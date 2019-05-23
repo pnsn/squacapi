@@ -1,0 +1,37 @@
+from django.test import TestCase
+from django.contrib.auth import get_user_model
+
+
+class ModelTests(TestCase):
+
+    def test_create_user_with_email_successful(self):
+        '''test creating a new user with an email success'''
+        email = 'test@uw.edu'
+        password = 'supersecret'
+        user = get_user_model().objects.create_user(
+            email=email,
+            password=password
+        )
+        self.assertEqual(user.email, email)
+        self.assertTrue(user.check_password(password))
+
+    def test_new_user_email_normalized(self):
+        '''Test email for new user is lowercased'''
+        email = "test@pNsn.org"
+        user = get_user_model().objects.create_user(email, "12323")
+
+        self.assertEqual(user.email, email.lower())
+
+    def test_new_user_invalid_email(self):
+        '''test createing user with no email reaises error'''
+        with self.assertRaises(ValueError):
+            get_user_model().objects.create_user(None, '1243')
+
+    def test_create_new_superuser(self):
+        '''Test creating new superuser'''
+        user = get_user_model().objects.create_superuser(
+            'test@pnsn.org',
+            'adjfkjds'
+        )
+        self.assertTrue(user.is_superuser)
+        self.assertTrue(user.is_staff)
