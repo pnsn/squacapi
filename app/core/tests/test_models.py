@@ -34,4 +34,3 @@ class ModelTests(TestCase):
             'adjfkjds'
         )
         self.assertTrue(user.is_superuser)
-        self.assertTrue(user.is_staff)
