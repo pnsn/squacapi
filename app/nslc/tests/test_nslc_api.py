@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.urls import reverse
-from nslc.models import Network, Station, Location, Channel
+from core.models import Network, Station, Location, Channel
 
 from rest_framework.test import APIClient
 from rest_framework import status
@@ -69,7 +69,7 @@ class PrivateNslcAPITests(TestCase):
         self.client.force_authenticate(user=sample_user)
 
     def test_create_network(self):
-        payload = {'code': "UW", "name": "University of Washington"}
+        # payload = {'code': "UW", "name": "University of Washington"}
         # res = self.client.get()
         # self.assertEqual(res.status_code, status.HTTP_200_OK)
         pass
