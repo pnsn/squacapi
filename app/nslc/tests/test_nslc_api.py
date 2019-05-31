@@ -16,15 +16,17 @@ class PublicNslcApiTests(TestCase):
     '''Test the nslc api (public)'''
 
     def setUp(self):
+        self.user = sample_user()
         self.client = APIClient()
         self.net = Network.objects.create(
-            code="UW", name="University of Washington")
+            code="UW", name="University of Washington", user=self.user)
         self.sta = Station.objects.create(
-            code='RCM', name="Camp Muir", network=self.net)
+            code='RCM', name="Camp Muir", network=self.net, user=self.user)
         self.loc = Location.objects.create(
-            code='--', name="--", station=self.sta, lat=45, lon=-122, elev=0)
+            code='--', name="--", station=self.sta, lat=45, lon=-122,
+            elev=0, user=self.user)
         self.chan = Channel.objects.create(
-            code='EHZ', name="EHZ", location=self.loc)
+            code='EHZ', name="EHZ", location=self.loc, user=self.user)
 
     def test_network_res_and_str(self):
         '''test if str is corrected'''
@@ -64,10 +66,10 @@ class PrivateNslcAPITests(TestCase):
 
     def setUp(self):
         self.client = APIClient()
-        self.client.force_authenticate(user=sample_user())
+        self.client.force_authenticate(user=sample_user)
 
     def test_create_network(self):
-        # payload = {'code': "UW", "name": "University of Washington"}
+        payload = {'code': "UW", "name": "University of Washington"}
         # res = self.client.get()
         # self.assertEqual(res.status_code, status.HTTP_200_OK)
         pass
