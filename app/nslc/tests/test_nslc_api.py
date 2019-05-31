@@ -7,8 +7,9 @@ from rest_framework.test import APIClient
 from rest_framework import status
 
 
-def create_user(**params):
-    return get_user_model().objects.create_user(**params)
+def sample_user(email='test@pnsn.org', password="secret"):
+    '''create a sample user for testing'''
+    return get_user_model().objects.create_user(email, password)
 
 
 class PublicNslcApiTests(TestCase):
@@ -16,78 +17,57 @@ class PublicNslcApiTests(TestCase):
 
     def setUp(self):
         self.client = APIClient()
-        self.net1 = Network.objects.create(
+        self.net = Network.objects.create(
             code="UW", name="University of Washington")
-        self.net2 = Network.objects.create(
-            code="UO", name="University of Oregon")
+        self.sta = Station.objects.create(
+            code='RCM', name="Camp Muir", network=self.net)
+        self.loc = Location.objects.create(
+            code='--', name="--", station=self.sta, lat=45, lon=-122, elev=0)
+        self.chan = Channel.objects.create(
+            code='EHZ', name="EHZ", location=self.loc)
 
-        self.sta1 = Station.objects.create(
-            code='RCM', name="Camp Muir", network=self.net1)
-        self.sta2 = Station.objects.create(
-            code='FMW', name="Fremont Peak", network=self.net2)
-
-        self.loc1 = Location.objects.create(
-            code='--', name="--", station=self.sta1, lat=45, lon=-122, elev=0)
-        self.loc2 = Location.objects.create(
-            code='00', name="00", station=self.sta1, lat=45, lon=-122, elev=0)
-
-        self.chan1 = Channel.objects.create(
-            code='EHZ', name="EHZ", location=self.loc2)
-        self.chan2 = Channel.objects.create(
-            code='BHZ', name="BHZ", location=self.loc2)
-
-    def test_networks_list_exist(self):
-        url = reverse('nslc:network-list')
-        '''test if network objects are returned in list'''
-        res = self.client.get(url)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(res.data), 2)
-
-    def test_network_details_exist(self):
-        '''test if correct object is returned'''
-        url = reverse('nslc:network-detail', kwargs={'pk': self.net1.id})
+    def test_network_res_and_str(self):
+        '''test if str is corrected'''
+        url = reverse('nslc:network-detail', kwargs={'pk': self.net.id})
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data['name'], "University of Washington")
+        self.assertEqual(str(self.net), "UW")
 
-    def test_station_list_exist(self):
-        url = reverse('nslc:station-list')
-        '''test if station objects are returned in list'''
-        res = self.client.get(url)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(res.data), 2)
-
-    def test_station_details_exist(self):
+    def test_station_res_and_str(self):
         '''test if correct station object is returned'''
-        url = reverse('nslc:station-detail', kwargs={'pk': self.sta1.id})
+        url = reverse('nslc:station-detail', kwargs={'pk': self.sta.id})
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data['name'], "Camp Muir")
+        self.assertEqual(str(self.sta), "RCM")
 
-    def test_location_list_exist(self):
-        url = reverse('nslc:location-list')
-        '''test if location objects are returned in list'''
-        res = self.client.get(url)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(res.data), 2)
-
-    def test_location_details_exist(self):
+    def test_location_res_and_str(self):
         '''test if correct location object is returned'''
-        url = reverse('nslc:location-detail', kwargs={'pk': self.loc1.id})
+        url = reverse('nslc:location-detail', kwargs={'pk': self.loc.id})
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data['name'], "--")
+        self.assertEqual(str(self.loc), "--")
 
-    def test_channel_list_exist(self):
-        '''test if channel objects are returned in list'''
-        url = reverse('nslc:channel-list')
-        res = self.client.get(url)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(res.data), 2)
-
-    def test_channel_details_exist(self):
+    def test_channel_res_and_str(self):
         '''test if correct channel object is returned'''
-        url = reverse('nslc:channel-detail', kwargs={'pk': self.chan1.id})
+        url = reverse('nslc:channel-detail', kwargs={'pk': self.chan.id})
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data['name'], "EHZ")
+        self.assertEqual(str(self.chan), "EHZ")
+
+
+class PrivateNslcAPITests(TestCase):
+    '''all authenticated tests go here'''
+
+    def setUp(self):
+        self.client = APIClient()
+        self.client.force_authenticate(user=sample_user())
+
+    def test_create_network(self):
+        # payload = {'code': "UW", "name": "University of Washington"}
+        # res = self.client.get()
+        # self.assertEqual(res.status_code, status.HTTP_200_OK)
+        pass
