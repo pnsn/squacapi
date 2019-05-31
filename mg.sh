@@ -1,5 +1,6 @@
 #!/bin/bash
-
+#use this to clean up run cruft
+#docker rm $(docker ps -a --filter="name=docker_app_run" -q)
  echo $1
 if [ "$#" -lt 1 ]; then
   echo "mg.sh: utility to run shell commands via docker-compose

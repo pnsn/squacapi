@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from core.models import Network, Station, Location, Channel
+from .models import Network, Station, Location, Channel
 # from rest_framework.relations import HyperlinkedIdentityField
 
 

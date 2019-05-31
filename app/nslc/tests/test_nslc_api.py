@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.urls import reverse
-from core.models import Network, Station, Location, Channel
+from nslc.models import Network, Station, Location, Channel
 
 from rest_framework.test import APIClient
 from rest_framework import status

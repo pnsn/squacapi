@@ -1,4 +1,4 @@
-from core.models import Network, Station, Location, Channel
+from .models import Network, Station, Location, Channel
 from rest_framework import generics
 from nslc.serializers import NetworkSerializer, StationSerializer, \
     LocationSerializer, ChannelSerializer

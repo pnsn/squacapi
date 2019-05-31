@@ -16,7 +16,7 @@ services:
             python manage.py runserver 0.0.0.0:8000"
     environment:
       - DB_HOST=db
-      - DB_NAME=app
+      - DB_NAME=squac_dev
       - DB_USER=postgres
       - DB_PASS=supersecret
     depends_on:
@@ -24,6 +24,6 @@ services:
   db:
     image: postgres:10-alpine
     environment:
-      - POSTGRES_DB=app
+      - POSTGRES_DB=squac_dev
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=supersecret
