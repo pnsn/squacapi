@@ -1,20 +1,13 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+
 from nslc import views
+
+router = DefaultRouter()
+router.register('channels', views.ChannelViewSet)
+router.register('locations', views.LocationViewSet)
+router.register('stations', views.StationViewSet)
+router.register('networks', views.NetworkViewSet)
+
 app_name = "nslc"
-urlpatterns = [
-    path('networks/', views.NetworkList.as_view(), name='network-list'),
-    path('networks/<int:pk>', views.NetworkDetail.as_view(),
-         name='network-detail'),
-
-    path('stations/', views.StationList.as_view(), name='station-list'),
-    path('stations/<int:pk>', views.StationDetail.as_view(),
-         name='station-detail'),
-
-    path('locations/', views.LocationList.as_view(), name='location-list'),
-    path('locations/<int:pk>', views.LocationDetail.as_view(),
-         name='location-detail'),
-
-    path('channels/', views.ChannelList.as_view(), name='channel-list'),
-    path('channels/<int:pk>', views.ChannelDetail.as_view(),
-         name='channel-detail')
-]
+urlpatterns = [path('', include(router.urls))]

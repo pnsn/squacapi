@@ -6,6 +6,8 @@ from nslc.models import Network, Station, Location, Channel
 from rest_framework.test import APIClient
 from rest_framework import status
 
+'''/mg.sh "test nslc && flake8"'''
+
 
 def sample_user(email='test@pnsn.org', password="secret"):
     '''create a sample user for testing'''
@@ -18,6 +20,8 @@ class PublicNslcApiTests(TestCase):
     def setUp(self):
         self.user = sample_user()
         self.client = APIClient()
+        # unauthenticate all public tests
+        self.client.force_authenticate(user=None)
         self.net = Network.objects.create(
             code="UW", name="University of Washington", user=self.user)
         self.sta = Station.objects.create(
@@ -35,6 +39,11 @@ class PublicNslcApiTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data['name'], "University of Washington")
         self.assertEqual(str(self.net), "UW")
+
+        url = reverse('nslc:network-list')
+        payload = {'code': "UW", "name": "University of Washington"}
+        res = self.client.post(url, payload)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_station_res_and_str(self):
         '''test if correct station object is returned'''
@@ -66,10 +75,10 @@ class PrivateNslcAPITests(TestCase):
 
     def setUp(self):
         self.client = APIClient()
-        self.client.force_authenticate(user=sample_user)
+        self.client.force_authenticate(user=sample_user())
 
     def test_create_network(self):
-        # payload = {'code': "UW", "name": "University of Washington"}
-        # res = self.client.get()
-        # self.assertEqual(res.status_code, status.HTTP_200_OK)
-        pass
+        url = reverse('nslc:network-list')
+        payload = {'code': "UW", "name": "University of Washington"}
+        res = self.client.post(url, payload)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)

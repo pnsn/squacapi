@@ -1,10 +1,15 @@
-from .models import Network, Station, Location, Channel
-from rest_framework import generics
-from nslc.serializers import NetworkSerializer, StationSerializer, \
-    LocationSerializer, ChannelSerializer
+from rest_framework import viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
+from rest_framework.authentication import TokenAuthentication, \
+    SessionAuthentication
+
+from rest_framework.permissions import IsAuthenticated, AllowAny
+
+from .models import Network, Station, Location, Channel
+from nslc.serializers import NetworkSerializer, StationSerializer, \
+    LocationSerializer, ChannelSerializer
 import django_filters as filters
 
 """Common methods for filtering classes to share"""
@@ -86,79 +91,57 @@ def api_root(request, format=None):
     })
 
 
-"""
-List and Detail views for all NSLC
-"""
+"""model viewset include all CRUD methods:
+    retrieve
+    list
+    update
+    partial_update
+    destory
+    """
 
 
-class NetworkList(generics.ListAPIView):
-    '''Network list view'''
+class BaseNslcViewSet(viewsets.ModelViewSet):
+    '''base class for all nslc viewsets'''
+    authentication_classes = (SessionAuthentication, TokenAuthentication)
+
+    def perform_create(self, serializer):
+        '''create an object'''
+        serializer.save(user=self.request.user)
+
+    def get_permissions(self):
+        '''require auth for non safe methods'''
+        if self.action in ['update', 'partial_update', 'destroy']:
+
+            permission_classes = [IsAuthenticated]
+        else:
+            '''allow any on retrieve'''
+            permission_classes = [AllowAny]
+        return [permission() for permission in permission_classes]
+
+
+class NetworkViewSet(BaseNslcViewSet):
     serializer_class = NetworkSerializer
-
-    # filter_class = NetworkFilter
-    def get_queryset(self):
-        queryset = Network.objects.all()
-        queryset = self.get_serializer_class().setup_eager_loading(queryset)
-        return queryset
+    filter_class = NetworkFilter
+    q = Network.objects.all()
+    queryset = serializer_class.setup_eager_loading(q)
 
 
-class NetworkDetail(generics.RetrieveUpdateDestroyAPIView):
-    '''Network detail view'''
-    serializer_class = NetworkSerializer
-
-    def get_object(self):
-        return Network.objects.get(pk=self.kwargs['pk'])
-
-
-class StationList(generics.ListAPIView):
+class StationViewSet(BaseNslcViewSet):
     serializer_class = StationSerializer
-    # filter_class = StationFilter
-
-    def get_queryset(self):
-        queryset = Station.objects.all()
-        queryset = self.get_serializer_class().setup_eager_loading(queryset)
-        return queryset
+    filter_class = StationFilter
+    q = Station.objects.all()
+    queryset = serializer_class.setup_eager_loading(q)
 
 
-class StationDetail(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = StationSerializer
-
-    def get_object(self):
-        return Station.objects.get(
-            pk=self.kwargs['pk'])
-
-
-class LocationList(generics.ListAPIView):
+class LocationViewSet(BaseNslcViewSet):
     serializer_class = LocationSerializer
-    # filter_class = LocationFilter
-
-    def get_queryset(self):
-        queryset = Location.objects.all()
-        queryset = self.get_serializer_class().setup_eager_loading(queryset)
-        return queryset
+    filter_class = LocationFilter
+    q = Location.objects.all()
+    queryset = serializer_class.setup_eager_loading(q)
 
 
-class LocationDetail(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = LocationSerializer
-    # filter_class = LocationFilter
-
-    def get_object(self):
-        return Location.objects.get(pk=self.kwargs['pk'])
-
-
-class ChannelList(generics.ListAPIView):
-    '''Return list of channels'''
+class ChannelViewSet(BaseNslcViewSet):
     serializer_class = ChannelSerializer
-    # filter_class = ChannelFilter
-
-    def get_queryset(self):
-        queryset = Channel.objects.all()
-        queryset = self.get_serializer_class().setup_eager_loading(queryset)
-        return queryset
-
-
-class ChannelDetail(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = ChannelSerializer
-
-    def get_object(self):
-        return Channel.objects.get(pk=self.kwargs['pk'])
+    filter_class = ChannelFilter
+    q = Channel.objects.all()
+    queryset = serializer_class.setup_eager_loading(q)
