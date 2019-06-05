@@ -12,10 +12,7 @@ class UserManager(BaseUserManager):
         # lowercase all emails!
         user = self.model(email=self.normalize_email(email), **extra_fields)
         user.set_password(password)
-        # using=self._db for supporting multiple dbs not needed now but good
-        # practice
         user.save(using=self._db)
-
         return user
 
     def create_superuser(self, email, password):
@@ -34,5 +31,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+
     objects = UserManager()
     USERNAME_FIELD = 'email'
+
+    def __str__(self):
+        return self.email
+
+    def get_full_name(self):
+        return self.email

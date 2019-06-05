@@ -21,6 +21,7 @@ class UserAdmin(BaseUserAdmin):
                 )
             }
         ),
+        ('Groups', {'fields': ('groups', )}),
         ('Important dates', {'fields': ('last_login',)}),)
 
     # add as in add user, NOT add fieldset to UserAdmin class
