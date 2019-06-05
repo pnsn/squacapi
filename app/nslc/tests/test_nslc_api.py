@@ -6,7 +6,15 @@ from nslc.models import Network, Station, Location, Channel
 from rest_framework.test import APIClient
 from rest_framework import status
 
-'''/mg.sh "test nslc && flake8"'''
+'''Tests for all nscl models:
+    *Network
+    *Station
+    *Location
+    *Channel
+
+
+to run only these test:
+    /mg.sh "test nslc && flake8"'''
 
 
 def sample_user(email='test@pnsn.org', password="secret"):

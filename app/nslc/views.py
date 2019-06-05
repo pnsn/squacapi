@@ -5,7 +5,7 @@ from rest_framework.reverse import reverse
 from rest_framework.authentication import TokenAuthentication, \
     SessionAuthentication
 
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from .models import Network, Station, Location, Channel
 from nslc.serializers import NetworkSerializer, StationSerializer, \
@@ -97,26 +97,22 @@ def api_root(request, format=None):
     update
     partial_update
     destory
-    """
+"""
 
 
 class BaseNslcViewSet(viewsets.ModelViewSet):
-    '''base class for all nslc viewsets'''
-    authentication_classes = (SessionAuthentication, TokenAuthentication)
+    '''base class for all nslc viewsets:
 
+     Permissions are IsAuthticatedOrReadOnly
+        This allows auth user to fully crud but unathorized user to view
+        all data
+     '''
+    authentication_classes = (TokenAuthentication, SessionAuthentication)
+    permission_classes = (IsAuthenticatedOrReadOnly, )
+
+    # all models have require an auth user, set on create
     def perform_create(self, serializer):
-        '''create an object'''
         serializer.save(user=self.request.user)
-
-    def get_permissions(self):
-        '''require auth for non safe methods'''
-        if self.action in ['update', 'partial_update', 'destroy']:
-
-            permission_classes = [IsAuthenticated]
-        else:
-            '''allow any on retrieve'''
-            permission_classes = [AllowAny]
-        return [permission() for permission in permission_classes]
 
 
 class NetworkViewSet(BaseNslcViewSet):
