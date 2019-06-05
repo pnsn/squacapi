@@ -51,7 +51,7 @@ class PublicNslcApiTests(TestCase):
         url = reverse('nslc:network-list')
         payload = {'code': "UW", "name": "University of Washington"}
         res = self.client.post(url, payload)
-        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_station_res_and_str(self):
         '''test if correct station object is returned'''
