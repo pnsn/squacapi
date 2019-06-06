@@ -6,10 +6,11 @@ from core import models
 
 class UserAdmin(BaseUserAdmin):
     ordering = ['id']
+    # list
     list_display = ['email', 'name']
-
+    # edit user form
     fieldsets = (
-        (None, {'fields': ('email', 'password')}),
+        (None, {'fields': ('email', )}),
         ('Personal Info', {'fields': ('name',)}),
         (
             'Permissions',
@@ -24,7 +25,7 @@ class UserAdmin(BaseUserAdmin):
         ('Groups', {'fields': ('groups', )}),
         ('Important dates', {'fields': ('last_login',)}),)
 
-    # add as in add user, NOT add fieldset to UserAdmin class
+    # Add new user form
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
@@ -33,3 +34,5 @@ class UserAdmin(BaseUserAdmin):
 
 
 admin.site.register(models.User, UserAdmin)
+# header for the admin page
+# admin.site.site_header = "Squac"

@@ -127,3 +127,14 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 AUTH_USER_MODEL = 'core.User'
+
+# LOGIN_REDIRECT_URL = "/accounts/"
+
+''' to add quick and dirty email server:
+    ADD the following Variables to this file:
+    EMAIL_HOST = 'localhost'
+    EMAIL_PORT = 1025
+    then run:
+        python -m smtpd -n -c DebuggingServer localhost: 1025
+    
+'''
