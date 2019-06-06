@@ -85,7 +85,7 @@ class PrivateNslcAPITests(TestCase):
         self.client = APIClient()
         self.user = sample_user(email="test@pnsn.org", password="secret")
         self.client.force_authenticate(self.user)
-        print(self.user.permissions)
+        # print(self.user.permissions)
 
     def test_create_network(self):
         url = reverse('nslc:network-list')
