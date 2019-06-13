@@ -36,5 +36,3 @@ class UserAdmin(BaseUserAdmin):
 
 admin.site.register(models.User, UserAdmin)
 admin.site.register(nslc.Network)
-# header for the admin page
-#admin.site.site_header = "Squac"
