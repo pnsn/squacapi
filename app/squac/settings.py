@@ -61,7 +61,7 @@ ROOT_URLCONF = 'squac.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -136,5 +136,5 @@ AUTH_USER_MODEL = 'core.User'
     EMAIL_PORT = 1025
     then run:
         python -m smtpd -n -c DebuggingServer localhost: 1025
-    
+
 '''
