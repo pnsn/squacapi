@@ -18,6 +18,11 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('accounts/', include('django.contrib.auth.urls')),
     path('api/v1.0/user/', include('user.urls')),
     path('api/v1.0/nslc/', include('nslc.urls'))
 ]
+'''To access password reset: localhost:8000/acounts/password_reset/
+For test reseting password: reset email text file will be created in a
+new directory app/sent_emails/(reset email) and link to password reset
+form will be found in the email text file'''

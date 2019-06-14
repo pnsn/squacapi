@@ -130,6 +130,11 @@ AUTH_USER_MODEL = 'core.User'
 
 # LOGIN_REDIRECT_URL = "/accounts/"
 
+'''Email backend and filepath allow for storing generated emails
+locally for password reset to test functionality'''
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
+
 ''' to add quick and dirty email server:
     ADD the following Variables to this file:
     EMAIL_HOST = 'localhost'
