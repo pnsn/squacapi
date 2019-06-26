@@ -125,6 +125,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/dev/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = "/var/www/squac_api/static/"
 
 AUTH_USER_MODEL = 'core.User'
 
