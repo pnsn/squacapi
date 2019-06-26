@@ -15,10 +15,11 @@ services:
             python manage.py migrate &&
             python manage.py runserver 0.0.0.0:8000"
     environment:
-      - DB_HOST=db
-      - DB_NAME=squac_dev
-      - DB_USER=postgres
-      - DB_PASS=supersecret
+      - SQUAC_DB_HOST=db
+      - SQUAC_DB_NAME=squac_dev
+      - SQUAC_DB_USER=postgres
+      - SQUAC_DB_PASS=supersecret
+      - SQUAC_SECRET_KEY=thisisnottherealkey
     depends_on:
       - db
   db:
