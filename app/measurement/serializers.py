@@ -1,19 +1,24 @@
 from rest_framework import serializers
-from .models import DataSource
+from .models import DataSource, Metric
+
+
+class MetricSerializer(serializers.HyperlinkedModelSerializer):
+    datasource = serializers.StringRelatedField()
+    url = serializers.HyperlinkedIdentityField(
+        view_name="measurement:metric-detail")
+
+    class Meta:
+        model = Metric
+        fields = ('id', 'name', 'url', 'description', 'unit', 'datasource',
+                  'created_at', 'updated_at', 'datasource')
 
 
 class DataSourceSerializer(serializers.HyperlinkedModelSerializer):
-    location = serializers.StringRelatedField()
-    url = serializers.HyperLinkedIdentityField(
-        view_name="measurement:datasource-detail"
-    )
+    metric = MetricSerializer(many=True, read_only=True)
+    url = serializers.HyperlinkedIdentityField(
+        view_name="measurement:datasource-detail")
 
     class Meta:
         model = DataSource
-        fields = ('class_name', 'name', 'id', 'url', 'description',
-                  'created_at', 'updated_at')
-
-    @staticmethod
-    def setup_eager_loading(queryset):
-        # queryset = queryset.select_related('metric')
-        return queryset
+        fields = ('id', 'name', 'url', 'description',
+                  'created_at', 'updated_at', 'metric')
