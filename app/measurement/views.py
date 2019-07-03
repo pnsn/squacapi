@@ -2,20 +2,9 @@ from rest_framework import viewsets
 from rest_framework.authentication import TokenAuthentication, \
     SessionAuthentication
 from rest_framework.permissions import BasePermission, SAFE_METHODS
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from rest_framework.reverse import reverse
 
 from .models import DataSource, Metric
 from measurement.serializers import DataSourceSerializer, MetricSerializer
-
-
-@api_view(['GET'])
-def api_root(request, format=None):
-    '''api root'''
-    return Response({
-        'nets': reverse('network-list', request=request, format=format),
-    })
 
 
 class ObjPermissionOrReadOnly(BasePermission):

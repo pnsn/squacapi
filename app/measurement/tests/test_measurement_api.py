@@ -67,7 +67,37 @@ class PublicMeasurementApiTests(TestCase):
         payload = {
             'name': 'Test',
             'unit': 'meter',
-            'datasource': self.datasrc.id
+            'datasource': self.datasrc
         }
         res = self.client.post(url, payload)
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+class PrivateMeasurementAPITests(TestCase):
+    '''For authenticated tests in measuremnt API'''
+
+    def setUp(self):
+        self.client = APIClient()
+        self.user = sample_user()
+        self.client.force_authenticate(self.user)
+
+    def test_create_datasource(self):
+        url = reverse('measurement:datasource-list')
+        payload = {'name': 'Data source test', 'user': self.user}
+        res = self.client.post(url, payload)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(res.data['name'], payload['name'])
+
+    def test_create_metric(self):
+        url = reverse('measurement:metric-list')
+        datasrc = DataSource.objects.create(name='Test', user=self.user)
+        datasrc.save()
+        payload = {
+            'name': 'Metric test',
+            'description': 'Test description',
+            'unit': 'meter',
+            'datasource': datasrc.id,
+            'user': self.user
+        }
+        res = self.client.post(url, payload)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)

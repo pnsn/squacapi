@@ -4,7 +4,7 @@ from django.conf import settings
 
 class DataSource(models.Model):
     name = models.CharField(max_length=255)
-    description = models.CharField(max_length=255, null=True, blank=True)
+    description = models.CharField(max_length=255, blank=True, default='')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(
@@ -18,11 +18,12 @@ class DataSource(models.Model):
 
 class Metric(models.Model):
     name = models.CharField(max_length=255)
-    description = models.CharField(max_length=255, null=True, blank=True)
+    description = models.CharField(max_length=255, blank=True, default='')
     unit = models.CharField(max_length=255)
     datasource = models.ForeignKey(
         DataSource,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        related_name='metrics'
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
