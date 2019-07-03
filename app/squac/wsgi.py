@@ -10,14 +10,18 @@ https://docs.djangoproject.com/en/dev/howto/deployment/wsgi/
 import os
 import sys
 from django.core.wsgi import get_wsgi_application
+from dotenv import load_dotenv
+
 # there is probably a better way of doing this but without we get the module
 # squac not found
 # include full path up to app/
-file_path = os.path.abspath(os.path.dirname(__file__))
-file_list = file_path.split("/")
-app_path = "/".join(file_list[0:-1])
-sys.path.insert(0, os.path.abspath(app_path))
-
+APP_ROOT = os.path.join(os.path.dirname(__file__), '..')
+# Add to path modules  ../app
+sys.path.insert(0, os.path.abspath(APP_ROOT))
+# load env variables
+dotenv_path = os.path.join(APP_ROOT, '.env')
+load_dotenv(dotenv_path)
+# load settings
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'squac.settings')
 
 application = get_wsgi_application()
