@@ -25,7 +25,7 @@ SECRET_KEY = os.environ.get('SQUAC_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['squac.pnsn.org','squacapi.pnsn.org']
 
 
 # Application definition
