@@ -10,8 +10,11 @@ class MetricSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Metric
-        fields = ('id', 'name', 'url', 'description', 'datasource', 'unit',
-                  'created_at', 'updated_at')
+        fields = (
+            'id', 'name', 'url', 'description', 'datasource', 'unit',
+            'created_at', 'updated_at'
+        )
+        read_only_fields = ('id',)
 
 
 class DataSourceSerializer(serializers.HyperlinkedModelSerializer):
@@ -21,5 +24,8 @@ class DataSourceSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = DataSource
-        fields = ('id', 'name', 'url', 'description',
-                  'created_at', 'updated_at', 'metrics')
+        fields = (
+            'id', 'name', 'url', 'description',
+            'created_at', 'updated_at', 'metrics'
+        )
+        read_only_fields = ('id',)
