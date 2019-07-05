@@ -4,13 +4,16 @@ from .models import Network, Station, Location, Channel
 
 
 class ChannelSerializer(serializers.HyperlinkedModelSerializer):
-    location = serializers.StringRelatedField()
+    location = serializers.PrimaryKeyRelatedField(
+        queryset=Location.objects.all()
+    )
     url = serializers.HyperlinkedIdentityField(view_name="nslc:channel-detail")
 
     class Meta:
         model = Channel
         fields = ('class_name', 'code', 'name', 'id', 'url', 'description',
                   'sample_rate', 'location', 'created_at', 'updated_at')
+        read_only_fields = ('id',)
 
     @staticmethod
     def setup_eager_loading(queryset):
@@ -19,7 +22,9 @@ class ChannelSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class LocationSerializer(serializers.HyperlinkedModelSerializer):
-    station = serializers.StringRelatedField()
+    station = serializers.PrimaryKeyRelatedField(
+        queryset=Station.objects.all()
+    )
     channels = ChannelSerializer(many=True, read_only=True)
     url = serializers.HyperlinkedIdentityField(
         view_name="nslc:location-detail")
@@ -27,8 +32,9 @@ class LocationSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Location
         fields = ('class_name', 'code', 'name', 'id', 'url', 'description',
-                  'lat', 'lon', 'station', 'created_at', 'updated_at',
+                  'lat', 'lon', 'elev', 'station', 'created_at', 'updated_at',
                   'channels')
+        read_only_fields = ('id',)
 
     @staticmethod
     def setup_eager_loading(queryset):
@@ -38,7 +44,9 @@ class LocationSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class StationSerializer(serializers.HyperlinkedModelSerializer):
-    network = serializers.StringRelatedField()
+    network = serializers.PrimaryKeyRelatedField(
+        queryset=Network.objects.all()
+    )
     locations = LocationSerializer(many=True, read_only=True)
     url = serializers.HyperlinkedIdentityField(view_name="nslc:station-detail")
 
@@ -47,6 +55,7 @@ class StationSerializer(serializers.HyperlinkedModelSerializer):
 
         fields = ('class_name', 'code', 'name', 'id', 'url', 'description',
                   'created_at', 'updated_at', 'network', 'locations')
+        read_only_fields = ('id',)
 
     @staticmethod
     def setup_eager_loading(queryset):
@@ -66,6 +75,7 @@ class NetworkSerializer(serializers.HyperlinkedModelSerializer):
         model = Network
         fields = ('class_name', 'code', 'name', 'id', 'url', 'description',
                   'created_at', 'updated_at', 'stations')
+        read_only_fields = ('id',)
 
     @staticmethod
     def setup_eager_loading(queryset):
