@@ -1,5 +1,22 @@
 from rest_framework import serializers
-from .models import DataSource, Metric, MetricGroup, Threshold
+from .models import DataSource, Metric, MetricGroup, Threshold, Alarm
+
+
+class AlarmSerializer(serializers.HyperlinkedModelSerializer):
+    threshold = serializers.PrimaryKeyRelatedField(
+        queryset=Threshold.objects.all()
+    )
+    url = serializers.HyperlinkedIdentityField(
+        view_name='measurement:alarm-detail'
+    )
+
+    class Meta:
+        model = Alarm
+        fields = (
+            'id', 'name', 'url', 'description', 'period', 'num_period',
+            'threshold', 'created_at', 'updated_at'
+        )
+        read_only_fields = ('id',)
 
 
 class ThresholdSerializer(serializers.HyperlinkedModelSerializer):

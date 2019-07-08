@@ -3,7 +3,7 @@ from rest_framework.authentication import TokenAuthentication, \
     SessionAuthentication
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 
-from .models import DataSource, Metric, MetricGroup, Threshold
+from .models import DataSource, Metric, MetricGroup, Threshold, Alarm
 from measurement import serializers
 
 
@@ -64,3 +64,8 @@ class MetricGroupViewSet(BaseMeasurementViewSet):
 class ThresholdViewSet(BaseMeasurementViewSet):
     serializer_class = serializers.ThresholdSerializer
     queryset = Threshold.objects.all()
+
+
+class AlarmViewSet(BaseMeasurementViewSet):
+    serializer_class = serializers.AlarmSerializer
+    queryset = Alarm.objects.all()

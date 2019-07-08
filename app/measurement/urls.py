@@ -8,6 +8,7 @@ router.register('datasource', views.DataSourceViewSet)
 router.register('metric', views.MetricViewSet)
 router.register('metricgroup', views.MetricGroupViewSet)
 router.register('threshold', views.ThresholdViewSet)
+router.register('alarm', views.AlarmViewSet)
 
 app_name = "measurement"
 urlpatterns = [path('', include(router.urls))]
