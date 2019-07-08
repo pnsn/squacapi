@@ -23,23 +23,8 @@ class Metric(models.Model):
     datasource = models.ForeignKey(
         DataSource,
         on_delete=models.CASCADE,
-        related_name='metrics'
+        related_name='metrics',
     )
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-    )
-
-    def __str__(self):
-        return self.name
-
-
-class Group(models.Model):
-    name = models.CharField(max_length=255)
-    description = models.CharField(max_length=255, blank=True, default='')
-    is_public = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(
@@ -52,13 +37,13 @@ class Group(models.Model):
 
 
 class MetricGroup(models.Model):
+    name = models.CharField(max_length=255)
+    description = models.CharField(max_length=255, blank=True, default='')
+    is_public = models.BooleanField(default=False)
     metric = models.ForeignKey(
         Metric,
         on_delete=models.CASCADE,
-    )
-    group = models.ForeignKey(
-        Group,
-        on_delete=models.CASCADE,
+        related_name='metricgroups',
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -68,4 +53,4 @@ class MetricGroup(models.Model):
     )
 
     def __str__(self):
-        return f"Metric: {self.metric} Group: {self.group}"
+        return self.name

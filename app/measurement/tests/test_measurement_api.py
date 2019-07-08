@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.urls import reverse
-from measurement.models import DataSource, Metric, Group, MetricGroup
+from measurement.models import DataSource, Metric, MetricGroup
 
 from rest_framework.test import APIClient
 from rest_framework import status
@@ -37,15 +37,11 @@ class PublicMeasurementApiTests(TestCase):
             datasource=self.datasrc,
             user=self.user
         )
-        self.group = Group.objects.create(
-            name='Group test',
+        self.metricgroup = MetricGroup.objects.create(
+            name="Metric group test",
             description='Some stuff',
             is_public=True,
-            user=self.user
-        )
-        self.metricgroup = MetricGroup.objects.create(
             metric=self.metric,
-            group=self.group,
             user=self.user
         )
 
@@ -56,7 +52,7 @@ class PublicMeasurementApiTests(TestCase):
         )
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data['name'], "Data source test")
+        # self.assertEqual(res.data['name'], "Data source test")
         self.assertEqual(str(self.datasrc), "Data source test")
 
     def test_datasource_post_unauth(self):
@@ -85,26 +81,6 @@ class PublicMeasurementApiTests(TestCase):
         res = self.client.post(url, payload)
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_group_res_and_str(self):
-        url = reverse(
-            'measurement:group-detail',
-            kwargs={'pk': self.group.id}
-        )
-        res = self.client.get(url)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data['name'], 'Group test')
-        self.assertEqual(str(self.group), 'Group test')
-
-    def test_group_post_unauth(self):
-        url = reverse('measurement:group-list')
-        payload = {
-            'name': 'Test',
-            'description': 'Some stuff',
-            'is_public': True,
-        }
-        res = self.client.post(url, payload)
-        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
-
     def test_metricgroup_res_and_str(self):
         url = reverse(
             'measurement:metricgroup-detail',
@@ -112,16 +88,15 @@ class PublicMeasurementApiTests(TestCase):
         )
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(
-            str(self.metricgroup),
-            'Metric: Metric test Group: Group test'
-        )
+        self.assertEqual(str(self.metricgroup), 'Metric group test')
 
     def test_metricgroup_post_unauth(self):
         url = reverse('measurement:metricgroup-list')
         payload = {
-            'metric': self.metric.id,
-            'group': self.group.id
+            'name': 'Group test',
+            'description': 'This is a test',
+            'is_public': True,
+            'metric': self.metric.id
         }
         res = self.client.post(url, payload)
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
@@ -144,14 +119,10 @@ class PrivateMeasurementAPITests(TestCase):
             datasource=self.datasrc,
             user=self.user
         )
-        self.group = Group.objects.create(
-            name='Sample group',
-            is_public=True,
-            user=self.user
-        )
         self.metricgroup = MetricGroup.objects.create(
+            name='Sample metric group',
+            is_public=True,
             metric=self.metric,
-            group=self.group,
             user=self.user
         )
 
@@ -177,29 +148,18 @@ class PrivateMeasurementAPITests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         metric = Metric.objects.get(id=res.data['id'])
         for key in payload.keys():
-            if key != 'datasource':
-                self.assertEqual(payload[key], getattr(metric, key))
-            else:
+            if key == 'datasource':
                 self.assertEqual(payload[key], metric.datasource.id)
-
-    def test_create_group(self):
-        url = reverse('measurement:group-list')
-        payload = {
-            'name': 'Group test',
-            'description': 'This is a test',
-            'is_public': True,
-        }
-        res = self.client.post(url, payload)
-        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-        group = Group.objects.get(id=res.data['id'])
-        for key in payload.keys():
-            self.assertEqual(payload[key], getattr(group, key))
+            else:
+                self.assertEqual(payload[key], getattr(metric, key))
 
     def test_create_metricgroup(self):
         url = reverse('measurement:metricgroup-list')
         payload = {
-            'metric': self.metric.id,
-            'group': self.group.id
+            'name': 'Group test',
+            'description': 'This is a test',
+            'is_public': True,
+            'metric': self.metric.id
         }
         res = self.client.post(url, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
@@ -207,7 +167,5 @@ class PrivateMeasurementAPITests(TestCase):
         for key in payload.keys():
             if key == 'metric':
                 self.assertEqual(payload[key], metricgroup.metric.id)
-            elif key == 'group':
-                self.assertEqual(payload[key], metricgroup.group.id)
             else:
                 self.assertEqual(payload[key], getattr(metricgroup, key))
