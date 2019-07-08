@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.urls import reverse
-from measurement.models import DataSource, Metric, MetricGroup
+from measurement.models import DataSource, Metric, MetricGroup, Threshold
 
 from rest_framework.test import APIClient
 from rest_framework import status
@@ -42,6 +42,13 @@ class PublicMeasurementApiTests(TestCase):
             description='Some stuff',
             is_public=True,
             metric=self.metric,
+            user=self.user
+        )
+        self.threshold = Threshold.objects.create(
+            name="Threshold test",
+            min=2.1,
+            max=3.5,
+            metricgroup=self.metricgroup,
             user=self.user
         )
 
@@ -88,15 +95,37 @@ class PublicMeasurementApiTests(TestCase):
         )
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data['name'], 'Metric group test')
         self.assertEqual(str(self.metricgroup), 'Metric group test')
 
     def test_metricgroup_post_unauth(self):
         url = reverse('measurement:metricgroup-list')
         payload = {
-            'name': 'Group test',
+            'name': 'Test',
             'description': 'This is a test',
             'is_public': True,
             'metric': self.metric.id
+        }
+        res = self.client.post(url, payload)
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_threshold_res_and_str(self):
+        url = reverse(
+            'measurement:threshold-detail',
+            kwargs={'pk': self.threshold.id}
+        )
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data['name'], 'Threshold test')
+        self.assertEqual(str(self.threshold), 'Threshold test')
+
+    def test_threshold_post_unauth(self):
+        url = reverse('measurement:threshold-list')
+        payload = {
+            'name': 'Test',
+            'min': 2.1,
+            'max': 2.2,
+            'metricgroup': self.metricgroup.id
         }
         res = self.client.post(url, payload)
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
@@ -169,3 +198,20 @@ class PrivateMeasurementAPITests(TestCase):
                 self.assertEqual(payload[key], metricgroup.metric.id)
             else:
                 self.assertEqual(payload[key], getattr(metricgroup, key))
+
+    def test_create_threshold(self):
+        url = reverse('measurement:threshold-list')
+        payload = {
+            'name': 'Test',
+            'min': 2.1,
+            'max': 2.2,
+            'metricgroup': self.metricgroup.id
+        }
+        res = self.client.post(url, payload)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        threshold = Threshold.objects.get(id=res.data['id'])
+        for key in payload.keys():
+            if key == 'metricgroup':
+                self.assertEqual(payload[key], threshold.metricgroup.id)
+            else:
+                self.assertEqual(payload[key], getattr(threshold, key))

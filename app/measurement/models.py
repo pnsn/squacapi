@@ -54,3 +54,24 @@ class MetricGroup(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Threshold(models.Model):
+    name = models.CharField(max_length=255)
+    description = models.CharField(max_length=255, blank=True, default='')
+    min = models.FloatField()
+    max = models.FloatField()
+    metricgroup = models.ForeignKey(
+        MetricGroup,
+        on_delete=models.CASCADE,
+        related_name='thresholds',
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+    )
+
+    def __str__(self):
+        return self.name
