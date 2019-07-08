@@ -3,9 +3,9 @@ from rest_framework.authentication import TokenAuthentication, \
     SessionAuthentication
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 
-from .models import DataSource, Metric, Group
+from .models import DataSource, Metric, Group, MetricGroup
 from measurement.serializers import DataSourceSerializer, MetricSerializer,\
-                                    GroupSerializer
+                                    GroupSerializer, MetricGroupSerializer
 
 
 class ObjPermissionOrReadOnly(BasePermission):
@@ -60,3 +60,8 @@ class MetricViewSet(BaseMeasurementViewSet):
 class GroupViewSet(BaseMeasurementViewSet):
     serializer_class = GroupSerializer
     queryset = Group.objects.all()
+
+
+class MetricGroupViewSet(BaseMeasurementViewSet):
+    serializer_class = MetricGroupSerializer
+    queryset = MetricGroup.objects.all()

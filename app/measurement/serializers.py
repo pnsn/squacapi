@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import DataSource, Metric, Group
+from .models import DataSource, Metric, Group, MetricGroup
 
 
 class GroupSerializer(serializers.HyperlinkedModelSerializer):
@@ -40,5 +40,21 @@ class DataSourceSerializer(serializers.HyperlinkedModelSerializer):
         fields = (
             'id', 'name', 'url', 'description',
             'created_at', 'updated_at', 'metrics'
+        )
+        read_only_fields = ('id',)
+
+
+class MetricGroupSerializer(serializers.HyperlinkedModelSerializer):
+    metric = serializers.PrimaryKeyRelatedField(
+        queryset=Metric.objects.all())
+    group = serializers.PrimaryKeyRelatedField(
+        queryset=Group.objects.all())
+    url = serializers.HyperlinkedIdentityField(
+        view_name="measurement:metricgroup-detail")
+
+    class Meta:
+        model = MetricGroup
+        fields = (
+            'id', 'metric', 'group', 'url', 'created_at', 'updated_at'
         )
         read_only_fields = ('id',)
