@@ -96,3 +96,21 @@ class Alarm(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Trigger(models.Model):
+    count = models.IntegerField()
+    alarm = models.ForeignKey(
+        Alarm,
+        on_delete=models.CASCADE,
+        related_name='triggers'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+    )
+
+    def __str__(self):
+        return f'{str(self.alarm)}: {str(self.count)}'

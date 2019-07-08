@@ -1,8 +1,25 @@
 from rest_framework import serializers
-from .models import DataSource, Metric, MetricGroup, Threshold, Alarm
+from .models import DataSource, Metric, MetricGroup, Threshold, Alarm, Trigger
+
+
+class TriggerSerializer(serializers.HyperlinkedModelSerializer):
+    alarm = serializers.PrimaryKeyRelatedField(
+        queryset=Alarm.objects.all()
+    )
+    url = serializers.HyperlinkedIdentityField(
+        view_name='measurement:trigger-detail'
+    )
+
+    class Meta:
+        model = Trigger
+        fields = (
+            'id', 'url', 'count', 'alarm', 'created_at', 'updated_at'
+        )
+        read_only_fields = ('id',)
 
 
 class AlarmSerializer(serializers.HyperlinkedModelSerializer):
+    triggers = TriggerSerializer(many=True, read_only=True)
     threshold = serializers.PrimaryKeyRelatedField(
         queryset=Threshold.objects.all()
     )
@@ -14,12 +31,13 @@ class AlarmSerializer(serializers.HyperlinkedModelSerializer):
         model = Alarm
         fields = (
             'id', 'name', 'url', 'description', 'period', 'num_period',
-            'threshold', 'created_at', 'updated_at'
+            'triggers', 'threshold', 'created_at', 'updated_at'
         )
         read_only_fields = ('id',)
 
 
 class ThresholdSerializer(serializers.HyperlinkedModelSerializer):
+    alarms = AlarmSerializer(many=True, read_only=True)
     metricgroup = serializers.PrimaryKeyRelatedField(
         queryset=MetricGroup.objects.all()
     )
@@ -30,13 +48,14 @@ class ThresholdSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Threshold
         fields = (
-            'id', 'name', 'url', 'description', 'min', 'max', 'metricgroup',
-            'created_at', 'updated_at'
+            'id', 'name', 'url', 'description', 'min', 'max', 'alarms',
+            'metricgroup', 'created_at', 'updated_at'
         )
         read_only_fields = ('id',)
 
 
 class MetricGroupSerializer(serializers.HyperlinkedModelSerializer):
+    thresholds = ThresholdSerializer(many=True, read_only=True)
     metric = serializers.PrimaryKeyRelatedField(
         queryset=Metric.objects.all()
     )
@@ -47,8 +66,8 @@ class MetricGroupSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = MetricGroup
         fields = (
-            'id', 'name', 'url', 'description', 'is_public', 'metric',
-            'created_at', 'updated_at'
+            'id', 'name', 'url', 'description', 'is_public', 'thresholds',
+            'metric', 'created_at', 'updated_at'
         )
         read_only_fields = ('id',)
 

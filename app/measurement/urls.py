@@ -9,6 +9,7 @@ router.register('metric', views.MetricViewSet)
 router.register('metricgroup', views.MetricGroupViewSet)
 router.register('threshold', views.ThresholdViewSet)
 router.register('alarm', views.AlarmViewSet)
+router.register('trigger', views.TriggerViewSet)
 
 app_name = "measurement"
 urlpatterns = [path('', include(router.urls))]

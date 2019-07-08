@@ -3,7 +3,7 @@ from rest_framework.authentication import TokenAuthentication, \
     SessionAuthentication
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 
-from .models import DataSource, Metric, MetricGroup, Threshold, Alarm
+from .models import DataSource, Metric, MetricGroup, Threshold, Alarm, Trigger
 from measurement import serializers
 
 
@@ -69,3 +69,8 @@ class ThresholdViewSet(BaseMeasurementViewSet):
 class AlarmViewSet(BaseMeasurementViewSet):
     serializer_class = serializers.AlarmSerializer
     queryset = Alarm.objects.all()
+
+
+class TriggerViewSet(BaseMeasurementViewSet):
+    serializer_class = serializers.TriggerSerializer
+    queryset = Trigger.objects.all()

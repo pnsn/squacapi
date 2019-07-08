@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from measurement.models import DataSource, Metric, MetricGroup, Threshold,\
-                               Alarm
+                               Alarm, Trigger
 
 from rest_framework.test import APIClient
 from rest_framework import status
@@ -57,6 +57,11 @@ class PublicMeasurementApiTests(TestCase):
             period=2,
             num_period=3,
             threshold=self.threshold,
+            user=self.user
+        )
+        self.trigger = Trigger.objects.create(
+            count=0,
+            alarm=self.alarm,
             user=self.user
         )
 
@@ -159,6 +164,24 @@ class PublicMeasurementApiTests(TestCase):
         res = self.client.post(url, payload)
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
+    def test_trigger_res_and_str(self):
+        url = reverse(
+            'measurement:trigger-detail',
+            kwargs={'pk': self.trigger.id}
+        )
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(str(self.trigger), 'Alarm test: 0')
+
+    def test_trigger_post_unauth(self):
+        url = reverse('measurement:trigger-list')
+        payload = {
+            'count': 0,
+            'alarm': self.alarm.id
+        }
+        res = self.client.post(url, payload)
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
 
 class PrivateMeasurementAPITests(TestCase):
     '''For authenticated tests in measuremnt API'''
@@ -188,6 +211,13 @@ class PrivateMeasurementAPITests(TestCase):
             min=2.1,
             max=3.5,
             metricgroup=self.metricgroup,
+            user=self.user
+        )
+        self.alarm = Alarm.objects.create(
+            name='Alarm test',
+            period=2,
+            num_period=3,
+            threshold=self.threshold,
             user=self.user
         )
 
@@ -268,3 +298,18 @@ class PrivateMeasurementAPITests(TestCase):
                 self.assertEqual(payload[key], alarm.threshold.id)
             else:
                 self.assertEqual(payload[key], getattr(alarm, key))
+
+    def test_create_trigger(self):
+        url = reverse('measurement:trigger-list')
+        payload = {
+            'count': 0,
+            'alarm': self.alarm.id
+        }
+        res = self.client.post(url, payload)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        trigger = Trigger.objects.get(id=res.data['id'])
+        for key in payload.keys():
+            if key == 'alarm':
+                self.assertEqual(payload[key], trigger.alarm.id)
+            else:
+                self.assertEqual(payload[key], getattr(trigger, key))
