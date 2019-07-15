@@ -111,7 +111,7 @@ class ObjPermissionOrReadOnly(BasePermission):
         # user must be authenticated
         return request.user and request.user.is_authenticated
 
-    def has_object_permission(self, request, view, obj):
+    def has_obj_permission(self, request, view, obj):
         '''object level permissions, set by adding user to group
 
         Read permissions are allowed to any request,
