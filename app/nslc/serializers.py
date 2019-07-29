@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Network, Station, Location, Channel
+from .models import Network, Station, Location, Channel, Group
 # from rest_framework.relations import HyperlinkedIdentityField
 
 
@@ -83,3 +83,13 @@ class NetworkSerializer(serializers.HyperlinkedModelSerializer):
         queryset = queryset.prefetch_related('stations__locations')
         queryset = queryset.prefetch_related('stations__locations__channels')
         return queryset
+
+
+class GroupSerializer(serializers.HyperlinkedModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='nslc:group-detail')
+
+    class Meta:
+        model = Group
+        fields = ('name', 'id', 'url', 'description', 'is_public',
+                  'created_at', 'updated_at')
+        read_only_fields = ('id',)
