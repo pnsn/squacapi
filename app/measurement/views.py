@@ -3,7 +3,8 @@ from rest_framework.authentication import TokenAuthentication, \
     SessionAuthentication
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 
-from .models import DataSource, Metric, MetricGroup, Threshold, Alarm, Trigger
+from .models import DataSource, Metric, Group, MetricGroup, Threshold, Alarm,\
+                    Trigger
 from measurement import serializers
 
 
@@ -54,6 +55,11 @@ class DataSourceViewSet(BaseMeasurementViewSet):
 class MetricViewSet(BaseMeasurementViewSet):
     serializer_class = serializers.MetricSerializer
     queryset = Metric.objects.all()
+
+
+class GroupViewSet(BaseMeasurementViewSet):
+    serializer_class = serializers.GroupSerializer
+    queryset = Group.objects.all()
 
 
 class MetricGroupViewSet(BaseMeasurementViewSet):

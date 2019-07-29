@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import DataSource, Metric, MetricGroup, Threshold, Alarm, Trigger
+from .models import DataSource, Metric, Group, MetricGroup, Threshold, Alarm,\
+                    Trigger
 
 
 class TriggerSerializer(serializers.HyperlinkedModelSerializer):
@@ -56,6 +57,9 @@ class ThresholdSerializer(serializers.HyperlinkedModelSerializer):
 
 class MetricGroupSerializer(serializers.HyperlinkedModelSerializer):
     thresholds = ThresholdSerializer(many=True, read_only=True)
+    group = serializers.PrimaryKeyRelatedField(
+        queryset=Group.objects.all()
+    )
     metric = serializers.PrimaryKeyRelatedField(
         queryset=Metric.objects.all()
     )
@@ -66,14 +70,14 @@ class MetricGroupSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = MetricGroup
         fields = (
-            'id', 'name', 'url', 'description', 'is_public', 'thresholds',
-            'metric', 'created_at', 'updated_at'
+            'id', 'url', 'group', 'metric', 'thresholds', 'created_at',
+            'updated_at'
         )
         read_only_fields = ('id',)
 
 
 class MetricSerializer(serializers.HyperlinkedModelSerializer):
-    metricgroups = MetricGroupSerializer(many=True, read_only=True)
+    metricgroup = MetricGroupSerializer(many=True, read_only=True)
     datasource = serializers.PrimaryKeyRelatedField(
         queryset=DataSource.objects.all()
     )
@@ -84,8 +88,23 @@ class MetricSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Metric
         fields = (
-            'id', 'name', 'url', 'description', 'metricgroups', 'datasource',
+            'id', 'name', 'url', 'description', 'metricgroup', 'datasource',
             'unit', 'created_at', 'updated_at'
+        )
+        read_only_fields = ('id',)
+
+
+class GroupSerializer(serializers.HyperlinkedModelSerializer):
+    metricgroup = MetricGroupSerializer(many=True, read_only=True)
+    url = serializers.HyperlinkedIdentityField(
+        view_name='measurement:group-detail'
+    )
+
+    class Meta:
+        model = Group
+        fields = (
+            'id', 'name', 'url', 'description', 'metricgroup', 'is_public',
+            'created_at', 'updated_at'
         )
         read_only_fields = ('id',)
 
