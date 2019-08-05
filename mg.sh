@@ -5,7 +5,7 @@
 if [ "$#" -lt 1 ]; then
   echo "mg.sh: utility to run shell commands via docker-compose
     replaces
-    docker-compose run --rm app sh -c python mangage.py [arg1]
+    docker-compose run --rm app sh -c python manage.py 'arg1 [arg2] ... [argn]'
     mg.sh shell
     for multiple args use quotes
     mg.sh 'migrate app-name 0001'

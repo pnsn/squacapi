@@ -7,9 +7,10 @@ from rest_framework.authentication import TokenAuthentication, \
 
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 
-from .models import Network, Station, Location, Channel
+from .models import Network, Station, Location, Channel, Group, ChannelGroup
 from nslc.serializers import NetworkSerializer, StationSerializer, \
-    LocationSerializer, ChannelSerializer
+                             LocationSerializer, ChannelSerializer, \
+                             GroupSerializer, ChannelGroupSerializer
 import django_filters as filters
 
 """Common methods for filtering classes to share"""
@@ -111,7 +112,7 @@ class ObjPermissionOrReadOnly(BasePermission):
         # user must be authenticated
         return request.user and request.user.is_authenticated
 
-    def has_object_permission(self, request, view, obj):
+    def has_obj_permission(self, request, view, obj):
         '''object level permissions, set by adding user to group
 
         Read permissions are allowed to any request,
@@ -166,3 +167,13 @@ class ChannelViewSet(BaseNslcViewSet):
     filter_class = ChannelFilter
     q = Channel.objects.all()
     queryset = serializer_class.setup_eager_loading(q)
+
+
+class GroupViewSet(BaseNslcViewSet):
+    serializer_class = GroupSerializer
+    queryset = Group.objects.all()
+
+
+class ChannelGroupViewSet(BaseNslcViewSet):
+    serializer_class = ChannelGroupSerializer
+    queryset = ChannelGroup.objects.all()

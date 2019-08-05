@@ -65,23 +65,35 @@ class Channel(Nslc):
         unique_together = (("code", "location"),)
 
 
-''' many to many with channelgroup
-To get the all channelgroups of channel c.channelgroup_set.all()
-# '''
+class Group(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+    )
+    name = models.CharField(max_length=255)
+    description = models.CharField(max_length=255, blank=True, default='')
+    is_public = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
-# '''
-#  Many to many with channels
-#  To list
-#  cg.channels.all()
-#  to add to
-#  cg.channels.add(c)
-# '''
-# class ChannelGroup(models.Model):
-#     user = models.ForeignKey(settings.AUTH_USER_MODEL,
-#           on_delete=models.CASCADE,)
-#     public = models.BooleanField(default=False)
-#     channels=models.ManyToManyField(Channel)
-#     name=models.CharField(max_length=255)
-#     description=models.CharField(max_length=255,null=True, blank=True)
-#     created_at = models.DateTimeField(auto_now_add=True)
-#     updated_at = models.DateTimeField(auto_now=True)
+    def __str__(self):
+        return self.name
+
+
+class ChannelGroup(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+    )
+    group = models.ForeignKey(
+        Group,
+        on_delete=models.CASCADE,
+        related_name='channelgroups'
+    )
+    channel = models.ForeignKey(
+        Channel,
+        on_delete=models.CASCADE,
+        related_name='channelgroups'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)

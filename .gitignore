@@ -1,3 +1,5 @@
 __pycache__
 .vscode
 app/sent_emails/*
+dev_notes.md
+app/.env
