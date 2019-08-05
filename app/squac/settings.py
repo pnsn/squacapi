@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'core',
     'user',
-    'nslc'
+    'nslc',
+    'measurement'
 ]
 
 MIDDLEWARE = [
