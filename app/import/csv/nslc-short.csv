@@ -1,0 +1,11 @@
+net,sta,seedchan,location,lat,lon,elev,samplerate,staname
+"UW","NLO","EHZ","","46.08924","-123.45173","826",,"Nicolai Mt., Oregon"
+"UW","GLDO","ENZ","","45.83878","-120.81479","610",,"Goldendale Observatory, WA, USA"
+"UW","GLDO","EHZ","","45.83878","-120.81479","610",,"Goldendale Observatory, WA, USA"
+"UW","GLDO","ENE","","45.83878","-120.81479","610",,"Goldendale Observatory, WA, USA"
+"UW","GLDO","ENN","","45.83878","-120.81479","610",,"Goldendale Observatory, WA, USA"
+"UO","ETON","HNE","","43.6409","-123.58076","36",,"Elkon Grade School Bus Garage, Elkton, OR, USA"
+"UO","ETON","HNN","","43.6409","-123.58076","36",,"Elkon Grade School Bus Garage, Elkton, OR, USA"
+"UO","ETON","HNZ","","43.6409","-123.58076","36",,"Elkon Grade School Bus Garage, Elkton, OR, USA"
+"UO","KVCS","HNE","","44.69453","-123.43416","94",,"Kings Valley Charter School, Philomath, OR, USA"
+"UO","KVCS","HNN","","44.69453","-123.43416","94",,"Kings Valley Charter School, Philomath, OR, USA"

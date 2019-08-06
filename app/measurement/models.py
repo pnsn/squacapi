@@ -45,6 +45,7 @@ class Group(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
+        related_name='measurementgroups'
     )
 
     def __str__(self):
