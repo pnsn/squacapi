@@ -10,7 +10,7 @@ import csv
 import django
 import sys
 import os
-
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import get_user_model
 
 
@@ -34,11 +34,11 @@ def load_nslc():
     Channel.objects.all().delete()
     ChannelGroup.objects.all().delete()
     Group.objects.all().delete()
-
-    if get_user_model().objects.get(email='loader@pnsn.org'):
-        get_user_model().objects.get(email='loader@pnsn.org').delete()
-    user = get_user_model().objects.create_user('loader@pnsn.org', 'secret')
-
+    try:
+        user = get_user_model().objects.get(email='loader@pnsn.org')
+    except ObjectDoesNotExist:
+        user = get_user_model().objects.create_user('loader@pnsn.org',
+                                                    'secret')
     for row in netReader:
         net = Network.objects.get_or_create(
             code=row[0].lower(),
