@@ -28,7 +28,7 @@ from nslc.models import Network, Station, Location, Channel, ChannelGroup,\
                         Group
 
 csv_path= project_path + "/import/csv/"
-nslc_path= csv_path + "nslc-short.csv"
+nslc_path= csv_path + "nslc.csv"
 networks_path= csv_path + "networks.csv"
 
 nslcReader = csv.reader(open(nslc_path), delimiter=',', quotechar='"')
