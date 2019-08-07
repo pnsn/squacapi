@@ -146,7 +146,7 @@ class PublicMeasurementApiTests(TestCase):
         res = self.client.post(url, payload)
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_measurement_res(self):
+    def test_measurement_res_and_str(self):
         url = reverse(
             'measurement:measurement-detail',
             kwargs={'pk': self.measurement.id}
@@ -155,6 +155,10 @@ class PublicMeasurementApiTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data['metric'], self.metric.id)
         self.assertEqual(res.data['channel'], self.chan.id)
+        self.assertEqual(
+            str(self.measurement),
+            'Metric: Metric test Channel: EHZ'
+        )
 
     def test_group_res_and_str(self):
         url = reverse(
@@ -166,7 +170,7 @@ class PublicMeasurementApiTests(TestCase):
         self.assertEqual(res.data['name'], 'Group test')
         self.assertEqual(str(self.group), 'Group test')
 
-    def test_metricgroup_res(self):
+    def test_metricgroup_res_and_str(self):
         url = reverse(
             'measurement:metricgroup-detail',
             kwargs={'pk': self.metricgroup.id}
@@ -175,6 +179,10 @@ class PublicMeasurementApiTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data['group'], self.group.id)
         self.assertEqual(res.data['metric'], self.metric.id)
+        self.assertEqual(
+            str(self.metricgroup),
+            'Group: Group test Metric: Metric test'
+        )
 
     def test_threshold_res_and_str(self):
         url = reverse(
@@ -225,7 +233,7 @@ class PublicMeasurementApiTests(TestCase):
         )
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(str(self.trigger), 'Alarm test: 0')
+        self.assertEqual(str(self.trigger), 'Alarm: Alarm test Count: 0')
 
     def test_trigger_post_unauth(self):
         url = reverse('measurement:trigger-list')
