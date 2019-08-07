@@ -15,8 +15,8 @@ from django.contrib.auth import get_user_model
 
 
 def load_nslc():
-    from nslc.models import Network, Station, Location, Channel, ChannelGroup,\
-                            Group
+    from nslc.models import Network, Station, Location, Channel,\
+        ChannelGroup, Group
 
     csv_path = project_path + "/import/csv/"
     nslc_path = csv_path + "nslc-short.csv"

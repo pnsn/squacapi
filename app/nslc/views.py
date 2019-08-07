@@ -50,12 +50,13 @@ perform regex SQL 'LIKE' for channel
     /networks?channel=ez
 '''
 
+
 class NetworkFilter(filters.FilterSet):
     network = filters.CharFilter(
         field_name='code', method=in_sql)
     station = filters.CharFilter(
         field_name='stations__code', lookup_expr='iexact')
-    
+
     class Meta:
         model = Network
         # These need to match column names or filter vars from above
@@ -70,7 +71,7 @@ class StationFilter(filters.FilterSet):
     # this will need to change to channels__code
     channel = filters.CharFilter(
         field_name='locations__channels__code', method=regex_sql)
-    
+
     class Meta:
         model = Station
         # These need to match column names or filter vars from above
@@ -98,12 +99,11 @@ class ChannelFilter(filters.FilterSet):
         field_name='location__station__code', lookup_expr='iexact')
     channel = filters.CharFilter(
         field_name='code', method=regex_sql)
-    
+
     class Meta:
         model = Channel
         # These need to match column names or filter vars from above
         fields = ['network', 'station', 'channel']
-
 
 
 @api_view(['GET'])
