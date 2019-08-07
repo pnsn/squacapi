@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import DataSource, Metric, Group, MetricGroup, Threshold, Alarm,\
-                    Trigger
+                    Trigger, Measurement
+from nslc.models import Channel
 
 
 class TriggerSerializer(serializers.HyperlinkedModelSerializer):
@@ -72,6 +73,26 @@ class MetricGroupSerializer(serializers.HyperlinkedModelSerializer):
         fields = (
             'id', 'url', 'group', 'metric', 'thresholds', 'created_at',
             'updated_at'
+        )
+        read_only_fields = ('id',)
+
+
+class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
+    metric = serializers.PrimaryKeyRelatedField(
+        queryset=Metric.objects.all()
+    )
+    channel = serializers.PrimaryKeyRelatedField(
+        queryset=Channel.objects.all()
+    )
+    url = serializers.HyperlinkedIdentityField(
+        view_name="measurement:measurement-detail"
+    )
+
+    class Meta:
+        model = Measurement
+        fields = (
+            'id', 'url', 'metric', 'channel', 'value', 'starttime', 'endtime',
+            'created_at', 'updated_at'
         )
         read_only_fields = ('id',)
 

@@ -14,9 +14,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import get_user_model
 
 
-def load_nslc():
-    from nslc.models import Network, Station, Location, Channel,\
-        ChannelGroup, Group
+def main():
+    from nslc.models import Network, Station, Location, Channel, ChannelGroup,\
+                            Group
 
     csv_path = project_path + "/import/csv/"
     nslc_path = csv_path + "nslc-short.csv"
@@ -115,4 +115,6 @@ sys.path.append(project_path)
 #    os.environ['DJANGO_SETTINGS_MODULE'] = 'config.settings.local'
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'squac.settings')
 django.setup()
-load_nslc()
+
+if __name__ == '__main__':
+    main()

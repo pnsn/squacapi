@@ -1,10 +1,11 @@
 from django.db import models
 from django.conf import settings
 
+from nslc.models import Channel
 
-class DataSource(models.Model):
-    name = models.CharField(max_length=255)
-    description = models.CharField(max_length=255, blank=True, default='')
+
+class MeasurementBase(models.Model):
+    '''Base class for all measurement models'''
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(
@@ -12,11 +13,22 @@ class DataSource(models.Model):
         on_delete=models.CASCADE,
     )
 
+    class Meta:
+        abstract = True
+
     def __str__(self):
         return self.name
 
+    def class_name(self):
+        return self.__class__.__name__.lower()
 
-class Metric(models.Model):
+
+class DataSource(MeasurementBase):
+    name = models.CharField(max_length=255)
+    description = models.CharField(max_length=255, blank=True, default='')
+
+
+class Metric(MeasurementBase):
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=255, blank=True, default='')
     unit = models.CharField(max_length=255)
@@ -25,51 +37,55 @@ class Metric(models.Model):
         on_delete=models.CASCADE,
         related_name='metrics',
     )
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
+
+
+class Measurement(MeasurementBase):
+    metric = models.ForeignKey(
+        Metric,
         on_delete=models.CASCADE,
+        related_name='measurements'
     )
+    channel = models.ForeignKey(
+        Channel,
+        on_delete=models.CASCADE,
+        related_name='measurements'
+    )
+    value = models.FloatField()
+    starttime = models.DateTimeField()
+    endtime = models.DateTimeField()
 
     def __str__(self):
-        return self.name
+        return f"Metric: {str(self.metric)} Channel: {str(self.channel)}"
 
 
-class Group(models.Model):
+class Group(MeasurementBase):
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=255, blank=True, default='')
     is_public = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name='measurementgroups'
     )
 
-    def __str__(self):
-        return self.name
 
-
-class MetricGroup(models.Model):
+class MetricGroup(MeasurementBase):
     group = models.ForeignKey(
         Group,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        related_name='metricgroups'
     )
     metric = models.ForeignKey(
         Metric,
-        on_delete=models.CASCADE
-    )
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
+        related_name='metricgroups'
     )
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Group: {str(self.group)} Metric: {str(self.metric)}"
 
 
-class Threshold(models.Model):
+class Threshold(MeasurementBase):
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=255, blank=True, default='')
     min = models.FloatField()
@@ -79,18 +95,9 @@ class Threshold(models.Model):
         on_delete=models.CASCADE,
         related_name='thresholds',
     )
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-    )
-
-    def __str__(self):
-        return self.name
 
 
-class Alarm(models.Model):
+class Alarm(MeasurementBase):
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=255, blank=True, default='')
     period = models.IntegerField()
@@ -100,30 +107,15 @@ class Alarm(models.Model):
         on_delete=models.CASCADE,
         related_name='alarms',
     )
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-    )
-
-    def __str__(self):
-        return self.name
 
 
-class Trigger(models.Model):
+class Trigger(MeasurementBase):
     count = models.IntegerField()
     alarm = models.ForeignKey(
         Alarm,
         on_delete=models.CASCADE,
         related_name='triggers'
     )
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-    )
 
     def __str__(self):
-        return f'{str(self.alarm)}: {str(self.count)}'
+        return f'Alarm: {str(self.alarm)} Count: {str(self.count)}'
