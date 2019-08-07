@@ -1,11 +1,17 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.urls import reverse
+from django.utils import timezone
+
 from measurement.models import DataSource, Metric, MetricGroup, Group,\
-                               Threshold, Alarm, Trigger
+                               Threshold, Alarm, Trigger, Measurement
+from nslc.models import Network, Station, Location, Channel
 
 from rest_framework.test import APIClient
 from rest_framework import status
+
+from datetime import datetime
+import pytz
 
 '''Tests for all measurement models:
     *
@@ -28,6 +34,7 @@ class PublicMeasurementApiTests(TestCase):
         self.client = APIClient()
         # unauthenticate all public tests
         self.client.force_authenticate(user=None)
+        timezone.now()
         self.datasrc = DataSource.objects.create(
             name='Data source test',
             user=self.user
@@ -36,6 +43,40 @@ class PublicMeasurementApiTests(TestCase):
             name='Metric test',
             unit='meter',
             datasource=self.datasrc,
+            user=self.user
+        )
+        self.net = Network.objects.create(
+            code="UW",
+            name="University of Washington",
+            user=self.user
+        )
+        self.sta = Station.objects.create(
+            code='RCM',
+            name="Camp Muir",
+            network=self.net,
+            user=self.user
+        )
+        self.loc = Location.objects.create(
+            code='--',
+            name="--",
+            station=self.sta,
+            lat=45,
+            lon=-122,
+            elev=0,
+            user=self.user
+        )
+        self.chan = Channel.objects.create(
+            code='EHZ',
+            name="EHZ",
+            location=self.loc,
+            user=self.user
+        )
+        self.measurement = Measurement.objects.create(
+            metric=self.metric,
+            channel=self.chan,
+            value=3.0,
+            starttime=datetime(2019, 5, 5, 8, 8, 7, 127325, tzinfo=pytz.UTC),
+            endtime=datetime(2019, 5, 5, 9, 8, 7, 127325, tzinfo=pytz.UTC),
             user=self.user
         )
         self.group = Group.objects.create(
@@ -105,6 +146,20 @@ class PublicMeasurementApiTests(TestCase):
         res = self.client.post(url, payload)
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
+    def test_measurement_res_and_str(self):
+        url = reverse(
+            'measurement:measurement-detail',
+            kwargs={'pk': self.measurement.id}
+        )
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data['metric'], self.metric.id)
+        self.assertEqual(res.data['channel'], self.chan.id)
+        self.assertEqual(
+            str(self.measurement),
+            'Metric: Metric test Channel: EHZ'
+        )
+
     def test_group_res_and_str(self):
         url = reverse(
             'measurement:group-detail',
@@ -115,7 +170,7 @@ class PublicMeasurementApiTests(TestCase):
         self.assertEqual(res.data['name'], 'Group test')
         self.assertEqual(str(self.group), 'Group test')
 
-    def test_metricgroup_res(self):
+    def test_metricgroup_res_and_str(self):
         url = reverse(
             'measurement:metricgroup-detail',
             kwargs={'pk': self.metricgroup.id}
@@ -124,6 +179,10 @@ class PublicMeasurementApiTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data['group'], self.group.id)
         self.assertEqual(res.data['metric'], self.metric.id)
+        self.assertEqual(
+            str(self.metricgroup),
+            'Group: Group test Metric: Metric test'
+        )
 
     def test_threshold_res_and_str(self):
         url = reverse(
@@ -174,7 +233,7 @@ class PublicMeasurementApiTests(TestCase):
         )
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(str(self.trigger), 'Alarm test: 0')
+        self.assertEqual(str(self.trigger), 'Alarm: Alarm test Count: 0')
 
     def test_trigger_post_unauth(self):
         url = reverse('measurement:trigger-list')
@@ -193,6 +252,7 @@ class PrivateMeasurementAPITests(TestCase):
         self.client = APIClient()
         self.user = sample_user()
         self.client.force_authenticate(self.user)
+        timezone.now()
         self.datasrc = DataSource.objects.create(
             name='Sample data source',
             user=self.user
@@ -201,6 +261,32 @@ class PrivateMeasurementAPITests(TestCase):
             name='Sample metric',
             unit='furlong',
             datasource=self.datasrc,
+            user=self.user
+        )
+        self.net = Network.objects.create(
+            code="UW",
+            name="University of Washington",
+            user=self.user
+        )
+        self.sta = Station.objects.create(
+            code='RCM',
+            name="Camp Muir",
+            network=self.net,
+            user=self.user
+        )
+        self.loc = Location.objects.create(
+            code='--',
+            name="--",
+            station=self.sta,
+            lat=45,
+            lon=-122,
+            elev=0,
+            user=self.user
+        )
+        self.chan = Channel.objects.create(
+            code='EHZ',
+            name="EHZ",
+            location=self.loc,
             user=self.user
         )
         self.group = Group.objects.create(
@@ -254,6 +340,28 @@ class PrivateMeasurementAPITests(TestCase):
                 self.assertEqual(payload[key], metric.datasource.id)
             else:
                 self.assertEqual(payload[key], getattr(metric, key))
+
+    def test_create_measurement(self):
+        url = reverse('measurement:measurement-list')
+        payload = {
+            'metric': self.metric.id,
+            'channel': self.chan.id,
+            'value': 47.0,
+            'starttime': datetime(
+                2019, 5, 5, 8, 8, 7, 127325, tzinfo=pytz.UTC),
+            'endtime': datetime(2019, 5, 5, 9, 8, 7, 127325, tzinfo=pytz.UTC),
+            'user': self.user
+        }
+        res = self.client.post(url, payload)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        measurement = Measurement.objects.get(id=res.data['id'])
+        for key in payload.keys():
+            if key == 'metric':
+                self.assertEqual(payload[key], measurement.metric.id)
+            elif key == 'channel':
+                self.assertEqual(payload[key], measurement.channel.id)
+            else:
+                self.assertEqual(payload[key], getattr(measurement, key))
 
     def test_create_group(self):
         url = reverse('measurement:group-list')
