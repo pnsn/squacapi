@@ -1,6 +1,8 @@
 from django.db import models
 from django.conf import settings
 
+from nslc.models import Channel
+
 
 class DataSource(models.Model):
     name = models.CharField(max_length=255)
@@ -34,6 +36,26 @@ class Metric(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Measurement(models.Model):
+    metric = models.ForeignKey(
+        Metric,
+        on_delete=models.CASCADE,
+    )
+    channel = models.ForeignKey(
+        Channel,
+        on_delete=models.CASCADE,
+    )
+    value = models.FloatField()
+    starttime = models.DateTimeField()
+    endtime = models.DateTimeField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+    )
 
 
 class Group(models.Model):
