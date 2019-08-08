@@ -21,8 +21,9 @@ from django_filters import rest_framework as filters
 def in_sql(queryset, name, value):
     """perform generic 'in' SQL statement exp
 
-    select * from networks where code in ('uw', 'uo')
+    select * from networks where code in ('uw', 'uo');
     """
+    # this just builds a networks__in
     if name is not None:
         values = value.lower().split(",")
         name_in = '__'.join([name, 'in'])
@@ -31,7 +32,10 @@ def in_sql(queryset, name, value):
 
 
 def regex_sql(queryset, name, value):
-    """perform python regex searches on field"""
+    """perform python regex searches on field
+        select * from  networks where code like %RC%;
+        turn * into .
+    """
     if name is not None:
         name_regex = '__'.join([name, 'iregex'])
         queryset = queryset.filter(**{name_regex: value})
