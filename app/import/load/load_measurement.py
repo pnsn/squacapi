@@ -47,11 +47,13 @@ from django.contrib.auth import get_user_model
 
 def main():
     from nslc.models import Channel
-    from measurement.models import DataSource, Metric, MetricGroup, Group
-    # Threshold, Alarm, Trigger, Measurement
+    from measurement.models import DataSource, Metric, MetricGroup, Group,\
+        Threshold, Alarm, Trigger, Measurement
 
     csv_path = project_path + "/import/csv/"
 
+    # For quick test uncomment next line and comment out following line
+    # measurements_csv = csv_path + "measurement_short.csv"
     measurements_csv = csv_path + "measurement_all.csv"
     metricgroup_csv = csv_path + "measurement_group.csv"
     # spectacle_csv = csv_path + "measurement_spectacle.csv"
@@ -70,6 +72,9 @@ def main():
     Group.objects.all().delete()
     Measurement.objects.all().delete()
     DataSource.objects.all().delete()
+    Threshold.objects.all().delete()
+    Alarm.objects.all().delete()
+    Trigger.objects.all().delete()
     # Spectacle.objects.all().delete()
     try:
         user = get_user_model().objects.get(email='loader@pnsn.org')
@@ -125,6 +130,16 @@ def main():
                 location__station__network__code=row[5].strip().lower(),
                 user=user
             )
+            Measurement.objects.create(
+                metric=metric[0],
+                channel=chan,
+                value=row[9],
+                starttime=timezone.make_aware(
+                    dateparse.parse_datetime(row[10])
+                ),
+                endtime=timezone.make_aware(dateparse.parse_datetime(row[11])),
+                user=user
+            )
         except Channel.DoesNotExist:
             print("404 code:{} location:{} station:{} network:{}".format(
                 row[8].lower(),
@@ -133,25 +148,18 @@ def main():
                 row[5].lower()
             ))
 
-        measurement = Measurement.objects.create(
-            metric=metric[0],
-            channel=chan,
-            value=row[9],
-            starttime=timezone.make_aware(dateparse.parse_datetime(row[10])),
-            endtime=timezone.make_aware(dateparse.parse_datetime(row[11])),
-            user=user
-        )
-
     next(metricgroupReader, None)
     for row in metricgroupReader:
-        mg = MetricGroup.objects.get_or_create(name=row[0].strip(), user=user)
+        try:
+            group = Group.objects.get(name=row[0].strip())
+        except Group.DoesNotExist:
+            Group.objects.create(name=row[0].strip(), user=user)
+            group = Group.objects.get(name=row[0].strip())
         try:
             metric = Metric.objects.get(name=row[1].strip())
+            MetricGroup.objects.create(group=group, metric=metric, user=user)
         except Metric.DoesNotExist:
             print("Metric {} 404".format(row[1]))
-        mg = mg[0]
-        mg.metrics.add(metric)
-        mg.save()
 
     '''next(spectacleReader, None)
     for row in spectacleReader:
@@ -179,3 +187,6 @@ sys.path.append(project_path)
 #     os.environ['DJANGO_SETTINGS_MODULE'] = 'config.settings.local'
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'squac.settings')
 django.setup()
+
+if __name__ == '__main__':
+    main()
