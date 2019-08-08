@@ -19,7 +19,10 @@ def main():
                             Group
 
     csv_path = project_path + "/import/csv/"
-    nslc_path = csv_path + "nslc-short.csv"
+
+    # For quick test uncomment next line and comment out following line
+    # nslc_path = csv_path + "nslc_short.csv"
+    nslc_path = csv_path + "nslc.csv"
     networks_path = csv_path + "networks.csv"
 
     nslcReader = csv.reader(open(nslc_path), delimiter=',', quotechar='"')
