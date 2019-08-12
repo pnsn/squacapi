@@ -15,8 +15,7 @@ from django.contrib.auth import get_user_model
 
 
 def main():
-    from nslc.models import Network, Station, Location, Channel, ChannelGroup,\
-                            Group
+    from nslc.models import Network, Station, Channel, ChannelGroup, Group
 
     csv_path = project_path + "/import/csv/"
 
@@ -33,7 +32,6 @@ def main():
 
     Network.objects.all().delete()
     Station.objects.all().delete()
-    Location.objects.all().delete()
     Channel.objects.all().delete()
     ChannelGroup.objects.all().delete()
     Group.objects.all().delete()
@@ -62,22 +60,19 @@ def main():
             row[3] = "--"
         if not row[7]:
             row[7] = -1
-        # need to do this so get_or_create selects only unique keys
-        loc = Location.objects.get_or_create(
-            code=row[3].lower(),
+        Channel.objects.get_or_create(
+            code=row[2].lower(),
             station=sta[0],
             user=user,
             defaults={
+                'name': row[2],
+                'sample_rate': float(row[7]),
+                'loc': row[3].lower(),
                 'lat': float(row[4]),
                 'lon': float(row[5]),
                 'elev': float(row[6])
             }
         )
-        Channel.objects.get_or_create(
-            code=row[2].lower(),
-            location=loc[0],
-            user=user,
-            defaults={'name': row[2], 'sample_rate': float(row[7])})
 
     # Create groups to be linked to a channel group
     uw = Group.objects.create(
@@ -91,8 +86,8 @@ def main():
         user=user
     )
     # Create channel groups for relating group objects to respective channels
-    uw_all = Channel.objects.filter(location__station__network__code="uw")
-    uo_all = Channel.objects.filter(location__station__network__code="uo")
+    uw_all = Channel.objects.filter(station__network__code="uw")
+    uo_all = Channel.objects.filter(station__network__code="uo")
     for c in uw_all:
         ChannelGroup.objects.create(
             channel=c,

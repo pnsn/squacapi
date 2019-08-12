@@ -4,7 +4,7 @@ from rest_framework.authentication import TokenAuthentication, \
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 
 from .models import DataSource, Metric, Group, MetricGroup, Threshold, Alarm,\
-                    Trigger, Measurement
+    Trigger, Measurement
 from measurement import serializers
 
 
@@ -36,7 +36,8 @@ class BaseMeasurementViewSet(viewsets.ModelViewSet):
     '''base class for measurement viewsets:
 
     Permissions are IsAuthenticatedOrReadOnly
-        This allows auth user full crud but unauthorized user to only view'''
+    This allows auth user full crud but unauthorized user to only view
+    '''
 
     authentication_classes = (TokenAuthentication, SessionAuthentication)
     permission_classes = (ObjPermissionOrReadOnly, )
