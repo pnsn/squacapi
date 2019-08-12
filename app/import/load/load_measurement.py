@@ -125,9 +125,9 @@ def main():
             # location__code=row[7].lower())
             chan = Channel.objects.get(
                 code=row[8].strip().lower(),
-                location__code=row[7].strip().lower(),
-                location__station__code=row[6].strip().lower(),
-                location__station__network__code=row[5].strip().lower(),
+                loc=row[7].strip().lower(),
+                station__code=row[6].strip().lower(),
+                station__network__code=row[5].strip().lower(),
                 user=user
             )
             Measurement.objects.create(
