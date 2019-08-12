@@ -145,3 +145,8 @@ EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
         python -m smtpd -n -c DebuggingServer localhost: 1025
 
 '''
+
+# Fixture directories
+FIXTURE_DIRS = (
+   '/nslc/fixtures/',
+)

@@ -1,0 +1,2061 @@
+[
+{
+  "model": "contenttypes.contenttype",
+  "pk": 1,
+  "fields": {
+    "app_label": "admin",
+    "model": "logentry"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 2,
+  "fields": {
+    "app_label": "auth",
+    "model": "permission"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 3,
+  "fields": {
+    "app_label": "auth",
+    "model": "group"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 4,
+  "fields": {
+    "app_label": "contenttypes",
+    "model": "contenttype"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 5,
+  "fields": {
+    "app_label": "sessions",
+    "model": "session"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 6,
+  "fields": {
+    "app_label": "authtoken",
+    "model": "token"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 7,
+  "fields": {
+    "app_label": "core",
+    "model": "user"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 8,
+  "fields": {
+    "app_label": "nslc",
+    "model": "channel"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 9,
+  "fields": {
+    "app_label": "nslc",
+    "model": "network"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 10,
+  "fields": {
+    "app_label": "nslc",
+    "model": "station"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 11,
+  "fields": {
+    "app_label": "nslc",
+    "model": "location"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 12,
+  "fields": {
+    "app_label": "nslc",
+    "model": "group"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 13,
+  "fields": {
+    "app_label": "nslc",
+    "model": "channelgroup"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 14,
+  "fields": {
+    "app_label": "measurement",
+    "model": "alarm"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 15,
+  "fields": {
+    "app_label": "measurement",
+    "model": "datasource"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 16,
+  "fields": {
+    "app_label": "measurement",
+    "model": "group"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 17,
+  "fields": {
+    "app_label": "measurement",
+    "model": "metric"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 18,
+  "fields": {
+    "app_label": "measurement",
+    "model": "metricgroup"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 19,
+  "fields": {
+    "app_label": "measurement",
+    "model": "trigger"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 20,
+  "fields": {
+    "app_label": "measurement",
+    "model": "threshold"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 21,
+  "fields": {
+    "app_label": "measurement",
+    "model": "measurement"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "ua70mnfm17um3xxgck3623gol8nsahc0",
+  "fields": {
+    "session_data": "YzkzZGIwNjE1OWJkOTc3ZTUxZDk1MDQ0MTYzMmU2MDZkMDIyMzFhMzp7Il9hdXRoX3VzZXJfaWQiOiIyIiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoiZGphbmdvLmNvbnRyaWIuYXV0aC5iYWNrZW5kcy5Nb2RlbEJhY2tlbmQiLCJfYXV0aF91c2VyX2hhc2giOiJiZmFlOTNmYWI4YmQzNGY0NjBhMzMwYzQ2MTA5NGJjZDZhMjc2NGFmIn0=",
+    "expire_date": "2019-08-26T17:48:40.815Z"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 1,
+  "fields": {
+    "name": "Can add log entry",
+    "content_type": 1,
+    "codename": "add_logentry"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 2,
+  "fields": {
+    "name": "Can change log entry",
+    "content_type": 1,
+    "codename": "change_logentry"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 3,
+  "fields": {
+    "name": "Can delete log entry",
+    "content_type": 1,
+    "codename": "delete_logentry"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 4,
+  "fields": {
+    "name": "Can view log entry",
+    "content_type": 1,
+    "codename": "view_logentry"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 5,
+  "fields": {
+    "name": "Can add permission",
+    "content_type": 2,
+    "codename": "add_permission"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 6,
+  "fields": {
+    "name": "Can change permission",
+    "content_type": 2,
+    "codename": "change_permission"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 7,
+  "fields": {
+    "name": "Can delete permission",
+    "content_type": 2,
+    "codename": "delete_permission"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 8,
+  "fields": {
+    "name": "Can view permission",
+    "content_type": 2,
+    "codename": "view_permission"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 9,
+  "fields": {
+    "name": "Can add group",
+    "content_type": 3,
+    "codename": "add_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 10,
+  "fields": {
+    "name": "Can change group",
+    "content_type": 3,
+    "codename": "change_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 11,
+  "fields": {
+    "name": "Can delete group",
+    "content_type": 3,
+    "codename": "delete_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 12,
+  "fields": {
+    "name": "Can view group",
+    "content_type": 3,
+    "codename": "view_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 13,
+  "fields": {
+    "name": "Can add content type",
+    "content_type": 4,
+    "codename": "add_contenttype"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 14,
+  "fields": {
+    "name": "Can change content type",
+    "content_type": 4,
+    "codename": "change_contenttype"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 15,
+  "fields": {
+    "name": "Can delete content type",
+    "content_type": 4,
+    "codename": "delete_contenttype"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 16,
+  "fields": {
+    "name": "Can view content type",
+    "content_type": 4,
+    "codename": "view_contenttype"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 17,
+  "fields": {
+    "name": "Can add session",
+    "content_type": 5,
+    "codename": "add_session"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 18,
+  "fields": {
+    "name": "Can change session",
+    "content_type": 5,
+    "codename": "change_session"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 19,
+  "fields": {
+    "name": "Can delete session",
+    "content_type": 5,
+    "codename": "delete_session"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 20,
+  "fields": {
+    "name": "Can view session",
+    "content_type": 5,
+    "codename": "view_session"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 21,
+  "fields": {
+    "name": "Can add Token",
+    "content_type": 6,
+    "codename": "add_token"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 22,
+  "fields": {
+    "name": "Can change Token",
+    "content_type": 6,
+    "codename": "change_token"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 23,
+  "fields": {
+    "name": "Can delete Token",
+    "content_type": 6,
+    "codename": "delete_token"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 24,
+  "fields": {
+    "name": "Can view Token",
+    "content_type": 6,
+    "codename": "view_token"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 25,
+  "fields": {
+    "name": "Can add user",
+    "content_type": 7,
+    "codename": "add_user"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 26,
+  "fields": {
+    "name": "Can change user",
+    "content_type": 7,
+    "codename": "change_user"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 27,
+  "fields": {
+    "name": "Can delete user",
+    "content_type": 7,
+    "codename": "delete_user"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 28,
+  "fields": {
+    "name": "Can view user",
+    "content_type": 7,
+    "codename": "view_user"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 29,
+  "fields": {
+    "name": "Can add channel",
+    "content_type": 8,
+    "codename": "add_channel"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 30,
+  "fields": {
+    "name": "Can change channel",
+    "content_type": 8,
+    "codename": "change_channel"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 31,
+  "fields": {
+    "name": "Can delete channel",
+    "content_type": 8,
+    "codename": "delete_channel"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 32,
+  "fields": {
+    "name": "Can view channel",
+    "content_type": 8,
+    "codename": "view_channel"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 33,
+  "fields": {
+    "name": "Can add network",
+    "content_type": 9,
+    "codename": "add_network"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 34,
+  "fields": {
+    "name": "Can change network",
+    "content_type": 9,
+    "codename": "change_network"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 35,
+  "fields": {
+    "name": "Can delete network",
+    "content_type": 9,
+    "codename": "delete_network"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 36,
+  "fields": {
+    "name": "Can view network",
+    "content_type": 9,
+    "codename": "view_network"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 37,
+  "fields": {
+    "name": "Can add station",
+    "content_type": 10,
+    "codename": "add_station"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 38,
+  "fields": {
+    "name": "Can change station",
+    "content_type": 10,
+    "codename": "change_station"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 39,
+  "fields": {
+    "name": "Can delete station",
+    "content_type": 10,
+    "codename": "delete_station"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 40,
+  "fields": {
+    "name": "Can view station",
+    "content_type": 10,
+    "codename": "view_station"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 41,
+  "fields": {
+    "name": "Can add location",
+    "content_type": 11,
+    "codename": "add_location"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 42,
+  "fields": {
+    "name": "Can change location",
+    "content_type": 11,
+    "codename": "change_location"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 43,
+  "fields": {
+    "name": "Can delete location",
+    "content_type": 11,
+    "codename": "delete_location"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 44,
+  "fields": {
+    "name": "Can view location",
+    "content_type": 11,
+    "codename": "view_location"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 45,
+  "fields": {
+    "name": "Can add group",
+    "content_type": 12,
+    "codename": "add_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 46,
+  "fields": {
+    "name": "Can change group",
+    "content_type": 12,
+    "codename": "change_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 47,
+  "fields": {
+    "name": "Can delete group",
+    "content_type": 12,
+    "codename": "delete_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 48,
+  "fields": {
+    "name": "Can view group",
+    "content_type": 12,
+    "codename": "view_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 49,
+  "fields": {
+    "name": "Can add channel group",
+    "content_type": 13,
+    "codename": "add_channelgroup"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 50,
+  "fields": {
+    "name": "Can change channel group",
+    "content_type": 13,
+    "codename": "change_channelgroup"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 51,
+  "fields": {
+    "name": "Can delete channel group",
+    "content_type": 13,
+    "codename": "delete_channelgroup"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 52,
+  "fields": {
+    "name": "Can view channel group",
+    "content_type": 13,
+    "codename": "view_channelgroup"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 53,
+  "fields": {
+    "name": "Can add alarm",
+    "content_type": 14,
+    "codename": "add_alarm"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 54,
+  "fields": {
+    "name": "Can change alarm",
+    "content_type": 14,
+    "codename": "change_alarm"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 55,
+  "fields": {
+    "name": "Can delete alarm",
+    "content_type": 14,
+    "codename": "delete_alarm"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 56,
+  "fields": {
+    "name": "Can view alarm",
+    "content_type": 14,
+    "codename": "view_alarm"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 57,
+  "fields": {
+    "name": "Can add data source",
+    "content_type": 15,
+    "codename": "add_datasource"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 58,
+  "fields": {
+    "name": "Can change data source",
+    "content_type": 15,
+    "codename": "change_datasource"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 59,
+  "fields": {
+    "name": "Can delete data source",
+    "content_type": 15,
+    "codename": "delete_datasource"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 60,
+  "fields": {
+    "name": "Can view data source",
+    "content_type": 15,
+    "codename": "view_datasource"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 61,
+  "fields": {
+    "name": "Can add group",
+    "content_type": 16,
+    "codename": "add_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 62,
+  "fields": {
+    "name": "Can change group",
+    "content_type": 16,
+    "codename": "change_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 63,
+  "fields": {
+    "name": "Can delete group",
+    "content_type": 16,
+    "codename": "delete_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 64,
+  "fields": {
+    "name": "Can view group",
+    "content_type": 16,
+    "codename": "view_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 65,
+  "fields": {
+    "name": "Can add metric",
+    "content_type": 17,
+    "codename": "add_metric"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 66,
+  "fields": {
+    "name": "Can change metric",
+    "content_type": 17,
+    "codename": "change_metric"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 67,
+  "fields": {
+    "name": "Can delete metric",
+    "content_type": 17,
+    "codename": "delete_metric"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 68,
+  "fields": {
+    "name": "Can view metric",
+    "content_type": 17,
+    "codename": "view_metric"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 69,
+  "fields": {
+    "name": "Can add metric group",
+    "content_type": 18,
+    "codename": "add_metricgroup"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 70,
+  "fields": {
+    "name": "Can change metric group",
+    "content_type": 18,
+    "codename": "change_metricgroup"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 71,
+  "fields": {
+    "name": "Can delete metric group",
+    "content_type": 18,
+    "codename": "delete_metricgroup"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 72,
+  "fields": {
+    "name": "Can view metric group",
+    "content_type": 18,
+    "codename": "view_metricgroup"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 73,
+  "fields": {
+    "name": "Can add trigger",
+    "content_type": 19,
+    "codename": "add_trigger"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 74,
+  "fields": {
+    "name": "Can change trigger",
+    "content_type": 19,
+    "codename": "change_trigger"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 75,
+  "fields": {
+    "name": "Can delete trigger",
+    "content_type": 19,
+    "codename": "delete_trigger"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 76,
+  "fields": {
+    "name": "Can view trigger",
+    "content_type": 19,
+    "codename": "view_trigger"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 77,
+  "fields": {
+    "name": "Can add threshold",
+    "content_type": 20,
+    "codename": "add_threshold"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 78,
+  "fields": {
+    "name": "Can change threshold",
+    "content_type": 20,
+    "codename": "change_threshold"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 79,
+  "fields": {
+    "name": "Can delete threshold",
+    "content_type": 20,
+    "codename": "delete_threshold"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 80,
+  "fields": {
+    "name": "Can view threshold",
+    "content_type": 20,
+    "codename": "view_threshold"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 81,
+  "fields": {
+    "name": "Can add measurement",
+    "content_type": 21,
+    "codename": "add_measurement"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 82,
+  "fields": {
+    "name": "Can change measurement",
+    "content_type": 21,
+    "codename": "change_measurement"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 83,
+  "fields": {
+    "name": "Can delete measurement",
+    "content_type": 21,
+    "codename": "delete_measurement"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 84,
+  "fields": {
+    "name": "Can view measurement",
+    "content_type": 21,
+    "codename": "view_measurement"
+  }
+},
+{
+  "model": "core.user",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$150000$8Mv3TkrqJW4A$AWab/zMTJ0aF1c2LXtlZM9ip8XAuR95WrWogI9qkr4w=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "loader@pnsn.org",
+    "name": "",
+    "is_active": true,
+    "is_staff": false,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "core.user",
+  "pk": 2,
+  "fields": {
+    "password": "pbkdf2_sha256$150000$BpKV475gDeMb$3qM8HkQeaF3N9TzXtGZrHG0EeoCvAdRcTnKQB4eYz6Q=",
+    "last_login": "2019-08-12T17:48:40.810Z",
+    "is_superuser": true,
+    "email": "jt.clayton92@yahoo.com",
+    "name": "",
+    "is_active": true,
+    "is_staff": true,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "nslc.network",
+  "pk": 1,
+  "fields": {
+    "name": "United States",
+    "description": null,
+    "created_at": "2019-08-09T22:20:27.383Z",
+    "updated_at": "2019-08-09T22:20:27.383Z",
+    "user": 1,
+    "code": "us"
+  }
+},
+{
+  "model": "nslc.network",
+  "pk": 2,
+  "fields": {
+    "name": "Leo Brady",
+    "description": null,
+    "created_at": "2019-08-09T22:20:27.390Z",
+    "updated_at": "2019-08-09T22:20:27.390Z",
+    "user": 1,
+    "code": "lb"
+  }
+},
+{
+  "model": "nslc.network",
+  "pk": 3,
+  "fields": {
+    "name": "University of Washington",
+    "description": null,
+    "created_at": "2019-08-09T22:20:27.396Z",
+    "updated_at": "2019-08-09T22:20:27.396Z",
+    "user": 1,
+    "code": "uw"
+  }
+},
+{
+  "model": "nslc.network",
+  "pk": 4,
+  "fields": {
+    "name": "Neptune Canada",
+    "description": null,
+    "created_at": "2019-08-09T22:20:27.401Z",
+    "updated_at": "2019-08-09T22:20:27.401Z",
+    "user": 1,
+    "code": "nv"
+  }
+},
+{
+  "model": "nslc.network",
+  "pk": 5,
+  "fields": {
+    "name": "Global Seismic",
+    "description": null,
+    "created_at": "2019-08-09T22:20:27.406Z",
+    "updated_at": "2019-08-09T22:20:27.406Z",
+    "user": 1,
+    "code": "iu"
+  }
+},
+{
+  "model": "nslc.network",
+  "pk": 6,
+  "fields": {
+    "name": "Northern California",
+    "description": null,
+    "created_at": "2019-08-09T22:20:27.412Z",
+    "updated_at": "2019-08-09T22:20:27.412Z",
+    "user": 1,
+    "code": "nc"
+  }
+},
+{
+  "model": "nslc.network",
+  "pk": 7,
+  "fields": {
+    "name": "Ocean Observatory",
+    "description": null,
+    "created_at": "2019-08-09T22:20:27.418Z",
+    "updated_at": "2019-08-09T22:20:27.418Z",
+    "user": 1,
+    "code": "oo"
+  }
+},
+{
+  "model": "nslc.network",
+  "pk": 8,
+  "fields": {
+    "name": "Nevada",
+    "description": null,
+    "created_at": "2019-08-09T22:20:27.425Z",
+    "updated_at": "2019-08-09T22:20:27.425Z",
+    "user": 1,
+    "code": "nn"
+  }
+},
+{
+  "model": "nslc.network",
+  "pk": 9,
+  "fields": {
+    "name": "Southern California",
+    "description": null,
+    "created_at": "2019-08-09T22:20:27.432Z",
+    "updated_at": "2019-08-09T22:20:27.432Z",
+    "user": 1,
+    "code": "ci"
+  }
+},
+{
+  "model": "nslc.network",
+  "pk": 10,
+  "fields": {
+    "name": "Montana",
+    "description": null,
+    "created_at": "2019-08-09T22:20:27.438Z",
+    "updated_at": "2019-08-09T22:20:27.439Z",
+    "user": 1,
+    "code": "mb"
+  }
+},
+{
+  "model": "nslc.network",
+  "pk": 11,
+  "fields": {
+    "name": "Canada",
+    "description": null,
+    "created_at": "2019-08-09T22:20:27.445Z",
+    "updated_at": "2019-08-09T22:20:27.445Z",
+    "user": 1,
+    "code": "cn"
+  }
+},
+{
+  "model": "nslc.network",
+  "pk": 12,
+  "fields": {
+    "name": "Berkley",
+    "description": null,
+    "created_at": "2019-08-09T22:20:27.452Z",
+    "updated_at": "2019-08-09T22:20:27.452Z",
+    "user": 1,
+    "code": "bk"
+  }
+},
+{
+  "model": "nslc.network",
+  "pk": 13,
+  "fields": {
+    "name": "Strong Motion Network",
+    "description": null,
+    "created_at": "2019-08-09T22:20:27.465Z",
+    "updated_at": "2019-08-09T22:20:27.465Z",
+    "user": 1,
+    "code": "np"
+  }
+},
+{
+  "model": "nslc.network",
+  "pk": 14,
+  "fields": {
+    "name": "Transportable Array",
+    "description": null,
+    "created_at": "2019-08-09T22:20:27.472Z",
+    "updated_at": "2019-08-09T22:20:27.472Z",
+    "user": 1,
+    "code": "ta"
+  }
+},
+{
+  "model": "nslc.network",
+  "pk": 15,
+  "fields": {
+    "name": "Cascade Volcanic Observatory",
+    "description": null,
+    "created_at": "2019-08-09T22:20:27.479Z",
+    "updated_at": "2019-08-09T22:20:27.479Z",
+    "user": 1,
+    "code": "cc"
+  }
+},
+{
+  "model": "nslc.network",
+  "pk": 16,
+  "fields": {
+    "name": "Plate Boundary Observatory",
+    "description": null,
+    "created_at": "2019-08-09T22:20:27.486Z",
+    "updated_at": "2019-08-09T22:20:27.486Z",
+    "user": 1,
+    "code": "pb"
+  }
+},
+{
+  "model": "nslc.network",
+  "pk": 17,
+  "fields": {
+    "name": "University of Oregon",
+    "description": null,
+    "created_at": "2019-08-09T22:20:27.493Z",
+    "updated_at": "2019-08-09T22:20:27.493Z",
+    "user": 1,
+    "code": "uo"
+  }
+},
+{
+  "model": "nslc.network",
+  "pk": 18,
+  "fields": {
+    "name": "Hanford",
+    "description": null,
+    "created_at": "2019-08-09T22:20:27.499Z",
+    "updated_at": "2019-08-09T22:20:27.499Z",
+    "user": 1,
+    "code": "hw"
+  }
+},
+{
+  "model": "nslc.station",
+  "pk": 1,
+  "fields": {
+    "name": "Nicolai Mt., Oregon",
+    "description": null,
+    "created_at": "2019-08-09T22:20:27.513Z",
+    "updated_at": "2019-08-09T22:20:27.513Z",
+    "user": 1,
+    "code": "nlo",
+    "network": 3
+  }
+},
+{
+  "model": "nslc.station",
+  "pk": 2,
+  "fields": {
+    "name": "Goldendale Observatory, WA, USA",
+    "description": null,
+    "created_at": "2019-08-09T22:20:27.541Z",
+    "updated_at": "2019-08-09T22:20:27.541Z",
+    "user": 1,
+    "code": "gldo",
+    "network": 3
+  }
+},
+{
+  "model": "nslc.station",
+  "pk": 3,
+  "fields": {
+    "name": "Elkon Grade School Bus Garage, Elkton, OR, USA",
+    "description": null,
+    "created_at": "2019-08-09T22:20:27.595Z",
+    "updated_at": "2019-08-09T22:20:27.595Z",
+    "user": 1,
+    "code": "eton",
+    "network": 17
+  }
+},
+{
+  "model": "nslc.station",
+  "pk": 4,
+  "fields": {
+    "name": "Kings Valley Charter School, Philomath, OR, USA",
+    "description": null,
+    "created_at": "2019-08-09T22:20:27.638Z",
+    "updated_at": "2019-08-09T22:20:27.638Z",
+    "user": 1,
+    "code": "kvcs",
+    "network": 17
+  }
+},
+{
+  "model": "nslc.location",
+  "pk": 1,
+  "fields": {
+    "code": "--",
+    "name": "",
+    "description": null,
+    "created_at": "2019-08-09T22:20:27.522Z",
+    "updated_at": "2019-08-09T22:20:27.522Z",
+    "user": 1,
+    "lat": 46.08924,
+    "lon": -123.45173,
+    "elev": 826.0,
+    "station": 1
+  }
+},
+{
+  "model": "nslc.location",
+  "pk": 2,
+  "fields": {
+    "code": "--",
+    "name": "",
+    "description": null,
+    "created_at": "2019-08-09T22:20:27.546Z",
+    "updated_at": "2019-08-09T22:20:27.546Z",
+    "user": 1,
+    "lat": 45.83878,
+    "lon": -120.81479,
+    "elev": 610.0,
+    "station": 2
+  }
+},
+{
+  "model": "nslc.location",
+  "pk": 3,
+  "fields": {
+    "code": "--",
+    "name": "",
+    "description": null,
+    "created_at": "2019-08-09T22:20:27.602Z",
+    "updated_at": "2019-08-09T22:20:27.602Z",
+    "user": 1,
+    "lat": 43.6409,
+    "lon": -123.58076,
+    "elev": 36.0,
+    "station": 3
+  }
+},
+{
+  "model": "nslc.location",
+  "pk": 4,
+  "fields": {
+    "code": "--",
+    "name": "",
+    "description": null,
+    "created_at": "2019-08-09T22:20:27.643Z",
+    "updated_at": "2019-08-09T22:20:27.643Z",
+    "user": 1,
+    "lat": 44.69453,
+    "lon": -123.43416,
+    "elev": 94.0,
+    "station": 4
+  }
+},
+{
+  "model": "nslc.channel",
+  "pk": 1,
+  "fields": {
+    "name": "EHZ",
+    "description": null,
+    "created_at": "2019-08-09T22:20:27.532Z",
+    "updated_at": "2019-08-09T22:20:27.532Z",
+    "user": 1,
+    "code": "ehz",
+    "sample_rate": -1.0,
+    "location": 1
+  }
+},
+{
+  "model": "nslc.channel",
+  "pk": 2,
+  "fields": {
+    "name": "ENZ",
+    "description": null,
+    "created_at": "2019-08-09T22:20:27.552Z",
+    "updated_at": "2019-08-09T22:20:27.552Z",
+    "user": 1,
+    "code": "enz",
+    "sample_rate": -1.0,
+    "location": 2
+  }
+},
+{
+  "model": "nslc.channel",
+  "pk": 3,
+  "fields": {
+    "name": "EHZ",
+    "description": null,
+    "created_at": "2019-08-09T22:20:27.564Z",
+    "updated_at": "2019-08-09T22:20:27.564Z",
+    "user": 1,
+    "code": "ehz",
+    "sample_rate": -1.0,
+    "location": 2
+  }
+},
+{
+  "model": "nslc.channel",
+  "pk": 4,
+  "fields": {
+    "name": "ENE",
+    "description": null,
+    "created_at": "2019-08-09T22:20:27.577Z",
+    "updated_at": "2019-08-09T22:20:27.577Z",
+    "user": 1,
+    "code": "ene",
+    "sample_rate": -1.0,
+    "location": 2
+  }
+},
+{
+  "model": "nslc.channel",
+  "pk": 5,
+  "fields": {
+    "name": "ENN",
+    "description": null,
+    "created_at": "2019-08-09T22:20:27.588Z",
+    "updated_at": "2019-08-09T22:20:27.588Z",
+    "user": 1,
+    "code": "enn",
+    "sample_rate": -1.0,
+    "location": 2
+  }
+},
+{
+  "model": "nslc.channel",
+  "pk": 6,
+  "fields": {
+    "name": "HNE",
+    "description": null,
+    "created_at": "2019-08-09T22:20:27.609Z",
+    "updated_at": "2019-08-09T22:20:27.609Z",
+    "user": 1,
+    "code": "hne",
+    "sample_rate": -1.0,
+    "location": 3
+  }
+},
+{
+  "model": "nslc.channel",
+  "pk": 7,
+  "fields": {
+    "name": "HNN",
+    "description": null,
+    "created_at": "2019-08-09T22:20:27.623Z",
+    "updated_at": "2019-08-09T22:20:27.623Z",
+    "user": 1,
+    "code": "hnn",
+    "sample_rate": -1.0,
+    "location": 3
+  }
+},
+{
+  "model": "nslc.channel",
+  "pk": 8,
+  "fields": {
+    "name": "HNZ",
+    "description": null,
+    "created_at": "2019-08-09T22:20:27.633Z",
+    "updated_at": "2019-08-09T22:20:27.633Z",
+    "user": 1,
+    "code": "hnz",
+    "sample_rate": -1.0,
+    "location": 3
+  }
+},
+{
+  "model": "nslc.channel",
+  "pk": 9,
+  "fields": {
+    "name": "HNE",
+    "description": null,
+    "created_at": "2019-08-09T22:20:27.648Z",
+    "updated_at": "2019-08-09T22:20:27.648Z",
+    "user": 1,
+    "code": "hne",
+    "sample_rate": -1.0,
+    "location": 4
+  }
+},
+{
+  "model": "nslc.channel",
+  "pk": 10,
+  "fields": {
+    "name": "HNN",
+    "description": null,
+    "created_at": "2019-08-09T22:20:27.657Z",
+    "updated_at": "2019-08-09T22:20:27.657Z",
+    "user": 1,
+    "code": "hnn",
+    "sample_rate": -1.0,
+    "location": 4
+  }
+},
+{
+  "model": "nslc.group",
+  "pk": 1,
+  "fields": {
+    "user": 1,
+    "name": "UW-All",
+    "description": "All UW stations",
+    "is_public": false,
+    "created_at": "2019-08-09T22:20:27.660Z",
+    "updated_at": "2019-08-09T22:20:27.660Z"
+  }
+},
+{
+  "model": "nslc.group",
+  "pk": 2,
+  "fields": {
+    "user": 1,
+    "name": "UO-All",
+    "description": "All UO stations",
+    "is_public": false,
+    "created_at": "2019-08-09T22:20:27.663Z",
+    "updated_at": "2019-08-09T22:20:27.663Z"
+  }
+},
+{
+  "model": "nslc.channelgroup",
+  "pk": 1,
+  "fields": {
+    "user": 1,
+    "group": 1,
+    "channel": 5,
+    "created_at": "2019-08-09T22:20:27.676Z",
+    "updated_at": "2019-08-09T22:20:27.676Z"
+  }
+},
+{
+  "model": "nslc.channelgroup",
+  "pk": 2,
+  "fields": {
+    "user": 1,
+    "group": 1,
+    "channel": 4,
+    "created_at": "2019-08-09T22:20:27.684Z",
+    "updated_at": "2019-08-09T22:20:27.684Z"
+  }
+},
+{
+  "model": "nslc.channelgroup",
+  "pk": 3,
+  "fields": {
+    "user": 1,
+    "group": 1,
+    "channel": 3,
+    "created_at": "2019-08-09T22:20:27.687Z",
+    "updated_at": "2019-08-09T22:20:27.687Z"
+  }
+},
+{
+  "model": "nslc.channelgroup",
+  "pk": 4,
+  "fields": {
+    "user": 1,
+    "group": 1,
+    "channel": 2,
+    "created_at": "2019-08-09T22:20:27.691Z",
+    "updated_at": "2019-08-09T22:20:27.691Z"
+  }
+},
+{
+  "model": "nslc.channelgroup",
+  "pk": 5,
+  "fields": {
+    "user": 1,
+    "group": 1,
+    "channel": 1,
+    "created_at": "2019-08-09T22:20:27.694Z",
+    "updated_at": "2019-08-09T22:20:27.694Z"
+  }
+},
+{
+  "model": "nslc.channelgroup",
+  "pk": 6,
+  "fields": {
+    "user": 1,
+    "group": 2,
+    "channel": 10,
+    "created_at": "2019-08-09T22:20:27.700Z",
+    "updated_at": "2019-08-09T22:20:27.700Z"
+  }
+},
+{
+  "model": "nslc.channelgroup",
+  "pk": 7,
+  "fields": {
+    "user": 1,
+    "group": 2,
+    "channel": 9,
+    "created_at": "2019-08-09T22:20:27.704Z",
+    "updated_at": "2019-08-09T22:20:27.704Z"
+  }
+},
+{
+  "model": "nslc.channelgroup",
+  "pk": 8,
+  "fields": {
+    "user": 1,
+    "group": 2,
+    "channel": 8,
+    "created_at": "2019-08-09T22:20:27.707Z",
+    "updated_at": "2019-08-09T22:20:27.707Z"
+  }
+},
+{
+  "model": "nslc.channelgroup",
+  "pk": 9,
+  "fields": {
+    "user": 1,
+    "group": 2,
+    "channel": 7,
+    "created_at": "2019-08-09T22:20:27.710Z",
+    "updated_at": "2019-08-09T22:20:27.710Z"
+  }
+},
+{
+  "model": "nslc.channelgroup",
+  "pk": 10,
+  "fields": {
+    "user": 1,
+    "group": 2,
+    "channel": 6,
+    "created_at": "2019-08-09T22:20:27.714Z",
+    "updated_at": "2019-08-09T22:20:27.714Z"
+  }
+},
+{
+  "model": "measurement.datasource",
+  "pk": 2,
+  "fields": {
+    "created_at": "2019-08-12T17:50:15.057Z",
+    "updated_at": "2019-08-12T17:50:15.057Z",
+    "user": 1,
+    "name": "IRIS",
+    "description": "IRIS DMC"
+  }
+},
+{
+  "model": "measurement.metric",
+  "pk": 33,
+  "fields": {
+    "created_at": "2019-08-12T17:50:15.065Z",
+    "updated_at": "2019-08-12T17:50:15.065Z",
+    "user": 1,
+    "name": "snr10_0p01cm",
+    "description": "Number of spikes with SNR > 10 and amplitude exceeding 0.01 cm/s^2 using filterd acceleration data.\n",
+    "unit": "integer",
+    "datasource": 2
+  }
+},
+{
+  "model": "measurement.metric",
+  "pk": 34,
+  "fields": {
+    "created_at": "2019-08-12T17:50:15.079Z",
+    "updated_at": "2019-08-12T17:50:15.079Z",
+    "user": 1,
+    "name": "snr20_0p05cm",
+    "description": "Number of spikes with SNR > 20 and amplitude exceeding 0.05 cm/s^2 using filterd acceleration data.\n",
+    "unit": "integer",
+    "datasource": 2
+  }
+},
+{
+  "model": "measurement.metric",
+  "pk": 35,
+  "fields": {
+    "created_at": "2019-08-12T17:50:15.091Z",
+    "updated_at": "2019-08-12T17:50:15.091Z",
+    "user": 1,
+    "name": "snr20_0p17cm",
+    "description": "Number of spikes with SNR > 20 and amplitude exceeding 0.17 cm/s^2 using filterd acceleration data (ShakeAlert station acceptance threshold using filter of 0.3 - 15Hz).\n",
+    "unit": "integer",
+    "datasource": 2
+  }
+},
+{
+  "model": "measurement.metric",
+  "pk": 36,
+  "fields": {
+    "created_at": "2019-08-12T17:50:15.103Z",
+    "updated_at": "2019-08-12T17:50:15.103Z",
+    "user": 1,
+    "name": "snr20_1cm",
+    "description": "Number of spikes with SNR > 20 and amplitude exceeding 1 cm/s^2 using filterd acceleration data.\n",
+    "unit": "integer",
+    "datasource": 2
+  }
+},
+{
+  "model": "measurement.metric",
+  "pk": 37,
+  "fields": {
+    "created_at": "2019-08-12T17:50:15.115Z",
+    "updated_at": "2019-08-12T17:50:15.115Z",
+    "user": 1,
+    "name": "snr20_3cm",
+    "description": "Number of spikes with SNR > 20 and amplitude exceeding 3 cm/s^2 using filterd acceleration data.\n",
+    "unit": "integer",
+    "datasource": 2
+  }
+},
+{
+  "model": "measurement.metric",
+  "pk": 38,
+  "fields": {
+    "created_at": "2019-08-12T17:50:15.128Z",
+    "updated_at": "2019-08-12T17:50:15.128Z",
+    "user": 1,
+    "name": "snr20_5cm",
+    "description": "Number of spikes with SNR > 20 and amplitude exceeding 5 cm/s^2 using filterd acceleration data.\n",
+    "unit": "integer",
+    "datasource": 2
+  }
+},
+{
+  "model": "measurement.metric",
+  "pk": 39,
+  "fields": {
+    "created_at": "2019-08-12T17:50:15.138Z",
+    "updated_at": "2019-08-12T17:50:15.138Z",
+    "user": 1,
+    "name": "pow50sec",
+    "description": "Power at 50 seconds.\n",
+    "unit": "dB",
+    "datasource": 2
+  }
+},
+{
+  "model": "measurement.metric",
+  "pk": 40,
+  "fields": {
+    "created_at": "2019-08-12T17:50:15.147Z",
+    "updated_at": "2019-08-12T17:50:15.147Z",
+    "user": 1,
+    "name": "pow12sec",
+    "description": "Power at 12 seconds.\n",
+    "unit": "dB",
+    "datasource": 2
+  }
+},
+{
+  "model": "measurement.metric",
+  "pk": 41,
+  "fields": {
+    "created_at": "2019-08-12T17:50:15.156Z",
+    "updated_at": "2019-08-12T17:50:15.156Z",
+    "user": 1,
+    "name": "pow1Hz",
+    "description": "Power at 1 Hertz.\n",
+    "unit": "dB",
+    "datasource": 2
+  }
+},
+{
+  "model": "measurement.metric",
+  "pk": 42,
+  "fields": {
+    "created_at": "2019-08-12T17:50:15.164Z",
+    "updated_at": "2019-08-12T17:50:15.164Z",
+    "user": 1,
+    "name": "pow5Hz",
+    "description": "Power at 5 Hertz.\n",
+    "unit": "dB",
+    "datasource": 2
+  }
+},
+{
+  "model": "measurement.metric",
+  "pk": 43,
+  "fields": {
+    "created_at": "2019-08-12T17:50:15.173Z",
+    "updated_at": "2019-08-12T17:50:15.173Z",
+    "user": 1,
+    "name": "pow10Hz",
+    "description": "Power at 10 Hertz.\n",
+    "unit": "dB",
+    "datasource": 2
+  }
+},
+{
+  "model": "measurement.metric",
+  "pk": 44,
+  "fields": {
+    "created_at": "2019-08-12T17:50:15.181Z",
+    "updated_at": "2019-08-12T17:50:15.181Z",
+    "user": 1,
+    "name": "pow20Hz",
+    "description": "Power at 20 Hertz.\n",
+    "unit": "dB",
+    "datasource": 2
+  }
+},
+{
+  "model": "measurement.metric",
+  "pk": 45,
+  "fields": {
+    "created_at": "2019-08-12T17:50:15.189Z",
+    "updated_at": "2019-08-12T17:50:15.189Z",
+    "user": 1,
+    "name": "pow50Hz",
+    "description": "Power at 50 Hertz.\n",
+    "unit": "dB",
+    "datasource": 2
+  }
+},
+{
+  "model": "measurement.metric",
+  "pk": 46,
+  "fields": {
+    "created_at": "2019-08-12T17:50:15.198Z",
+    "updated_at": "2019-08-12T17:50:15.198Z",
+    "user": 1,
+    "name": "NoiseFloorAcc",
+    "description": "Range the 2nd to 98th percentile of sorted acceleration amplitudes which approximates median envelope amplitude.\n",
+    "unit": "cm/s^2",
+    "datasource": 2
+  }
+},
+{
+  "model": "measurement.metric",
+  "pk": 47,
+  "fields": {
+    "created_at": "2019-08-12T17:50:15.206Z",
+    "updated_at": "2019-08-12T17:50:15.206Z",
+    "user": 1,
+    "name": "NoiseFloorVel",
+    "description": "Range of the 2nd to 98th percentile of sorted velocity amplitudes which approximates median envelope amplitude.\n",
+    "unit": "cm/s",
+    "datasource": 2
+  }
+},
+{
+  "model": "measurement.metric",
+  "pk": 48,
+  "fields": {
+    "created_at": "2019-08-12T17:50:15.215Z",
+    "updated_at": "2019-08-12T17:50:15.215Z",
+    "user": 1,
+    "name": "rawrange",
+    "description": "Range in counts.\n",
+    "unit": "counts",
+    "datasource": 2
+  }
+},
+{
+  "model": "measurement.metric",
+  "pk": 49,
+  "fields": {
+    "created_at": "2019-08-12T17:50:15.224Z",
+    "updated_at": "2019-08-12T17:50:15.224Z",
+    "user": 1,
+    "name": "rawmean",
+    "description": "Mean.\n",
+    "unit": "counts",
+    "datasource": 2
+  }
+},
+{
+  "model": "measurement.metric",
+  "pk": 50,
+  "fields": {
+    "created_at": "2019-08-12T17:50:15.235Z",
+    "updated_at": "2019-08-12T17:50:15.235Z",
+    "user": 1,
+    "name": "rawmin",
+    "description": "Minimum amplitude.\n",
+    "unit": "counts",
+    "datasource": 2
+  }
+},
+{
+  "model": "measurement.metric",
+  "pk": 51,
+  "fields": {
+    "created_at": "2019-08-12T17:50:15.244Z",
+    "updated_at": "2019-08-12T17:50:15.244Z",
+    "user": 1,
+    "name": "rawmax",
+    "description": "Maximum amplitude.\n",
+    "unit": "counts",
+    "datasource": 2
+  }
+},
+{
+  "model": "measurement.group",
+  "pk": 3,
+  "fields": {
+    "created_at": "2019-08-12T17:50:15.384Z",
+    "updated_at": "2019-08-12T17:50:15.384Z",
+    "name": "snorepow",
+    "description": "",
+    "is_public": false,
+    "user": 1
+  }
+},
+{
+  "model": "measurement.group",
+  "pk": 4,
+  "fields": {
+    "created_at": "2019-08-12T17:50:15.463Z",
+    "updated_at": "2019-08-12T17:50:15.463Z",
+    "name": "rawfloor",
+    "description": "",
+    "is_public": false,
+    "user": 1
+  }
+},
+{
+  "model": "measurement.metricgroup",
+  "pk": 20,
+  "fields": {
+    "created_at": "2019-08-12T17:50:15.392Z",
+    "updated_at": "2019-08-12T17:50:15.392Z",
+    "user": 1,
+    "group": 3,
+    "metric": 33
+  }
+},
+{
+  "model": "measurement.metricgroup",
+  "pk": 21,
+  "fields": {
+    "created_at": "2019-08-12T17:50:15.397Z",
+    "updated_at": "2019-08-12T17:50:15.397Z",
+    "user": 1,
+    "group": 3,
+    "metric": 34
+  }
+},
+{
+  "model": "measurement.metricgroup",
+  "pk": 22,
+  "fields": {
+    "created_at": "2019-08-12T17:50:15.403Z",
+    "updated_at": "2019-08-12T17:50:15.403Z",
+    "user": 1,
+    "group": 3,
+    "metric": 35
+  }
+},
+{
+  "model": "measurement.metricgroup",
+  "pk": 23,
+  "fields": {
+    "created_at": "2019-08-12T17:50:15.408Z",
+    "updated_at": "2019-08-12T17:50:15.408Z",
+    "user": 1,
+    "group": 3,
+    "metric": 36
+  }
+},
+{
+  "model": "measurement.metricgroup",
+  "pk": 24,
+  "fields": {
+    "created_at": "2019-08-12T17:50:15.414Z",
+    "updated_at": "2019-08-12T17:50:15.414Z",
+    "user": 1,
+    "group": 3,
+    "metric": 37
+  }
+},
+{
+  "model": "measurement.metricgroup",
+  "pk": 25,
+  "fields": {
+    "created_at": "2019-08-12T17:50:15.420Z",
+    "updated_at": "2019-08-12T17:50:15.420Z",
+    "user": 1,
+    "group": 3,
+    "metric": 38
+  }
+},
+{
+  "model": "measurement.metricgroup",
+  "pk": 26,
+  "fields": {
+    "created_at": "2019-08-12T17:50:15.426Z",
+    "updated_at": "2019-08-12T17:50:15.426Z",
+    "user": 1,
+    "group": 3,
+    "metric": 39
+  }
+},
+{
+  "model": "measurement.metricgroup",
+  "pk": 27,
+  "fields": {
+    "created_at": "2019-08-12T17:50:15.431Z",
+    "updated_at": "2019-08-12T17:50:15.431Z",
+    "user": 1,
+    "group": 3,
+    "metric": 40
+  }
+},
+{
+  "model": "measurement.metricgroup",
+  "pk": 28,
+  "fields": {
+    "created_at": "2019-08-12T17:50:15.437Z",
+    "updated_at": "2019-08-12T17:50:15.437Z",
+    "user": 1,
+    "group": 3,
+    "metric": 41
+  }
+},
+{
+  "model": "measurement.metricgroup",
+  "pk": 29,
+  "fields": {
+    "created_at": "2019-08-12T17:50:15.442Z",
+    "updated_at": "2019-08-12T17:50:15.442Z",
+    "user": 1,
+    "group": 3,
+    "metric": 42
+  }
+},
+{
+  "model": "measurement.metricgroup",
+  "pk": 30,
+  "fields": {
+    "created_at": "2019-08-12T17:50:15.448Z",
+    "updated_at": "2019-08-12T17:50:15.448Z",
+    "user": 1,
+    "group": 3,
+    "metric": 43
+  }
+},
+{
+  "model": "measurement.metricgroup",
+  "pk": 31,
+  "fields": {
+    "created_at": "2019-08-12T17:50:15.453Z",
+    "updated_at": "2019-08-12T17:50:15.453Z",
+    "user": 1,
+    "group": 3,
+    "metric": 44
+  }
+},
+{
+  "model": "measurement.metricgroup",
+  "pk": 32,
+  "fields": {
+    "created_at": "2019-08-12T17:50:15.459Z",
+    "updated_at": "2019-08-12T17:50:15.459Z",
+    "user": 1,
+    "group": 3,
+    "metric": 45
+  }
+},
+{
+  "model": "measurement.metricgroup",
+  "pk": 33,
+  "fields": {
+    "created_at": "2019-08-12T17:50:15.468Z",
+    "updated_at": "2019-08-12T17:50:15.468Z",
+    "user": 1,
+    "group": 4,
+    "metric": 46
+  }
+},
+{
+  "model": "measurement.metricgroup",
+  "pk": 34,
+  "fields": {
+    "created_at": "2019-08-12T17:50:15.474Z",
+    "updated_at": "2019-08-12T17:50:15.474Z",
+    "user": 1,
+    "group": 4,
+    "metric": 47
+  }
+},
+{
+  "model": "measurement.metricgroup",
+  "pk": 35,
+  "fields": {
+    "created_at": "2019-08-12T17:50:15.479Z",
+    "updated_at": "2019-08-12T17:50:15.479Z",
+    "user": 1,
+    "group": 4,
+    "metric": 48
+  }
+},
+{
+  "model": "measurement.metricgroup",
+  "pk": 36,
+  "fields": {
+    "created_at": "2019-08-12T17:50:15.485Z",
+    "updated_at": "2019-08-12T17:50:15.485Z",
+    "user": 1,
+    "group": 4,
+    "metric": 49
+  }
+},
+{
+  "model": "measurement.metricgroup",
+  "pk": 37,
+  "fields": {
+    "created_at": "2019-08-12T17:50:15.490Z",
+    "updated_at": "2019-08-12T17:50:15.490Z",
+    "user": 1,
+    "group": 4,
+    "metric": 50
+  }
+},
+{
+  "model": "measurement.metricgroup",
+  "pk": 38,
+  "fields": {
+    "created_at": "2019-08-12T17:50:15.495Z",
+    "updated_at": "2019-08-12T17:50:15.495Z",
+    "user": 1,
+    "group": 4,
+    "metric": 51
+  }
+}
+]
