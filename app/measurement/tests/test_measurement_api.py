@@ -4,8 +4,8 @@ from django.urls import reverse
 from django.utils import timezone
 
 from measurement.models import DataSource, Metric, MetricGroup, Group,\
-                               Threshold, Alarm, Trigger, Measurement
-from nslc.models import Network, Station, Location, Channel
+    Threshold, Alarm, Trigger, Measurement
+from nslc.models import Network, Station, Channel
 
 from rest_framework.test import APIClient
 from rest_framework import status
@@ -56,19 +56,14 @@ class PublicMeasurementApiTests(TestCase):
             network=self.net,
             user=self.user
         )
-        self.loc = Location.objects.create(
-            code='--',
-            name="--",
+        self.chan = Channel.objects.create(
+            code='EHZ',
+            name="EHZ",
+            loc="--",
             station=self.sta,
             lat=45,
             lon=-122,
             elev=0,
-            user=self.user
-        )
-        self.chan = Channel.objects.create(
-            code='EHZ',
-            name="EHZ",
-            location=self.loc,
             user=self.user
         )
         self.measurement = Measurement.objects.create(
@@ -274,19 +269,14 @@ class PrivateMeasurementAPITests(TestCase):
             network=self.net,
             user=self.user
         )
-        self.loc = Location.objects.create(
-            code='--',
-            name="--",
+        self.chan = Channel.objects.create(
+            code='EHZ',
+            name="EHZ",
+            loc="--",
             station=self.sta,
             lat=45,
             lon=-122,
             elev=0,
-            user=self.user
-        )
-        self.chan = Channel.objects.create(
-            code='EHZ',
-            name="EHZ",
-            location=self.loc,
             user=self.user
         )
         self.group = Group.objects.create(

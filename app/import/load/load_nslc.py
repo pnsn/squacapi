@@ -60,17 +60,6 @@ def main():
             row[3] = "--"
         if not row[7]:
             row[7] = -1
-  
-        # loc = Location.objects.get_or_create(
-        #     code=row[3].lower(),
-        #     station=sta[0],
-        #     user=user,
-        #     defaults={
-        #         'lat': float(row[4]),
-        #         'lon': float(row[5]),
-        #         'elev': float(row[6])
-        #     }
-        # )
         Channel.objects.get_or_create(
             code=row[2].lower(),
             station=sta[0],
