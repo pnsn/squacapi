@@ -1,8 +1,7 @@
 from django.db import models
 from django.conf import settings
 
-# from measurement.models import Metric
-from nslc.models import ChannelGroup
+from nslc.models import Group
 
 
 class DashboardBase(models.Model):
@@ -31,6 +30,7 @@ class Widget_Type(DashboardBase):
 
 
 class Widget(DashboardBase):
+    metrics = models.ManyToManyField('measurement.Metric')
     widget_type = models.ForeignKey(
         Widget_Type,
         on_delete=models.CASCADE,
@@ -39,10 +39,10 @@ class Widget(DashboardBase):
 
 
 class Dashboard(DashboardBase):
-    channel_group = models.ForeignKey(
-        ChannelGroup,
+    group = models.ForeignKey(
+        Group,
         on_delete=models.CASCADE,
-        related_name='dashboards',
+        related_name='dashboards'
     )
     widget = models.ForeignKey(
         Widget,

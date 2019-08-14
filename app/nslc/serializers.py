@@ -1,32 +1,20 @@
 from rest_framework import serializers
-from .models import Network, Station, Channel, Group, ChannelGroup
-
-
-class ChannelGroupSerializer(serializers.HyperlinkedModelSerializer):
-    group = serializers.PrimaryKeyRelatedField(
-        queryset=Group.objects.all()
-    )
-    channel = serializers.PrimaryKeyRelatedField(
-        queryset=Channel.objects.all()
-    )
-    url = serializers.HyperlinkedIdentityField(
-        view_name="nslc:channelgroup-detail"
-    )
-
-    class Meta:
-        model = ChannelGroup
-        fields = ('id', 'group', 'channel', 'url', 'created_at', 'updated_at')
-        read_only_fields = ('id',)
+from .models import Network, Station, Channel, Group
 
 
 class GroupSerializer(serializers.HyperlinkedModelSerializer):
-    channelgroup = ChannelGroupSerializer(many=True, read_only=True)
-    url = serializers.HyperlinkedIdentityField(view_name='nslc:group-detail')
+    url = serializers.HyperlinkedIdentityField(
+        view_name='nslc:group-detail'
+    )
+    channels = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=Channel.objects.all()
+    )
 
     class Meta:
         model = Group
-        fields = ('name', 'id', 'url', 'description', 'is_public',
-                  'channelgroup', 'created_at', 'updated_at')
+        fields = ('name', 'id', 'url', 'description', 'channels', 'is_public',
+                  'created_at', 'updated_at')
         read_only_fields = ('id',)
 
 
@@ -34,13 +22,12 @@ class ChannelSerializer(serializers.HyperlinkedModelSerializer):
     station = serializers.PrimaryKeyRelatedField(
         queryset=Station.objects.all()
     )
-    channelgroup = ChannelGroupSerializer(many=True, read_only=True)
     url = serializers.HyperlinkedIdentityField(view_name="nslc:channel-detail")
 
     class Meta:
         model = Channel
         fields = ('class_name', 'code', 'name', 'id', 'url', 'description',
-                  'channelgroup', 'sample_rate', 'station', 'loc', 'lat',
+                  'sample_rate', 'station', 'loc', 'lat',
                   'lon', 'elev', 'created_at', 'updated_at')
         read_only_fields = ('id',)
 

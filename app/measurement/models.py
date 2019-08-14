@@ -23,20 +23,11 @@ class MeasurementBase(models.Model):
         return self.__class__.__name__.lower()
 
 
-class DataSource(MeasurementBase):
-    name = models.CharField(max_length=255)
-    description = models.CharField(max_length=255, blank=True, default='')
-
-
 class Metric(MeasurementBase):
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=255, blank=True, default='')
     unit = models.CharField(max_length=255)
-    datasource = models.ForeignKey(
-        DataSource,
-        on_delete=models.CASCADE,
-        related_name='metrics',
-    )
+    url = models.CharField(max_length=255, default='')
 
 
 class Measurement(MeasurementBase):

@@ -3,7 +3,7 @@ from rest_framework.authentication import TokenAuthentication, \
     SessionAuthentication
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 
-from .models import DataSource, Metric, Measurement
+from .models import Metric, Measurement
 from measurement import serializers
 
 
@@ -44,12 +44,6 @@ class BaseMeasurementViewSet(viewsets.ModelViewSet):
     # all models require an auth user, set on create
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
-
-
-class DataSourceViewSet(BaseMeasurementViewSet):
-    serializer_class = serializers.DataSourceSerializer
-    # filter_class = DataSourceFilter
-    queryset = DataSource.objects.all()
 
 
 class MetricViewSet(BaseMeasurementViewSet):

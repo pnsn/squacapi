@@ -4,7 +4,6 @@ from rest_framework.routers import DefaultRouter
 from measurement import views
 
 router = DefaultRouter()
-router.register('datasource', views.DataSourceViewSet)
 router.register('metric', views.MetricViewSet)
 router.register('measurement', views.MeasurementViewSet)
 

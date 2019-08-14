@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.utils import timezone
 
-from measurement.models import DataSource, Metric, Measurement
+from measurement.models import Metric, Measurement
 from nslc.models import Network, Station, Channel
 
 from rest_framework.test import APIClient
@@ -34,14 +34,9 @@ class PublicMeasurementApiTests(TestCase):
         # unauthenticate all public tests
         self.client.force_authenticate(user=None)
         timezone.now()
-        self.datasrc = DataSource.objects.create(
-            name='Data source test',
-            user=self.user
-        )
         self.metric = Metric.objects.create(
             name='Metric test',
             unit='meter',
-            datasource=self.datasrc,
             user=self.user
         )
         self.net = Network.objects.create(
@@ -74,22 +69,6 @@ class PublicMeasurementApiTests(TestCase):
             user=self.user
         )
 
-    def test_datasource_res_and_str(self):
-        url = reverse(
-            'measurement:datasource-detail',
-            kwargs={'pk': self.datasrc.id}
-        )
-        res = self.client.get(url)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        # self.assertEqual(res.data['name'], "Data source test")
-        self.assertEqual(str(self.datasrc), "Data source test")
-
-    def test_datasource_post_unauth(self):
-        url = reverse('measurement:datasource-list')
-        payload = {'name': 'Test'}
-        res = self.client.post(url, payload)
-        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
-
     def test_metric_res_and_str(self):
         url = reverse(
             'measurement:metric-detail',
@@ -104,8 +83,7 @@ class PublicMeasurementApiTests(TestCase):
         url = reverse('measurement:metric-list')
         payload = {
             'name': 'Test',
-            'unit': 'meter',
-            'datasource': self.datasrc.id
+            'unit': 'meter'
         }
         res = self.client.post(url, payload)
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
@@ -133,14 +111,9 @@ class PrivateMeasurementAPITests(TestCase):
         self.user = sample_user()
         self.client.force_authenticate(self.user)
         timezone.now()
-        self.datasrc = DataSource.objects.create(
-            name='Sample data source',
-            user=self.user
-        )
         self.metric = Metric.objects.create(
             name='Sample metric',
             unit='furlong',
-            datasource=self.datasrc,
             user=self.user
         )
         self.net = Network.objects.create(
@@ -165,32 +138,19 @@ class PrivateMeasurementAPITests(TestCase):
             user=self.user
         )
 
-    def test_create_datasource(self):
-        url = reverse('measurement:datasource-list')
-        payload = {'name': 'Data source test', 'user': self.user}
-        res = self.client.post(url, payload)
-        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-        datasource = DataSource.objects.get(id=res.data['id'])
-        for key in payload.keys():
-            self.assertEqual(payload[key], getattr(datasource, key))
-
     def test_create_metric(self):
         url = reverse('measurement:metric-list')
         payload = {
             'name': 'Metric test',
             'description': 'Test description',
             'unit': 'meter',
-            'datasource': self.datasrc.id,
             'user': self.user
         }
         res = self.client.post(url, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         metric = Metric.objects.get(id=res.data['id'])
         for key in payload.keys():
-            if key == 'datasource':
-                self.assertEqual(payload[key], metric.datasource.id)
-            else:
-                self.assertEqual(payload[key], getattr(metric, key))
+            self.assertEqual(payload[key], getattr(metric, key))
 
     def test_create_measurement(self):
         url = reverse('measurement:measurement-list')

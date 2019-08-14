@@ -64,6 +64,7 @@ class Group(models.Model):
         on_delete=models.CASCADE,
         related_name='nslcgroups'
     )
+    channels = models.ManyToManyField('Channel')
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=255, blank=True, default='')
     is_public = models.BooleanField(default=False)
@@ -74,20 +75,20 @@ class Group(models.Model):
         return self.name
 
 
-class ChannelGroup(models.Model):
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-    )
-    group = models.ForeignKey(
-        Group,
-        on_delete=models.CASCADE,
-        related_name='channelgroups'
-    )
-    channel = models.ForeignKey(
-        Channel,
-        on_delete=models.CASCADE,
-        related_name='channelgroups'
-    )
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+# class ChannelGroup(models.Model):
+#     user = models.ForeignKey(
+#         settings.AUTH_USER_MODEL,
+#         on_delete=models.CASCADE,
+#     )
+#     group = models.ForeignKey(
+#         Group,
+#         on_delete=models.CASCADE,
+#         related_name='channelgroups'
+#     )
+#     channel = models.ForeignKey(
+#         Channel,
+#         on_delete=models.CASCADE,
+#         related_name='channelgroups'
+#     )
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     updated_at = models.DateTimeField(auto_now=True)
