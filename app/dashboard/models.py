@@ -29,23 +29,23 @@ class Widget_Type(DashboardBase):
     type = models.CharField(max_length=255)
 
 
-class Widget(DashboardBase):
-    metrics = models.ManyToManyField('measurement.Metric')
-    widget_type = models.ForeignKey(
-        Widget_Type,
-        on_delete=models.CASCADE,
-        related_name='widgets',
-    )
-
-
 class Dashboard(DashboardBase):
     group = models.ForeignKey(
         Group,
         on_delete=models.CASCADE,
         related_name='dashboards'
     )
-    widget = models.ForeignKey(
-        Widget,
+
+
+class Widget(DashboardBase):
+    metrics = models.ManyToManyField('measurement.Metric')
+    dashboard = models.ForeignKey(
+        Dashboard,
         on_delete=models.CASCADE,
         related_name='dashboards'
+    )
+    widget_type = models.ForeignKey(
+        Widget_Type,
+        on_delete=models.CASCADE,
+        related_name='widgets',
     )

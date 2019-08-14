@@ -97,16 +97,10 @@ def main():
     # skip header
     next(measurementReader, None)
     for row in measurementReader:
-        ds = DataSource.objects.get_or_create(
-            name=row[3],
-            description=row[4],
-            user=user
-        )
         metric = Metric.objects.get_or_create(
             name=row[0],
             description=row[1],
             unit=row[2],
-            datasource=ds[0],
             user=user
         )
 

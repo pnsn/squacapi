@@ -205,7 +205,8 @@ class PrivateNslcAPITests(TestCase):
         group = Group.objects.get(id=res.data['id'])
         for key in payload.keys():
             if key == 'channels':
-                self.assertEqual(payload[key][0], self.chan.id)
+                channels = group.channels.all()
+                self.assertIn(self.chan, channels)
             else:
                 self.assertEqual(payload[key], getattr(group, key))
 
