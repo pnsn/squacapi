@@ -21,7 +21,8 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
     path('user/', include('user.urls')),
     path('v1.0/nslc/', include('nslc.urls')),
-    path('v1.0/measurement/', include('measurement.urls'))
+    path('v1.0/measurement/', include('measurement.urls')),
+    path('v1.0/widget/', include('widget.urls'))
 ]
 '''To access password reset: localhost:8000/acounts/password_reset/
 For test reseting password: reset email text file will be created in a

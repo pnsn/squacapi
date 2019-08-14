@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from .models import Network, Station, Channel, Group, ChannelGroup
-# from rest_framework.relations import HyperlinkedIdentityField
 
 
 class ChannelGroupSerializer(serializers.HyperlinkedModelSerializer):
