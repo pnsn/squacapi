@@ -1,11 +1,11 @@
 from django.db import models
 from django.conf import settings
 
-from measurement.models import Metric
+# from measurement.models import Metric
 from nslc.models import ChannelGroup
 
 
-class WidgetBase(models.Model):
+class DashboardBase(models.Model):
     '''Base class for all widget models'''
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=255, blank=True, default='')
@@ -26,26 +26,26 @@ class WidgetBase(models.Model):
         return self.__class__.__name__.lower()
 
 
-class Widget_Type(WidgetBase):
+class Widget_Type(DashboardBase):
     type = models.CharField(max_length=255)
 
 
-class Widget(WidgetBase):
+class Widget(DashboardBase):
     widget_type = models.ForeignKey(
         Widget_Type,
         on_delete=models.CASCADE,
         related_name='widgets',
     )
+
+
+class Dashboard(DashboardBase):
     channel_group = models.ForeignKey(
         ChannelGroup,
         on_delete=models.CASCADE,
-        related_name='widgets',
+        related_name='dashboards',
     )
-
-
-class Dashboard(WidgetBase):
     widget = models.ForeignKey(
         Widget,
         on_delete=models.CASCADE,
-        related_name='metric_params'
+        related_name='dashboards'
     )

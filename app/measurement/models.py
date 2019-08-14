@@ -55,4 +55,4 @@ class Measurement(MeasurementBase):
     endtime = models.DateTimeField()
 
     def __str__(self):
-        return "Metric: {str(self.metric)} Channel: {str(self.channel)}"
+        return f"Metric: {str(self.metric)} Channel: {str(self.channel)}"

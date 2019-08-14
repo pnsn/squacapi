@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'core',
     'user',
     'nslc',
-    'measurement'
+    'measurement',
+    'dashboard'
 ]
 
 MIDDLEWARE = [

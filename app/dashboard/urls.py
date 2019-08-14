@@ -9,5 +9,5 @@ router = DefaultRouter()
 # router.register('alarm', views.AlarmViewSet)
 # router.register('trigger', views.TriggerViewSet)
 
-app_name = "widget"
+app_name = "dashboard"
 urlpatterns = [path('', include(router.urls))]
