@@ -59,18 +59,3 @@ class Widget_TypeViewSet(BaseDashboardViewSet):
 class WidgetViewSet(BaseDashboardViewSet):
     serializer_class = serializers.WidgetSerializer
     queryset = Widget.objects.all()
-
-
-# class ThresholdViewSet(BaseMeasurementViewSet):
-#     serializer_class = serializers.ThresholdSerializer
-#     queryset = Threshold.objects.all()
-
-
-# class AlarmViewSet(BaseMeasurementViewSet):
-#     serializer_class = serializers.AlarmSerializer
-#     queryset = Alarm.objects.all()
-
-
-# class TriggerViewSet(BaseMeasurementViewSet):
-#     serializer_class = serializers.TriggerSerializer
-#     queryset = Trigger.objects.all()
