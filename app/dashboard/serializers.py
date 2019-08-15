@@ -30,7 +30,6 @@ class DashboardSerializer(serializers.HyperlinkedModelSerializer):
         queryset=Group.objects.all()
     )
 
-
     class Meta:
         model = Dashboard
         fields = (
