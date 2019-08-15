@@ -7,9 +7,9 @@ from rest_framework.authentication import TokenAuthentication, \
 
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 
-from .models import Network, Station, Channel, Group, ChannelGroup
+from .models import Network, Station, Channel, Group
 from nslc.serializers import NetworkSerializer, StationSerializer, \
-    ChannelSerializer, GroupSerializer, ChannelGroupSerializer
+    ChannelSerializer, GroupSerializer
 
 # import django_filters as filters
 from django_filters import rest_framework as filters
@@ -188,8 +188,3 @@ class ChannelViewSet(BaseNslcViewSet):
 class GroupViewSet(BaseNslcViewSet):
     serializer_class = GroupSerializer
     queryset = Group.objects.all()
-
-
-class ChannelGroupViewSet(BaseNslcViewSet):
-    serializer_class = ChannelGroupSerializer
-    queryset = ChannelGroup.objects.all()

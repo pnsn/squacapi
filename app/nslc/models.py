@@ -48,8 +48,6 @@ class Channel(Nslc):
     code = models.CharField(max_length=3)
     sample_rate = models.FloatField(null=True, blank=True)
     loc = models.CharField(max_length=2, default='--')
-    # FIXME these defaults need to be removed once location model
-    # has been slayed.
     lat = models.FloatField()
     lon = models.FloatField()
     elev = models.FloatField()
@@ -66,6 +64,7 @@ class Group(models.Model):
         on_delete=models.CASCADE,
         related_name='nslcgroups'
     )
+    channels = models.ManyToManyField('Channel')
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=255, blank=True, default='')
     is_public = models.BooleanField(default=False)
@@ -76,20 +75,20 @@ class Group(models.Model):
         return self.name
 
 
-class ChannelGroup(models.Model):
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-    )
-    group = models.ForeignKey(
-        Group,
-        on_delete=models.CASCADE,
-        related_name='channelgroups'
-    )
-    channel = models.ForeignKey(
-        Channel,
-        on_delete=models.CASCADE,
-        related_name='channelgroups'
-    )
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+# class ChannelGroup(models.Model):
+#     user = models.ForeignKey(
+#         settings.AUTH_USER_MODEL,
+#         on_delete=models.CASCADE,
+#     )
+#     group = models.ForeignKey(
+#         Group,
+#         on_delete=models.CASCADE,
+#         related_name='channelgroups'
+#     )
+#     channel = models.ForeignKey(
+#         Channel,
+#         on_delete=models.CASCADE,
+#         related_name='channelgroups'
+#     )
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     updated_at = models.DateTimeField(auto_now=True)

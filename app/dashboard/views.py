@@ -3,8 +3,8 @@ from rest_framework.authentication import TokenAuthentication, \
     SessionAuthentication
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 
-from .models import Metric, Measurement
-from measurement import serializers
+from .models import Dashboard, Widget_Type, Widget
+from dashboard import serializers
 
 
 class ObjPermissionOrReadOnly(BasePermission):
@@ -31,8 +31,8 @@ class ObjPermissionOrReadOnly(BasePermission):
         return self.check_object_permissions(request, obj)
 
 
-class BaseMeasurementViewSet(viewsets.ModelViewSet):
-    '''base class for measurement viewsets:
+class BaseDashboardViewSet(viewsets.ModelViewSet):
+    '''base class for dashboard viewsets:
 
     Permissions are IsAuthenticatedOrReadOnly
     This allows auth user full crud but unauthorized user to only view
@@ -46,11 +46,31 @@ class BaseMeasurementViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
 
 
-class MetricViewSet(BaseMeasurementViewSet):
-    serializer_class = serializers.MetricSerializer
-    queryset = Metric.objects.all()
+class DashboardViewSet(BaseDashboardViewSet):
+    serializer_class = serializers.DashboardSerializer
+    queryset = Dashboard.objects.all()
 
 
-class MeasurementViewSet(BaseMeasurementViewSet):
-    serializer_class = serializers.MeasurementSerializer
-    queryset = Measurement.objects.all()
+class Widget_TypeViewSet(BaseDashboardViewSet):
+    serializer_class = serializers.Widget_TypeSerializer
+    queryset = Widget_Type.objects.all()
+
+
+class WidgetViewSet(BaseDashboardViewSet):
+    serializer_class = serializers.WidgetSerializer
+    queryset = Widget.objects.all()
+
+
+# class ThresholdViewSet(BaseMeasurementViewSet):
+#     serializer_class = serializers.ThresholdSerializer
+#     queryset = Threshold.objects.all()
+
+
+# class AlarmViewSet(BaseMeasurementViewSet):
+#     serializer_class = serializers.AlarmSerializer
+#     queryset = Alarm.objects.all()
+
+
+# class TriggerViewSet(BaseMeasurementViewSet):
+#     serializer_class = serializers.TriggerSerializer
+#     queryset = Trigger.objects.all()

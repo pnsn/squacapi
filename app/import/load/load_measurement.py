@@ -47,35 +47,24 @@ from django.contrib.auth import get_user_model
 
 def main():
     from nslc.models import Channel
-    from measurement.models import DataSource, Metric, MetricGroup, Group,\
-        Threshold, Alarm, Trigger, Measurement
+    from measurement.models import Metric, Measurement
 
     csv_path = project_path + "/import/csv/"
 
     # For quick test uncomment next line and comment out following line
     # measurements_csv = csv_path + "measurement_short.csv"
     measurements_csv = csv_path + "measurement_all.csv"
-    metricgroup_csv = csv_path + "measurement_group.csv"
-    # spectacle_csv = csv_path + "measurement_spectacle.csv"
 
     measurementReader = csv.reader(
         open(measurements_csv), delimiter=',', quotechar='"'
     )
     # spectacleReader = csv.reader(open(spectacle_csv), delimiter=',',\
     # quotechar='"')
-    metricgroupReader = csv.reader(
-        open(metricgroup_csv), delimiter=',', quotechar='"'
-    )
+
     # skip the headers
     Metric.objects.all().delete()
-    MetricGroup.objects.all().delete()
-    Group.objects.all().delete()
     Measurement.objects.all().delete()
-    DataSource.objects.all().delete()
-    Threshold.objects.all().delete()
-    Alarm.objects.all().delete()
-    Trigger.objects.all().delete()
-    # Spectacle.objects.all().delete()
+
     try:
         user = get_user_model().objects.get(email='loader@pnsn.org')
     except ObjectDoesNotExist:
@@ -107,16 +96,10 @@ def main():
     # skip header
     next(measurementReader, None)
     for row in measurementReader:
-        ds = DataSource.objects.get_or_create(
-            name=row[3],
-            description=row[4],
-            user=user
-        )
         metric = Metric.objects.get_or_create(
             name=row[0],
             description=row[1],
             unit=row[2],
-            datasource=ds[0],
             user=user
         )
 
@@ -147,38 +130,6 @@ def main():
                 row[6].lower(),
                 row[5].lower()
             ))
-
-    next(metricgroupReader, None)
-    for row in metricgroupReader:
-        try:
-            group = Group.objects.get(name=row[0].strip())
-        except Group.DoesNotExist:
-            Group.objects.create(name=row[0].strip(), user=user)
-            group = Group.objects.get(name=row[0].strip())
-        try:
-            metric = Metric.objects.get(name=row[1].strip())
-            MetricGroup.objects.create(group=group, metric=metric, user=user)
-        except Metric.DoesNotExist:
-            print("Metric {} 404".format(row[1]))
-
-    '''next(spectacleReader, None)
-    for row in spectacleReader:
-        sp=Spectacle(name=row[0], user_id=1)
-        print(ChannelGroup.objects.all())
-        print(MetricGroup.objects.all())
-        try:
-            channelgroup=ChannelGroup.objects.get(name=row[1])
-            metricgroup=MetricGroup.objects.get(name=row[2])
-
-        except (ChannelGroup.DoesNotExist):
-            print("MetricGroup or Channel Group Fail: {}, {}".format(
-                row[1],
-                row[2]
-            ))
-        else:
-            sp.channelgroup=channelgroup
-            sp.metricgroup=metricgroup
-            sp.save()'''
 
 
 project_path = './'
