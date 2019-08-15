@@ -15,7 +15,7 @@ from django.contrib.auth import get_user_model
 
 
 def main():
-    from nslc.models import Network, Station, Channel, ChannelGroup, Group
+    from nslc.models import Network, Station, Channel, Group
 
     csv_path = project_path + "/import/csv/"
 
@@ -33,7 +33,6 @@ def main():
     Network.objects.all().delete()
     Station.objects.all().delete()
     Channel.objects.all().delete()
-    ChannelGroup.objects.all().delete()
     Group.objects.all().delete()
     try:
         user = get_user_model().objects.get(email='loader@pnsn.org')
@@ -89,18 +88,10 @@ def main():
     uw_all = Channel.objects.filter(station__network__code="uw")
     uo_all = Channel.objects.filter(station__network__code="uo")
     for c in uw_all:
-        ChannelGroup.objects.create(
-            channel=c,
-            group=uw,
-            user=user
-        )
+        uw.channels.add(c)
 
     for c in uo_all:
-        ChannelGroup.objects.create(
-            channel=c,
-            group=uo,
-            user=user
-        )
+        uo.channels.add(c)
 
 
 # app is root directory where project lives

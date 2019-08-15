@@ -47,13 +47,13 @@ from django.contrib.auth import get_user_model
 
 def main():
     from nslc.models import Channel
-    from measurement.models import DataSource, Metric, Measurement
+    from measurement.models import Metric, Measurement
 
     csv_path = project_path + "/import/csv/"
 
     # For quick test uncomment next line and comment out following line
-    measurements_csv = csv_path + "measurement_short.csv"
-    # measurements_csv = csv_path + "measurement_all.csv"
+    # measurements_csv = csv_path + "measurement_short.csv"
+    measurements_csv = csv_path + "measurement_all.csv"
 
     measurementReader = csv.reader(
         open(measurements_csv), delimiter=',', quotechar='"'
@@ -64,7 +64,6 @@ def main():
     # skip the headers
     Metric.objects.all().delete()
     Measurement.objects.all().delete()
-    DataSource.objects.all().delete()
 
     try:
         user = get_user_model().objects.get(email='loader@pnsn.org')

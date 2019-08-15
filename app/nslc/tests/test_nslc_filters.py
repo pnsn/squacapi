@@ -8,7 +8,7 @@ from rest_framework import status
 
 class PublicNslcFilterTests(TestCase):
     # Public tests for nslc filters
-    # fixtures = ['nslc_tests.json']
+    fixtures = ['nslc_tests.json']
     # Fixtures load from the fixtures directory within /nslc
     # to dump data to an nslc folder run:
     # ./mg.sh "dumpdata --indent=2 >> somefolder/file.json"

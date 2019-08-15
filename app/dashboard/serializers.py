@@ -4,35 +4,6 @@ from nslc.models import Group
 from measurement.models import Metric
 
 
-class DashboardSerializer(serializers.HyperlinkedModelSerializer):
-    group = serializers.PrimaryKeyRelatedField(
-        queryset=Group.objects.all()
-    )
-    url = serializers.HyperlinkedIdentityField(
-        view_name='dashboard:dashboard-detail'
-    )
-
-    class Meta:
-        model = Dashboard
-        fields = (
-            'id', 'name', 'url', 'group', 'created_at', 'updated_at'
-        )
-        read_only_fields = ('id',)
-
-
-class Widget_TypeSerializer(serializers.HyperlinkedModelSerializer):
-    url = serializers.HyperlinkedIdentityField(
-        view_name='dashboard:widget_type-detail'
-    )
-
-    class Meta:
-        model = Widget_Type
-        fields = (
-            'id', 'name', 'url', 'type', 'created_at', 'updated_at'
-        )
-        read_only_fields = ('id',)
-
-
 class WidgetSerializer(serializers.HyperlinkedModelSerializer):
     dashboard = serializers.PrimaryKeyRelatedField(
         queryset=Dashboard.objects.all()
@@ -53,6 +24,37 @@ class WidgetSerializer(serializers.HyperlinkedModelSerializer):
         fields = (
             'id', 'name', 'url', 'dashboard', 'widget_type', 'metrics',
             'created_at', 'updated_at'
+        )
+        read_only_fields = ('id',)
+
+
+class DashboardSerializer(serializers.HyperlinkedModelSerializer):
+    group = serializers.PrimaryKeyRelatedField(
+        queryset=Group.objects.all()
+    )
+    widget = WidgetSerializer(many=True, read_only=True)
+    url = serializers.HyperlinkedIdentityField(
+        view_name='dashboard:dashboard-detail'
+    )
+
+    class Meta:
+        model = Dashboard
+        fields = (
+            'id', 'name', 'url', 'group', 'widget', 'created_at', 'updated_at'
+        )
+        read_only_fields = ('id',)
+
+
+class Widget_TypeSerializer(serializers.HyperlinkedModelSerializer):
+    widget = WidgetSerializer(many=True, read_only=True)
+    url = serializers.HyperlinkedIdentityField(
+        view_name='dashboard:widget_type-detail'
+    )
+
+    class Meta:
+        model = Widget_Type
+        fields = (
+            'id', 'name', 'url', 'type', 'widget', 'created_at', 'updated_at'
         )
         read_only_fields = ('id',)
 

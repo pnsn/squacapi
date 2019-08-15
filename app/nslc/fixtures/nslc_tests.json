@@ -91,8 +91,8 @@
   "model": "contenttypes.contenttype",
   "pk": 12,
   "fields": {
-    "app_label": "nslc",
-    "model": "channelgroup"
+    "app_label": "measurement",
+    "model": "metric"
   }
 },
 {
@@ -100,71 +100,39 @@
   "pk": 13,
   "fields": {
     "app_label": "measurement",
-    "model": "alarm"
+    "model": "measurement"
   }
 },
 {
   "model": "contenttypes.contenttype",
   "pk": 14,
   "fields": {
-    "app_label": "measurement",
-    "model": "datasource"
+    "app_label": "dashboard",
+    "model": "dashboard"
   }
 },
 {
   "model": "contenttypes.contenttype",
   "pk": 15,
   "fields": {
-    "app_label": "measurement",
-    "model": "group"
+    "app_label": "dashboard",
+    "model": "widget_type"
   }
 },
 {
   "model": "contenttypes.contenttype",
   "pk": 16,
   "fields": {
-    "app_label": "measurement",
-    "model": "metric"
-  }
-},
-{
-  "model": "contenttypes.contenttype",
-  "pk": 17,
-  "fields": {
-    "app_label": "measurement",
-    "model": "metricgroup"
-  }
-},
-{
-  "model": "contenttypes.contenttype",
-  "pk": 18,
-  "fields": {
-    "app_label": "measurement",
-    "model": "trigger"
-  }
-},
-{
-  "model": "contenttypes.contenttype",
-  "pk": 19,
-  "fields": {
-    "app_label": "measurement",
-    "model": "threshold"
-  }
-},
-{
-  "model": "contenttypes.contenttype",
-  "pk": 20,
-  "fields": {
-    "app_label": "measurement",
-    "model": "measurement"
+    "app_label": "dashboard",
+    "model": "widget"
   }
 },
 {
   "model": "sessions.session",
-  "pk": "57vocktfy0ypujgeapkt1lz09prdyik8",
+  "pk": "rcr6hsaw5hhz2oa4qw80d1wt9w8xh1no",
   "fields": {
-    "session_data": "MWRmMjZmZGZjMGI2NTVlZWIwMmQ0ZWQ5NTZjMmVhMjQzMmZhMTcxOTp7Il9hdXRoX3VzZXJfaWQiOiIxIiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoiZGphbmdvLmNvbnRyaWIuYXV0aC5iYWNrZW5kcy5Nb2RlbEJhY2tlbmQiLCJfYXV0aF91c2VyX2hhc2giOiI5N2YyZWI3ZmRlZWVjNjI5NGYwZTNkMzljNDUyMDcxYjBmOWZjNmE1In0=",
-    "expire_date": "2019-08-26T23:09:56.925Z"
+    "session_data": "YThkYjExZTFiNmEyMTViZjRiNjIwYmY4MGY4ZTQ0NzdmNDBhNDFhYjp7Il9hdXRoX3VzZXJfaWQiOiIxIiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoiZGphbmdvLmNvbnRyaWIuYXV0aC5iYWNrZW5kcy5Nb2RlbEJhY2tlbmQiLCJfYXV0aF91c2VyX2hhc2giOiI0YzYzYjA1MmUzYWI0NTM2ZmYwZWIyZDBhOTk3YmFmZWJkZWZiOTFkIn0=",
+    "expire_date": "2019-08-28T23:56:54.916Z"
   }
 },
 {
@@ -567,332 +535,188 @@
   "model": "auth.permission",
   "pk": 45,
   "fields": {
-    "name": "Can add channel group",
+    "name": "Can add metric",
     "content_type": 12,
-    "codename": "add_channelgroup"
+    "codename": "add_metric"
   }
 },
 {
   "model": "auth.permission",
   "pk": 46,
   "fields": {
-    "name": "Can change channel group",
+    "name": "Can change metric",
     "content_type": 12,
-    "codename": "change_channelgroup"
+    "codename": "change_metric"
   }
 },
 {
   "model": "auth.permission",
   "pk": 47,
   "fields": {
-    "name": "Can delete channel group",
+    "name": "Can delete metric",
     "content_type": 12,
-    "codename": "delete_channelgroup"
+    "codename": "delete_metric"
   }
 },
 {
   "model": "auth.permission",
   "pk": 48,
   "fields": {
-    "name": "Can view channel group",
+    "name": "Can view metric",
     "content_type": 12,
-    "codename": "view_channelgroup"
+    "codename": "view_metric"
   }
 },
 {
   "model": "auth.permission",
   "pk": 49,
   "fields": {
-    "name": "Can add alarm",
+    "name": "Can add measurement",
     "content_type": 13,
-    "codename": "add_alarm"
+    "codename": "add_measurement"
   }
 },
 {
   "model": "auth.permission",
   "pk": 50,
   "fields": {
-    "name": "Can change alarm",
+    "name": "Can change measurement",
     "content_type": 13,
-    "codename": "change_alarm"
+    "codename": "change_measurement"
   }
 },
 {
   "model": "auth.permission",
   "pk": 51,
   "fields": {
-    "name": "Can delete alarm",
+    "name": "Can delete measurement",
     "content_type": 13,
-    "codename": "delete_alarm"
+    "codename": "delete_measurement"
   }
 },
 {
   "model": "auth.permission",
   "pk": 52,
   "fields": {
-    "name": "Can view alarm",
+    "name": "Can view measurement",
     "content_type": 13,
-    "codename": "view_alarm"
+    "codename": "view_measurement"
   }
 },
 {
   "model": "auth.permission",
   "pk": 53,
   "fields": {
-    "name": "Can add data source",
+    "name": "Can add dashboard",
     "content_type": 14,
-    "codename": "add_datasource"
+    "codename": "add_dashboard"
   }
 },
 {
   "model": "auth.permission",
   "pk": 54,
   "fields": {
-    "name": "Can change data source",
+    "name": "Can change dashboard",
     "content_type": 14,
-    "codename": "change_datasource"
+    "codename": "change_dashboard"
   }
 },
 {
   "model": "auth.permission",
   "pk": 55,
   "fields": {
-    "name": "Can delete data source",
+    "name": "Can delete dashboard",
     "content_type": 14,
-    "codename": "delete_datasource"
+    "codename": "delete_dashboard"
   }
 },
 {
   "model": "auth.permission",
   "pk": 56,
   "fields": {
-    "name": "Can view data source",
+    "name": "Can view dashboard",
     "content_type": 14,
-    "codename": "view_datasource"
+    "codename": "view_dashboard"
   }
 },
 {
   "model": "auth.permission",
   "pk": 57,
   "fields": {
-    "name": "Can add group",
+    "name": "Can add widget_ type",
     "content_type": 15,
-    "codename": "add_group"
+    "codename": "add_widget_type"
   }
 },
 {
   "model": "auth.permission",
   "pk": 58,
   "fields": {
-    "name": "Can change group",
+    "name": "Can change widget_ type",
     "content_type": 15,
-    "codename": "change_group"
+    "codename": "change_widget_type"
   }
 },
 {
   "model": "auth.permission",
   "pk": 59,
   "fields": {
-    "name": "Can delete group",
+    "name": "Can delete widget_ type",
     "content_type": 15,
-    "codename": "delete_group"
+    "codename": "delete_widget_type"
   }
 },
 {
   "model": "auth.permission",
   "pk": 60,
   "fields": {
-    "name": "Can view group",
+    "name": "Can view widget_ type",
     "content_type": 15,
-    "codename": "view_group"
+    "codename": "view_widget_type"
   }
 },
 {
   "model": "auth.permission",
   "pk": 61,
   "fields": {
-    "name": "Can add metric",
+    "name": "Can add widget",
     "content_type": 16,
-    "codename": "add_metric"
+    "codename": "add_widget"
   }
 },
 {
   "model": "auth.permission",
   "pk": 62,
   "fields": {
-    "name": "Can change metric",
+    "name": "Can change widget",
     "content_type": 16,
-    "codename": "change_metric"
+    "codename": "change_widget"
   }
 },
 {
   "model": "auth.permission",
   "pk": 63,
   "fields": {
-    "name": "Can delete metric",
+    "name": "Can delete widget",
     "content_type": 16,
-    "codename": "delete_metric"
+    "codename": "delete_widget"
   }
 },
 {
   "model": "auth.permission",
   "pk": 64,
   "fields": {
-    "name": "Can view metric",
+    "name": "Can view widget",
     "content_type": 16,
-    "codename": "view_metric"
-  }
-},
-{
-  "model": "auth.permission",
-  "pk": 65,
-  "fields": {
-    "name": "Can add metric group",
-    "content_type": 17,
-    "codename": "add_metricgroup"
-  }
-},
-{
-  "model": "auth.permission",
-  "pk": 66,
-  "fields": {
-    "name": "Can change metric group",
-    "content_type": 17,
-    "codename": "change_metricgroup"
-  }
-},
-{
-  "model": "auth.permission",
-  "pk": 67,
-  "fields": {
-    "name": "Can delete metric group",
-    "content_type": 17,
-    "codename": "delete_metricgroup"
-  }
-},
-{
-  "model": "auth.permission",
-  "pk": 68,
-  "fields": {
-    "name": "Can view metric group",
-    "content_type": 17,
-    "codename": "view_metricgroup"
-  }
-},
-{
-  "model": "auth.permission",
-  "pk": 69,
-  "fields": {
-    "name": "Can add trigger",
-    "content_type": 18,
-    "codename": "add_trigger"
-  }
-},
-{
-  "model": "auth.permission",
-  "pk": 70,
-  "fields": {
-    "name": "Can change trigger",
-    "content_type": 18,
-    "codename": "change_trigger"
-  }
-},
-{
-  "model": "auth.permission",
-  "pk": 71,
-  "fields": {
-    "name": "Can delete trigger",
-    "content_type": 18,
-    "codename": "delete_trigger"
-  }
-},
-{
-  "model": "auth.permission",
-  "pk": 72,
-  "fields": {
-    "name": "Can view trigger",
-    "content_type": 18,
-    "codename": "view_trigger"
-  }
-},
-{
-  "model": "auth.permission",
-  "pk": 73,
-  "fields": {
-    "name": "Can add threshold",
-    "content_type": 19,
-    "codename": "add_threshold"
-  }
-},
-{
-  "model": "auth.permission",
-  "pk": 74,
-  "fields": {
-    "name": "Can change threshold",
-    "content_type": 19,
-    "codename": "change_threshold"
-  }
-},
-{
-  "model": "auth.permission",
-  "pk": 75,
-  "fields": {
-    "name": "Can delete threshold",
-    "content_type": 19,
-    "codename": "delete_threshold"
-  }
-},
-{
-  "model": "auth.permission",
-  "pk": 76,
-  "fields": {
-    "name": "Can view threshold",
-    "content_type": 19,
-    "codename": "view_threshold"
-  }
-},
-{
-  "model": "auth.permission",
-  "pk": 77,
-  "fields": {
-    "name": "Can add measurement",
-    "content_type": 20,
-    "codename": "add_measurement"
-  }
-},
-{
-  "model": "auth.permission",
-  "pk": 78,
-  "fields": {
-    "name": "Can change measurement",
-    "content_type": 20,
-    "codename": "change_measurement"
-  }
-},
-{
-  "model": "auth.permission",
-  "pk": 79,
-  "fields": {
-    "name": "Can delete measurement",
-    "content_type": 20,
-    "codename": "delete_measurement"
-  }
-},
-{
-  "model": "auth.permission",
-  "pk": 80,
-  "fields": {
-    "name": "Can view measurement",
-    "content_type": 20,
-    "codename": "view_measurement"
+    "codename": "view_widget"
   }
 },
 {
   "model": "core.user",
   "pk": 1,
   "fields": {
-    "password": "pbkdf2_sha256$150000$mf3E0HlvV5gD$LLheIX7rCWWWyhTLIzjl9cKinR+dipiP3+XxD1E5LDM=",
-    "last_login": "2019-08-12T23:09:56.920Z",
+    "password": "pbkdf2_sha256$150000$hFiCOQSOEfHJ$eRHYJwEALs7YOfWbSXweyi/xn5XOHnWB2q0aiLIXS3E=",
+    "last_login": "2019-08-14T23:56:54.911Z",
     "is_superuser": true,
     "email": "jt.clayton92@yahoo.com",
     "name": "",
@@ -906,7 +730,7 @@
   "model": "core.user",
   "pk": 2,
   "fields": {
-    "password": "pbkdf2_sha256$150000$pP1cCgBwazpm$9Y08ZEIuxEkfDmSC/pW/Xa5u12SJphMqOvE7zYXpjiY=",
+    "password": "pbkdf2_sha256$150000$zIvyOw0G2PYY$nvbSdsLINV1qiN9DQwAbHi5BAKm4W3U9fcgdf8Ap1n8=",
     "last_login": null,
     "is_superuser": false,
     "email": "loader@pnsn.org",
@@ -923,8 +747,8 @@
   "fields": {
     "name": "United States",
     "description": null,
-    "created_at": "2019-08-12T23:04:34.074Z",
-    "updated_at": "2019-08-12T23:04:34.074Z",
+    "created_at": "2019-08-14T23:57:38.162Z",
+    "updated_at": "2019-08-14T23:57:38.162Z",
     "user": 2,
     "code": "us"
   }
@@ -935,8 +759,8 @@
   "fields": {
     "name": "Leo Brady",
     "description": null,
-    "created_at": "2019-08-12T23:04:34.081Z",
-    "updated_at": "2019-08-12T23:04:34.081Z",
+    "created_at": "2019-08-14T23:57:38.168Z",
+    "updated_at": "2019-08-14T23:57:38.168Z",
     "user": 2,
     "code": "lb"
   }
@@ -947,8 +771,8 @@
   "fields": {
     "name": "University of Washington",
     "description": null,
-    "created_at": "2019-08-12T23:04:34.087Z",
-    "updated_at": "2019-08-12T23:04:34.087Z",
+    "created_at": "2019-08-14T23:57:38.174Z",
+    "updated_at": "2019-08-14T23:57:38.174Z",
     "user": 2,
     "code": "uw"
   }
@@ -959,8 +783,8 @@
   "fields": {
     "name": "Neptune Canada",
     "description": null,
-    "created_at": "2019-08-12T23:04:34.092Z",
-    "updated_at": "2019-08-12T23:04:34.092Z",
+    "created_at": "2019-08-14T23:57:38.179Z",
+    "updated_at": "2019-08-14T23:57:38.179Z",
     "user": 2,
     "code": "nv"
   }
@@ -971,8 +795,8 @@
   "fields": {
     "name": "Global Seismic",
     "description": null,
-    "created_at": "2019-08-12T23:04:34.098Z",
-    "updated_at": "2019-08-12T23:04:34.098Z",
+    "created_at": "2019-08-14T23:57:38.192Z",
+    "updated_at": "2019-08-14T23:57:38.192Z",
     "user": 2,
     "code": "iu"
   }
@@ -983,8 +807,8 @@
   "fields": {
     "name": "Northern California",
     "description": null,
-    "created_at": "2019-08-12T23:04:34.103Z",
-    "updated_at": "2019-08-12T23:04:34.103Z",
+    "created_at": "2019-08-14T23:57:38.199Z",
+    "updated_at": "2019-08-14T23:57:38.199Z",
     "user": 2,
     "code": "nc"
   }
@@ -995,8 +819,8 @@
   "fields": {
     "name": "Ocean Observatory",
     "description": null,
-    "created_at": "2019-08-12T23:04:34.110Z",
-    "updated_at": "2019-08-12T23:04:34.110Z",
+    "created_at": "2019-08-14T23:57:38.206Z",
+    "updated_at": "2019-08-14T23:57:38.206Z",
     "user": 2,
     "code": "oo"
   }
@@ -1007,8 +831,8 @@
   "fields": {
     "name": "Nevada",
     "description": null,
-    "created_at": "2019-08-12T23:04:34.117Z",
-    "updated_at": "2019-08-12T23:04:34.117Z",
+    "created_at": "2019-08-14T23:57:38.213Z",
+    "updated_at": "2019-08-14T23:57:38.213Z",
     "user": 2,
     "code": "nn"
   }
@@ -1019,8 +843,8 @@
   "fields": {
     "name": "Southern California",
     "description": null,
-    "created_at": "2019-08-12T23:04:34.123Z",
-    "updated_at": "2019-08-12T23:04:34.123Z",
+    "created_at": "2019-08-14T23:57:38.220Z",
+    "updated_at": "2019-08-14T23:57:38.220Z",
     "user": 2,
     "code": "ci"
   }
@@ -1031,8 +855,8 @@
   "fields": {
     "name": "Montana",
     "description": null,
-    "created_at": "2019-08-12T23:04:34.130Z",
-    "updated_at": "2019-08-12T23:04:34.130Z",
+    "created_at": "2019-08-14T23:57:38.227Z",
+    "updated_at": "2019-08-14T23:57:38.227Z",
     "user": 2,
     "code": "mb"
   }
@@ -1043,8 +867,8 @@
   "fields": {
     "name": "Canada",
     "description": null,
-    "created_at": "2019-08-12T23:04:34.137Z",
-    "updated_at": "2019-08-12T23:04:34.137Z",
+    "created_at": "2019-08-14T23:57:38.235Z",
+    "updated_at": "2019-08-14T23:57:38.235Z",
     "user": 2,
     "code": "cn"
   }
@@ -1055,8 +879,8 @@
   "fields": {
     "name": "Berkley",
     "description": null,
-    "created_at": "2019-08-12T23:04:34.143Z",
-    "updated_at": "2019-08-12T23:04:34.143Z",
+    "created_at": "2019-08-14T23:57:38.243Z",
+    "updated_at": "2019-08-14T23:57:38.243Z",
     "user": 2,
     "code": "bk"
   }
@@ -1067,8 +891,8 @@
   "fields": {
     "name": "Strong Motion Network",
     "description": null,
-    "created_at": "2019-08-12T23:04:34.151Z",
-    "updated_at": "2019-08-12T23:04:34.151Z",
+    "created_at": "2019-08-14T23:57:38.249Z",
+    "updated_at": "2019-08-14T23:57:38.250Z",
     "user": 2,
     "code": "np"
   }
@@ -1079,8 +903,8 @@
   "fields": {
     "name": "Transportable Array",
     "description": null,
-    "created_at": "2019-08-12T23:04:34.158Z",
-    "updated_at": "2019-08-12T23:04:34.158Z",
+    "created_at": "2019-08-14T23:57:38.257Z",
+    "updated_at": "2019-08-14T23:57:38.257Z",
     "user": 2,
     "code": "ta"
   }
@@ -1091,8 +915,8 @@
   "fields": {
     "name": "Cascade Volcanic Observatory",
     "description": null,
-    "created_at": "2019-08-12T23:04:34.165Z",
-    "updated_at": "2019-08-12T23:04:34.165Z",
+    "created_at": "2019-08-14T23:57:38.264Z",
+    "updated_at": "2019-08-14T23:57:38.264Z",
     "user": 2,
     "code": "cc"
   }
@@ -1103,8 +927,8 @@
   "fields": {
     "name": "Plate Boundary Observatory",
     "description": null,
-    "created_at": "2019-08-12T23:04:34.171Z",
-    "updated_at": "2019-08-12T23:04:34.171Z",
+    "created_at": "2019-08-14T23:57:38.271Z",
+    "updated_at": "2019-08-14T23:57:38.271Z",
     "user": 2,
     "code": "pb"
   }
@@ -1115,8 +939,8 @@
   "fields": {
     "name": "University of Oregon",
     "description": null,
-    "created_at": "2019-08-12T23:04:34.178Z",
-    "updated_at": "2019-08-12T23:04:34.178Z",
+    "created_at": "2019-08-14T23:57:38.277Z",
+    "updated_at": "2019-08-14T23:57:38.277Z",
     "user": 2,
     "code": "uo"
   }
@@ -1127,8 +951,8 @@
   "fields": {
     "name": "Hanford",
     "description": null,
-    "created_at": "2019-08-12T23:04:34.186Z",
-    "updated_at": "2019-08-12T23:04:34.186Z",
+    "created_at": "2019-08-14T23:57:38.285Z",
+    "updated_at": "2019-08-14T23:57:38.285Z",
     "user": 2,
     "code": "hw"
   }
@@ -1139,8 +963,8 @@
   "fields": {
     "name": "Nicolai Mt., Oregon",
     "description": null,
-    "created_at": "2019-08-12T23:04:34.197Z",
-    "updated_at": "2019-08-12T23:04:34.197Z",
+    "created_at": "2019-08-14T23:57:38.297Z",
+    "updated_at": "2019-08-14T23:57:38.297Z",
     "user": 2,
     "code": "nlo",
     "network": 3
@@ -1152,8 +976,8 @@
   "fields": {
     "name": "Goldendale Observatory, WA, USA",
     "description": null,
-    "created_at": "2019-08-12T23:04:34.215Z",
-    "updated_at": "2019-08-12T23:04:34.215Z",
+    "created_at": "2019-08-14T23:57:38.314Z",
+    "updated_at": "2019-08-14T23:57:38.314Z",
     "user": 2,
     "code": "gldo",
     "network": 3
@@ -1165,8 +989,8 @@
   "fields": {
     "name": "Elkon Grade School Bus Garage, Elkton, OR, USA",
     "description": null,
-    "created_at": "2019-08-12T23:04:34.265Z",
-    "updated_at": "2019-08-12T23:04:34.265Z",
+    "created_at": "2019-08-14T23:57:38.360Z",
+    "updated_at": "2019-08-14T23:57:38.360Z",
     "user": 2,
     "code": "eton",
     "network": 17
@@ -1178,8 +1002,8 @@
   "fields": {
     "name": "Kings Valley Charter School, Philomath, OR, USA",
     "description": null,
-    "created_at": "2019-08-12T23:04:34.309Z",
-    "updated_at": "2019-08-12T23:04:34.309Z",
+    "created_at": "2019-08-14T23:57:38.398Z",
+    "updated_at": "2019-08-14T23:57:38.398Z",
     "user": 2,
     "code": "kvcs",
     "network": 17
@@ -1191,8 +1015,8 @@
   "fields": {
     "name": "EHZ",
     "description": null,
-    "created_at": "2019-08-12T23:04:34.206Z",
-    "updated_at": "2019-08-12T23:04:34.207Z",
+    "created_at": "2019-08-14T23:57:38.306Z",
+    "updated_at": "2019-08-14T23:57:38.306Z",
     "user": 2,
     "code": "ehz",
     "sample_rate": -1.0,
@@ -1209,8 +1033,8 @@
   "fields": {
     "name": "ENZ",
     "description": null,
-    "created_at": "2019-08-12T23:04:34.221Z",
-    "updated_at": "2019-08-12T23:04:34.221Z",
+    "created_at": "2019-08-14T23:57:38.320Z",
+    "updated_at": "2019-08-14T23:57:38.320Z",
     "user": 2,
     "code": "enz",
     "sample_rate": -1.0,
@@ -1227,8 +1051,8 @@
   "fields": {
     "name": "EHZ",
     "description": null,
-    "created_at": "2019-08-12T23:04:34.233Z",
-    "updated_at": "2019-08-12T23:04:34.233Z",
+    "created_at": "2019-08-14T23:57:38.331Z",
+    "updated_at": "2019-08-14T23:57:38.331Z",
     "user": 2,
     "code": "ehz",
     "sample_rate": -1.0,
@@ -1245,8 +1069,8 @@
   "fields": {
     "name": "ENE",
     "description": null,
-    "created_at": "2019-08-12T23:04:34.244Z",
-    "updated_at": "2019-08-12T23:04:34.244Z",
+    "created_at": "2019-08-14T23:57:38.341Z",
+    "updated_at": "2019-08-14T23:57:38.341Z",
     "user": 2,
     "code": "ene",
     "sample_rate": -1.0,
@@ -1263,8 +1087,8 @@
   "fields": {
     "name": "ENN",
     "description": null,
-    "created_at": "2019-08-12T23:04:34.256Z",
-    "updated_at": "2019-08-12T23:04:34.256Z",
+    "created_at": "2019-08-14T23:57:38.351Z",
+    "updated_at": "2019-08-14T23:57:38.351Z",
     "user": 2,
     "code": "enn",
     "sample_rate": -1.0,
@@ -1281,8 +1105,8 @@
   "fields": {
     "name": "HNE",
     "description": null,
-    "created_at": "2019-08-12T23:04:34.273Z",
-    "updated_at": "2019-08-12T23:04:34.273Z",
+    "created_at": "2019-08-14T23:57:38.368Z",
+    "updated_at": "2019-08-14T23:57:38.368Z",
     "user": 2,
     "code": "hne",
     "sample_rate": -1.0,
@@ -1299,8 +1123,8 @@
   "fields": {
     "name": "HNN",
     "description": null,
-    "created_at": "2019-08-12T23:04:34.284Z",
-    "updated_at": "2019-08-12T23:04:34.284Z",
+    "created_at": "2019-08-14T23:57:38.380Z",
+    "updated_at": "2019-08-14T23:57:38.380Z",
     "user": 2,
     "code": "hnn",
     "sample_rate": -1.0,
@@ -1317,8 +1141,8 @@
   "fields": {
     "name": "HNZ",
     "description": null,
-    "created_at": "2019-08-12T23:04:34.295Z",
-    "updated_at": "2019-08-12T23:04:34.295Z",
+    "created_at": "2019-08-14T23:57:38.390Z",
+    "updated_at": "2019-08-14T23:57:38.391Z",
     "user": 2,
     "code": "hnz",
     "sample_rate": -1.0,
@@ -1335,8 +1159,8 @@
   "fields": {
     "name": "HNE",
     "description": null,
-    "created_at": "2019-08-12T23:04:34.316Z",
-    "updated_at": "2019-08-12T23:04:34.316Z",
+    "created_at": "2019-08-14T23:57:38.405Z",
+    "updated_at": "2019-08-14T23:57:38.405Z",
     "user": 2,
     "code": "hne",
     "sample_rate": -1.0,
@@ -1353,8 +1177,8 @@
   "fields": {
     "name": "HNN",
     "description": null,
-    "created_at": "2019-08-12T23:04:34.326Z",
-    "updated_at": "2019-08-12T23:04:34.326Z",
+    "created_at": "2019-08-14T23:57:38.417Z",
+    "updated_at": "2019-08-14T23:57:38.417Z",
     "user": 2,
     "code": "hnn",
     "sample_rate": -1.0,
@@ -1373,8 +1197,15 @@
     "name": "UW-All",
     "description": "All UW stations",
     "is_public": false,
-    "created_at": "2019-08-12T23:04:34.330Z",
-    "updated_at": "2019-08-12T23:04:34.330Z"
+    "created_at": "2019-08-14T23:57:38.422Z",
+    "updated_at": "2019-08-14T23:57:38.422Z",
+    "channels": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ]
   }
 },
 {
@@ -1385,609 +1216,355 @@
     "name": "UO-All",
     "description": "All UO stations",
     "is_public": false,
-    "created_at": "2019-08-12T23:04:34.335Z",
-    "updated_at": "2019-08-12T23:04:34.335Z"
-  }
-},
-{
-  "model": "nslc.channelgroup",
-  "pk": 1,
-  "fields": {
-    "user": 2,
-    "group": 1,
-    "channel": 5,
-    "created_at": "2019-08-12T23:04:34.343Z",
-    "updated_at": "2019-08-12T23:04:34.343Z"
-  }
-},
-{
-  "model": "nslc.channelgroup",
-  "pk": 2,
-  "fields": {
-    "user": 2,
-    "group": 1,
-    "channel": 4,
-    "created_at": "2019-08-12T23:04:34.348Z",
-    "updated_at": "2019-08-12T23:04:34.348Z"
-  }
-},
-{
-  "model": "nslc.channelgroup",
-  "pk": 3,
-  "fields": {
-    "user": 2,
-    "group": 1,
-    "channel": 3,
-    "created_at": "2019-08-12T23:04:34.352Z",
-    "updated_at": "2019-08-12T23:04:34.352Z"
-  }
-},
-{
-  "model": "nslc.channelgroup",
-  "pk": 4,
-  "fields": {
-    "user": 2,
-    "group": 1,
-    "channel": 2,
-    "created_at": "2019-08-12T23:04:34.356Z",
-    "updated_at": "2019-08-12T23:04:34.356Z"
-  }
-},
-{
-  "model": "nslc.channelgroup",
-  "pk": 5,
-  "fields": {
-    "user": 2,
-    "group": 1,
-    "channel": 1,
-    "created_at": "2019-08-12T23:04:34.360Z",
-    "updated_at": "2019-08-12T23:04:34.360Z"
-  }
-},
-{
-  "model": "nslc.channelgroup",
-  "pk": 6,
-  "fields": {
-    "user": 2,
-    "group": 2,
-    "channel": 10,
-    "created_at": "2019-08-12T23:04:34.367Z",
-    "updated_at": "2019-08-12T23:04:34.367Z"
-  }
-},
-{
-  "model": "nslc.channelgroup",
-  "pk": 7,
-  "fields": {
-    "user": 2,
-    "group": 2,
-    "channel": 9,
-    "created_at": "2019-08-12T23:04:34.371Z",
-    "updated_at": "2019-08-12T23:04:34.371Z"
-  }
-},
-{
-  "model": "nslc.channelgroup",
-  "pk": 8,
-  "fields": {
-    "user": 2,
-    "group": 2,
-    "channel": 8,
-    "created_at": "2019-08-12T23:04:34.375Z",
-    "updated_at": "2019-08-12T23:04:34.375Z"
-  }
-},
-{
-  "model": "nslc.channelgroup",
-  "pk": 9,
-  "fields": {
-    "user": 2,
-    "group": 2,
-    "channel": 7,
-    "created_at": "2019-08-12T23:04:34.386Z",
-    "updated_at": "2019-08-12T23:04:34.386Z"
-  }
-},
-{
-  "model": "nslc.channelgroup",
-  "pk": 10,
-  "fields": {
-    "user": 2,
-    "group": 2,
-    "channel": 6,
-    "created_at": "2019-08-12T23:04:34.391Z",
-    "updated_at": "2019-08-12T23:04:34.391Z"
-  }
-},
-{
-  "model": "measurement.datasource",
-  "pk": 2,
-  "fields": {
-    "created_at": "2019-08-12T23:09:27.470Z",
-    "updated_at": "2019-08-12T23:09:27.470Z",
-    "user": 2,
-    "name": "IRIS",
-    "description": "IRIS DMC"
+    "created_at": "2019-08-14T23:57:38.426Z",
+    "updated_at": "2019-08-14T23:57:38.426Z",
+    "channels": [
+      6,
+      7,
+      8,
+      9,
+      10
+    ]
   }
 },
 {
   "model": "measurement.metric",
-  "pk": 2,
+  "pk": 1,
   "fields": {
-    "created_at": "2019-08-12T23:09:27.479Z",
-    "updated_at": "2019-08-12T23:09:27.479Z",
+    "created_at": "2019-08-14T23:57:46.932Z",
+    "updated_at": "2019-08-14T23:57:46.932Z",
     "user": 2,
     "name": "snr10_0p01cm",
     "description": "Number of spikes with SNR > 10 and amplitude exceeding 0.01 cm/s^2 using filterd acceleration data.\n",
     "unit": "integer",
-    "datasource": 2
+    "url": ""
   }
 },
 {
   "model": "measurement.metric",
-  "pk": 3,
+  "pk": 2,
   "fields": {
-    "created_at": "2019-08-12T23:09:27.492Z",
-    "updated_at": "2019-08-12T23:09:27.492Z",
+    "created_at": "2019-08-14T23:57:46.944Z",
+    "updated_at": "2019-08-14T23:57:46.944Z",
     "user": 2,
     "name": "snr20_0p05cm",
     "description": "Number of spikes with SNR > 20 and amplitude exceeding 0.05 cm/s^2 using filterd acceleration data.\n",
     "unit": "integer",
-    "datasource": 2
+    "url": ""
   }
 },
 {
   "model": "measurement.metric",
-  "pk": 4,
+  "pk": 3,
   "fields": {
-    "created_at": "2019-08-12T23:09:27.502Z",
-    "updated_at": "2019-08-12T23:09:27.502Z",
+    "created_at": "2019-08-14T23:57:46.962Z",
+    "updated_at": "2019-08-14T23:57:46.962Z",
     "user": 2,
     "name": "snr20_0p17cm",
     "description": "Number of spikes with SNR > 20 and amplitude exceeding 0.17 cm/s^2 using filterd acceleration data (ShakeAlert station acceptance threshold using filter of 0.3 - 15Hz).\n",
     "unit": "integer",
-    "datasource": 2
+    "url": ""
   }
 },
 {
   "model": "measurement.metric",
-  "pk": 5,
+  "pk": 4,
   "fields": {
-    "created_at": "2019-08-12T23:09:27.512Z",
-    "updated_at": "2019-08-12T23:09:27.512Z",
+    "created_at": "2019-08-14T23:57:46.973Z",
+    "updated_at": "2019-08-14T23:57:46.973Z",
     "user": 2,
     "name": "snr20_1cm",
     "description": "Number of spikes with SNR > 20 and amplitude exceeding 1 cm/s^2 using filterd acceleration data.\n",
     "unit": "integer",
-    "datasource": 2
+    "url": ""
   }
 },
 {
   "model": "measurement.metric",
-  "pk": 6,
+  "pk": 5,
   "fields": {
-    "created_at": "2019-08-12T23:09:27.523Z",
-    "updated_at": "2019-08-12T23:09:27.523Z",
+    "created_at": "2019-08-14T23:57:46.983Z",
+    "updated_at": "2019-08-14T23:57:46.983Z",
     "user": 2,
     "name": "snr20_3cm",
     "description": "Number of spikes with SNR > 20 and amplitude exceeding 3 cm/s^2 using filterd acceleration data.\n",
     "unit": "integer",
-    "datasource": 2
+    "url": ""
   }
 },
 {
   "model": "measurement.metric",
-  "pk": 7,
+  "pk": 6,
   "fields": {
-    "created_at": "2019-08-12T23:09:27.534Z",
-    "updated_at": "2019-08-12T23:09:27.534Z",
+    "created_at": "2019-08-14T23:57:46.992Z",
+    "updated_at": "2019-08-14T23:57:46.992Z",
     "user": 2,
     "name": "snr20_5cm",
     "description": "Number of spikes with SNR > 20 and amplitude exceeding 5 cm/s^2 using filterd acceleration data.\n",
     "unit": "integer",
-    "datasource": 2
+    "url": ""
   }
 },
 {
   "model": "measurement.metric",
-  "pk": 8,
+  "pk": 7,
   "fields": {
-    "created_at": "2019-08-12T23:09:27.543Z",
-    "updated_at": "2019-08-12T23:09:27.543Z",
+    "created_at": "2019-08-14T23:57:47.002Z",
+    "updated_at": "2019-08-14T23:57:47.002Z",
     "user": 2,
     "name": "pow50sec",
     "description": "Power at 50 seconds.\n",
     "unit": "dB",
-    "datasource": 2
+    "url": ""
   }
 },
 {
   "model": "measurement.metric",
-  "pk": 9,
+  "pk": 8,
   "fields": {
-    "created_at": "2019-08-12T23:09:27.552Z",
-    "updated_at": "2019-08-12T23:09:27.552Z",
+    "created_at": "2019-08-14T23:57:47.012Z",
+    "updated_at": "2019-08-14T23:57:47.012Z",
     "user": 2,
     "name": "pow12sec",
     "description": "Power at 12 seconds.\n",
     "unit": "dB",
-    "datasource": 2
+    "url": ""
   }
 },
 {
   "model": "measurement.metric",
-  "pk": 10,
+  "pk": 9,
   "fields": {
-    "created_at": "2019-08-12T23:09:27.559Z",
-    "updated_at": "2019-08-12T23:09:27.559Z",
+    "created_at": "2019-08-14T23:57:47.020Z",
+    "updated_at": "2019-08-14T23:57:47.020Z",
     "user": 2,
     "name": "pow1Hz",
     "description": "Power at 1 Hertz.\n",
     "unit": "dB",
-    "datasource": 2
+    "url": ""
   }
 },
 {
   "model": "measurement.metric",
-  "pk": 11,
+  "pk": 10,
   "fields": {
-    "created_at": "2019-08-12T23:09:27.567Z",
-    "updated_at": "2019-08-12T23:09:27.567Z",
+    "created_at": "2019-08-14T23:57:47.028Z",
+    "updated_at": "2019-08-14T23:57:47.028Z",
     "user": 2,
     "name": "pow5Hz",
     "description": "Power at 5 Hertz.\n",
     "unit": "dB",
-    "datasource": 2
+    "url": ""
   }
 },
 {
   "model": "measurement.metric",
-  "pk": 12,
+  "pk": 11,
   "fields": {
-    "created_at": "2019-08-12T23:09:27.575Z",
-    "updated_at": "2019-08-12T23:09:27.575Z",
+    "created_at": "2019-08-14T23:57:47.036Z",
+    "updated_at": "2019-08-14T23:57:47.036Z",
     "user": 2,
     "name": "pow10Hz",
     "description": "Power at 10 Hertz.\n",
     "unit": "dB",
-    "datasource": 2
+    "url": ""
   }
 },
 {
   "model": "measurement.metric",
-  "pk": 13,
+  "pk": 12,
   "fields": {
-    "created_at": "2019-08-12T23:09:27.584Z",
-    "updated_at": "2019-08-12T23:09:27.584Z",
+    "created_at": "2019-08-14T23:57:47.044Z",
+    "updated_at": "2019-08-14T23:57:47.044Z",
     "user": 2,
     "name": "pow20Hz",
     "description": "Power at 20 Hertz.\n",
     "unit": "dB",
-    "datasource": 2
+    "url": ""
   }
 },
 {
   "model": "measurement.metric",
-  "pk": 14,
+  "pk": 13,
   "fields": {
-    "created_at": "2019-08-12T23:09:27.594Z",
-    "updated_at": "2019-08-12T23:09:27.594Z",
+    "created_at": "2019-08-14T23:57:47.051Z",
+    "updated_at": "2019-08-14T23:57:47.051Z",
     "user": 2,
     "name": "pow50Hz",
     "description": "Power at 50 Hertz.\n",
     "unit": "dB",
-    "datasource": 2
+    "url": ""
   }
 },
 {
   "model": "measurement.metric",
-  "pk": 15,
+  "pk": 14,
   "fields": {
-    "created_at": "2019-08-12T23:09:27.610Z",
-    "updated_at": "2019-08-12T23:09:27.610Z",
+    "created_at": "2019-08-14T23:57:47.059Z",
+    "updated_at": "2019-08-14T23:57:47.059Z",
     "user": 2,
     "name": "NoiseFloorAcc",
     "description": "Range the 2nd to 98th percentile of sorted acceleration amplitudes which approximates median envelope amplitude.\n",
     "unit": "cm/s^2",
-    "datasource": 2
+    "url": ""
   }
 },
 {
   "model": "measurement.metric",
-  "pk": 16,
+  "pk": 15,
   "fields": {
-    "created_at": "2019-08-12T23:09:27.621Z",
-    "updated_at": "2019-08-12T23:09:27.621Z",
+    "created_at": "2019-08-14T23:57:47.067Z",
+    "updated_at": "2019-08-14T23:57:47.067Z",
     "user": 2,
     "name": "NoiseFloorVel",
     "description": "Range of the 2nd to 98th percentile of sorted velocity amplitudes which approximates median envelope amplitude.\n",
     "unit": "cm/s",
-    "datasource": 2
+    "url": ""
   }
 },
 {
   "model": "measurement.metric",
-  "pk": 17,
+  "pk": 16,
   "fields": {
-    "created_at": "2019-08-12T23:09:27.630Z",
-    "updated_at": "2019-08-12T23:09:27.630Z",
+    "created_at": "2019-08-14T23:57:47.075Z",
+    "updated_at": "2019-08-14T23:57:47.075Z",
     "user": 2,
     "name": "rawrange",
     "description": "Range in counts.\n",
     "unit": "counts",
-    "datasource": 2
+    "url": ""
   }
 },
 {
   "model": "measurement.metric",
-  "pk": 18,
+  "pk": 17,
   "fields": {
-    "created_at": "2019-08-12T23:09:27.639Z",
-    "updated_at": "2019-08-12T23:09:27.639Z",
+    "created_at": "2019-08-14T23:57:47.083Z",
+    "updated_at": "2019-08-14T23:57:47.083Z",
     "user": 2,
     "name": "rawmean",
     "description": "Mean.\n",
     "unit": "counts",
-    "datasource": 2
+    "url": ""
   }
 },
 {
   "model": "measurement.metric",
-  "pk": 19,
+  "pk": 18,
   "fields": {
-    "created_at": "2019-08-12T23:09:27.654Z",
-    "updated_at": "2019-08-12T23:09:27.654Z",
+    "created_at": "2019-08-14T23:57:47.090Z",
+    "updated_at": "2019-08-14T23:57:47.090Z",
     "user": 2,
     "name": "rawmin",
     "description": "Minimum amplitude.\n",
     "unit": "counts",
-    "datasource": 2
+    "url": ""
   }
 },
 {
   "model": "measurement.metric",
-  "pk": 20,
+  "pk": 19,
   "fields": {
-    "created_at": "2019-08-12T23:09:27.663Z",
-    "updated_at": "2019-08-12T23:09:27.663Z",
+    "created_at": "2019-08-14T23:57:47.098Z",
+    "updated_at": "2019-08-14T23:57:47.098Z",
     "user": 2,
     "name": "rawmax",
     "description": "Maximum amplitude.\n",
     "unit": "counts",
-    "datasource": 2
+    "url": ""
   }
 },
 {
-  "model": "measurement.group",
+  "model": "dashboard.widget_type",
   "pk": 1,
   "fields": {
-    "created_at": "2019-08-12T23:09:27.785Z",
-    "updated_at": "2019-08-12T23:09:27.785Z",
-    "name": "snorepow",
+    "name": "Test widget",
     "description": "",
-    "is_public": false,
-    "user": 2
+    "created_at": "2019-08-14T23:58:02.512Z",
+    "updated_at": "2019-08-14T23:58:02.512Z",
+    "user": 1,
+    "type": "Tabular"
   }
 },
 {
-  "model": "measurement.group",
-  "pk": 2,
-  "fields": {
-    "created_at": "2019-08-12T23:09:27.856Z",
-    "updated_at": "2019-08-12T23:09:27.856Z",
-    "name": "rawfloor",
-    "description": "",
-    "is_public": false,
-    "user": 2
-  }
-},
-{
-  "model": "measurement.metricgroup",
+  "model": "dashboard.dashboard",
   "pk": 1,
   "fields": {
-    "created_at": "2019-08-12T23:09:27.798Z",
-    "updated_at": "2019-08-12T23:09:27.798Z",
-    "user": 2,
-    "group": 1,
-    "metric": 2
+    "name": "Test Dashboard uw",
+    "description": "",
+    "created_at": "2019-08-14T23:58:16.983Z",
+    "updated_at": "2019-08-14T23:58:16.983Z",
+    "user": 1,
+    "group": 1
   }
 },
 {
-  "model": "measurement.metricgroup",
+  "model": "dashboard.dashboard",
   "pk": 2,
   "fields": {
-    "created_at": "2019-08-12T23:09:27.803Z",
-    "updated_at": "2019-08-12T23:09:27.803Z",
-    "user": 2,
-    "group": 1,
-    "metric": 3
+    "name": "Test Dashboard uo",
+    "description": "",
+    "created_at": "2019-08-14T23:58:25.771Z",
+    "updated_at": "2019-08-14T23:58:25.771Z",
+    "user": 1,
+    "group": 2
   }
 },
 {
-  "model": "measurement.metricgroup",
-  "pk": 3,
+  "model": "dashboard.widget",
+  "pk": 1,
   "fields": {
-    "created_at": "2019-08-12T23:09:27.808Z",
-    "updated_at": "2019-08-12T23:09:27.808Z",
-    "user": 2,
-    "group": 1,
-    "metric": 4
+    "name": "Test widget",
+    "description": "",
+    "created_at": "2019-08-14T23:58:50.860Z",
+    "updated_at": "2019-08-14T23:58:50.860Z",
+    "user": 1,
+    "dashboard": 1,
+    "widget_type": 1,
+    "metrics": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19
+    ]
   }
 },
 {
-  "model": "measurement.metricgroup",
-  "pk": 4,
+  "model": "dashboard.widget",
+  "pk": 2,
   "fields": {
-    "created_at": "2019-08-12T23:09:27.813Z",
-    "updated_at": "2019-08-12T23:09:27.813Z",
-    "user": 2,
-    "group": 1,
-    "metric": 5
-  }
-},
-{
-  "model": "measurement.metricgroup",
-  "pk": 5,
-  "fields": {
-    "created_at": "2019-08-12T23:09:27.817Z",
-    "updated_at": "2019-08-12T23:09:27.817Z",
-    "user": 2,
-    "group": 1,
-    "metric": 6
-  }
-},
-{
-  "model": "measurement.metricgroup",
-  "pk": 6,
-  "fields": {
-    "created_at": "2019-08-12T23:09:27.822Z",
-    "updated_at": "2019-08-12T23:09:27.822Z",
-    "user": 2,
-    "group": 1,
-    "metric": 7
-  }
-},
-{
-  "model": "measurement.metricgroup",
-  "pk": 7,
-  "fields": {
-    "created_at": "2019-08-12T23:09:27.826Z",
-    "updated_at": "2019-08-12T23:09:27.826Z",
-    "user": 2,
-    "group": 1,
-    "metric": 8
-  }
-},
-{
-  "model": "measurement.metricgroup",
-  "pk": 8,
-  "fields": {
-    "created_at": "2019-08-12T23:09:27.830Z",
-    "updated_at": "2019-08-12T23:09:27.830Z",
-    "user": 2,
-    "group": 1,
-    "metric": 9
-  }
-},
-{
-  "model": "measurement.metricgroup",
-  "pk": 9,
-  "fields": {
-    "created_at": "2019-08-12T23:09:27.835Z",
-    "updated_at": "2019-08-12T23:09:27.835Z",
-    "user": 2,
-    "group": 1,
-    "metric": 10
-  }
-},
-{
-  "model": "measurement.metricgroup",
-  "pk": 10,
-  "fields": {
-    "created_at": "2019-08-12T23:09:27.839Z",
-    "updated_at": "2019-08-12T23:09:27.839Z",
-    "user": 2,
-    "group": 1,
-    "metric": 11
-  }
-},
-{
-  "model": "measurement.metricgroup",
-  "pk": 11,
-  "fields": {
-    "created_at": "2019-08-12T23:09:27.844Z",
-    "updated_at": "2019-08-12T23:09:27.844Z",
-    "user": 2,
-    "group": 1,
-    "metric": 12
-  }
-},
-{
-  "model": "measurement.metricgroup",
-  "pk": 12,
-  "fields": {
-    "created_at": "2019-08-12T23:09:27.848Z",
-    "updated_at": "2019-08-12T23:09:27.848Z",
-    "user": 2,
-    "group": 1,
-    "metric": 13
-  }
-},
-{
-  "model": "measurement.metricgroup",
-  "pk": 13,
-  "fields": {
-    "created_at": "2019-08-12T23:09:27.853Z",
-    "updated_at": "2019-08-12T23:09:27.853Z",
-    "user": 2,
-    "group": 1,
-    "metric": 14
-  }
-},
-{
-  "model": "measurement.metricgroup",
-  "pk": 14,
-  "fields": {
-    "created_at": "2019-08-12T23:09:27.860Z",
-    "updated_at": "2019-08-12T23:09:27.861Z",
-    "user": 2,
-    "group": 2,
-    "metric": 15
-  }
-},
-{
-  "model": "measurement.metricgroup",
-  "pk": 15,
-  "fields": {
-    "created_at": "2019-08-12T23:09:27.865Z",
-    "updated_at": "2019-08-12T23:09:27.865Z",
-    "user": 2,
-    "group": 2,
-    "metric": 16
-  }
-},
-{
-  "model": "measurement.metricgroup",
-  "pk": 16,
-  "fields": {
-    "created_at": "2019-08-12T23:09:27.869Z",
-    "updated_at": "2019-08-12T23:09:27.869Z",
-    "user": 2,
-    "group": 2,
-    "metric": 17
-  }
-},
-{
-  "model": "measurement.metricgroup",
-  "pk": 17,
-  "fields": {
-    "created_at": "2019-08-12T23:09:27.874Z",
-    "updated_at": "2019-08-12T23:09:27.874Z",
-    "user": 2,
-    "group": 2,
-    "metric": 18
-  }
-},
-{
-  "model": "measurement.metricgroup",
-  "pk": 18,
-  "fields": {
-    "created_at": "2019-08-12T23:09:27.878Z",
-    "updated_at": "2019-08-12T23:09:27.878Z",
-    "user": 2,
-    "group": 2,
-    "metric": 19
-  }
-},
-{
-  "model": "measurement.metricgroup",
-  "pk": 19,
-  "fields": {
-    "created_at": "2019-08-12T23:09:27.882Z",
-    "updated_at": "2019-08-12T23:09:27.882Z",
-    "user": 2,
-    "group": 2,
-    "metric": 20
+    "name": "Test widget 2",
+    "description": "",
+    "created_at": "2019-08-14T23:59:04.915Z",
+    "updated_at": "2019-08-14T23:59:04.915Z",
+    "user": 1,
+    "dashboard": 2,
+    "widget_type": 1,
+    "metrics": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      11,
+      13,
+      14
+    ]
   }
 }
 ]
