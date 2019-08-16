@@ -231,15 +231,45 @@ class PrivateNslcAPITests(TestCase):
 
     def test_full_update_group(self):
         group = Group.objects.get(name='UW-All')
+        chan_list = []
+        chan_id_list = []
+        for i in range(5):
+            chan_list.append(
+                Channel.objects.create(
+                    code=f'TC{i}', name=f"TC{i}", loc="--", station=self.sta,
+                    lat=45, lon=-122, elev=100.0, user=self.user
+                )
+            )
+            chan_id_list.append(chan_list[i].id)
+
         payload = {
             'name': 'UW-All-full-update',
+            'channels': chan_id_list
         }
         url = reverse('nslc:group-detail', args=[group.id])
         self.client.put(url, payload)
         group.refresh_from_db()
         self.assertEqual(group.name, payload['name'])
         channels = group.channels.all()
-        self.assertEqual(len(channels), 0)
+        self.assertEqual(len(channels), 5)
+        for channel in chan_list:
+            self.assertIn(channel, channels)
+
+        new_chan_list = []
+        for i in range(5):
+            new_chan_list.append(
+                Channel.objects.create(
+                    code=f'TC{i+5}', name=f"TC{i+5}", loc="--",
+                    station=self.sta, lat=45, lon=-122, elev=100.0,
+                    user=self.user
+                )
+            )
+
+        group.channels.set(new_chan_list)
+        new_channels = group.channels.all()
+        self.assertEqual(len(new_channels), 5)
+        for channel in new_chan_list:
+            self.assertIn(channel, new_channels)
 
     # def test_create_channelgroup(self):
     #     '''Test a channel group can be created'''
