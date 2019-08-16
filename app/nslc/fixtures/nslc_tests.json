@@ -116,7 +116,7 @@
   "pk": 15,
   "fields": {
     "app_label": "dashboard",
-    "model": "widget_type"
+    "model": "widget"
   }
 },
 {
@@ -124,15 +124,7 @@
   "pk": 16,
   "fields": {
     "app_label": "dashboard",
-    "model": "widget"
-  }
-},
-{
-  "model": "sessions.session",
-  "pk": "rcr6hsaw5hhz2oa4qw80d1wt9w8xh1no",
-  "fields": {
-    "session_data": "YThkYjExZTFiNmEyMTViZjRiNjIwYmY4MGY4ZTQ0NzdmNDBhNDFhYjp7Il9hdXRoX3VzZXJfaWQiOiIxIiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoiZGphbmdvLmNvbnRyaWIuYXV0aC5iYWNrZW5kcy5Nb2RlbEJhY2tlbmQiLCJfYXV0aF91c2VyX2hhc2giOiI0YzYzYjA1MmUzYWI0NTM2ZmYwZWIyZDBhOTk3YmFmZWJkZWZiOTFkIn0=",
-    "expire_date": "2019-08-28T23:56:54.916Z"
+    "model": "widgettype"
   }
 },
 {
@@ -643,94 +635,79 @@
   "model": "auth.permission",
   "pk": 57,
   "fields": {
-    "name": "Can add widget_ type",
+    "name": "Can add widget",
     "content_type": 15,
-    "codename": "add_widget_type"
+    "codename": "add_widget"
   }
 },
 {
   "model": "auth.permission",
   "pk": 58,
   "fields": {
-    "name": "Can change widget_ type",
+    "name": "Can change widget",
     "content_type": 15,
-    "codename": "change_widget_type"
+    "codename": "change_widget"
   }
 },
 {
   "model": "auth.permission",
   "pk": 59,
   "fields": {
-    "name": "Can delete widget_ type",
+    "name": "Can delete widget",
     "content_type": 15,
-    "codename": "delete_widget_type"
+    "codename": "delete_widget"
   }
 },
 {
   "model": "auth.permission",
   "pk": 60,
   "fields": {
-    "name": "Can view widget_ type",
+    "name": "Can view widget",
     "content_type": 15,
-    "codename": "view_widget_type"
+    "codename": "view_widget"
   }
 },
 {
   "model": "auth.permission",
   "pk": 61,
   "fields": {
-    "name": "Can add widget",
+    "name": "Can add widget type",
     "content_type": 16,
-    "codename": "add_widget"
+    "codename": "add_widgettype"
   }
 },
 {
   "model": "auth.permission",
   "pk": 62,
   "fields": {
-    "name": "Can change widget",
+    "name": "Can change widget type",
     "content_type": 16,
-    "codename": "change_widget"
+    "codename": "change_widgettype"
   }
 },
 {
   "model": "auth.permission",
   "pk": 63,
   "fields": {
-    "name": "Can delete widget",
+    "name": "Can delete widget type",
     "content_type": 16,
-    "codename": "delete_widget"
+    "codename": "delete_widgettype"
   }
 },
 {
   "model": "auth.permission",
   "pk": 64,
   "fields": {
-    "name": "Can view widget",
+    "name": "Can view widget type",
     "content_type": 16,
-    "codename": "view_widget"
+    "codename": "view_widgettype"
   }
 },
 {
   "model": "core.user",
   "pk": 1,
   "fields": {
-    "password": "pbkdf2_sha256$150000$hFiCOQSOEfHJ$eRHYJwEALs7YOfWbSXweyi/xn5XOHnWB2q0aiLIXS3E=",
-    "last_login": "2019-08-14T23:56:54.911Z",
-    "is_superuser": true,
-    "email": "jt.clayton92@yahoo.com",
-    "name": "",
-    "is_active": true,
-    "is_staff": true,
-    "groups": [],
-    "user_permissions": []
-  }
-},
-{
-  "model": "core.user",
-  "pk": 2,
-  "fields": {
-    "password": "pbkdf2_sha256$150000$zIvyOw0G2PYY$nvbSdsLINV1qiN9DQwAbHi5BAKm4W3U9fcgdf8Ap1n8=",
+    "password": "pbkdf2_sha256$150000$IUGE9aXL34Nv$l7UY3gwXrppOK8/nmurBOFcTbUuptHh723Y728AC/W0=",
     "last_login": null,
     "is_superuser": false,
     "email": "loader@pnsn.org",
@@ -747,9 +724,9 @@
   "fields": {
     "name": "United States",
     "description": null,
-    "created_at": "2019-08-14T23:57:38.162Z",
-    "updated_at": "2019-08-14T23:57:38.162Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:22.191Z",
+    "updated_at": "2019-08-16T16:14:22.191Z",
+    "user": 1,
     "code": "us"
   }
 },
@@ -759,9 +736,9 @@
   "fields": {
     "name": "Leo Brady",
     "description": null,
-    "created_at": "2019-08-14T23:57:38.168Z",
-    "updated_at": "2019-08-14T23:57:38.168Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:22.197Z",
+    "updated_at": "2019-08-16T16:14:22.197Z",
+    "user": 1,
     "code": "lb"
   }
 },
@@ -771,9 +748,9 @@
   "fields": {
     "name": "University of Washington",
     "description": null,
-    "created_at": "2019-08-14T23:57:38.174Z",
-    "updated_at": "2019-08-14T23:57:38.174Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:22.202Z",
+    "updated_at": "2019-08-16T16:14:22.202Z",
+    "user": 1,
     "code": "uw"
   }
 },
@@ -783,9 +760,9 @@
   "fields": {
     "name": "Neptune Canada",
     "description": null,
-    "created_at": "2019-08-14T23:57:38.179Z",
-    "updated_at": "2019-08-14T23:57:38.179Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:22.208Z",
+    "updated_at": "2019-08-16T16:14:22.208Z",
+    "user": 1,
     "code": "nv"
   }
 },
@@ -795,9 +772,9 @@
   "fields": {
     "name": "Global Seismic",
     "description": null,
-    "created_at": "2019-08-14T23:57:38.192Z",
-    "updated_at": "2019-08-14T23:57:38.192Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:22.213Z",
+    "updated_at": "2019-08-16T16:14:22.213Z",
+    "user": 1,
     "code": "iu"
   }
 },
@@ -807,9 +784,9 @@
   "fields": {
     "name": "Northern California",
     "description": null,
-    "created_at": "2019-08-14T23:57:38.199Z",
-    "updated_at": "2019-08-14T23:57:38.199Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:22.219Z",
+    "updated_at": "2019-08-16T16:14:22.219Z",
+    "user": 1,
     "code": "nc"
   }
 },
@@ -819,9 +796,9 @@
   "fields": {
     "name": "Ocean Observatory",
     "description": null,
-    "created_at": "2019-08-14T23:57:38.206Z",
-    "updated_at": "2019-08-14T23:57:38.206Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:22.225Z",
+    "updated_at": "2019-08-16T16:14:22.225Z",
+    "user": 1,
     "code": "oo"
   }
 },
@@ -831,9 +808,9 @@
   "fields": {
     "name": "Nevada",
     "description": null,
-    "created_at": "2019-08-14T23:57:38.213Z",
-    "updated_at": "2019-08-14T23:57:38.213Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:22.232Z",
+    "updated_at": "2019-08-16T16:14:22.233Z",
+    "user": 1,
     "code": "nn"
   }
 },
@@ -843,9 +820,9 @@
   "fields": {
     "name": "Southern California",
     "description": null,
-    "created_at": "2019-08-14T23:57:38.220Z",
-    "updated_at": "2019-08-14T23:57:38.220Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:22.240Z",
+    "updated_at": "2019-08-16T16:14:22.240Z",
+    "user": 1,
     "code": "ci"
   }
 },
@@ -855,9 +832,9 @@
   "fields": {
     "name": "Montana",
     "description": null,
-    "created_at": "2019-08-14T23:57:38.227Z",
-    "updated_at": "2019-08-14T23:57:38.227Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:22.247Z",
+    "updated_at": "2019-08-16T16:14:22.247Z",
+    "user": 1,
     "code": "mb"
   }
 },
@@ -867,9 +844,9 @@
   "fields": {
     "name": "Canada",
     "description": null,
-    "created_at": "2019-08-14T23:57:38.235Z",
-    "updated_at": "2019-08-14T23:57:38.235Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:22.254Z",
+    "updated_at": "2019-08-16T16:14:22.254Z",
+    "user": 1,
     "code": "cn"
   }
 },
@@ -879,9 +856,9 @@
   "fields": {
     "name": "Berkley",
     "description": null,
-    "created_at": "2019-08-14T23:57:38.243Z",
-    "updated_at": "2019-08-14T23:57:38.243Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:22.261Z",
+    "updated_at": "2019-08-16T16:14:22.261Z",
+    "user": 1,
     "code": "bk"
   }
 },
@@ -891,9 +868,9 @@
   "fields": {
     "name": "Strong Motion Network",
     "description": null,
-    "created_at": "2019-08-14T23:57:38.249Z",
-    "updated_at": "2019-08-14T23:57:38.250Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:22.268Z",
+    "updated_at": "2019-08-16T16:14:22.268Z",
+    "user": 1,
     "code": "np"
   }
 },
@@ -903,9 +880,9 @@
   "fields": {
     "name": "Transportable Array",
     "description": null,
-    "created_at": "2019-08-14T23:57:38.257Z",
-    "updated_at": "2019-08-14T23:57:38.257Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:22.275Z",
+    "updated_at": "2019-08-16T16:14:22.275Z",
+    "user": 1,
     "code": "ta"
   }
 },
@@ -915,9 +892,9 @@
   "fields": {
     "name": "Cascade Volcanic Observatory",
     "description": null,
-    "created_at": "2019-08-14T23:57:38.264Z",
-    "updated_at": "2019-08-14T23:57:38.264Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:22.282Z",
+    "updated_at": "2019-08-16T16:14:22.282Z",
+    "user": 1,
     "code": "cc"
   }
 },
@@ -927,9 +904,9 @@
   "fields": {
     "name": "Plate Boundary Observatory",
     "description": null,
-    "created_at": "2019-08-14T23:57:38.271Z",
-    "updated_at": "2019-08-14T23:57:38.271Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:22.289Z",
+    "updated_at": "2019-08-16T16:14:22.289Z",
+    "user": 1,
     "code": "pb"
   }
 },
@@ -939,9 +916,9 @@
   "fields": {
     "name": "University of Oregon",
     "description": null,
-    "created_at": "2019-08-14T23:57:38.277Z",
-    "updated_at": "2019-08-14T23:57:38.277Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:22.297Z",
+    "updated_at": "2019-08-16T16:14:22.297Z",
+    "user": 1,
     "code": "uo"
   }
 },
@@ -951,9 +928,9 @@
   "fields": {
     "name": "Hanford",
     "description": null,
-    "created_at": "2019-08-14T23:57:38.285Z",
-    "updated_at": "2019-08-14T23:57:38.285Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:22.303Z",
+    "updated_at": "2019-08-16T16:14:22.303Z",
+    "user": 1,
     "code": "hw"
   }
 },
@@ -963,9 +940,9 @@
   "fields": {
     "name": "Nicolai Mt., Oregon",
     "description": null,
-    "created_at": "2019-08-14T23:57:38.297Z",
-    "updated_at": "2019-08-14T23:57:38.297Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:22.316Z",
+    "updated_at": "2019-08-16T16:14:22.316Z",
+    "user": 1,
     "code": "nlo",
     "network": 3
   }
@@ -976,9 +953,9 @@
   "fields": {
     "name": "Goldendale Observatory, WA, USA",
     "description": null,
-    "created_at": "2019-08-14T23:57:38.314Z",
-    "updated_at": "2019-08-14T23:57:38.314Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:22.331Z",
+    "updated_at": "2019-08-16T16:14:22.331Z",
+    "user": 1,
     "code": "gldo",
     "network": 3
   }
@@ -989,9 +966,9 @@
   "fields": {
     "name": "Elkon Grade School Bus Garage, Elkton, OR, USA",
     "description": null,
-    "created_at": "2019-08-14T23:57:38.360Z",
-    "updated_at": "2019-08-14T23:57:38.360Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:22.377Z",
+    "updated_at": "2019-08-16T16:14:22.377Z",
+    "user": 1,
     "code": "eton",
     "network": 17
   }
@@ -1002,9 +979,9 @@
   "fields": {
     "name": "Kings Valley Charter School, Philomath, OR, USA",
     "description": null,
-    "created_at": "2019-08-14T23:57:38.398Z",
-    "updated_at": "2019-08-14T23:57:38.398Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:22.420Z",
+    "updated_at": "2019-08-16T16:14:22.420Z",
+    "user": 1,
     "code": "kvcs",
     "network": 17
   }
@@ -1015,9 +992,9 @@
   "fields": {
     "name": "EHZ",
     "description": null,
-    "created_at": "2019-08-14T23:57:38.306Z",
-    "updated_at": "2019-08-14T23:57:38.306Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:22.325Z",
+    "updated_at": "2019-08-16T16:14:22.325Z",
+    "user": 1,
     "code": "ehz",
     "sample_rate": -1.0,
     "loc": "--",
@@ -1033,9 +1010,9 @@
   "fields": {
     "name": "ENZ",
     "description": null,
-    "created_at": "2019-08-14T23:57:38.320Z",
-    "updated_at": "2019-08-14T23:57:38.320Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:22.336Z",
+    "updated_at": "2019-08-16T16:14:22.336Z",
+    "user": 1,
     "code": "enz",
     "sample_rate": -1.0,
     "loc": "--",
@@ -1051,9 +1028,9 @@
   "fields": {
     "name": "EHZ",
     "description": null,
-    "created_at": "2019-08-14T23:57:38.331Z",
-    "updated_at": "2019-08-14T23:57:38.331Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:22.343Z",
+    "updated_at": "2019-08-16T16:14:22.343Z",
+    "user": 1,
     "code": "ehz",
     "sample_rate": -1.0,
     "loc": "--",
@@ -1069,9 +1046,9 @@
   "fields": {
     "name": "ENE",
     "description": null,
-    "created_at": "2019-08-14T23:57:38.341Z",
-    "updated_at": "2019-08-14T23:57:38.341Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:22.357Z",
+    "updated_at": "2019-08-16T16:14:22.357Z",
+    "user": 1,
     "code": "ene",
     "sample_rate": -1.0,
     "loc": "--",
@@ -1087,9 +1064,9 @@
   "fields": {
     "name": "ENN",
     "description": null,
-    "created_at": "2019-08-14T23:57:38.351Z",
-    "updated_at": "2019-08-14T23:57:38.351Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:22.370Z",
+    "updated_at": "2019-08-16T16:14:22.370Z",
+    "user": 1,
     "code": "enn",
     "sample_rate": -1.0,
     "loc": "--",
@@ -1105,9 +1082,9 @@
   "fields": {
     "name": "HNE",
     "description": null,
-    "created_at": "2019-08-14T23:57:38.368Z",
-    "updated_at": "2019-08-14T23:57:38.368Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:22.389Z",
+    "updated_at": "2019-08-16T16:14:22.389Z",
+    "user": 1,
     "code": "hne",
     "sample_rate": -1.0,
     "loc": "--",
@@ -1123,9 +1100,9 @@
   "fields": {
     "name": "HNN",
     "description": null,
-    "created_at": "2019-08-14T23:57:38.380Z",
-    "updated_at": "2019-08-14T23:57:38.380Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:22.401Z",
+    "updated_at": "2019-08-16T16:14:22.401Z",
+    "user": 1,
     "code": "hnn",
     "sample_rate": -1.0,
     "loc": "--",
@@ -1141,9 +1118,9 @@
   "fields": {
     "name": "HNZ",
     "description": null,
-    "created_at": "2019-08-14T23:57:38.390Z",
-    "updated_at": "2019-08-14T23:57:38.391Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:22.411Z",
+    "updated_at": "2019-08-16T16:14:22.411Z",
+    "user": 1,
     "code": "hnz",
     "sample_rate": -1.0,
     "loc": "--",
@@ -1159,9 +1136,9 @@
   "fields": {
     "name": "HNE",
     "description": null,
-    "created_at": "2019-08-14T23:57:38.405Z",
-    "updated_at": "2019-08-14T23:57:38.405Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:22.427Z",
+    "updated_at": "2019-08-16T16:14:22.427Z",
+    "user": 1,
     "code": "hne",
     "sample_rate": -1.0,
     "loc": "--",
@@ -1177,9 +1154,9 @@
   "fields": {
     "name": "HNN",
     "description": null,
-    "created_at": "2019-08-14T23:57:38.417Z",
-    "updated_at": "2019-08-14T23:57:38.417Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:22.439Z",
+    "updated_at": "2019-08-16T16:14:22.439Z",
+    "user": 1,
     "code": "hnn",
     "sample_rate": -1.0,
     "loc": "--",
@@ -1193,12 +1170,12 @@
   "model": "nslc.group",
   "pk": 1,
   "fields": {
-    "user": 2,
+    "user": 1,
     "name": "UW-All",
     "description": "All UW stations",
     "is_public": false,
-    "created_at": "2019-08-14T23:57:38.422Z",
-    "updated_at": "2019-08-14T23:57:38.422Z",
+    "created_at": "2019-08-16T16:14:22.443Z",
+    "updated_at": "2019-08-16T16:14:22.443Z",
     "channels": [
       1,
       2,
@@ -1212,12 +1189,12 @@
   "model": "nslc.group",
   "pk": 2,
   "fields": {
-    "user": 2,
+    "user": 1,
     "name": "UO-All",
     "description": "All UO stations",
     "is_public": false,
-    "created_at": "2019-08-14T23:57:38.426Z",
-    "updated_at": "2019-08-14T23:57:38.426Z",
+    "created_at": "2019-08-16T16:14:22.448Z",
+    "updated_at": "2019-08-16T16:14:22.448Z",
     "channels": [
       6,
       7,
@@ -1231,9 +1208,9 @@
   "model": "measurement.metric",
   "pk": 1,
   "fields": {
-    "created_at": "2019-08-14T23:57:46.932Z",
-    "updated_at": "2019-08-14T23:57:46.932Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:30.962Z",
+    "updated_at": "2019-08-16T16:14:30.962Z",
+    "user": 1,
     "name": "snr10_0p01cm",
     "description": "Number of spikes with SNR > 10 and amplitude exceeding 0.01 cm/s^2 using filterd acceleration data.\n",
     "unit": "integer",
@@ -1244,9 +1221,9 @@
   "model": "measurement.metric",
   "pk": 2,
   "fields": {
-    "created_at": "2019-08-14T23:57:46.944Z",
-    "updated_at": "2019-08-14T23:57:46.944Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:30.974Z",
+    "updated_at": "2019-08-16T16:14:30.974Z",
+    "user": 1,
     "name": "snr20_0p05cm",
     "description": "Number of spikes with SNR > 20 and amplitude exceeding 0.05 cm/s^2 using filterd acceleration data.\n",
     "unit": "integer",
@@ -1257,9 +1234,9 @@
   "model": "measurement.metric",
   "pk": 3,
   "fields": {
-    "created_at": "2019-08-14T23:57:46.962Z",
-    "updated_at": "2019-08-14T23:57:46.962Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:30.982Z",
+    "updated_at": "2019-08-16T16:14:30.982Z",
+    "user": 1,
     "name": "snr20_0p17cm",
     "description": "Number of spikes with SNR > 20 and amplitude exceeding 0.17 cm/s^2 using filterd acceleration data (ShakeAlert station acceptance threshold using filter of 0.3 - 15Hz).\n",
     "unit": "integer",
@@ -1270,9 +1247,9 @@
   "model": "measurement.metric",
   "pk": 4,
   "fields": {
-    "created_at": "2019-08-14T23:57:46.973Z",
-    "updated_at": "2019-08-14T23:57:46.973Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:30.991Z",
+    "updated_at": "2019-08-16T16:14:30.991Z",
+    "user": 1,
     "name": "snr20_1cm",
     "description": "Number of spikes with SNR > 20 and amplitude exceeding 1 cm/s^2 using filterd acceleration data.\n",
     "unit": "integer",
@@ -1283,9 +1260,9 @@
   "model": "measurement.metric",
   "pk": 5,
   "fields": {
-    "created_at": "2019-08-14T23:57:46.983Z",
-    "updated_at": "2019-08-14T23:57:46.983Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:31.001Z",
+    "updated_at": "2019-08-16T16:14:31.001Z",
+    "user": 1,
     "name": "snr20_3cm",
     "description": "Number of spikes with SNR > 20 and amplitude exceeding 3 cm/s^2 using filterd acceleration data.\n",
     "unit": "integer",
@@ -1296,9 +1273,9 @@
   "model": "measurement.metric",
   "pk": 6,
   "fields": {
-    "created_at": "2019-08-14T23:57:46.992Z",
-    "updated_at": "2019-08-14T23:57:46.992Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:31.018Z",
+    "updated_at": "2019-08-16T16:14:31.018Z",
+    "user": 1,
     "name": "snr20_5cm",
     "description": "Number of spikes with SNR > 20 and amplitude exceeding 5 cm/s^2 using filterd acceleration data.\n",
     "unit": "integer",
@@ -1309,9 +1286,9 @@
   "model": "measurement.metric",
   "pk": 7,
   "fields": {
-    "created_at": "2019-08-14T23:57:47.002Z",
-    "updated_at": "2019-08-14T23:57:47.002Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:31.029Z",
+    "updated_at": "2019-08-16T16:14:31.029Z",
+    "user": 1,
     "name": "pow50sec",
     "description": "Power at 50 seconds.\n",
     "unit": "dB",
@@ -1322,9 +1299,9 @@
   "model": "measurement.metric",
   "pk": 8,
   "fields": {
-    "created_at": "2019-08-14T23:57:47.012Z",
-    "updated_at": "2019-08-14T23:57:47.012Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:31.039Z",
+    "updated_at": "2019-08-16T16:14:31.039Z",
+    "user": 1,
     "name": "pow12sec",
     "description": "Power at 12 seconds.\n",
     "unit": "dB",
@@ -1335,9 +1312,9 @@
   "model": "measurement.metric",
   "pk": 9,
   "fields": {
-    "created_at": "2019-08-14T23:57:47.020Z",
-    "updated_at": "2019-08-14T23:57:47.020Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:31.048Z",
+    "updated_at": "2019-08-16T16:14:31.048Z",
+    "user": 1,
     "name": "pow1Hz",
     "description": "Power at 1 Hertz.\n",
     "unit": "dB",
@@ -1348,9 +1325,9 @@
   "model": "measurement.metric",
   "pk": 10,
   "fields": {
-    "created_at": "2019-08-14T23:57:47.028Z",
-    "updated_at": "2019-08-14T23:57:47.028Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:31.057Z",
+    "updated_at": "2019-08-16T16:14:31.057Z",
+    "user": 1,
     "name": "pow5Hz",
     "description": "Power at 5 Hertz.\n",
     "unit": "dB",
@@ -1361,9 +1338,9 @@
   "model": "measurement.metric",
   "pk": 11,
   "fields": {
-    "created_at": "2019-08-14T23:57:47.036Z",
-    "updated_at": "2019-08-14T23:57:47.036Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:31.067Z",
+    "updated_at": "2019-08-16T16:14:31.067Z",
+    "user": 1,
     "name": "pow10Hz",
     "description": "Power at 10 Hertz.\n",
     "unit": "dB",
@@ -1374,9 +1351,9 @@
   "model": "measurement.metric",
   "pk": 12,
   "fields": {
-    "created_at": "2019-08-14T23:57:47.044Z",
-    "updated_at": "2019-08-14T23:57:47.044Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:31.078Z",
+    "updated_at": "2019-08-16T16:14:31.078Z",
+    "user": 1,
     "name": "pow20Hz",
     "description": "Power at 20 Hertz.\n",
     "unit": "dB",
@@ -1387,9 +1364,9 @@
   "model": "measurement.metric",
   "pk": 13,
   "fields": {
-    "created_at": "2019-08-14T23:57:47.051Z",
-    "updated_at": "2019-08-14T23:57:47.051Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:31.087Z",
+    "updated_at": "2019-08-16T16:14:31.087Z",
+    "user": 1,
     "name": "pow50Hz",
     "description": "Power at 50 Hertz.\n",
     "unit": "dB",
@@ -1400,9 +1377,9 @@
   "model": "measurement.metric",
   "pk": 14,
   "fields": {
-    "created_at": "2019-08-14T23:57:47.059Z",
-    "updated_at": "2019-08-14T23:57:47.059Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:31.097Z",
+    "updated_at": "2019-08-16T16:14:31.097Z",
+    "user": 1,
     "name": "NoiseFloorAcc",
     "description": "Range the 2nd to 98th percentile of sorted acceleration amplitudes which approximates median envelope amplitude.\n",
     "unit": "cm/s^2",
@@ -1413,9 +1390,9 @@
   "model": "measurement.metric",
   "pk": 15,
   "fields": {
-    "created_at": "2019-08-14T23:57:47.067Z",
-    "updated_at": "2019-08-14T23:57:47.067Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:31.107Z",
+    "updated_at": "2019-08-16T16:14:31.107Z",
+    "user": 1,
     "name": "NoiseFloorVel",
     "description": "Range of the 2nd to 98th percentile of sorted velocity amplitudes which approximates median envelope amplitude.\n",
     "unit": "cm/s",
@@ -1426,9 +1403,9 @@
   "model": "measurement.metric",
   "pk": 16,
   "fields": {
-    "created_at": "2019-08-14T23:57:47.075Z",
-    "updated_at": "2019-08-14T23:57:47.075Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:31.116Z",
+    "updated_at": "2019-08-16T16:14:31.116Z",
+    "user": 1,
     "name": "rawrange",
     "description": "Range in counts.\n",
     "unit": "counts",
@@ -1439,9 +1416,9 @@
   "model": "measurement.metric",
   "pk": 17,
   "fields": {
-    "created_at": "2019-08-14T23:57:47.083Z",
-    "updated_at": "2019-08-14T23:57:47.083Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:31.125Z",
+    "updated_at": "2019-08-16T16:14:31.125Z",
+    "user": 1,
     "name": "rawmean",
     "description": "Mean.\n",
     "unit": "counts",
@@ -1452,9 +1429,9 @@
   "model": "measurement.metric",
   "pk": 18,
   "fields": {
-    "created_at": "2019-08-14T23:57:47.090Z",
-    "updated_at": "2019-08-14T23:57:47.090Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:31.135Z",
+    "updated_at": "2019-08-16T16:14:31.135Z",
+    "user": 1,
     "name": "rawmin",
     "description": "Minimum amplitude.\n",
     "unit": "counts",
@@ -1465,106 +1442,13 @@
   "model": "measurement.metric",
   "pk": 19,
   "fields": {
-    "created_at": "2019-08-14T23:57:47.098Z",
-    "updated_at": "2019-08-14T23:57:47.098Z",
-    "user": 2,
+    "created_at": "2019-08-16T16:14:31.144Z",
+    "updated_at": "2019-08-16T16:14:31.144Z",
+    "user": 1,
     "name": "rawmax",
     "description": "Maximum amplitude.\n",
     "unit": "counts",
     "url": ""
-  }
-},
-{
-  "model": "dashboard.widget_type",
-  "pk": 1,
-  "fields": {
-    "name": "Test widget",
-    "description": "",
-    "created_at": "2019-08-14T23:58:02.512Z",
-    "updated_at": "2019-08-14T23:58:02.512Z",
-    "user": 1,
-    "type": "Tabular"
-  }
-},
-{
-  "model": "dashboard.dashboard",
-  "pk": 1,
-  "fields": {
-    "name": "Test Dashboard uw",
-    "description": "",
-    "created_at": "2019-08-14T23:58:16.983Z",
-    "updated_at": "2019-08-14T23:58:16.983Z",
-    "user": 1,
-    "group": 1
-  }
-},
-{
-  "model": "dashboard.dashboard",
-  "pk": 2,
-  "fields": {
-    "name": "Test Dashboard uo",
-    "description": "",
-    "created_at": "2019-08-14T23:58:25.771Z",
-    "updated_at": "2019-08-14T23:58:25.771Z",
-    "user": 1,
-    "group": 2
-  }
-},
-{
-  "model": "dashboard.widget",
-  "pk": 1,
-  "fields": {
-    "name": "Test widget",
-    "description": "",
-    "created_at": "2019-08-14T23:58:50.860Z",
-    "updated_at": "2019-08-14T23:58:50.860Z",
-    "user": 1,
-    "dashboard": 1,
-    "widget_type": 1,
-    "metrics": [
-      1,
-      2,
-      3,
-      4,
-      5,
-      6,
-      7,
-      8,
-      9,
-      10,
-      11,
-      12,
-      13,
-      14,
-      15,
-      16,
-      17,
-      18,
-      19
-    ]
-  }
-},
-{
-  "model": "dashboard.widget",
-  "pk": 2,
-  "fields": {
-    "name": "Test widget 2",
-    "description": "",
-    "created_at": "2019-08-14T23:59:04.915Z",
-    "updated_at": "2019-08-14T23:59:04.915Z",
-    "user": 1,
-    "dashboard": 2,
-    "widget_type": 1,
-    "metrics": [
-      1,
-      2,
-      3,
-      4,
-      5,
-      11,
-      13,
-      14
-    ]
   }
 }
 ]

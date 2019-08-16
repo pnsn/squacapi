@@ -52,8 +52,8 @@ def main():
     csv_path = project_path + "/import/csv/"
 
     # For quick test uncomment next line and comment out following line
-    # measurements_csv = csv_path + "measurement_short.csv"
-    measurements_csv = csv_path + "measurement_all.csv"
+    measurements_csv = csv_path + "measurement_short.csv"
+    # measurements_csv = csv_path + "measurement_all.csv"
 
     measurementReader = csv.reader(
         open(measurements_csv), delimiter=',', quotechar='"'
