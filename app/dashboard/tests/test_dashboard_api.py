@@ -5,7 +5,7 @@ from django.utils import timezone
 
 from measurement.models import Metric
 from nslc.models import Network, Station, Channel, Group
-from dashboard.models import Dashboard, Widget, Widget_Type
+from dashboard.models import Dashboard, Widget, WidgetType
 
 from rest_framework.test import APIClient
 from rest_framework import status
@@ -68,7 +68,7 @@ class PublicMeasurementApiTests(TestCase):
             group=self.grp,
             user=self.user
         )
-        self.widtype = Widget_Type.objects.create(
+        self.widtype = WidgetType.objects.create(
             name='Test widget type',
             type='Some type',
             user=self.user
@@ -76,7 +76,7 @@ class PublicMeasurementApiTests(TestCase):
         self.widget = Widget.objects.create(
             name='Test widget',
             dashboard=self.dashboard,
-            widget_type=self.widtype,
+            widgettype=self.widtype,
             user=self.user
         )
         self.widget.metrics.add(self.metric)
@@ -112,7 +112,7 @@ class PublicMeasurementApiTests(TestCase):
 
     def test_widget_type_res_and_str(self):
         url = reverse(
-            'dashboard:widget_type-detail',
+            'dashboard:widgettype-detail',
             kwargs={'pk': self.widtype.id}
         )
         res = self.client.get(url)
@@ -232,7 +232,7 @@ class PrivateMeasurementAPITests(TestCase):
             group=self.grp,
             user=self.user
         )
-        self.widtype = Widget_Type.objects.create(
+        self.widtype = WidgetType.objects.create(
             name='Test widget type',
             type='Some type',
             user=self.user
@@ -265,11 +265,11 @@ class PrivateMeasurementAPITests(TestCase):
                 self.assertEqual(payload[key], getattr(dashboard, key))
 
     def test_create_widgettype(self):
-        url = reverse('dashboard:widget_type-list')
+        url = reverse('dashboard:widgettype-list')
         payload = {'name': "Test widget type", "type": "Type"}
         res = self.client.post(url, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-        widtype = Widget_Type.objects.get(id=res.data['id'])
+        widtype = WidgetType.objects.get(id=res.data['id'])
         for key in payload.keys():
             self.assertEqual(payload[key], getattr(widtype, key))
 
@@ -278,7 +278,7 @@ class PrivateMeasurementAPITests(TestCase):
         payload = {
             'name': 'Test widget',
             'dashboard': self.dashboard.id,
-            'widget_type': self.widtype.id,
+            'widgettype': self.widtype.id,
             'metrics': [self.metric.id]
         }
         res = self.client.post(url, payload)
@@ -287,8 +287,8 @@ class PrivateMeasurementAPITests(TestCase):
         for key in payload.keys():
             if key == 'dashboard':
                 self.assertEqual(payload[key], widget.dashboard.id)
-            elif key == 'widget_type':
-                self.assertEqual(payload[key], widget.widget_type.id)
+            elif key == 'widgettype':
+                self.assertEqual(payload[key], widget.widgettype.id)
             elif key == 'metrics':
                 metrics = widget.metrics.all()
                 self.assertIn(self.metric, metrics)

@@ -25,7 +25,7 @@ class DashboardBase(models.Model):
         return self.__class__.__name__.lower()
 
 
-class Widget_Type(DashboardBase):
+class WidgetType(DashboardBase):
     type = models.CharField(max_length=255)
 
 
@@ -44,8 +44,8 @@ class Widget(DashboardBase):
         on_delete=models.CASCADE,
         related_name='dashboards'
     )
-    widget_type = models.ForeignKey(
-        Widget_Type,
+    widgettype = models.ForeignKey(
+        WidgetType,
         on_delete=models.CASCADE,
         related_name='widgets',
     )
