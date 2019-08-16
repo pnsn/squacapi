@@ -20,8 +20,8 @@ def main():
     csv_path = project_path + "/import/csv/"
 
     # For quick test uncomment next line and comment out following line
-    # nslc_path = csv_path + "nslc_short.csv"
-    nslc_path = csv_path + "nslc.csv"
+    nslc_path = csv_path + "nslc_short.csv"
+    # nslc_path = csv_path + "nslc.csv"
     networks_path = csv_path + "networks.csv"
 
     nslcReader = csv.reader(open(nslc_path), delimiter=',', quotechar='"')
