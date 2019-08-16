@@ -103,6 +103,10 @@ class PublicNslcApiTests(TestCase):
 class PrivateNslcAPITests(TestCase):
     '''all authenticated tests go here'''
 
+    fixtures = ['nslc_tests.json']
+    # Fixtures load from the fixtures directory within /nslc
+    # Fixture for testing patch/put on group
+
     def setUp(self):
         self.client = APIClient()
         self.user = sample_user(email="test@pnsn.org", password="secret")
@@ -209,6 +213,33 @@ class PrivateNslcAPITests(TestCase):
                 self.assertIn(self.chan, channels)
             else:
                 self.assertEqual(payload[key], getattr(group, key))
+
+    def test_partial_update_group(self):
+        group = Group.objects.get(name='UW-All')
+        payload = {
+            'name': 'UW-All-partial-update',
+            'channels': [self.chan.id]
+        }
+        url = reverse('nslc:group-detail', args=[group.id])
+        self.client.patch(url, payload)
+        group.refresh_from_db()
+        self.assertEqual(group.name, payload['name'])
+        self.assertEqual(group.description, "All UW stations")
+        channels = group.channels.all()
+        self.assertEqual(len(channels), 1)
+        self.assertIn(self.chan, channels)
+
+    def test_full_update_group(self):
+        group = Group.objects.get(name='UW-All')
+        payload = {
+            'name': 'UW-All-full-update',
+        }
+        url = reverse('nslc:group-detail', args=[group.id])
+        self.client.put(url, payload)
+        group.refresh_from_db()
+        self.assertEqual(group.name, payload['name'])
+        channels = group.channels.all()
+        self.assertEqual(len(channels), 0)
 
     # def test_create_channelgroup(self):
     #     '''Test a channel group can be created'''
