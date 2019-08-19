@@ -1,9 +1,10 @@
-'''load station and networks from csv
+'''load measurements and metrics from csv
  run in docker-compose like:
     docker-compose run --rm app sh -c 'python import/load/load_measurement.py'
+    nslc must be loaded first
  use default arg with get_or_create to select on unique together keys
  deault keys are ignored on get, but used in create/save. Without using default
- on non unique columns IntegrityError might be thown
+ on non unique columns IntegrityError might be thrown
 INPUT CSV:
  measurements:
     metric_name,metric_description,metric_unit,ds_name,ds_description,net,sta,\
@@ -45,15 +46,16 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import get_user_model
 
 
-def main():
+def main(csv_length=0):
     from nslc.models import Channel
     from measurement.models import Metric, Measurement
 
     csv_path = project_path + "/import/csv/"
-
     # For quick test uncomment next line and comment out following line
-    measurements_csv = csv_path + "measurement_short.csv"
-    # measurements_csv = csv_path + "measurement_all.csv"
+    if csv_length == 0:
+        measurements_csv = csv_path + "measurement_short.csv"
+    else:
+        measurements_csv = csv_path + "measurement_all.csv"
 
     measurementReader = csv.reader(
         open(measurements_csv), delimiter=',', quotechar='"'

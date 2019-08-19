@@ -42,7 +42,7 @@ class Widget(DashboardBase):
     dashboard = models.ForeignKey(
         Dashboard,
         on_delete=models.CASCADE,
-        related_name='dashboards'
+        related_name='widgets'
     )
     widgettype = models.ForeignKey(
         WidgetType,

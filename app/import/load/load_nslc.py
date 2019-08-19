@@ -14,14 +14,16 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import get_user_model
 
 
-def main():
+def main(csv_length=0):
     from nslc.models import Network, Station, Channel, Group
 
     csv_path = project_path + "/import/csv/"
 
     # For quick test uncomment next line and comment out following line
-    nslc_path = csv_path + "nslc_short.csv"
-    # nslc_path = csv_path + "nslc.csv"
+    if csv_length == 0:
+        nslc_path = csv_path + "nslc_short.csv"
+    else:
+        nslc_path = csv_path + "nslc.csv"
     networks_path = csv_path + "networks.csv"
 
     nslcReader = csv.reader(open(nslc_path), delimiter=',', quotechar='"')
@@ -74,24 +76,16 @@ def main():
         )
 
     # Create groups to be linked to a channel group
-    uw = Group.objects.create(
-        name="UW-All",
-        description="All UW stations",
-        user=user
-    )
-    uo = Group.objects.create(
-        name="UO-All",
-        description="All UO stations",
-        user=user
-    )
-    # Create channel groups for relating group objects to respective channels
-    uw_all = Channel.objects.filter(station__network__code="uw")
-    uo_all = Channel.objects.filter(station__network__code="uo")
-    for c in uw_all:
-        uw.channels.add(c)
-
-    for c in uo_all:
-        uo.channels.add(c)
+    networks = Network.objects.all()
+    for n in networks:
+        group = Group.objects.create(
+            name=f"{n.code.upper()}-All",
+            description=f"All {n.code.upper()} stations",
+            user=user
+        )
+        n_channels = Channel.objects.filter(station__network__code=n.code)
+        for c in n_channels:
+            group.channels.add(c)
 
 
 # app is root directory where project lives
