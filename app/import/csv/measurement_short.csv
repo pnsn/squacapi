@@ -1,77 +1,129 @@
 metric_name,metric_description,metric_unit,ds_name,ds_description,net,sta,loc,chan,value,starttime,endtime,lat,lon,elev
 "snr10_0p01cm","Number of spikes with SNR > 10 and amplitude exceeding 0.01 cm/s^2 using filterd acceleration data.
-","integer","IRIS","IRIS DMC","BK","YBH  ","00","BHE","1","2018-02-01 00:00:00","2018-02-01 01:00:00","41.73204","-122.710388","1059.7"
+","integer","IRIS","IRIS DMC","UW","REED ","--","HNZ","4","2018-02-01 03:00:00","2018-02-01 04:00:00","43.701279","-124.107513","5"
 "snr20_0p05cm","Number of spikes with SNR > 20 and amplitude exceeding 0.05 cm/s^2 using filterd acceleration data.
-","integer","IRIS","IRIS DMC","BK","YBH  ","00","BHE","0","2018-02-01 00:00:00","2018-02-01 01:00:00","41.73204","-122.710388","1059.7"
+","integer","IRIS","IRIS DMC","UW","REED ","--","HNZ","2","2018-02-01 03:00:00","2018-02-01 04:00:00","43.701279","-124.107513","5"
 "snr20_0p17cm","Number of spikes with SNR > 20 and amplitude exceeding 0.17 cm/s^2 using filterd acceleration data (ShakeAlert station acceptance threshold using filter of 0.3 - 15Hz).
-","integer","IRIS","IRIS DMC","BK","YBH  ","00","BHE","0","2018-02-01 00:00:00","2018-02-01 01:00:00","41.73204","-122.710388","1059.7"
+","integer","IRIS","IRIS DMC","UW","REED ","--","HNZ","0","2018-02-01 03:00:00","2018-02-01 04:00:00","43.701279","-124.107513","5"
 "snr20_1cm","Number of spikes with SNR > 20 and amplitude exceeding 1 cm/s^2 using filterd acceleration data.
-","integer","IRIS","IRIS DMC","BK","YBH  ","00","BHE","0","2018-02-01 00:00:00","2018-02-01 01:00:00","41.73204","-122.710388","1059.7"
+","integer","IRIS","IRIS DMC","UW","REED ","--","HNZ","0","2018-02-01 03:00:00","2018-02-01 04:00:00","43.701279","-124.107513","5"
 "snr20_3cm","Number of spikes with SNR > 20 and amplitude exceeding 3 cm/s^2 using filterd acceleration data.
-","integer","IRIS","IRIS DMC","BK","YBH  ","00","BHE","0","2018-02-01 00:00:00","2018-02-01 01:00:00","41.73204","-122.710388","1059.7"
+","integer","IRIS","IRIS DMC","UW","REED ","--","HNZ","0","2018-02-01 03:00:00","2018-02-01 04:00:00","43.701279","-124.107513","5"
 "snr20_5cm","Number of spikes with SNR > 20 and amplitude exceeding 5 cm/s^2 using filterd acceleration data.
-","integer","IRIS","IRIS DMC","BK","YBH  ","00","BHE","0","2018-02-01 00:00:00","2018-02-01 01:00:00","41.73204","-122.710388","1059.7"
+","integer","IRIS","IRIS DMC","UW","REED ","--","HNZ","0","2018-02-01 03:00:00","2018-02-01 04:00:00","43.701279","-124.107513","5"
 "pow50sec","Power at 50 seconds.
-","dB","IRIS","IRIS DMC","BK","YBH  ","00","BHE","0","2018-02-01 00:00:00","2018-02-01 01:00:00","41.73204","-122.710388","1059.7"
+","dB","IRIS","IRIS DMC","UW","REED ","--","HNZ","-100.658","2018-02-01 03:00:00","2018-02-01 04:00:00","43.701279","-124.107513","5"
+"pow30sec","Power at 30 seconds.
+","dB","IRIS","IRIS DMC","UW","REED ","--","HNZ","-103.896","2018-02-01 03:00:00","2018-02-01 04:00:00","43.701279","-124.107513","5"
+"pow20sec","Power at 20 seconds.
+","dB","IRIS","IRIS DMC","UW","REED ","--","HNZ","-105.498","2018-02-01 03:00:00","2018-02-01 04:00:00","43.701279","-124.107513","5"
 "pow12sec","Power at 12 seconds.
-","dB","IRIS","IRIS DMC","BK","YBH  ","00","BHE","0","2018-02-01 00:00:00","2018-02-01 01:00:00","41.73204","-122.710388","1059.7"
+","dB","IRIS","IRIS DMC","UW","REED ","--","HNZ","-107.002","2018-02-01 03:00:00","2018-02-01 04:00:00","43.701279","-124.107513","5"
+"pow10sec","Power at 10 seconds.
+","dB","IRIS","IRIS DMC","UW","REED ","--","HNZ","-107.701","2018-02-01 03:00:00","2018-02-01 04:00:00","43.701279","-124.107513","5"
+"pow5sec","Power at 5 seconds.
+","dB","IRIS","IRIS DMC","UW","REED ","--","HNZ","-108.395","2018-02-01 03:00:00","2018-02-01 04:00:00","43.701279","-124.107513","5"
 "pow1Hz","Power at 1 Hertz.
-","dB","IRIS","IRIS DMC","BK","YBH  ","00","BHE","0","2018-02-01 00:00:00","2018-02-01 01:00:00","41.73204","-122.710388","1059.7"
+","dB","IRIS","IRIS DMC","UW","REED ","--","HNZ","-117.558","2018-02-01 03:00:00","2018-02-01 04:00:00","43.701279","-124.107513","5"
 "pow5Hz","Power at 5 Hertz.
-","dB","IRIS","IRIS DMC","BK","YBH  ","00","BHE","0","2018-02-01 00:00:00","2018-02-01 01:00:00","41.73204","-122.710388","1059.7"
+","dB","IRIS","IRIS DMC","UW","REED ","--","HNZ","-122.201","2018-02-01 03:00:00","2018-02-01 04:00:00","43.701279","-124.107513","5"
 "pow10Hz","Power at 10 Hertz.
-","dB","IRIS","IRIS DMC","BK","YBH  ","00","BHE","0","2018-02-01 00:00:00","2018-02-01 01:00:00","41.73204","-122.710388","1059.7"
+","dB","IRIS","IRIS DMC","UW","REED ","--","HNZ","-117.419","2018-02-01 03:00:00","2018-02-01 04:00:00","43.701279","-124.107513","5"
 "pow20Hz","Power at 20 Hertz.
-","dB","IRIS","IRIS DMC","BK","YBH  ","00","BHE","0","2018-02-01 00:00:00","2018-02-01 01:00:00","41.73204","-122.710388","1059.7"
+","dB","IRIS","IRIS DMC","UW","REED ","--","HNZ","-106.507","2018-02-01 03:00:00","2018-02-01 04:00:00","43.701279","-124.107513","5"
 "pow50Hz","Power at 50 Hertz.
-","dB","IRIS","IRIS DMC","BK","YBH  ","00","BHE","0","2018-02-01 00:00:00","2018-02-01 01:00:00","41.73204","-122.710388","1059.7"
+","dB","IRIS","IRIS DMC","UW","REED ","--","HNZ","-112.014","2018-02-01 03:00:00","2018-02-01 04:00:00","43.701279","-124.107513","5"
 "NoiseFloorAcc","Range the 2nd to 98th percentile of sorted acceleration amplitudes which approximates median envelope amplitude.
-","cm/s^2","IRIS","IRIS DMC","BK","YBH  ","00","BHE","1.15937330216e-05","2018-02-01 00:00:00","2018-02-01 01:00:00","41.73204","-122.710388","1059.7"
+","cm/s^2","IRIS","IRIS DMC","UW","REED ","--","HNZ","1.34479178287e-05","2018-02-01 03:00:00","2018-02-01 04:00:00","43.701279","-124.107513","5"
 "NoiseFloorVel","Range of the 2nd to 98th percentile of sorted velocity amplitudes which approximates median envelope amplitude.
-","cm/s","IRIS","IRIS DMC","BK","YBH  ","00","BHE","3.33274952373e-07","2018-02-01 00:00:00","2018-02-01 01:00:00","41.73204","-122.710388","1059.7"
+","cm/s","IRIS","IRIS DMC","UW","REED ","--","HNZ","1.58643731689e-06","2018-02-01 03:00:00","2018-02-01 04:00:00","43.701279","-124.107513","5"
 "rawrange","Range in counts.
-","counts","IRIS","IRIS DMC","BK","YBH  ","00","BHE","2164","2018-02-01 00:00:00","2018-02-01 01:00:00","41.73204","-122.710388","1059.7"
+","counts","IRIS","IRIS DMC","UW","REED ","--","HNZ","373","2018-02-01 03:00:00","2018-02-01 04:00:00","43.701279","-124.107513","5"
 "rawmean","Mean.
-","counts","IRIS","IRIS DMC","BK","YBH  ","00","BHE","-3431.23547328","2018-02-01 00:00:00","2018-02-01 01:00:00","41.73204","-122.710388","1059.7"
+","counts","IRIS","IRIS DMC","UW","REED ","--","HNZ","-12605.4179104","2018-02-01 03:00:00","2018-02-01 04:00:00","43.701279","-124.107513","5"
+"rawrms","RMS.
+","counts","IRIS","IRIS DMC","UW","REED ","--","HNZ","18.9096850752","2018-02-01 03:00:00","2018-02-01 04:00:00","43.701279","-124.107513","5"
 "rawmin","Minimum amplitude.
-","counts","IRIS","IRIS DMC","BK","YBH  ","00","BHE","-4497","2018-02-01 00:00:00","2018-02-01 01:00:00","41.73204","-122.710388","1059.7"
+","counts","IRIS","IRIS DMC","UW","REED ","--","HNZ","-12783","2018-02-01 03:00:00","2018-02-01 04:00:00","43.701279","-124.107513","5"
 "rawmax","Maximum amplitude.
-","counts","IRIS","IRIS DMC","BK","YBH  ","00","BHE","-2333","2018-02-01 00:00:00","2018-02-01 01:00:00","41.73204","-122.710388","1059.7"
+","counts","IRIS","IRIS DMC","UW","REED ","--","HNZ","-12410","2018-02-01 03:00:00","2018-02-01 04:00:00","43.701279","-124.107513","5"
+"segmentshort","Duration of the shortest segment.
+","s","IRIS","IRIS DMC","UW","REED ","--","HNZ","7210.11","2018-02-01 03:00:00","2018-02-01 04:00:00","43.701279","-124.107513","5"
+"segmentlong","Duration of the longest segment.
+","s","IRIS","IRIS DMC","UW","REED ","--","HNZ","7210.11","2018-02-01 03:00:00","2018-02-01 04:00:00","43.701279","-124.107513","5"
+"pctavailable","Percentage of data returned of data requested.
+","percent","IRIS","IRIS DMC","UW","REED ","--","HNZ","200.003051318","2018-02-01 03:00:00","2018-02-01 04:00:00","43.701279","-124.107513","5"
+"ngaps","Number of gaps.
+","integer","IRIS","IRIS DMC","UW","REED ","--","HNZ","0","2018-02-01 03:00:00","2018-02-01 04:00:00","43.701279","-124.107513","5"
+"RMSduration_0p01cm","Total duration of RMS acceleration amplitude exceeding 0.01 cm/s^2 using a 5 sec RMS window.
+","s","IRIS","IRIS DMC","UW","REED ","--","HNZ","51.39","2018-02-01 03:00:00","2018-02-01 04:00:00","43.701279","-124.107513","5"
+"RMSduration_0p035cm","Total duration of RMS acceleration amplitude exceeding 0.035 cm/s^2 using a 5 sec RMS window (ShakeAlert station acceptance threshold).
+","s","IRIS","IRIS DMC","UW","REED ","--","HNZ","0","2018-02-01 03:00:00","2018-02-01 04:00:00","43.701279","-124.107513","5"
+"RMSduration_0p1cm","Total duration of RMS acceleration amplitude exceeding 0.1 cm/s^2 using a 5 sec RMS window.
+","s","IRIS","IRIS DMC","UW","REED ","--","HNZ","0","2018-02-01 03:00:00","2018-02-01 04:00:00","43.701279","-124.107513","5"
+"RMSduration_1cm","Total duration of RMS acceleration amplitude exceeding 1 cm/s^2 using a 5 sec RMS window.
+","s","IRIS","IRIS DMC","UW","REED ","--","HNZ","0","2018-02-01 03:00:00","2018-02-01 04:00:00","43.701279","-124.107513","5"
 "snr10_0p01cm","Number of spikes with SNR > 10 and amplitude exceeding 0.01 cm/s^2 using filterd acceleration data.
-","integer","IRIS","IRIS DMC","BK","YBH  ","00","HHE","1","2018-02-01 00:00:00","2018-02-01 01:00:00","41.73204","-122.710388","1059.7"
+","integer","IRIS","IRIS DMC","UO","DFAZ ","--","ENE","2","2018-02-01 04:00:00","2018-02-01 05:00:00","43.240601","-122.109299","1948"
 "snr20_0p05cm","Number of spikes with SNR > 20 and amplitude exceeding 0.05 cm/s^2 using filterd acceleration data.
-","integer","IRIS","IRIS DMC","BK","YBH  ","00","HHE","0","2018-02-01 00:00:00","2018-02-01 01:00:00","41.73204","-122.710388","1059.7"
+","integer","IRIS","IRIS DMC","UO","DFAZ ","--","ENE","0","2018-02-01 04:00:00","2018-02-01 05:00:00","43.240601","-122.109299","1948"
 "snr20_0p17cm","Number of spikes with SNR > 20 and amplitude exceeding 0.17 cm/s^2 using filterd acceleration data (ShakeAlert station acceptance threshold using filter of 0.3 - 15Hz).
-","integer","IRIS","IRIS DMC","BK","YBH  ","00","HHE","0","2018-02-01 00:00:00","2018-02-01 01:00:00","41.73204","-122.710388","1059.7"
+","integer","IRIS","IRIS DMC","UO","DFAZ ","--","ENE","0","2018-02-01 04:00:00","2018-02-01 05:00:00","43.240601","-122.109299","1948"
 "snr20_1cm","Number of spikes with SNR > 20 and amplitude exceeding 1 cm/s^2 using filterd acceleration data.
-","integer","IRIS","IRIS DMC","BK","YBH  ","00","HHE","0","2018-02-01 00:00:00","2018-02-01 01:00:00","41.73204","-122.710388","1059.7"
+","integer","IRIS","IRIS DMC","UO","DFAZ ","--","ENE","0","2018-02-01 04:00:00","2018-02-01 05:00:00","43.240601","-122.109299","1948"
 "snr20_3cm","Number of spikes with SNR > 20 and amplitude exceeding 3 cm/s^2 using filterd acceleration data.
-","integer","IRIS","IRIS DMC","BK","YBH  ","00","HHE","0","2018-02-01 00:00:00","2018-02-01 01:00:00","41.73204","-122.710388","1059.7"
+","integer","IRIS","IRIS DMC","UO","DFAZ ","--","ENE","0","2018-02-01 04:00:00","2018-02-01 05:00:00","43.240601","-122.109299","1948"
 "snr20_5cm","Number of spikes with SNR > 20 and amplitude exceeding 5 cm/s^2 using filterd acceleration data.
-","integer","IRIS","IRIS DMC","BK","YBH  ","00","HHE","0","2018-02-01 00:00:00","2018-02-01 01:00:00","41.73204","-122.710388","1059.7"
+","integer","IRIS","IRIS DMC","UO","DFAZ ","--","ENE","0","2018-02-01 04:00:00","2018-02-01 05:00:00","43.240601","-122.109299","1948"
 "pow50sec","Power at 50 seconds.
-","dB","IRIS","IRIS DMC","BK","YBH  ","00","HHE","0","2018-02-01 00:00:00","2018-02-01 01:00:00","41.73204","-122.710388","1059.7"
+","dB","IRIS","IRIS DMC","UO","DFAZ ","--","ENE","-177.393","2018-02-01 04:00:00","2018-02-01 05:00:00","43.240601","-122.109299","1948"
+"pow30sec","Power at 30 seconds.
+","dB","IRIS","IRIS DMC","UO","DFAZ ","--","ENE","-172.461","2018-02-01 04:00:00","2018-02-01 05:00:00","43.240601","-122.109299","1948"
+"pow20sec","Power at 20 seconds.
+","dB","IRIS","IRIS DMC","UO","DFAZ ","--","ENE","-163.114","2018-02-01 04:00:00","2018-02-01 05:00:00","43.240601","-122.109299","1948"
 "pow12sec","Power at 12 seconds.
-","dB","IRIS","IRIS DMC","BK","YBH  ","00","HHE","0","2018-02-01 00:00:00","2018-02-01 01:00:00","41.73204","-122.710388","1059.7"
+","dB","IRIS","IRIS DMC","UO","DFAZ ","--","ENE","-149.406","2018-02-01 04:00:00","2018-02-01 05:00:00","43.240601","-122.109299","1948"
+"pow10sec","Power at 10 seconds.
+","dB","IRIS","IRIS DMC","UO","DFAZ ","--","ENE","-142.85","2018-02-01 04:00:00","2018-02-01 05:00:00","43.240601","-122.109299","1948"
+"pow5sec","Power at 5 seconds.
+","dB","IRIS","IRIS DMC","UO","DFAZ ","--","ENE","-119.171","2018-02-01 04:00:00","2018-02-01 05:00:00","43.240601","-122.109299","1948"
 "pow1Hz","Power at 1 Hertz.
-","dB","IRIS","IRIS DMC","BK","YBH  ","00","HHE","0","2018-02-01 00:00:00","2018-02-01 01:00:00","41.73204","-122.710388","1059.7"
+","dB","IRIS","IRIS DMC","UO","DFAZ ","--","ENE","-149.674","2018-02-01 04:00:00","2018-02-01 05:00:00","43.240601","-122.109299","1948"
 "pow5Hz","Power at 5 Hertz.
-","dB","IRIS","IRIS DMC","BK","YBH  ","00","HHE","0","2018-02-01 00:00:00","2018-02-01 01:00:00","41.73204","-122.710388","1059.7"
+","dB","IRIS","IRIS DMC","UO","DFAZ ","--","ENE","-141.986","2018-02-01 04:00:00","2018-02-01 05:00:00","43.240601","-122.109299","1948"
 "pow10Hz","Power at 10 Hertz.
-","dB","IRIS","IRIS DMC","BK","YBH  ","00","HHE","0","2018-02-01 00:00:00","2018-02-01 01:00:00","41.73204","-122.710388","1059.7"
+","dB","IRIS","IRIS DMC","UO","DFAZ ","--","ENE","-139.687","2018-02-01 04:00:00","2018-02-01 05:00:00","43.240601","-122.109299","1948"
 "pow20Hz","Power at 20 Hertz.
-","dB","IRIS","IRIS DMC","BK","YBH  ","00","HHE","0","2018-02-01 00:00:00","2018-02-01 01:00:00","41.73204","-122.710388","1059.7"
+","dB","IRIS","IRIS DMC","UO","DFAZ ","--","ENE","-132.287","2018-02-01 04:00:00","2018-02-01 05:00:00","43.240601","-122.109299","1948"
 "pow50Hz","Power at 50 Hertz.
-","dB","IRIS","IRIS DMC","BK","YBH  ","00","HHE","0","2018-02-01 00:00:00","2018-02-01 01:00:00","41.73204","-122.710388","1059.7"
+","dB","IRIS","IRIS DMC","UO","DFAZ ","--","ENE","-124.026","2018-02-01 04:00:00","2018-02-01 05:00:00","43.240601","-122.109299","1948"
 "NoiseFloorAcc","Range the 2nd to 98th percentile of sorted acceleration amplitudes which approximates median envelope amplitude.
-","cm/s^2","IRIS","IRIS DMC","BK","YBH  ","00","HHE","2.23051844313e-05","2018-02-01 00:00:00","2018-02-01 01:00:00","41.73204","-122.710388","1059.7"
+","cm/s^2","IRIS","IRIS DMC","UO","DFAZ ","--","ENE","1.07940141262e-06","2018-02-01 04:00:00","2018-02-01 05:00:00","43.240601","-122.109299","1948"
 "NoiseFloorVel","Range of the 2nd to 98th percentile of sorted velocity amplitudes which approximates median envelope amplitude.
-","cm/s","IRIS","IRIS DMC","BK","YBH  ","00","HHE","5.53007210813e-07","2018-02-01 00:00:00","2018-02-01 01:00:00","41.73204","-122.710388","1059.7"
+","cm/s","IRIS","IRIS DMC","UO","DFAZ ","--","ENE","2.77755469177e-07","2018-02-01 04:00:00","2018-02-01 05:00:00","43.240601","-122.109299","1948"
 "rawrange","Range in counts.
-","counts","IRIS","IRIS DMC","BK","YBH  ","00","HHE","2700","2018-02-01 00:00:00","2018-02-01 01:00:00","41.73204","-122.710388","1059.7"
+","counts","IRIS","IRIS DMC","UO","DFAZ ","--","ENE","2718","2018-02-01 04:00:00","2018-02-01 05:00:00","43.240601","-122.109299","1948"
 "rawmean","Mean.
-","counts","IRIS","IRIS DMC","BK","YBH  ","00","HHE","-1737.85109263","2018-02-01 00:00:00","2018-02-01 01:00:00","41.73204","-122.710388","1059.7"
+","counts","IRIS","IRIS DMC","UO","DFAZ ","--","ENE","126.368726179","2018-02-01 04:00:00","2018-02-01 05:00:00","43.240601","-122.109299","1948"
+"rawrms","RMS.
+","counts","IRIS","IRIS DMC","UO","DFAZ ","--","ENE","200.346966363","2018-02-01 04:00:00","2018-02-01 05:00:00","43.240601","-122.109299","1948"
 "rawmin","Minimum amplitude.
-","counts","IRIS","IRIS DMC","BK","YBH  ","00","HHE","-2908","2018-02-01 00:00:00","2018-02-01 01:00:00","41.73204","-122.710388","1059.7"
+","counts","IRIS","IRIS DMC","UO","DFAZ ","--","ENE","-1581","2018-02-01 04:00:00","2018-02-01 05:00:00","43.240601","-122.109299","1948"
 "rawmax","Maximum amplitude.
-","counts","IRIS","IRIS DMC","BK","YBH  ","00","HHE","-208","2018-02-01 00:00:00","2018-02-01 01:00:00","41.73204","-122.710388","1059.7"
+","counts","IRIS","IRIS DMC","UO","DFAZ ","--","ENE","1137","2018-02-01 04:00:00","2018-02-01 05:00:00","43.240601","-122.109299","1948"
+"segmentshort","Duration of the shortest segment.
+","s","IRIS","IRIS DMC","UO","DFAZ ","--","ENE","3605.06","2018-02-01 04:00:00","2018-02-01 05:00:00","43.240601","-122.109299","1948"
+"segmentlong","Duration of the longest segment.
+","s","IRIS","IRIS DMC","UO","DFAZ ","--","ENE","3605.06","2018-02-01 04:00:00","2018-02-01 05:00:00","43.240601","-122.109299","1948"
+"pctavailable","Percentage of data returned of data requested.
+","percent","IRIS","IRIS DMC","UO","DFAZ ","--","ENE","100.001664355","2018-02-01 04:00:00","2018-02-01 05:00:00","43.240601","-122.109299","1948"
+"ngaps","Number of gaps.
+","integer","IRIS","IRIS DMC","UO","DFAZ ","--","ENE","0","2018-02-01 04:00:00","2018-02-01 05:00:00","43.240601","-122.109299","1948"
+"RMSduration_0p01cm","Total duration of RMS acceleration amplitude exceeding 0.01 cm/s^2 using a 5 sec RMS window.
+","s","IRIS","IRIS DMC","UO","DFAZ ","--","ENE","0","2018-02-01 04:00:00","2018-02-01 05:00:00","43.240601","-122.109299","1948"
+"RMSduration_0p035cm","Total duration of RMS acceleration amplitude exceeding 0.035 cm/s^2 using a 5 sec RMS window (ShakeAlert station acceptance threshold).
+","s","IRIS","IRIS DMC","UO","DFAZ ","--","ENE","0","2018-02-01 04:00:00","2018-02-01 05:00:00","43.240601","-122.109299","1948"
+"RMSduration_0p1cm","Total duration of RMS acceleration amplitude exceeding 0.1 cm/s^2 using a 5 sec RMS window.
+","s","IRIS","IRIS DMC","UO","DFAZ ","--","ENE","0","2018-02-01 04:00:00","2018-02-01 05:00:00","43.240601","-122.109299","1948"
+"RMSduration_1cm","Total duration of RMS acceleration amplitude exceeding 1 cm/s^2 using a 5 sec RMS window.
+","s","IRIS","IRIS DMC","UO","DFAZ ","--","ENE","0","2018-02-01 04:00:00","2018-02-01 05:00:00","43.240601","-122.109299","1948"

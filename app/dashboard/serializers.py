@@ -29,21 +29,22 @@ class DashboardSerializer(serializers.HyperlinkedModelSerializer):
     group = serializers.PrimaryKeyRelatedField(
         queryset=Group.objects.all()
     )
+    widgets = WidgetSerializer(many=True, read_only=True)
 
     class Meta:
         model = Dashboard
         fields = (
-            'id', 'name', 'group', 'created_at', 'updated_at'
+            'id', 'name', 'group', 'widgets', 'created_at', 'updated_at'
         )
         read_only_fields = ('id',)
 
 
 class WidgetTypeSerializer(serializers.HyperlinkedModelSerializer):
-    widget = WidgetSerializer(many=True, read_only=True)
+    widgets = WidgetSerializer(many=True, read_only=True)
 
     class Meta:
         model = WidgetType
         fields = (
-            'id', 'name', 'type', 'widget', 'created_at', 'updated_at'
+            'id', 'name', 'type', 'widgets', 'created_at', 'updated_at'
         )
         read_only_fields = ('id',)

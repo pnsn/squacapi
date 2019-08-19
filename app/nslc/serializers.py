@@ -7,7 +7,7 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
     url = serializers.HyperlinkedIdentityField(
         view_name='nslc:group-detail'
     )
-    dashboard = DashboardSerializer(many=True, read_only=True)
+    dashboards = DashboardSerializer(many=True, read_only=True)
     channels = serializers.PrimaryKeyRelatedField(
         many=True,
         queryset=Channel.objects.all()
@@ -16,7 +16,7 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Group
         fields = (
-            'name', 'id', 'url', 'description', 'dashboard', 'channels',
+            'name', 'id', 'url', 'description', 'dashboards', 'channels',
             'is_public', 'created_at', 'updated_at'
         )
         read_only_fields = ('id',)
