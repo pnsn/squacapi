@@ -11,7 +11,7 @@ class PublicImportTests(TestCase):
     '''Test the db test data loader'''
 
     def setUp(self):
-        load_all.main(1)
+        load_all.main()
         self.nets = Network.objects.all()
         self.stations = Station.objects.all()
         self.channels = Channel.objects.all()
