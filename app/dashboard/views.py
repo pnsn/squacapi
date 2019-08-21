@@ -59,3 +59,17 @@ class WidgetTypeViewSet(BaseDashboardViewSet):
 class WidgetViewSet(BaseDashboardViewSet):
     serializer_class = serializers.WidgetSerializer
     queryset = Widget.objects.all()
+
+    def _params_to_ints(self, qs):
+        # Convert a list of string IDs to a list of integers
+        return [int(str_id) for str_id in qs.split(',')]
+
+    def get_queryset(self):
+        # Retrieve widget by dashboard id
+        dashboard = self.request.query_params.get('dashboard')
+        queryset = self.queryset
+        if dashboard:
+            dashboard_id = self._params_to_ints(dashboard)
+            queryset = queryset.filter(dashboard__id__in=dashboard_id)
+
+        return queryset

@@ -5,9 +5,9 @@ from dashboard import views
 
 router = DefaultRouter()
 
-router.register('dashboard', views.DashboardViewSet)
-router.register('widgettype', views.WidgetTypeViewSet)
-router.register('widget', views.WidgetViewSet)
+router.register('dashboards', views.DashboardViewSet)
+router.register('widgettypes', views.WidgetTypeViewSet)
+router.register('widgets', views.WidgetViewSet)
 # router.register('alarm', views.AlarmViewSet)
 # router.register('trigger', views.TriggerViewSet)
 
