@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from .models import Network, Station, Channel, Group
-from dashboard.serializers import DashboardSerializer
 
 
 class GroupSerializer(serializers.HyperlinkedModelSerializer):
@@ -43,14 +42,13 @@ class ChannelSerializer(serializers.HyperlinkedModelSerializer):
 
 class GroupDetailSerializer(GroupSerializer):
     # Serializer when viewing details of specific group
-    dashboards = DashboardSerializer(many=True, read_only=True)
     channels = ChannelSerializer(many=True, read_only=True)
 
     class Meta:
         model = Group
         fields = (
-            'name', 'id', 'url', 'description', 'dashboards', 'channels',
-            'is_public', 'created_at', 'updated_at'
+            'name', 'id', 'url', 'description', 'channels', 'is_public',
+            'created_at', 'updated_at'
         )
         read_only_fields = ('id',)
 
