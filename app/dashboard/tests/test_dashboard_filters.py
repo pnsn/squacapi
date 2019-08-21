@@ -20,11 +20,14 @@ class PublicDashboardFilterTests(TestCase):
         self.client.force_authenticate(user=None)
 
     def test_widget_dashboard_filter(self):
-        url = 'http://localhost:8000/v1.0/dashboard/widgets/?dashboard=113'
-        res = self.client.get(url)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        dashboard = Dashboard.objects.get(id=113)
-        widgets = dashboard.widgets.all()
-        self.assertEqual(len(widgets), len(res.data))
-        for dict in res.data:
-            self.assertEqual(dict['dashboard'], 113)
+        dashboards = Dashboard.objects.all()
+        for d in dashboards:
+            url = 'http://localhost:8000/v1.0/dashboard/widgets/?dashboard='
+            url += str(d.id)
+            res = self.client.get(url)
+            self.assertEqual(res.status_code, status.HTTP_200_OK)
+            dashboard = Dashboard.objects.get(id=d.id)
+            widgets = dashboard.widgets.all()
+            self.assertEqual(len(widgets), len(res.data))
+            for dict in res.data:
+                self.assertEqual(dict['dashboard'], d.id)
