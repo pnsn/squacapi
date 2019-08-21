@@ -50,6 +50,11 @@ class DashboardViewSet(BaseDashboardViewSet):
     serializer_class = serializers.DashboardSerializer
     queryset = Dashboard.objects.all()
 
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return serializers.DashboardDetailSerializer
+        return self.serializer_class
+
 
 class WidgetTypeViewSet(BaseDashboardViewSet):
     serializer_class = serializers.WidgetTypeSerializer

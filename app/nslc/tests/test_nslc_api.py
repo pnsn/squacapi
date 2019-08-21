@@ -87,6 +87,9 @@ class PublicNslcApiTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data['name'], 'Test group')
         self.assertEqual(str(self.grp), 'Test group')
+        for channel in res.data['channels']:
+            self.assertEqual(channel['id'], self.chan.id)
+            self.assertEqual(channel['code'], self.chan.code)
 
     # def test_changroup_res(self):
     #     '''Test if correct channel group object is returned'''
@@ -209,8 +212,9 @@ class PrivateNslcAPITests(TestCase):
         group = Group.objects.get(id=res.data['id'])
         for key in payload.keys():
             if key == 'channels':
-                channels = group.channels.all()
-                self.assertIn(self.chan, channels)
+                for c in payload[key]:
+                    channel = Channel.objects.get(id=c)
+                    self.assertIn(channel, group.channels.all())
             else:
                 self.assertEqual(payload[key], getattr(group, key))
 
@@ -221,7 +225,8 @@ class PrivateNslcAPITests(TestCase):
             'channels': [self.chan.id]
         }
         url = reverse('nslc:group-detail', args=[group.id])
-        self.client.patch(url, payload)
+        res = self.client.patch(url, payload)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
         group.refresh_from_db()
         self.assertEqual(group.name, payload['name'])
         self.assertEqual(group.description, "All UW stations")
