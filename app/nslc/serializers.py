@@ -4,10 +4,10 @@ from dashboard.serializers import DashboardSerializer
 
 
 class GroupSerializer(serializers.HyperlinkedModelSerializer):
+    # Group Serializer for list view, will not include channels/dashboards
     url = serializers.HyperlinkedIdentityField(
         view_name='nslc:group-detail'
     )
-    dashboards = DashboardSerializer(many=True, read_only=True)
     channels = serializers.PrimaryKeyRelatedField(
         many=True,
         queryset=Channel.objects.all()
@@ -16,8 +16,8 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Group
         fields = (
-            'name', 'id', 'url', 'description', 'dashboards', 'channels',
-            'is_public', 'created_at', 'updated_at'
+            'name', 'id', 'url', 'description', 'channels', 'is_public',
+            'created_at', 'updated_at'
         )
         read_only_fields = ('id',)
 
@@ -39,6 +39,20 @@ class ChannelSerializer(serializers.HyperlinkedModelSerializer):
     def setup_eager_loading(queryset):
         queryset = queryset.select_related('station')
         return queryset
+
+
+class GroupDetailSerializer(GroupSerializer):
+    # Serializer when viewing details of specific group
+    dashboards = DashboardSerializer(many=True, read_only=True)
+    channels = ChannelSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Group
+        fields = (
+            'name', 'id', 'url', 'description', 'dashboards', 'channels',
+            'is_public', 'created_at', 'updated_at'
+        )
+        read_only_fields = ('id',)
 
 
 class StationSerializer(serializers.HyperlinkedModelSerializer):
