@@ -2,6 +2,7 @@ from django.test import TestCase
 
 from rest_framework.test import APIClient
 from rest_framework import status
+from django.urls import reverse
 
 '''Tests for custom nslc filters in views.py'''
 
@@ -18,7 +19,8 @@ class PublicNslcFilterTests(TestCase):
         self.client.force_authenticate(user=None)
 
     def test_network_filter(self):
-        url = 'http://localhost:8000/v1.0/nslc/networks/?network=uw'
+        url = reverse('nslc:network-list')
+        url += '?network=uw'
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         for dict in res.data:
@@ -26,7 +28,8 @@ class PublicNslcFilterTests(TestCase):
                 self.assertEqual(dict['code'], 'uw')
 
     def test_station_filter(self):
-        url = 'http://localhost:8000/v1.0/nslc/stations/?station=kvcs'
+        url = reverse('nslc:station-list')
+        url += '?station=kvcs'
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         for dict in res.data:
@@ -34,7 +37,8 @@ class PublicNslcFilterTests(TestCase):
                 self.assertEqual(dict['code'], 'kvcs')
 
     def test_channel_filter(self):
-        url = 'http://localhost:8000/v1.0/nslc/channels/?channel=hnn'
+        url = reverse('nslc:channel-list')
+        url += '?channel=hnn'
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         for dict in res.data:
