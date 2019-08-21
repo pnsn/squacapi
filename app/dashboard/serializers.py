@@ -29,6 +29,19 @@ class DashboardSerializer(serializers.HyperlinkedModelSerializer):
     group = serializers.PrimaryKeyRelatedField(
         queryset=Group.objects.all()
     )
+
+    class Meta:
+        model = Dashboard
+        fields = (
+            'id', 'name', 'group', 'created_at', 'updated_at'
+        )
+        read_only_fields = ('id',)
+
+
+class DashboardDetailSerializer(serializers.HyperlinkedModelSerializer):
+    group = serializers.PrimaryKeyRelatedField(
+        queryset=Group.objects.all()
+    )
     widgets = WidgetSerializer(many=True, read_only=True)
 
     class Meta:
