@@ -38,6 +38,7 @@ def regex_sql(queryset, name, value):
     """
 
     if name is not None:
+        value = value.replace('*', '.')
         name_regex = '__'.join([name, 'iregex'])
         queryset = queryset.filter(**{name_regex: value})
     return queryset

@@ -44,3 +44,22 @@ class PublicNslcFilterTests(TestCase):
         for dict in res.data:
             if dict['class_name'] == 'channel':
                 self.assertEqual(dict['code'], 'hnn')
+
+    def test_channel_wildcard_filter(self):
+        url = reverse('nslc:channel-list')
+        url += '?channel=**z'
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        channel_count = 0
+        for dict in res.data:
+            if dict['class_name'] == 'channel':
+                channel_count += 1
+                self.assertEqual(dict['code'][2], 'z')
+        self.assertEqual(channel_count, 4)
+
+    def test_bad_channel_request(self):
+        url = reverse('nslc:channel-list')
+        url += '?channel=***abc'
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data), 0)
