@@ -64,13 +64,13 @@ class StationSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class NetworkSerializer(serializers.HyperlinkedModelSerializer):
-    stations = StationSerializer(many=True, read_only=True)
+    # stations = StationSerializer(many=True, read_only=True)
     url = serializers.HyperlinkedIdentityField(view_name="nslc:network-detail")
 
     class Meta:
         model = Network
         fields = ('class_name', 'code', 'name', 'id', 'url', 'description',
-                  'created_at', 'updated_at', 'stations')
+                  'created_at', 'updated_at')
         read_only_fields = ('id',)
 
     @staticmethod
