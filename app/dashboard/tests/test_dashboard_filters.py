@@ -2,6 +2,7 @@ from django.test import TestCase
 
 from rest_framework.test import APIClient
 from rest_framework import status
+from django.urls import reverse
 
 from dashboard.models import Dashboard
 
@@ -22,8 +23,8 @@ class PublicDashboardFilterTests(TestCase):
     def test_widget_dashboard_filter(self):
         dashboards = Dashboard.objects.all()
         for d in dashboards:
-            url = 'http://localhost:8000/v1.0/dashboard/widgets/?dashboard='
-            url += str(d.id)
+            url = reverse('dashboard:widget-list')
+            url += f'?dashboard={d.id}'
             res = self.client.get(url)
             self.assertEqual(res.status_code, status.HTTP_200_OK)
             dashboard = Dashboard.objects.get(id=d.id)
