@@ -62,7 +62,6 @@ class MeasurementViewSet(BaseMeasurementViewSet):
     def get_queryset(self):
         # Filter measurements by metric, channel, start and end times
         # All 4 params are required for filter to function
-        # 
         metric = self.request.query_params.get('metric')
         chan = self.request.query_params.get('channel')
         stime = self.request.query_params.get('starttime')
