@@ -31,4 +31,4 @@ class PublicDashboardFilterTests(TestCase):
             widgets = dashboard.widgets.all()
             self.assertEqual(len(widgets), len(res.data))
             for dict in res.data:
-                self.assertEqual(dict['dashboard'], d.id)
+                self.assertEqual(dict['dashboard']['id'], d.id)
