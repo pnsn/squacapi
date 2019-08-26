@@ -22,8 +22,7 @@ class PublicMeasurementFilterTests(TestCase):
         url = reverse('measurement:measurement-list')
         url += '?metric=284&channel=4430'
         res = self.client.get(url)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(res.data), 0)
+        self.assertEqual(res.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
 
     def test_measurement_filter(self):
         # Test that filter properly finds the measurement that fits params
