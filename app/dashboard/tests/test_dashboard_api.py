@@ -110,8 +110,7 @@ class PublicMeasurementApiTests(TestCase):
         self.assertEqual(res.data['name'], 'Test dashboard')
         self.assertEqual(str(self.dashboard), 'Test dashboard')
         for widget in res.data['widgets']:
-            self.assertEqual(widget['id'], self.widget.id)
-            self.assertEqual(widget['name'], self.widget.name)
+            self.assertEqual(widget, self.widget.id)
 
     def test_widget_type_res_and_str(self):
         url = reverse(
