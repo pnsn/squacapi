@@ -53,11 +53,10 @@ class DashboardDetailSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class WidgetTypeSerializer(serializers.HyperlinkedModelSerializer):
-    widgets = WidgetSerializer(many=True, read_only=True)
 
     class Meta:
         model = WidgetType
         fields = (
-            'id', 'name', 'type', 'widgets', 'created_at', 'updated_at'
+            'id', 'name', 'type', 'created_at', 'updated_at'
         )
         read_only_fields = ('id',)
