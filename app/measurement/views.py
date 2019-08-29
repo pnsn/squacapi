@@ -5,6 +5,7 @@ from rest_framework.permissions import BasePermission, SAFE_METHODS
 
 from .models import Metric, Measurement
 from measurement import serializers
+from .exceptions import MissingParameterException
 
 
 class ObjPermissionOrReadOnly(BasePermission):
@@ -54,3 +55,30 @@ class MetricViewSet(BaseMeasurementViewSet):
 class MeasurementViewSet(BaseMeasurementViewSet):
     serializer_class = serializers.MeasurementSerializer
     queryset = Measurement.objects.all()
+
+    def _params_to_ints(self, qs):
+        # Convert a list of string IDs to a list of integers
+        return [int(str_id) for str_id in qs.split(',')]
+
+    def get_queryset(self):
+        # Filter measurements by metric, channel, start and end times
+        # All 4 params are required for filter to function
+        queryset = self.queryset
+        pk = self.kwargs.get('pk')
+        metric = self.request.query_params.get('metric')
+        chan = self.request.query_params.get('channel')
+        stime = self.request.query_params.get('starttime')
+        etime = self.request.query_params.get('endtime')
+        if pk:
+            return queryset.filter(id=pk)
+        else:
+            if metric and chan and stime and etime:
+                metric_ids = self._params_to_ints(metric)
+                chan_ids = self._params_to_ints(chan)
+                queryset = queryset.filter(metric__id__in=metric_ids)
+                queryset = queryset.filter(channel__id__in=chan_ids)
+                queryset = queryset.filter(starttime__gte=stime)
+                queryset = queryset.filter(endtime__lte=etime)
+            else:
+                raise MissingParameterException
+        return queryset
