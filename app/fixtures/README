@@ -1,0 +1,5 @@
+To create fixtures from existing test data run:
+./mg.sh "dumpdata  --indent=2" > app/fixtures/fixtures_all.json
+
+Then open file and delete first line
+Congratulations, you just fixtured

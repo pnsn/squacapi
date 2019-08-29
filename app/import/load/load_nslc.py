@@ -1,4 +1,4 @@
-"""load station and networks from csv
+"""load channels and networks from csv
  run in docker-compose like
  docker-compose run --rm app sh -c 'python import/load/load_nslc.py'
  use default arg with get_or_create to select on unique together keys
@@ -15,7 +15,7 @@ from django.contrib.auth import get_user_model
 
 
 def main(csv_length=0):
-    from nslc.models import Network, Station, Channel, Group
+    from nslc.models import Network, Channel, Group
 
     csv_path = project_path + "/import/csv/"
 
@@ -33,7 +33,6 @@ def main(csv_length=0):
     next(netReader, None)
 
     Network.objects.all().delete()
-    Station.objects.all().delete()
     Channel.objects.all().delete()
     Group.objects.all().delete()
     try:
@@ -51,19 +50,20 @@ def main(csv_length=0):
     for row in nslcReader:
         # print(row)
         net = Network.objects.get(code=row[0].lower())
-        sta = Station.objects.get_or_create(
-            code=row[1].lower(),
-            network=net,
-            user=user,
-            defaults={'name': row[8]}
-        )
+        # sta = Station.objects.get_or_create(
+        #     code=row[1].lower(),
+        #     network=net,
+        #     user=user,
+        #     defaults={'name': row[8]}
+        # )
         if not row[3]:
             row[3] = "--"
         if not row[7]:
             row[7] = -1
         Channel.objects.get_or_create(
             code=row[2].lower(),
-            station=sta[0],
+            network=net,
+            station_code=row[1].lower(),
             user=user,
             defaults={
                 'name': row[2],
@@ -80,10 +80,10 @@ def main(csv_length=0):
     for n in networks:
         group = Group.objects.create(
             name=f"{n.code.upper()}-All",
-            description=f"All {n.code.upper()} stations",
+            description=f"All {n.code.upper()} channels",
             user=user
         )
-        n_channels = Channel.objects.filter(station__network__code=n.code)
+        n_channels = Channel.objects.filter(network__code=n.code)
         for c in n_channels:
             group.channels.add(c)
 

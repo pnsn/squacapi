@@ -7,9 +7,9 @@ from rest_framework.authentication import TokenAuthentication, \
 
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 
-from .models import Network, Station, Channel, Group
-from nslc.serializers import NetworkSerializer, StationSerializer, \
-    ChannelSerializer, GroupSerializer, GroupDetailSerializer
+from .models import Network, Channel, Group
+from nslc.serializers import NetworkSerializer, ChannelSerializer, \
+    GroupSerializer, GroupDetailSerializer
 
 # import django_filters as filters
 from django_filters import rest_framework as filters
@@ -60,44 +60,40 @@ perform regex SQL 'LIKE' for channel
 class NetworkFilter(filters.FilterSet):
     network = filters.CharFilter(
         field_name='code', method=in_sql)
-    station = filters.CharFilter(
-        field_name='stations__code', lookup_expr='iexact')
+    channel = filters.CharFilter(
+        field_name='channels__code', lookup_expr='iexact')
 
     class Meta:
         model = Network
         # These need to match column names or filter vars from above
-        fields = ['network', 'station']
+        fields = ['network', 'channel']
 
 
-class StationFilter(filters.FilterSet):
-    network = filters.CharFilter(
-        field_name='network__code', method=in_sql)
-    station = filters.CharFilter(
-        field_name='code', lookup_expr='iexact')
-    # this will need to change to channels__code
-    channel = filters.CharFilter(
-        field_name='channels__code', method=regex_sql)
+# class StationFilter(filters.FilterSet):
+#     network = filters.CharFilter(
+#         field_name='network__code', method=in_sql)
+#     station = filters.CharFilter(
+#         field_name='code', lookup_expr='iexact')
+#     # this will need to change to channels__code
+#     channel = filters.CharFilter(
+#         field_name='channels__code', method=regex_sql)
 
-    class Meta:
-        model = Station
-        # These need to match column names or filter vars from above
-        fields = ['network', 'station', 'channel']
+    # class Meta:
+    #     model = Station
+    #     # These need to match column names or filter vars from above
+    #     fields = ['network', 'station', 'channel']
 
 
 class ChannelFilter(filters.FilterSet):
-    # change to station__network__code
     network = filters.CharFilter(
-        field_name='station__network__code', method=in_sql)
-    # change to station__code
-    station = filters.CharFilter(
-        field_name='station__code', lookup_expr='iexact')
+        field_name='network__code', method=in_sql)
     channel = filters.CharFilter(
         field_name='code', method=regex_sql)
 
     class Meta:
         model = Channel
         # These need to match column names or filter vars from above
-        fields = ['network', 'station', 'channel']
+        fields = ['network', 'channel']
 
 
 @api_view(['GET'])
@@ -165,11 +161,11 @@ class NetworkViewSet(BaseNslcViewSet):
     queryset = serializer_class.setup_eager_loading(q)
 
 
-class StationViewSet(BaseNslcViewSet):
-    serializer_class = StationSerializer
-    filter_class = StationFilter
-    q = Station.objects.all()
-    queryset = serializer_class.setup_eager_loading(q)
+# class StationViewSet(BaseNslcViewSet):
+#     serializer_class = StationSerializer
+#     filter_class = StationFilter
+#     q = Station.objects.all()
+#     queryset = serializer_class.setup_eager_loading(q)
 
 
 # class LocationViewSet(BaseNslcViewSet):

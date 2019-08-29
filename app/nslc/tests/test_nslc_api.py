@@ -1,15 +1,16 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.urls import reverse
-from nslc.models import Network, Station, Channel, Group
+from nslc.models import Network, Channel, Group
 
 from rest_framework.test import APIClient
 from rest_framework import status
 
 '''Tests for all nscl models:
     *Network
-    *Station
     *Channel
+    *Group
+    *ChannelGroup
 
 
 to run only these test:
@@ -31,21 +32,17 @@ class PublicNslcApiTests(TestCase):
         self.client.force_authenticate(user=None)
         self.net = Network.objects.create(
             code="UW", name="University of Washington", user=self.user)
-        self.sta = Station.objects.create(
-            code='RCM', name="Camp Muir", network=self.net, user=self.user)
-        # self.loc = Location.objects.create(
-        #     code='--', name="--", station=self.sta, lat=45, lon=-122,
-        #     elev=0, user=self.user)
         self.chan = Channel.objects.create(
             code='EHZ', name="EHZ", loc="--", lat=45.0, lon=-122.0,
-            elev=100.0, station=self.sta, user=self.user)
+            station_code='RCM', station_name='Camp Muir',
+            elev=100.0, network=self.net, user=self.user)
         self.grp = Group.objects.create(
             name='Test group', is_public=True, user=self.user)
         self.grp.channels.add(self.chan)
 
     def test_network_res_and_str(self):
         '''test if str is corrected'''
-        url = reverse('nslc:network-detail', kwargs={'pk': self.net.id})
+        url = reverse('nslc:network-detail', kwargs={'pk': self.net.code})
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data['name'], "University of Washington")
@@ -55,22 +52,6 @@ class PublicNslcApiTests(TestCase):
         payload = {'code': "UW", "name": "University of Washington"}
         res = self.client.post(url, payload)
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
-
-    def test_station_res_and_str(self):
-        '''test if correct station object is returned'''
-        url = reverse('nslc:station-detail', kwargs={'pk': self.sta.id})
-        res = self.client.get(url)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data['name'], "Camp Muir")
-        self.assertEqual(str(self.sta), "RCM")
-
-    # def test_location_res_and_str(self):
-    #     '''test if correct location object is returned'''
-    #     url = reverse('nslc:location-detail', kwargs={'pk': self.loc.id})
-    #     res = self.client.get(url)
-    #     self.assertEqual(res.status_code, status.HTTP_200_OK)
-    #     self.assertEqual(res.data['name'], "--")
-    #     self.assertEqual(str(self.loc), "--")
 
     def test_channel_res_and_str(self):
         '''test if correct channel object is returned'''
@@ -106,8 +87,8 @@ class PublicNslcApiTests(TestCase):
 class PrivateNslcAPITests(TestCase):
     '''all authenticated tests go here'''
 
-    fixtures = ['nslc_tests.json']
-    # Fixtures load from the fixtures directory within /nslc
+    fixtures = ['fixtures_all.json']
+    # Fixtures load from the fixtures directory in app
     # Fixture for testing patch/put on group
 
     def setUp(self):
@@ -117,13 +98,9 @@ class PrivateNslcAPITests(TestCase):
         # print(self.user.permissions)
         self.net = Network.objects.create(
             code="UW", name="University of Washington", user=self.user)
-        self.sta = Station.objects.create(
-            code='RCM', name="Camp Muir", network=self.net, user=self.user)
-        # self.loc = Location.objects.create(
-        #     code='--', name="--", station=self.sta, lat=45, lon=-122,
-        #     elev=100.0, user=self.user)
         self.chan = Channel.objects.create(
-            code='EHZ', name="EHZ", loc="--", station=self.sta,
+            code='EHZ', name="EHZ", loc="--", network=self.net,
+            station_code='RCM', station_name='Camp Muir',
             lat=45, lon=-122, elev=100.0, user=self.user)
         self.grp = Group.objects.create(
             name='Test group', is_public=True, user=self.user)
@@ -133,46 +110,9 @@ class PrivateNslcAPITests(TestCase):
         payload = {'code': "TN", "name": "Test network"}
         res = self.client.post(url, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-        network = Network.objects.get(id=res.data['id'])
+        network = Network.objects.get(code=res.data['code'])
         for key in payload.keys():
             self.assertEqual(payload[key], getattr(network, key))
-
-    def test_create_station(self):
-        '''Test that a station can be created under a network'''
-        url = reverse('nslc:station-list')
-        payload = {
-            'code': 'TS',
-            'name': 'Test station',
-            'network': self.net.id
-        }
-        res = self.client.post(url, payload)
-        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-        station = Station.objects.get(id=res.data['id'])
-        for key in payload.keys():
-            if key != 'network':
-                self.assertEqual(payload[key], getattr(station, key))
-            else:
-                self.assertEqual(payload[key], station.network.id)
-
-    # def test_create_location(self):
-    #     '''Test that a location can be created under a network and station'''
-    #     url = reverse('nslc:location-list')
-    #     payload = {
-    #         'code': 'TL',
-    #         'name': 'Test location',
-    #         'lat': 47.8,
-    #         'lon': 122.3,
-    #         'elev': 100.0,
-    #         'station': self.sta.id
-    #     }
-    #     res = self.client.post(url, payload)
-    #     self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-    #     location = Location.objects.get(id=res.data['id'])
-    #     for key in payload.keys():
-    #         if key != 'station':
-    #             self.assertEqual(payload[key], getattr(location, key))
-    #         else:
-    #             self.assertEqual(payload[key], location.station.id)
 
     def test_create_channel(self):
 
@@ -182,9 +122,11 @@ class PrivateNslcAPITests(TestCase):
         payload = {
             'code': 'TC',
             'name': 'Test channel',
+            'station_code': 'RCS',
+            'station_name': 'Schurman',
             'sample_rate': 96.5,
             'loc': "--",
-            'station': self.sta.id,
+            'network': self.net.code,
             'lat': 45.0,
             'lon': -122.0,
             'elev': 190.0
@@ -193,10 +135,10 @@ class PrivateNslcAPITests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         channel = Channel.objects.get(id=res.data['id'])
         for key in payload.keys():
-            if key != 'station':
+            if key != 'network':
                 self.assertEqual(payload[key], getattr(channel, key))
             else:
-                self.assertEqual(payload[key], channel.station.id)
+                self.assertEqual(payload[key], channel.network.code)
 
     def test_create_group(self):
         '''Test a group can be created'''
@@ -229,7 +171,7 @@ class PrivateNslcAPITests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         group.refresh_from_db()
         self.assertEqual(group.name, payload['name'])
-        self.assertEqual(group.description, "All UW stations")
+        self.assertEqual(group.description, "All UW channels")
         channels = group.channels.all()
         self.assertEqual(len(channels), 1)
         self.assertIn(self.chan, channels)
@@ -241,7 +183,8 @@ class PrivateNslcAPITests(TestCase):
         for i in range(5):
             chan_list.append(
                 Channel.objects.create(
-                    code=f'TC{i}', name=f"TC{i}", loc="--", station=self.sta,
+                    code=f'TC{i}', name=f"TC{i}", loc="--", network=self.net,
+                    station_code='RCM', station_name='Camp Muir',
                     lat=45, lon=-122, elev=100.0, user=self.user
                 )
             )
@@ -265,7 +208,8 @@ class PrivateNslcAPITests(TestCase):
             new_chan_list.append(
                 Channel.objects.create(
                     code=f'TC{i+5}', name=f"TC{i+5}", loc="--",
-                    station=self.sta, lat=45, lon=-122, elev=100.0,
+                    network=self.net, lat=45, lon=-122, elev=100.0,
+                    station_code='RCM', station_name='Camp Muir',
                     user=self.user
                 )
             )
