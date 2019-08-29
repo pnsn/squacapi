@@ -1,5 +1,11 @@
 from rest_framework import serializers
-from .models import Network, Station, Channel, Group
+from .models import Network, Channel, Group
+
+# to dump data from db into fixtures
+# ./mg.sh "dumpdata nslc" > app/nslc/fixtures/nslc_tests.json
+
+# to run only these tests
+# $:./mg.sh "test nslc.tests.test_nslc_api"
 
 
 class GroupSerializer(serializers.HyperlinkedModelSerializer):
@@ -22,21 +28,22 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class ChannelSerializer(serializers.HyperlinkedModelSerializer):
-    station = serializers.PrimaryKeyRelatedField(
-        queryset=Station.objects.all()
+    network = serializers.PrimaryKeyRelatedField(
+        queryset=Network.objects.all()
     )
     url = serializers.HyperlinkedIdentityField(view_name="nslc:channel-detail")
 
     class Meta:
         model = Channel
-        fields = ('class_name', 'code', 'name', 'id', 'url', 'description',
-                  'sample_rate', 'station', 'loc', 'lat',
+        fields = ('id', 'class_name', 'code', 'name', 'station_code',
+                  'station_name', 'url', 'description',
+                  'sample_rate', 'network', 'loc', 'lat',
                   'lon', 'elev', 'created_at', 'updated_at')
         read_only_fields = ('id',)
 
     @staticmethod
     def setup_eager_loading(queryset):
-        queryset = queryset.select_related('station')
+        queryset = queryset.select_related('network')
         return queryset
 
 
@@ -53,40 +60,17 @@ class GroupDetailSerializer(GroupSerializer):
         read_only_fields = ('id',)
 
 
-class StationSerializer(serializers.HyperlinkedModelSerializer):
-    network = serializers.PrimaryKeyRelatedField(
-        queryset=Network.objects.all()
-    )
-    channels = ChannelSerializer(many=True, read_only=True)
-    url = serializers.HyperlinkedIdentityField(view_name="nslc:station-detail")
-
-    class Meta:
-        model = Station
-
-        fields = ('class_name', 'code', 'name', 'id', 'url', 'description',
-                  'created_at', 'updated_at', 'network', 'channels')
-        read_only_fields = ('id',)
-
-    @staticmethod
-    def setup_eager_loading(queryset):
-        # prefetch eagerloads to-many: stations have many channels
-        queryset = queryset.prefetch_related('channels')
-        queryset = queryset.select_related('network')
-        return queryset
-
-
 class NetworkSerializer(serializers.HyperlinkedModelSerializer):
     # stations = StationSerializer(many=True, read_only=True)
     url = serializers.HyperlinkedIdentityField(view_name="nslc:network-detail")
 
     class Meta:
         model = Network
-        fields = ('class_name', 'code', 'name', 'id', 'url', 'description',
+        fields = ('class_name', 'code', 'name', 'url', 'description',
                   'created_at', 'updated_at')
-        read_only_fields = ('id',)
+        # read_only_fields = ('id',)
 
     @staticmethod
     def setup_eager_loading(queryset):
-        queryset = queryset.prefetch_related('stations')
-        queryset = queryset.prefetch_related('stations__channels')
+        queryset = queryset.prefetch_related('channels')
         return queryset

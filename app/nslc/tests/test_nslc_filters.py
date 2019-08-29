@@ -9,10 +9,11 @@ from django.urls import reverse
 
 class PublicNslcFilterTests(TestCase):
     # Public tests for nslc filters
-    fixtures = ['nslc_tests.json']
+    fixtures = ['fixtures_all.json']
     # Fixtures load from the fixtures directory within /nslc
     # to dump data to an nslc folder run:
-    # ./mg.sh "dumpdata --indent=2 >> somefolder/file.json"
+    # ./mg.sh "dumpdata nslc --indent=2" > app/nslc/fixtures/nslc_tests.json
+    # then delete the first line of file
 
     def setUp(self):
         self.client = APIClient()
@@ -26,15 +27,6 @@ class PublicNslcFilterTests(TestCase):
         for dict in res.data:
             if dict['class_name'] == 'network':
                 self.assertEqual(dict['code'], 'uw')
-
-    def test_station_filter(self):
-        url = reverse('nslc:station-list')
-        url += '?station=kvcs'
-        res = self.client.get(url)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        for dict in res.data:
-            if dict['class_name'] == 'station':
-                self.assertEqual(dict['code'], 'kvcs')
 
     def test_channel_filter(self):
         url = reverse('nslc:channel-list')
@@ -55,7 +47,7 @@ class PublicNslcFilterTests(TestCase):
             if dict['class_name'] == 'channel':
                 channel_count += 1
                 self.assertEqual(dict['code'][2], 'z')
-        self.assertEqual(channel_count, 4)
+        self.assertEqual(channel_count, 2)
 
     def test_bad_channel_request(self):
         url = reverse('nslc:channel-list')

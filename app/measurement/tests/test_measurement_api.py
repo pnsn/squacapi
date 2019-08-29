@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from measurement.models import Metric, Measurement
-from nslc.models import Network, Station, Channel
+from nslc.models import Network, Channel
 
 from rest_framework.test import APIClient
 from rest_framework import status
@@ -44,17 +44,13 @@ class PublicMeasurementApiTests(TestCase):
             name="University of Washington",
             user=self.user
         )
-        self.sta = Station.objects.create(
-            code='RCM',
-            name="Camp Muir",
-            network=self.net,
-            user=self.user
-        )
         self.chan = Channel.objects.create(
             code='EHZ',
             name="EHZ",
+            station_code='RCM',
+            station_name='Camp Muir',
             loc="--",
-            station=self.sta,
+            network=self.net,
             lat=45,
             lon=-122,
             elev=0,
@@ -121,17 +117,13 @@ class PrivateMeasurementAPITests(TestCase):
             name="University of Washington",
             user=self.user
         )
-        self.sta = Station.objects.create(
-            code='RCM',
-            name="Camp Muir",
-            network=self.net,
-            user=self.user
-        )
         self.chan = Channel.objects.create(
             code='EHZ',
             name="EHZ",
+            station_code='RCM',
+            station_name='Camp Muir',
             loc="--",
-            station=self.sta,
+            network=self.net,
             lat=45,
             lon=-122,
             elev=0,

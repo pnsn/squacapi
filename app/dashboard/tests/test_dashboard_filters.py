@@ -11,10 +11,9 @@ from dashboard.models import Dashboard
 
 class PublicDashboardFilterTests(TestCase):
     # Public tests for dashboard filters
-    fixtures = ['dashboard_tests.json']
-    # Fixtures load from fixtures directory in dashboard
-    # to dump data to a dashboard folder run:
-    # ./mg.sh "dumpdata --indent=2 >> dashboard/fixtures/file.json"
+    fixtures = ['fixtures_all.json']
+    # Fixtures load from fixtures directory in app
+    # see README in app/fixutes/README
 
     def setUp(self):
         self.client = APIClient()

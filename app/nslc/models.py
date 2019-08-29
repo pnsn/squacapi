@@ -29,33 +29,23 @@ class Nslc(models.Model):
 
 
 class Network(Nslc):
-    code = models.CharField(max_length=2, unique=True)
-
-
-class Station(Nslc):
-    code = models.CharField(max_length=5)
-    network = models.ForeignKey(
-        Network,
-        on_delete=models.CASCADE,
-        related_name='stations'
-    )
-
-    class Meta:
-        unique_together = (("code", "network"),)
+    code = models.CharField(max_length=2, unique=True, primary_key=True)
 
 
 class Channel(Nslc):
     code = models.CharField(max_length=3)
+    station_code = models.CharField(max_length=5)
+    station_name = models.CharField(max_length=255)
     sample_rate = models.FloatField(null=True, blank=True)
     loc = models.CharField(max_length=2, default='--')
     lat = models.FloatField()
     lon = models.FloatField()
     elev = models.FloatField()
-    station = models.ForeignKey(Station, on_delete=models.CASCADE,
+    network = models.ForeignKey(Network, on_delete=models.CASCADE,
                                 related_name='channels')
 
     class Meta:
-        unique_together = (("code", "station"),)
+        unique_together = (("code", "network"),)
 
 
 class Group(models.Model):
