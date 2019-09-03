@@ -25,13 +25,13 @@ def sample_user(email='test@pnsn.org', password="secret"):
     return get_user_model().objects.create_user(email, password)
 
 
-class PublicMeasurementApiTests(TestCase):
+class UnauthenticatedMeasurementApiTests(TestCase):
     '''Test the measurement api (public)'''
 
     def setUp(self):
         self.user = sample_user()
         self.client = APIClient()
-        # unauthenticate all public tests
+        # unauthenticate all requests
         self.client.force_authenticate(user=None)
         timezone.now()
         self.metric = Metric.objects.create(
@@ -65,15 +65,13 @@ class PublicMeasurementApiTests(TestCase):
             user=self.user
         )
 
-    def test_metric_res_and_str(self):
+    def test_unauthenticated_metric(self):
         url = reverse(
             'measurement:metric-detail',
             kwargs={'pk': self.metric.id}
         )
         res = self.client.get(url)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data['name'], 'Metric test')
-        self.assertEqual(str(self.metric), 'Metric test')
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_metric_post_unauth(self):
         url = reverse('measurement:metric-list')
@@ -90,13 +88,7 @@ class PublicMeasurementApiTests(TestCase):
             kwargs={'pk': self.measurement.id}
         )
         res = self.client.get(url)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data['metric'], self.metric.id)
-        self.assertEqual(res.data['channel'], self.chan.id)
-        self.assertEqual(
-            str(self.measurement),
-            'Metric: Metric test Channel: EHZ'
-        )
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
 class PrivateMeasurementAPITests(TestCase):
@@ -130,6 +122,25 @@ class PrivateMeasurementAPITests(TestCase):
             user=self.user
         )
 
+        self.measurement = Measurement.objects.create(
+            metric=self.metric,
+            channel=self.chan,
+            value=3.0,
+            starttime=datetime(2019, 5, 5, 8, 8, 7, 127325, tzinfo=pytz.UTC),
+            endtime=datetime(2019, 5, 5, 9, 8, 7, 127325, tzinfo=pytz.UTC),
+            user=self.user
+        )
+
+    def test_get_metric(self):
+        url = reverse(
+            'measurement:metric-detail',
+            kwargs={'pk': self.metric.id}
+        )
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data['name'], 'Sample metric')
+        self.assertEqual(str(self.metric), 'Sample metric')
+
     def test_create_metric(self):
         url = reverse('measurement:metric-list')
         payload = {
@@ -143,6 +154,20 @@ class PrivateMeasurementAPITests(TestCase):
         metric = Metric.objects.get(id=res.data['id'])
         for key in payload.keys():
             self.assertEqual(payload[key], getattr(metric, key))
+
+    def test_get_measurement(self):
+        url = reverse(
+            'measurement:measurement-detail',
+            kwargs={'pk': self.measurement.id}
+        )
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data['metric'], self.metric.id)
+        self.assertEqual(res.data['channel'], self.chan.id)
+        self.assertEqual(
+            str(self.measurement),
+            'Metric: Sample metric Channel: EHZ'
+        )
 
     def test_create_measurement(self):
         url = reverse('measurement:measurement-list')
