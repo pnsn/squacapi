@@ -193,7 +193,7 @@ class PrivateNslcAPITests(TestCase):
         for i in range(5):
             chan_list.append(
                 Channel.objects.create(
-                    code=f'TC{i}', name=f"TC{i}", loc="--", network=self.net,
+                    code=f"TC{i}", name=f"TC{i}", loc="--", network=self.net,
                     station_code='RCM', station_name='Camp Muir',
                     lat=45, lon=-122, elev=100.0, user=self.user
                 )
