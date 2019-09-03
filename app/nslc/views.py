@@ -69,21 +69,6 @@ class NetworkFilter(filters.FilterSet):
         fields = ['network', 'channel']
 
 
-# class StationFilter(filters.FilterSet):
-#     network = filters.CharFilter(
-#         field_name='network__code', method=in_sql)
-#     station = filters.CharFilter(
-#         field_name='code', lookup_expr='iexact')
-#     # this will need to change to channels__code
-#     channel = filters.CharFilter(
-#         field_name='channels__code', method=regex_sql)
-
-    # class Meta:
-    #     model = Station
-    #     # These need to match column names or filter vars from above
-    #     fields = ['network', 'station', 'channel']
-
-
 class ChannelFilter(filters.FilterSet):
     network = filters.CharFilter(
         field_name='network__code', method=in_sql)
