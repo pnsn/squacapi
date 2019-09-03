@@ -9,7 +9,7 @@ from django.contrib.auth import get_user_model
 '''Tests for custom measurement filters in views.py'''
 
 
-class PublicMeasurementFilterTests(TestCase):
+class AuthenticatedMeasurementFilterTests(TestCase):
     # Public tests for filters
     fixtures = ['fixtures_all.json']
     # Fixtures load from fixture directory within measurement app
