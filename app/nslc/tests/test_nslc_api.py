@@ -13,8 +13,12 @@ from rest_framework import status
     *ChannelGroup
 
 
-to run only these test:
-    /mg.sh "test nslc && flake8"'''
+to run only the app tests:
+    /mg.sh "test nslc && flake8"
+to run only this file
+    ./mg.sh "test nslc.tests.test_nslc_api  && flake8"
+
+'''
 
 
 def sample_user(email='test@pnsn.org', password="secret"):
@@ -22,13 +26,13 @@ def sample_user(email='test@pnsn.org', password="secret"):
     return get_user_model().objects.create_user(email, password)
 
 
-class PublicNslcApiTests(TestCase):
-    '''Test the nslc api (public)'''
+class UnAuthenticatedNslcApiTests(TestCase):
+    '''Test the nslc api (public). should 401 on all requests'''
 
     def setUp(self):
         self.user = sample_user()
         self.client = APIClient()
-        # unauthenticate all public tests
+        # unauthenticate user
         self.client.force_authenticate(user=None)
         self.net = Network.objects.create(
             code="UW", name="University of Washington", user=self.user)
@@ -40,48 +44,28 @@ class PublicNslcApiTests(TestCase):
             name='Test group', is_public=True, user=self.user)
         self.grp.channels.add(self.chan)
 
-    def test_network_res_and_str(self):
-        '''test if str is corrected'''
+    def test_network_unathorized(self):
+        '''test if unauth user can read or write to network'''
         url = reverse('nslc:network-detail', kwargs={'pk': self.net.code})
         res = self.client.get(url)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data['name'], "University of Washington")
-        self.assertEqual(str(self.net), "UW")
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
         url = reverse('nslc:network-list')
         payload = {'code': "UW", "name": "University of Washington"}
         res = self.client.post(url, payload)
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_channel_res_and_str(self):
-        '''test if correct channel object is returned'''
+    def test_channel_unauthorized(self):
+        '''check that unathenticated user can't read or write to channels'''
         url = reverse('nslc:channel-detail', kwargs={'pk': self.chan.id})
         res = self.client.get(url)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data['name'], "EHZ")
-        self.assertEqual(str(self.chan), "EHZ")
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_group_res_and_str(self):
-        '''Test if correct group object is returned'''
+    def test_group_unauthorized(self):
+        '''Test if unauth user can read/write groups'''
         url = reverse('nslc:group-detail', kwargs={'pk': self.grp.id})
         res = self.client.get(url)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data['name'], 'Test group')
-        self.assertEqual(str(self.grp), 'Test group')
-        for channel in res.data['channels']:
-            self.assertEqual(channel['id'], self.chan.id)
-            self.assertEqual(channel['code'], self.chan.code)
-
-    # def test_changroup_res(self):
-    #     '''Test if correct channel group object is returned'''
-    #     url = reverse(
-    #         'nslc:channelgroup-detail',
-    #         kwargs={'pk': self.changrp.id}
-    #     )
-    #     res = self.client.get(url)
-    #     self.assertEqual(res.status_code, status.HTTP_200_OK)
-    #     self.assertEqual(res.data['group'], self.grp.id)
-    #     self.assertEqual(res.data['channel'], self.chan.id)
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
 class PrivateNslcAPITests(TestCase):
@@ -95,7 +79,6 @@ class PrivateNslcAPITests(TestCase):
         self.client = APIClient()
         self.user = sample_user(email="test@pnsn.org", password="secret")
         self.client.force_authenticate(self.user)
-        # print(self.user.permissions)
         self.net = Network.objects.create(
             code="UW", name="University of Washington", user=self.user)
         self.chan = Channel.objects.create(
@@ -105,6 +88,14 @@ class PrivateNslcAPITests(TestCase):
         self.grp = Group.objects.create(
             name='Test group', is_public=True, user=self.user)
 
+    def test_get_network(self):
+        '''test if str is corrected'''
+        url = reverse('nslc:network-detail', kwargs={'pk': self.net.code})
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data['name'], "University of Washington")
+        self.assertEqual(str(self.net), "UW")
+
     def test_create_network(self):
         url = reverse('nslc:network-list')
         payload = {'code': "TN", "name": "Test network"}
@@ -113,6 +104,14 @@ class PrivateNslcAPITests(TestCase):
         network = Network.objects.get(code=res.data['code'])
         for key in payload.keys():
             self.assertEqual(payload[key], getattr(network, key))
+
+    def test_get_channel(self):
+        '''Test if auth user cat get channel'''
+        url = reverse('nslc:channel-detail', kwargs={'pk': self.chan.id})
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data['name'], "EHZ")
+        self.assertEqual(str(self.chan), "EHZ")
 
     def test_create_channel(self):
 
@@ -139,6 +138,17 @@ class PrivateNslcAPITests(TestCase):
                 self.assertEqual(payload[key], getattr(channel, key))
             else:
                 self.assertEqual(payload[key], channel.network.code)
+
+    def test_get_group(self):
+        '''Test if correct group object is returned'''
+        url = reverse('nslc:group-detail', kwargs={'pk': self.grp.id})
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data['name'], 'Test group')
+        self.assertEqual(str(self.grp), 'Test group')
+        for channel in res.data['channels']:
+            self.assertEqual(channel['id'], self.chan.id)
+            self.assertEqual(channel['code'], self.chan.code)
 
     def test_create_group(self):
         '''Test a group can be created'''
@@ -219,16 +229,3 @@ class PrivateNslcAPITests(TestCase):
         self.assertEqual(len(new_channels), 5)
         for channel in new_chan_list:
             self.assertIn(channel, new_channels)
-
-    # def test_create_channelgroup(self):
-    #     '''Test a channel group can be created'''
-    #     url = reverse('nslc:channelgroup-list')
-    #     payload = {
-    #         'group': self.grp.id,
-    #         'channel': self.chan.id
-    #     }
-    #     res = self.client.post(url, payload)
-    #     self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-    #     changrp = ChannelGroup.objects.get(id=res.data['id'])
-    #     self.assertEqual(payload['group'], changrp.group.id)
-    #     self.assertEqual(payload['channel'], changrp.channel.id)

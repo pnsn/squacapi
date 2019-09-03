@@ -3,12 +3,14 @@ from django.test import TestCase
 from rest_framework.test import APIClient
 from rest_framework import status
 from django.urls import reverse
+from django.contrib.auth import get_user_model
+
 
 '''Tests for custom nslc filters in views.py'''
 
 
-class PublicNslcFilterTests(TestCase):
-    # Public tests for nslc filters
+class NslcFilterTests(TestCase):
+    # Tests for nslc filters
     fixtures = ['fixtures_all.json']
     # Fixtures load from the fixtures directory within /nslc
     # to dump data to an nslc folder run:
@@ -17,7 +19,9 @@ class PublicNslcFilterTests(TestCase):
 
     def setUp(self):
         self.client = APIClient()
-        self.client.force_authenticate(user=None)
+        self.user = get_user_model().objects.create_user(
+            email="test@pnsn.org", password="secret")
+        self.client.force_authenticate(self.user)
 
     def test_network_filter(self):
         url = reverse('nslc:network-list')

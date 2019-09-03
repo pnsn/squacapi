@@ -5,7 +5,7 @@ from rest_framework.reverse import reverse
 from rest_framework.authentication import TokenAuthentication, \
     SessionAuthentication
 
-from rest_framework.permissions import BasePermission, SAFE_METHODS
+from rest_framework.permissions import IsAuthenticated
 
 from .models import Network, Channel, Group
 from nslc.serializers import NetworkSerializer, ChannelSerializer, \
@@ -113,28 +113,29 @@ def api_root(request, format=None):
 """
 
 
-class ObjPermissionOrReadOnly(BasePermission):
-    """Object-level permission on scarey methods, read only on safe methods """
+# class ObjPermissionOrReadOnly(BasePermission):
+#     """Object-level permission on scarey methods,
+# read only on safe methods """
 
-    def has_permission(self, request, view):
-        '''http permission?'''
+#     def has_permission(self, request, view):
+#         '''http permission?'''
 
-        if request.method in SAFE_METHODS:
-            return True
-        # user must be authenticated
-        return request.user and request.user.is_authenticated
+#         # if request.method in SAFE_METHODS:
+#         #     return True
+#         # user must be authenticated
+#         return request.user and request.user.is_authenticated
 
-    def has_obj_permission(self, request, view, obj):
-        '''object level permissions, set by adding user to group
+#     def has_obj_permission(self, request, view, obj):
+#         '''object level permissions, set by adding user to group
 
-        Read permissions are allowed to any request,
-        so we'll always allow GET, HEAD or OPTIONS requests.
-        '''
-        if request.method in SAFE_METHODS:
-            return True
+#         Read permissions are allowed to any request,
+#         so we'll always allow GET, HEAD or OPTIONS requests.
+#         '''
+#         # if request.method in SAFE_METHODS:
+#         #     return True
 
-        # user must have permission
-        return self.check_object_permissions(request, obj)
+#         # user must have permission
+#         return self.check_object_permissions(request, obj)
 
 
 class BaseNslcViewSet(viewsets.ModelViewSet):
@@ -145,9 +146,8 @@ class BaseNslcViewSet(viewsets.ModelViewSet):
         all data
      '''
     authentication_classes = (TokenAuthentication, SessionAuthentication)
-    permission_classes = (ObjPermissionOrReadOnly, )
+    permission_classes = (IsAuthenticated, )
     filter_backends = (filters.DjangoFilterBackend,)
-    # permisssion_classes = (IsAuthenticatedOrReadOnly, )
 
     # all models have require an auth user, set on create
     def perform_create(self, serializer):
