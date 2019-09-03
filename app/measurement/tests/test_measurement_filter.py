@@ -3,6 +3,8 @@ from django.test import TestCase
 from rest_framework.test import APIClient
 from rest_framework import status
 from django.urls import reverse
+from django.contrib.auth import get_user_model
+
 
 '''Tests for custom measurement filters in views.py'''
 
@@ -14,7 +16,9 @@ class PublicMeasurementFilterTests(TestCase):
 
     def setUp(self):
         self.client = APIClient()
-        self.client.force_authenticate(user=None)
+        self.user = get_user_model().objects.create_user(
+            "test@pnsn.org", "secret")
+        self.client.force_authenticate(self.user)
 
     def test_measurement_invalid_filter_input(self):
         # Not inputing metric, channel, starttime, and endtime should result
