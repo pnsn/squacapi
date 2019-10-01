@@ -2,7 +2,6 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 from core import models
-from nslc import models as nslc
 
 
 class UserAdmin(BaseUserAdmin):
@@ -35,4 +34,3 @@ class UserAdmin(BaseUserAdmin):
 
 
 admin.site.register(models.User, UserAdmin)
-admin.site.register(nslc.Network)

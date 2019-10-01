@@ -20,7 +20,7 @@ class WidgetSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Widget
         fields = (
-            'id', 'name', 'dashboard', 'widgettype', 'metrics',
+            'id', 'name', 'dashboard', 'widgettype', 'description', 'metrics',
             'created_at', 'updated_at'
         )
         read_only_fields = ('id',)
@@ -34,7 +34,7 @@ class DashboardSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Dashboard
         fields = (
-            'id', 'name', 'group', 'created_at', 'updated_at'
+            'id', 'name', 'group', 'description', 'created_at', 'updated_at'
         )
         read_only_fields = ('id',)
 
@@ -44,7 +44,7 @@ class WidgetTypeSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = WidgetType
         fields = (
-            'id', 'name', 'type', 'created_at', 'updated_at'
+            'id', 'name', 'type', 'description', 'created_at', 'updated_at'
         )
         read_only_fields = ('id',)
 
@@ -71,7 +71,7 @@ class WidgetDetailSerializer(WidgetSerializer):
     class Meta:
         model = Widget
         fields = (
-            'id', 'name', 'dashboard', 'widgettype', 'metrics',
+            'id', 'name', 'dashboard', 'description', 'widgettype', 'metrics',
             'created_at', 'updated_at'
         )
         read_only_fields = ('id',)

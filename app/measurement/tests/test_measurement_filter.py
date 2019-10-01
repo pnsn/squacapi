@@ -46,3 +46,11 @@ class AuthenticatedMeasurementFilterTests(TestCase):
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data), 0)
+
+    def test_metric_filter(self):
+        m1, m2 = 'pctavailable', 'ngaps'
+        url = reverse('measurement:metric-list')
+        url += f'?name={m1},{m2}'
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data), 2)

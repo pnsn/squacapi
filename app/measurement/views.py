@@ -6,31 +6,18 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Metric, Measurement
 from measurement import serializers
 from .exceptions import MissingParameterException
+from squac.filters import in_sql
+from django_filters import rest_framework as filters
 
 
-# class ObjPermissionOrReadOnly(BasePermission):
-#     '''Object-level permission on scarey methods,
-#       read only on safe methods'''
+class MetricFilter(filters.FilterSet):
+    name = filters.CharFilter(
+        field_name='name', method=in_sql)
 
-#     def has_permission(self, request, view):
-#         '''http permission?'''
-
-#         if request.method in SAFE_METHODS:
-#             return True
-#         # user must be authenticated
-#         return request.user and request.user.is_authenticated
-
-#     def has_obj_permission(self, request, view, obj):
-#         '''object level permissions, set by adding user to group
-
-#         Read permissions are allowed to any request,
-#         so we'll always allow GET, HEAD or OPTIONS requests.
-#         '''
-#         if request.method in SAFE_METHODS:
-#             return True
-
-#         # user must have permission
-#         return self.check_object_permissions(request, obj)
+    class Meta:
+        model = Metric
+        # These need to match column names or filter vars from above
+        fields = ['name']
 
 
 class BaseMeasurementViewSet(viewsets.ModelViewSet):
@@ -38,6 +25,7 @@ class BaseMeasurementViewSet(viewsets.ModelViewSet):
 
     authentication_classes = (TokenAuthentication, SessionAuthentication)
     permission_classes = (IsAuthenticated, )
+    filter_backends = (filters.DjangoFilterBackend,)
 
     # all models require an auth user, set on create
     def perform_create(self, serializer):
@@ -46,6 +34,7 @@ class BaseMeasurementViewSet(viewsets.ModelViewSet):
 
 class MetricViewSet(BaseMeasurementViewSet):
     serializer_class = serializers.MetricSerializer
+    filter_class = MetricFilter
     queryset = Metric.objects.all()
 
 
