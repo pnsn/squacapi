@@ -42,6 +42,15 @@ class MeasurementViewSet(BaseMeasurementViewSet):
     serializer_class = serializers.MeasurementSerializer
     queryset = Measurement.objects.all()
 
+    def get_serializer(self, *args, **kwargs):
+        """Allow bulk update
+
+        if an array is passed, set serializer to many
+        """
+        if isinstance(kwargs.get('data', {}), list):
+            kwargs['many'] = True
+        return super(MeasurementViewSet, self).get_serializer(*args, **kwargs)
+
     def _params_to_ints(self, qs):
         # Convert a list of string IDs to a list of integers
         return [int(str_id) for str_id in qs.split(',')]
