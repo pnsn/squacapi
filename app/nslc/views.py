@@ -45,11 +45,15 @@ class ChannelFilter(filters.FilterSet):
         field_name='network__code', method=in_sql)
     channel = filters.CharFilter(
         field_name='code', method=regex_sql)
+    station = filters.CharFilter(
+        field_name='station_code')
+    location = filters.CharFilter(
+        field_name='loc')
 
     class Meta:
         model = Channel
         # These need to match column names or filter vars from above
-        fields = ['network', 'channel']
+        fields = ['network', 'channel', 'station', 'loc']
 
 
 @api_view(['GET'])
