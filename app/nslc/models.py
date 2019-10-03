@@ -45,7 +45,7 @@ class Channel(Nslc):
                                 related_name='channels')
 
     class Meta:
-        unique_together = (("code", "network"),)
+        unique_together = (("code", "network", 'station_code', 'loc'),)
 
 
 class Group(models.Model):
