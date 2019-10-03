@@ -8,7 +8,7 @@ def in_sql(queryset, name, value):
     """
     # this just builds a networks__in
     if name is not None:
-        values = value.lower().split(",")
+        values = value.split(",")
         name_in = '__'.join([name, 'in'])
         queryset = queryset.filter(**{name_in: values})
     return queryset
