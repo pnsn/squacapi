@@ -1863,7 +1863,6 @@
   "pk": 1,
   "fields": {
     "created_at": "2019-08-28T23:30:31.262Z",
-    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": 1,
     "metric": 2,
     "channel": 5,
@@ -1877,7 +1876,6 @@
   "pk": 2,
   "fields": {
     "created_at": "2019-08-28T23:30:31.268Z",
-    "updated_at": "2019-08-28T23:30:31.268Z",
     "user": 1,
     "metric": 3,
     "channel": 5,
@@ -1891,7 +1889,6 @@
   "pk": 3,
   "fields": {
     "created_at": "2019-08-28T23:30:31.273Z",
-    "updated_at": "2019-08-28T23:30:31.273Z",
     "user": 1,
     "metric": 4,
     "channel": 5,
@@ -1905,7 +1902,6 @@
   "pk": 4,
   "fields": {
     "created_at": "2019-08-28T23:30:31.279Z",
-    "updated_at": "2019-08-28T23:30:31.279Z",
     "user": 1,
     "metric": 5,
     "channel": 5,
@@ -1919,7 +1915,6 @@
   "pk": 5,
   "fields": {
     "created_at": "2019-08-28T23:30:31.285Z",
-    "updated_at": "2019-08-28T23:30:31.285Z",
     "user": 1,
     "metric": 6,
     "channel": 5,
@@ -1933,7 +1928,6 @@
   "pk": 6,
   "fields": {
     "created_at": "2019-08-28T23:30:31.291Z",
-    "updated_at": "2019-08-28T23:30:31.291Z",
     "user": 1,
     "metric": 7,
     "channel": 5,
@@ -1947,7 +1941,6 @@
   "pk": 7,
   "fields": {
     "created_at": "2019-08-28T23:30:31.297Z",
-    "updated_at": "2019-08-28T23:30:31.297Z",
     "user": 1,
     "metric": 8,
     "channel": 5,
@@ -1961,7 +1954,6 @@
   "pk": 8,
   "fields": {
     "created_at": "2019-08-28T23:30:31.303Z",
-    "updated_at": "2019-08-28T23:30:31.303Z",
     "user": 1,
     "metric": 9,
     "channel": 5,
@@ -1975,7 +1967,6 @@
   "pk": 9,
   "fields": {
     "created_at": "2019-08-28T23:30:31.309Z",
-    "updated_at": "2019-08-28T23:30:31.309Z",
     "user": 1,
     "metric": 10,
     "channel": 5,
@@ -1989,7 +1980,6 @@
   "pk": 10,
   "fields": {
     "created_at": "2019-08-28T23:30:31.315Z",
-    "updated_at": "2019-08-28T23:30:31.315Z",
     "user": 1,
     "metric": 11,
     "channel": 5,
@@ -2003,7 +1993,6 @@
   "pk": 11,
   "fields": {
     "created_at": "2019-08-28T23:30:31.322Z",
-    "updated_at": "2019-08-28T23:30:31.322Z",
     "user": 1,
     "metric": 12,
     "channel": 5,
@@ -2017,7 +2006,6 @@
   "pk": 12,
   "fields": {
     "created_at": "2019-08-28T23:30:31.328Z",
-    "updated_at": "2019-08-28T23:30:31.328Z",
     "user": 1,
     "metric": 13,
     "channel": 5,
@@ -2031,7 +2019,6 @@
   "pk": 13,
   "fields": {
     "created_at": "2019-08-28T23:30:31.335Z",
-    "updated_at": "2019-08-28T23:30:31.335Z",
     "user": 1,
     "metric": 14,
     "channel": 5,
@@ -2045,7 +2032,6 @@
   "pk": 14,
   "fields": {
     "created_at": "2019-08-28T23:30:31.341Z",
-    "updated_at": "2019-08-28T23:30:31.341Z",
     "user": 1,
     "metric": 15,
     "channel": 5,
@@ -2059,7 +2045,6 @@
   "pk": 15,
   "fields": {
     "created_at": "2019-08-28T23:30:31.348Z",
-    "updated_at": "2019-08-28T23:30:31.348Z",
     "user": 1,
     "metric": 16,
     "channel": 5,
@@ -2073,7 +2058,6 @@
   "pk": 16,
   "fields": {
     "created_at": "2019-08-28T23:30:31.354Z",
-    "updated_at": "2019-08-28T23:30:31.354Z",
     "user": 1,
     "metric": 17,
     "channel": 5,
@@ -2087,7 +2071,6 @@
   "pk": 17,
   "fields": {
     "created_at": "2019-08-28T23:30:31.361Z",
-    "updated_at": "2019-08-28T23:30:31.361Z",
     "user": 1,
     "metric": 18,
     "channel": 5,
@@ -2101,7 +2084,6 @@
   "pk": 18,
   "fields": {
     "created_at": "2019-08-28T23:30:31.367Z",
-    "updated_at": "2019-08-28T23:30:31.367Z",
     "user": 1,
     "metric": 19,
     "channel": 5,
@@ -2115,7 +2097,6 @@
   "pk": 19,
   "fields": {
     "created_at": "2019-08-28T23:30:31.373Z",
-    "updated_at": "2019-08-28T23:30:31.373Z",
     "user": 1,
     "metric": 20,
     "channel": 5,
@@ -2129,7 +2110,6 @@
   "pk": 20,
   "fields": {
     "created_at": "2019-08-28T23:30:31.379Z",
-    "updated_at": "2019-08-28T23:30:31.379Z",
     "user": 1,
     "metric": 21,
     "channel": 5,
@@ -2143,7 +2123,6 @@
   "pk": 21,
   "fields": {
     "created_at": "2019-08-28T23:30:31.385Z",
-    "updated_at": "2019-08-28T23:30:31.385Z",
     "user": 1,
     "metric": 22,
     "channel": 5,
@@ -2157,7 +2136,6 @@
   "pk": 22,
   "fields": {
     "created_at": "2019-08-28T23:30:31.391Z",
-    "updated_at": "2019-08-28T23:30:31.391Z",
     "user": 1,
     "metric": 23,
     "channel": 5,
@@ -2171,7 +2149,6 @@
   "pk": 23,
   "fields": {
     "created_at": "2019-08-28T23:30:31.397Z",
-    "updated_at": "2019-08-28T23:30:31.397Z",
     "user": 1,
     "metric": 24,
     "channel": 5,
@@ -2185,7 +2162,6 @@
   "pk": 24,
   "fields": {
     "created_at": "2019-08-28T23:30:31.404Z",
-    "updated_at": "2019-08-28T23:30:31.404Z",
     "user": 1,
     "metric": 25,
     "channel": 5,
@@ -2199,7 +2175,6 @@
   "pk": 25,
   "fields": {
     "created_at": "2019-08-28T23:30:31.410Z",
-    "updated_at": "2019-08-28T23:30:31.410Z",
     "user": 1,
     "metric": 26,
     "channel": 5,
@@ -2213,7 +2188,6 @@
   "pk": 26,
   "fields": {
     "created_at": "2019-08-28T23:30:31.416Z",
-    "updated_at": "2019-08-28T23:30:31.416Z",
     "user": 1,
     "metric": 27,
     "channel": 5,
@@ -2227,7 +2201,6 @@
   "pk": 27,
   "fields": {
     "created_at": "2019-08-28T23:30:31.422Z",
-    "updated_at": "2019-08-28T23:30:31.422Z",
     "user": 1,
     "metric": 28,
     "channel": 5,
@@ -2241,7 +2214,6 @@
   "pk": 28,
   "fields": {
     "created_at": "2019-08-28T23:30:31.428Z",
-    "updated_at": "2019-08-28T23:30:31.428Z",
     "user": 1,
     "metric": 29,
     "channel": 5,
@@ -2255,7 +2227,6 @@
   "pk": 29,
   "fields": {
     "created_at": "2019-08-28T23:30:31.434Z",
-    "updated_at": "2019-08-28T23:30:31.434Z",
     "user": 1,
     "metric": 30,
     "channel": 5,
@@ -2269,7 +2240,6 @@
   "pk": 30,
   "fields": {
     "created_at": "2019-08-28T23:30:31.440Z",
-    "updated_at": "2019-08-28T23:30:31.440Z",
     "user": 1,
     "metric": 31,
     "channel": 5,
@@ -2283,7 +2253,6 @@
   "pk": 31,
   "fields": {
     "created_at": "2019-08-28T23:30:31.446Z",
-    "updated_at": "2019-08-28T23:30:31.446Z",
     "user": 1,
     "metric": 32,
     "channel": 5,
@@ -2297,7 +2266,6 @@
   "pk": 32,
   "fields": {
     "created_at": "2019-08-28T23:30:31.452Z",
-    "updated_at": "2019-08-28T23:30:31.452Z",
     "user": 1,
     "metric": 33,
     "channel": 5,
@@ -2311,7 +2279,6 @@
   "pk": 33,
   "fields": {
     "created_at": "2019-08-28T23:30:31.456Z",
-    "updated_at": "2019-08-28T23:30:31.456Z",
     "user": 1,
     "metric": 2,
     "channel": 9,
@@ -2325,7 +2292,6 @@
   "pk": 34,
   "fields": {
     "created_at": "2019-08-28T23:30:31.460Z",
-    "updated_at": "2019-08-28T23:30:31.460Z",
     "user": 1,
     "metric": 3,
     "channel": 9,
@@ -2339,7 +2305,6 @@
   "pk": 35,
   "fields": {
     "created_at": "2019-08-28T23:30:31.463Z",
-    "updated_at": "2019-08-28T23:30:31.463Z",
     "user": 1,
     "metric": 4,
     "channel": 9,
@@ -2353,7 +2318,6 @@
   "pk": 36,
   "fields": {
     "created_at": "2019-08-28T23:30:31.467Z",
-    "updated_at": "2019-08-28T23:30:31.467Z",
     "user": 1,
     "metric": 5,
     "channel": 9,
@@ -2367,7 +2331,6 @@
   "pk": 37,
   "fields": {
     "created_at": "2019-08-28T23:30:31.471Z",
-    "updated_at": "2019-08-28T23:30:31.471Z",
     "user": 1,
     "metric": 6,
     "channel": 9,
@@ -2381,7 +2344,6 @@
   "pk": 38,
   "fields": {
     "created_at": "2019-08-28T23:30:31.475Z",
-    "updated_at": "2019-08-28T23:30:31.475Z",
     "user": 1,
     "metric": 7,
     "channel": 9,
@@ -2395,7 +2357,6 @@
   "pk": 39,
   "fields": {
     "created_at": "2019-08-28T23:30:31.480Z",
-    "updated_at": "2019-08-28T23:30:31.480Z",
     "user": 1,
     "metric": 8,
     "channel": 9,
@@ -2409,7 +2370,6 @@
   "pk": 40,
   "fields": {
     "created_at": "2019-08-28T23:30:31.485Z",
-    "updated_at": "2019-08-28T23:30:31.485Z",
     "user": 1,
     "metric": 9,
     "channel": 9,
@@ -2423,7 +2383,6 @@
   "pk": 41,
   "fields": {
     "created_at": "2019-08-28T23:30:31.489Z",
-    "updated_at": "2019-08-28T23:30:31.489Z",
     "user": 1,
     "metric": 10,
     "channel": 9,
@@ -2437,7 +2396,6 @@
   "pk": 42,
   "fields": {
     "created_at": "2019-08-28T23:30:31.493Z",
-    "updated_at": "2019-08-28T23:30:31.493Z",
     "user": 1,
     "metric": 11,
     "channel": 9,
@@ -2451,7 +2409,6 @@
   "pk": 43,
   "fields": {
     "created_at": "2019-08-28T23:30:31.498Z",
-    "updated_at": "2019-08-28T23:30:31.498Z",
     "user": 1,
     "metric": 12,
     "channel": 9,
@@ -2465,7 +2422,6 @@
   "pk": 44,
   "fields": {
     "created_at": "2019-08-28T23:30:31.502Z",
-    "updated_at": "2019-08-28T23:30:31.502Z",
     "user": 1,
     "metric": 13,
     "channel": 9,
@@ -2479,7 +2435,6 @@
   "pk": 45,
   "fields": {
     "created_at": "2019-08-28T23:30:31.506Z",
-    "updated_at": "2019-08-28T23:30:31.506Z",
     "user": 1,
     "metric": 14,
     "channel": 9,
@@ -2493,7 +2448,6 @@
   "pk": 46,
   "fields": {
     "created_at": "2019-08-28T23:30:31.510Z",
-    "updated_at": "2019-08-28T23:30:31.510Z",
     "user": 1,
     "metric": 15,
     "channel": 9,
@@ -2507,7 +2461,6 @@
   "pk": 47,
   "fields": {
     "created_at": "2019-08-28T23:30:31.515Z",
-    "updated_at": "2019-08-28T23:30:31.515Z",
     "user": 1,
     "metric": 16,
     "channel": 9,
@@ -2521,7 +2474,6 @@
   "pk": 48,
   "fields": {
     "created_at": "2019-08-28T23:30:31.519Z",
-    "updated_at": "2019-08-28T23:30:31.519Z",
     "user": 1,
     "metric": 17,
     "channel": 9,
@@ -2535,7 +2487,6 @@
   "pk": 49,
   "fields": {
     "created_at": "2019-08-28T23:30:31.523Z",
-    "updated_at": "2019-08-28T23:30:31.523Z",
     "user": 1,
     "metric": 18,
     "channel": 9,
@@ -2549,7 +2500,6 @@
   "pk": 50,
   "fields": {
     "created_at": "2019-08-28T23:30:31.528Z",
-    "updated_at": "2019-08-28T23:30:31.528Z",
     "user": 1,
     "metric": 19,
     "channel": 9,
@@ -2563,7 +2513,6 @@
   "pk": 51,
   "fields": {
     "created_at": "2019-08-28T23:30:31.532Z",
-    "updated_at": "2019-08-28T23:30:31.532Z",
     "user": 1,
     "metric": 20,
     "channel": 9,
@@ -2577,7 +2526,6 @@
   "pk": 52,
   "fields": {
     "created_at": "2019-08-28T23:30:31.537Z",
-    "updated_at": "2019-08-28T23:30:31.537Z",
     "user": 1,
     "metric": 21,
     "channel": 9,
@@ -2591,7 +2539,6 @@
   "pk": 53,
   "fields": {
     "created_at": "2019-08-28T23:30:31.541Z",
-    "updated_at": "2019-08-28T23:30:31.541Z",
     "user": 1,
     "metric": 22,
     "channel": 9,
@@ -2605,7 +2552,6 @@
   "pk": 54,
   "fields": {
     "created_at": "2019-08-28T23:30:31.545Z",
-    "updated_at": "2019-08-28T23:30:31.546Z",
     "user": 1,
     "metric": 23,
     "channel": 9,
@@ -2619,7 +2565,6 @@
   "pk": 55,
   "fields": {
     "created_at": "2019-08-28T23:30:31.550Z",
-    "updated_at": "2019-08-28T23:30:31.550Z",
     "user": 1,
     "metric": 24,
     "channel": 9,
@@ -2633,7 +2578,6 @@
   "pk": 56,
   "fields": {
     "created_at": "2019-08-28T23:30:31.554Z",
-    "updated_at": "2019-08-28T23:30:31.554Z",
     "user": 1,
     "metric": 25,
     "channel": 9,
@@ -2647,7 +2591,6 @@
   "pk": 57,
   "fields": {
     "created_at": "2019-08-28T23:30:31.559Z",
-    "updated_at": "2019-08-28T23:30:31.559Z",
     "user": 1,
     "metric": 26,
     "channel": 9,
@@ -2661,7 +2604,6 @@
   "pk": 58,
   "fields": {
     "created_at": "2019-08-28T23:30:31.564Z",
-    "updated_at": "2019-08-28T23:30:31.564Z",
     "user": 1,
     "metric": 27,
     "channel": 9,
@@ -2675,7 +2617,6 @@
   "pk": 59,
   "fields": {
     "created_at": "2019-08-28T23:30:31.568Z",
-    "updated_at": "2019-08-28T23:30:31.568Z",
     "user": 1,
     "metric": 28,
     "channel": 9,
@@ -2689,7 +2630,6 @@
   "pk": 60,
   "fields": {
     "created_at": "2019-08-28T23:30:31.572Z",
-    "updated_at": "2019-08-28T23:30:31.572Z",
     "user": 1,
     "metric": 29,
     "channel": 9,
@@ -2703,7 +2643,6 @@
   "pk": 61,
   "fields": {
     "created_at": "2019-08-28T23:30:31.576Z",
-    "updated_at": "2019-08-28T23:30:31.576Z",
     "user": 1,
     "metric": 30,
     "channel": 9,
@@ -2717,7 +2656,6 @@
   "pk": 62,
   "fields": {
     "created_at": "2019-08-28T23:30:31.580Z",
-    "updated_at": "2019-08-28T23:30:31.580Z",
     "user": 1,
     "metric": 31,
     "channel": 9,
@@ -2731,7 +2669,6 @@
   "pk": 63,
   "fields": {
     "created_at": "2019-08-28T23:30:31.585Z",
-    "updated_at": "2019-08-28T23:30:31.585Z",
     "user": 1,
     "metric": 32,
     "channel": 9,
@@ -2745,7 +2682,6 @@
   "pk": 64,
   "fields": {
     "created_at": "2019-08-28T23:30:31.589Z",
-    "updated_at": "2019-08-28T23:30:31.589Z",
     "user": 1,
     "metric": 33,
     "channel": 9,

@@ -7,7 +7,6 @@ from nslc.models import Channel
 class MeasurementBase(models.Model):
     '''Base class for all measurement models'''
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -28,6 +27,7 @@ class Metric(MeasurementBase):
     description = models.CharField(max_length=255, blank=True, default='')
     unit = models.CharField(max_length=255)
     url = models.CharField(max_length=255, default='')
+    updated_at = models.DateTimeField(auto_now=True)
 
 
 class Measurement(MeasurementBase):

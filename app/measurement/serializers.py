@@ -10,15 +10,12 @@ class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
     channel = serializers.PrimaryKeyRelatedField(
         queryset=Channel.objects.all()
     )
-    url = serializers.HyperlinkedIdentityField(
-        view_name="measurement:measurement-detail"
-    )
 
     class Meta:
         model = Measurement
         fields = (
-            'id', 'url', 'metric', 'channel', 'value', 'starttime', 'endtime',
-            'created_at', 'updated_at'
+            'id', 'metric', 'channel', 'value', 'starttime', 'endtime',
+            'created_at'
         )
         read_only_fields = ('id',)
 
