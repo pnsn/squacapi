@@ -5,6 +5,9 @@ from nslc.models import Network, Channel, Group
 
 from rest_framework.test import APIClient
 from rest_framework import status
+from datetime import datetime
+import pytz
+
 
 '''Tests for all nscl models:
     *Network
@@ -39,7 +42,9 @@ class UnAuthenticatedNslcApiTests(TestCase):
         self.chan = Channel.objects.create(
             code='EHZ', name="EHZ", loc="--", lat=45.0, lon=-122.0,
             station_code='RCM', station_name='Camp Muir',
-            elev=100.0, network=self.net, user=self.user)
+            elev=100.0, network=self.net, user=self.user,
+            starttime=datetime(1970, 1, 1, tzinfo=pytz.UTC),
+            endtime=datetime(2599, 12, 31, tzinfo=pytz.UTC))
         self.grp = Group.objects.create(
             name='Test group', is_public=True, user=self.user)
         self.grp.channels.add(self.chan)
@@ -84,7 +89,9 @@ class PrivateNslcAPITests(TestCase):
         self.chan = Channel.objects.create(
             code='EHZ', name="EHZ", loc="--", network=self.net,
             station_code='RCM', station_name='Camp Muir',
-            lat=45, lon=-122, elev=100.0, user=self.user)
+            lat=45, lon=-122, elev=100.0, user=self.user,
+            starttime=datetime(1970, 1, 1, tzinfo=pytz.UTC),
+            endtime=datetime(2599, 12, 31, tzinfo=pytz.UTC))
         self.grp = Group.objects.create(
             name='Test group', is_public=True, user=self.user)
 

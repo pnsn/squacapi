@@ -54,7 +54,9 @@ class UnauthenticatedMeasurementApiTests(TestCase):
             lat=45,
             lon=-122,
             elev=0,
-            user=self.user
+            user=self.user,
+            starttime=datetime(1970, 1, 1, tzinfo=pytz.UTC),
+            endtime=datetime(2599, 12, 31, tzinfo=pytz.UTC)
         )
         self.measurement = Measurement.objects.create(
             metric=self.metric,
@@ -119,7 +121,10 @@ class PrivateMeasurementAPITests(TestCase):
             lat=45,
             lon=-122,
             elev=0,
-            user=self.user
+            user=self.user,
+            starttime=datetime(1970, 1, 1, tzinfo=pytz.UTC),
+            endtime=datetime(2599, 12, 31, tzinfo=pytz.UTC)
+
         )
 
         self.measurement = Measurement.objects.create(

@@ -1,5 +1,7 @@
 from django.db import models
 from django.conf import settings
+from datetime import datetime
+import pytz
 
 
 class Nslc(models.Model):
@@ -41,6 +43,17 @@ class Channel(Nslc):
     lat = models.FloatField()
     lon = models.FloatField()
     elev = models.FloatField()
+    depth = models.FloatField(default=0.0)
+    azimuth = models.FloatField(default=0.0)
+    dip = models.FloatField(default=0.0)
+    sensor_description = models.CharField(max_length=255, default="")
+    scale = models.FloatField(default=0.0)
+    scale_freq = models.FloatField(default=1.0)
+    scale_units = models.CharField(max_length=10, default='M/S')
+    starttime = models.DateTimeField(
+        default=datetime(1970, 1, 1, tzinfo=pytz.UTC))
+    endtime = models.DateTimeField(
+        default=datetime(2599, 12, 31, tzinfo=pytz.UTC))
     network = models.ForeignKey(Network, on_delete=models.CASCADE,
                                 related_name='channels')
 
@@ -63,22 +76,3 @@ class Group(models.Model):
 
     def __str__(self):
         return self.name
-
-
-# class ChannelGroup(models.Model):
-#     user = models.ForeignKey(
-#         settings.AUTH_USER_MODEL,
-#         on_delete=models.CASCADE,
-#     )
-#     group = models.ForeignKey(
-#         Group,
-#         on_delete=models.CASCADE,
-#         related_name='channelgroups'
-#     )
-#     channel = models.ForeignKey(
-#         Channel,
-#         on_delete=models.CASCADE,
-#         related_name='channelgroups'
-#     )
-#     created_at = models.DateTimeField(auto_now_add=True)
-#     updated_at = models.DateTimeField(auto_now=True)
