@@ -2,7 +2,7 @@
  run in docker-compose like
  $:docker-compose run --rm app sh -c 'LOADER_EMAIL=email@pnsn.org  \
                     python import/load/load_nslc_nets.py "."'
- 
+
 """
 import csv
 import django
@@ -39,7 +39,7 @@ def main(csv_path):
     # use defaults for attrs not required for the lookup
     for row in netReader:
         print(row)
-        net = Network.objects.get_or_create(
+        Network.objects.get_or_create(
             code=row[0].lower(),
             defaults={'user': user, 'name': row[1]}
         )

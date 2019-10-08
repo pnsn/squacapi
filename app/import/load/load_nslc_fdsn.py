@@ -76,7 +76,7 @@ def main():
             python import/load/load_nslc_fdsn.py path
             --networks=CC,UW,UO
             --endtime=[YYYY-mm-dd]"""
-        )
+    )
     parser.add_argument('--path', default='.',
                         help="path to app root dir")
     parser.add_argument('--networks', required=True,
@@ -134,7 +134,7 @@ def main():
             net = networks[row[0].lower()]
             Channel.objects.get_or_create(
                 network=net,
-                station_code=row[1].lower(), 
+                station_code=row[1].lower(),
                 loc=row[2].lower(),
                 code=row[3].lower(),
                 defaults={
