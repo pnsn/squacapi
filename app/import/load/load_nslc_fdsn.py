@@ -1,7 +1,8 @@
 """load channel data from fdsn
  run in docker-compose:
  $:docker-compose run --rm app sh -c 'LOADER_EMAIL=email@pnsn.org  \
-                    python import/load/load_nslc_fdsn.py "."'
+                    python import/load/load_nslc_fdsn.py --path="." \
+                    --networks="UW,CC,UO" --endtime="YYYY-mm-dd"'
 
 """
 import csv

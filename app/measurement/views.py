@@ -40,7 +40,7 @@ class MetricViewSet(BaseMeasurementViewSet):
 
 class MeasurementViewSet(BaseMeasurementViewSet):
     serializer_class = serializers.MeasurementSerializer
-    queryset = Measurement.objects.all().order_by('metric', 'channel')
+    queryset = Measurement.objects.all().order_by('channel', 'metric')
 
     def get_serializer(self, *args, **kwargs):
         """Allow bulk update
