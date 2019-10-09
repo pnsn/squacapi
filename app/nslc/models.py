@@ -49,7 +49,7 @@ class Channel(Nslc):
     sensor_description = models.CharField(max_length=255, default="")
     scale = models.FloatField(default=0.0)
     scale_freq = models.FloatField(default=1.0)
-    scale_units = models.CharField(max_length=10, default='M/S')
+    scale_units = models.CharField(max_length=32, default='M/S')
     starttime = models.DateTimeField(
         default=datetime(1970, 1, 1, tzinfo=pytz.UTC))
     endtime = models.DateTimeField(

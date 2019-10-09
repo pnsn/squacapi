@@ -45,5 +45,8 @@ class Measurement(MeasurementBase):
     starttime = models.DateTimeField()
     endtime = models.DateTimeField()
 
+    class Meta:
+        unique_together = (("metric", "channel", 'starttime', 'endtime'),)
+
     def __str__(self):
         return f"Metric: {str(self.metric)} Channel: {str(self.channel)}"

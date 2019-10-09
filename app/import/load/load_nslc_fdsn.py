@@ -111,8 +111,10 @@ def main():
     if not endtime:
         endtime = datetime.now()
         endtime = endtime.strftime("%Y-%m-%d")
+    print(endtime)
     station_url = build_url(args.networks, 'station', endtime)
     # create a station hash so we can pull out station description
+
     stations = {}
     with requests.Session() as s:
         download = s.get(station_url)
@@ -122,8 +124,7 @@ def main():
         # skip first two rows of metadata
         for row in row_list[2:]:
             stations[row[1].lower()] = row[5]
-
-    channel_url = build_url('UW,CC,UO', 'channel', endtime)
+    channel_url = build_url(args.networks, 'channel', endtime)
     with requests.Session() as s:
         download = s.get(channel_url)
         decoded_content = download.content.decode('utf-8')
@@ -131,12 +132,11 @@ def main():
         row_list = list(content)
         # skip first two rows of metadata
         for row in row_list[5:]:
-
             net = networks[row[0].lower()]
             Channel.objects.get_or_create(
                 network=net,
                 station_code=row[1].lower(),
-                loc=row[2].lower(),
+                loc='--' if not row[2] else row[2].lower(),
                 code=row[3].lower(),
                 defaults={
                     'lat': float(row[4]),
