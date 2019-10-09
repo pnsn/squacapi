@@ -181,8 +181,8 @@ class PrivateMeasurementAPITests(TestCase):
             'channel': self.chan.id,
             'value': 47.0,
             'starttime': datetime(
-                2019, 5, 5, 8, 8, 7, 127325, tzinfo=pytz.UTC),
-            'endtime': datetime(2019, 5, 5, 9, 8, 7, 127325, tzinfo=pytz.UTC),
+                2019, 4, 5, 8, 8, 7, 127325, tzinfo=pytz.UTC),
+            'endtime': datetime(2019, 4, 5, 9, 8, 7, 127325, tzinfo=pytz.UTC),
             'user': self.user
         }
         res = self.client.post(url, payload)
@@ -207,18 +207,18 @@ class PrivateMeasurementAPITests(TestCase):
                 'channel': self.chan.id,
                 'value': 47.0,
                 'starttime': datetime(
-                    2019, 5, 5, 8, 8, 7, 127325, tzinfo=pytz.UTC),
+                    2019, 1, 5, 8, 8, 7, 127325, tzinfo=pytz.UTC),
                 'endtime': datetime(
-                    2019, 5, 5, 9, 8, 7, 127325, tzinfo=pytz.UTC)
+                    2019, 1, 5, 9, 8, 7, 127325, tzinfo=pytz.UTC)
             },
             {
                 'metric': self.metric.id,
                 'channel': self.chan.id,
                 'value': 10.0,
                 'starttime': datetime(
-                    2019, 6, 5, 8, 8, 7, 127325, tzinfo=pytz.UTC),
+                    2019, 3, 5, 8, 8, 7, 127325, tzinfo=pytz.UTC),
                 'endtime': datetime(
-                    2019, 6, 5, 9, 8, 7, 127325, tzinfo=pytz.UTC)
+                    2019, 3, 5, 9, 8, 7, 127325, tzinfo=pytz.UTC)
             }
         ]
         res = self.client.post(url, payload, format='json')
