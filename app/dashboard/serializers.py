@@ -58,7 +58,8 @@ class DashboardDetailSerializer(DashboardSerializer):
     class Meta:
         model = Dashboard
         fields = (
-            'id', 'name', 'group', 'widgets', 'created_at', 'updated_at'
+            'id', 'name', 'description', 'group', 'widgets', 'created_at',
+            'updated_at'
         )
         read_only_fields = ('id',)
 
