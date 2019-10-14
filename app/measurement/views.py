@@ -6,13 +6,12 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Metric, Measurement
 from measurement import serializers
 from .exceptions import MissingParameterException
-from squac.filters import in_sql
 from django_filters import rest_framework as filters
 
 
 class MetricFilter(filters.FilterSet):
     name = filters.CharFilter(
-        field_name='name', method=in_sql)
+        field_name='name', method='in')
 
     class Meta:
         model = Metric

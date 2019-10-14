@@ -6,7 +6,14 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 
 
-'''Tests for custom nslc filters in views.py'''
+'''Tests for custom nslc filters in views.py
+
+    to run only the app tests:
+    /mg.sh "test nslc && flake8"
+    to run only this file
+    ./mg.sh "test nslc.tests.test_nslc_filters  && flake8"
+
+'''
 
 
 class NslcFilterTests(TestCase):
@@ -41,9 +48,22 @@ class NslcFilterTests(TestCase):
             if dict['class_name'] == 'channel':
                 self.assertEqual(dict['code'], 'hnn')
 
+    def test_channel_date_filter(self):
+        baseurl = reverse('nslc:channel-list')
+        endtime = '2018-02-01T03:00:00Z'
+        url = baseurl + f'?endafter={endtime}'
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data), 10)
+        endtime = '2018-02-01T03:00:00Z'
+        url = baseurl + f'?endbefore={endtime}'
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data), 0)
+
     def test_channel_wildcard_filter(self):
         url = reverse('nslc:channel-list')
-        url += '?channel=**z'
+        url += '?channel=..z'
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         channel_count = 0
@@ -55,7 +75,7 @@ class NslcFilterTests(TestCase):
 
     def test_bad_channel_request(self):
         url = reverse('nslc:channel-list')
-        url += '?channel=***abc'
+        url += '?channel=...abc'
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data), 0)
