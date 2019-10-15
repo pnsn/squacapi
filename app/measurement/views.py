@@ -14,10 +14,6 @@ class MetricFilter(filters.FilterSet):
     # CharInFilter is custom filter see imports
     name = CharInFilter(lookup_expr='in')
 
-    class Meta:
-        model = Metric
-        fields = ['name']
-
 
 class BaseMeasurementViewSet(viewsets.ModelViewSet):
     '''base class for measurement viewsets '''

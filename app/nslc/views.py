@@ -30,10 +30,6 @@ class NetworkFilter(filters.FilterSet):
     network = CharInFilter(field_name='code', lookup_expr='in')
     channel = filters.CharFilter(field_name='channels__code')
 
-    class Meta:
-        model = Network
-        fields = ['network']
-
 
 class ChannelFilter(filters.FilterSet):
     network = CharInFilter(field_name='network__code')
@@ -44,10 +40,6 @@ class ChannelFilter(filters.FilterSet):
     startbefore = filters.CharFilter(field_name='starttime', lookup_expr='lte')
     endafter = filters.CharFilter(field_name='endtime', lookup_expr='gte')
     endbefore = filters.CharFilter(field_name='endtime', lookup_expr='lte')
-
-    class Meta:
-        model = Channel
-        fields = ['network']
 
 
 @api_view(['GET'])
