@@ -32,18 +32,17 @@ class NslcFilterTests(TestCase):
 
     def test_network_filter(self):
         url = reverse('nslc:network-list')
-        url += '?network=uw'
+        url += '?network=uw,cc'
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        for dict in res.data:
-            if dict['class_name'] == 'network':
-                self.assertEqual(dict['code'], 'uw')
+        self.assertEqual(len(res.data), 2)
 
     def test_channel_filter(self):
         url = reverse('nslc:channel-list')
         url += '?channel=hnn'
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertNotEqual(len(res.data), 0)
         for dict in res.data:
             if dict['class_name'] == 'channel':
                 self.assertEqual(dict['code'], 'hnn')

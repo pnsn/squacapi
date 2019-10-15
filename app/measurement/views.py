@@ -7,15 +7,15 @@ from .models import Metric, Measurement
 from measurement import serializers
 from .exceptions import MissingParameterException
 from django_filters import rest_framework as filters
+from squac.filters import CharInFilter
 
 
 class MetricFilter(filters.FilterSet):
-    name = filters.CharFilter(
-        field_name='name', method='in')
+    # CharInFilter is custom filter see imports
+    name = CharInFilter(lookup_expr='in')
 
     class Meta:
         model = Metric
-        # These need to match column names or filter vars from above
         fields = ['name']
 
 

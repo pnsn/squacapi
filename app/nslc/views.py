@@ -10,10 +10,8 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Network, Channel, Group
 from nslc.serializers import NetworkSerializer, ChannelSerializer, \
     GroupSerializer, GroupDetailSerializer
-
-
-# import django_filters as filters
 from django_filters import rest_framework as filters
+from squac.filters import CharInFilter
 
 """Filter classes used for view filtering"""
 
@@ -29,19 +27,16 @@ perform regex SQL 'LIKE' for channel
 
 
 class NetworkFilter(filters.FilterSet):
-    network = filters.CharFilter(
-        field_name='code', lookup_expr='in')
-    channel = filters.CharFilter(
-        field_name='channels__code', lookup_expr='iexact')
+    network = CharInFilter(field_name='code', lookup_expr='in')
+    channel = filters.CharFilter(field_name='channels__code')
 
     class Meta:
         model = Network
-        # These need to match column names or filter vars from above
-        fields = ['network', 'channel']
+        fields = ['network']
 
 
 class ChannelFilter(filters.FilterSet):
-    network = filters.CharFilter(field_name='network__code', lookup_expr='in')
+    network = CharInFilter(field_name='network__code')
     channel = filters.CharFilter(field_name='code', lookup_expr='iregex')
     station = filters.CharFilter(field_name='station_code')
     location = filters.CharFilter(field_name='loc')
@@ -49,10 +44,10 @@ class ChannelFilter(filters.FilterSet):
     startbefore = filters.CharFilter(field_name='starttime', lookup_expr='lte')
     endafter = filters.CharFilter(field_name='endtime', lookup_expr='gte')
     endbefore = filters.CharFilter(field_name='endtime', lookup_expr='lte')
+
     class Meta:
         model = Channel
-        # These need to match column names or filter vars from above
-        fields = ['network', 'channel', 'station', 'loc']
+        fields = ['network']
 
 
 @api_view(['GET'])
