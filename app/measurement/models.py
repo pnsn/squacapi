@@ -23,6 +23,7 @@ class MeasurementBase(models.Model):
 
 
 class Metric(MeasurementBase):
+    '''Describes the kind of metric'''
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=255, blank=True, default='')
     unit = models.CharField(max_length=255)
@@ -31,6 +32,7 @@ class Metric(MeasurementBase):
 
 
 class Measurement(MeasurementBase):
+    '''describes the observable metrics'''
     metric = models.ForeignKey(
         Metric,
         on_delete=models.CASCADE,

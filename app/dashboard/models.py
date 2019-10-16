@@ -26,10 +26,17 @@ class DashboardBase(models.Model):
 
 
 class WidgetType(DashboardBase):
-    type = models.CharField(max_length=255)
+    '''describes the type of widget'''
+    type = models.CharField(max_length=255, unique=True)
 
+
+class StatType(DashboardBase):
+    '''describes the stat used on widget'''
+    type = models.CharField(max_length=255, unique=True)
+    
 
 class Dashboard(DashboardBase):
+    '''describes the container the holds widgets'''
     group = models.ForeignKey(
         Group,
         on_delete=models.CASCADE,
@@ -38,6 +45,7 @@ class Dashboard(DashboardBase):
 
 
 class Widget(DashboardBase):
+    '''describes the widget'''
     metrics = models.ManyToManyField('measurement.Metric')
     dashboard = models.ForeignKey(
         Dashboard,
@@ -48,4 +56,9 @@ class Widget(DashboardBase):
         WidgetType,
         on_delete=models.CASCADE,
         related_name='widgets',
+    )
+    statttype = models.ForeignKey(
+        StatType,
+        on_delete=models.CASCADE,
+        related_name='stat',
     )
