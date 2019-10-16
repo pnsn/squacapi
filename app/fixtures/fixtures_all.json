@@ -2961,6 +2961,7 @@
     "user": 1,
     "dashboard": 1,
     "widgettype": 1,
+    "stattype_id":1,
     "metrics": [
       2,
       3,
@@ -3008,6 +3009,7 @@
     "user": 1,
     "dashboard": 1,
     "widgettype": 2,
+    "stattype_id":1,
     "metrics": [
       22
     ]
@@ -3024,6 +3026,7 @@
     "user": 1,
     "dashboard": 2,
     "widgettype": 1,
+    "stattype_id":1,
     "metrics": [
       2,
       3,
@@ -3071,6 +3074,7 @@
     "user": 1,
     "dashboard": 2,
     "widgettype": 2,
+    "stattype_id":1,
     "metrics": [
       22
     ]
@@ -3087,6 +3091,7 @@
     "user": 1,
     "dashboard": 3,
     "widgettype": 1,
+    "stattype_id":1,
     "metrics": [
       2,
       3,
@@ -3134,6 +3139,7 @@
     "user": 1,
     "dashboard": 3,
     "widgettype": 2,
+    "stattype_id":1,
     "metrics": [
       22
     ]
@@ -3150,6 +3156,7 @@
     "user": 1,
     "dashboard": 4,
     "widgettype": 1,
+    "stattype_id":1,
     "metrics": [
       2,
       3,
@@ -3197,6 +3204,7 @@
     "user": 1,
     "dashboard": 4,
     "widgettype": 2,
+    "stattype_id":1,
     "metrics": [
       22
     ]
@@ -3213,6 +3221,7 @@
     "user": 1,
     "dashboard": 5,
     "widgettype": 1,
+    "stattype_id":1,
     "metrics": [
       2,
       3,
@@ -3260,6 +3269,7 @@
     "user": 1,
     "dashboard": 5,
     "widgettype": 2,
+    "stattype_id":1,
     "metrics": [
       22
     ]
@@ -3276,6 +3286,7 @@
     "user": 1,
     "dashboard": 6,
     "widgettype": 1,
+    "stattype_id":1,
     "metrics": [
       2,
       3,
@@ -3323,6 +3334,7 @@
     "user": 1,
     "dashboard": 6,
     "widgettype": 2,
+    "stattype_id":1,
     "metrics": [
       22
     ]
@@ -3339,6 +3351,7 @@
     "user": 1,
     "dashboard": 7,
     "widgettype": 1,
+    "stattype_id":1,
     "metrics": [
       2,
       3,
@@ -3386,6 +3399,7 @@
     "user": 1,
     "dashboard": 7,
     "widgettype": 2,
+    "stattype_id":1,
     "metrics": [
       22
     ]
@@ -3402,6 +3416,7 @@
     "user": 1,
     "dashboard": 8,
     "widgettype": 1,
+    "stattype_id":1,
     "metrics": [
       2,
       3,
@@ -3449,6 +3464,7 @@
     "user": 1,
     "dashboard": 8,
     "widgettype": 2,
+    "stattype_id":1,
     "metrics": [
       22
     ]
@@ -3465,6 +3481,7 @@
     "user": 1,
     "dashboard": 9,
     "widgettype": 1,
+    "stattype_id":1,
     "metrics": [
       2,
       3,
@@ -3512,6 +3529,7 @@
     "user": 1,
     "dashboard": 9,
     "widgettype": 2,
+    "stattype_id":1,
     "metrics": [
       22
     ]
@@ -3528,6 +3546,7 @@
     "user": 1,
     "dashboard": 10,
     "widgettype": 1,
+    "stattype_id":1,
     "metrics": [
       2,
       3,
@@ -3575,6 +3594,7 @@
     "user": 1,
     "dashboard": 10,
     "widgettype": 2,
+    "stattype_id":1,
     "metrics": [
       22
     ]
@@ -3591,6 +3611,7 @@
     "user": 1,
     "dashboard": 11,
     "widgettype": 1,
+    "stattype_id":1,
     "metrics": [
       2,
       3,
@@ -3638,6 +3659,7 @@
     "user": 1,
     "dashboard": 11,
     "widgettype": 2,
+    "stattype_id":1,
     "metrics": [
       22
     ]
@@ -3654,6 +3676,7 @@
     "user": 1,
     "dashboard": 12,
     "widgettype": 1,
+    "stattype_id":1,
     "metrics": [
       2,
       3,
@@ -3701,6 +3724,7 @@
     "user": 1,
     "dashboard": 12,
     "widgettype": 2,
+    "stattype_id":1,
     "metrics": [
       22
     ]
@@ -3717,6 +3741,7 @@
     "user": 1,
     "dashboard": 13,
     "widgettype": 1,
+    "stattype_id":1,
     "metrics": [
       2,
       3,
@@ -3764,6 +3789,7 @@
     "user": 1,
     "dashboard": 13,
     "widgettype": 2,
+    "stattype_id":1,
     "metrics": [
       22
     ]
@@ -3780,6 +3806,7 @@
     "user": 1,
     "dashboard": 14,
     "widgettype": 1,
+    "stattype_id":1,
     "metrics": [
       2,
       3,
@@ -3827,6 +3854,7 @@
     "user": 1,
     "dashboard": 14,
     "widgettype": 2,
+    "stattype_id":1,
     "metrics": [
       22
     ]
@@ -3843,6 +3871,7 @@
     "user": 1,
     "dashboard": 15,
     "widgettype": 1,
+    "stattype_id":1,
     "metrics": [
       2,
       3,
@@ -3890,6 +3919,7 @@
     "user": 1,
     "dashboard": 15,
     "widgettype": 2,
+    "stattype_id":1,
     "metrics": [
       22
     ]
@@ -3906,6 +3936,7 @@
     "user": 1,
     "dashboard": 16,
     "widgettype": 1,
+    "stattype_id":1,
     "metrics": [
       2,
       3,
@@ -3953,6 +3984,7 @@
     "user": 1,
     "dashboard": 16,
     "widgettype": 2,
+    "stattype_id":1,
     "metrics": [
       22
     ]
@@ -3969,6 +4001,7 @@
     "user": 1,
     "dashboard": 17,
     "widgettype": 1,
+    "stattype_id":1,
     "metrics": [
       2,
       3,
@@ -4016,6 +4049,7 @@
     "user": 1,
     "dashboard": 17,
     "widgettype": 2,
+    "stattype_id":1,
     "metrics": [
       22
     ]
@@ -4032,6 +4066,7 @@
     "user": 1,
     "dashboard": 18,
     "widgettype": 1,
+    "stattype_id":1,
     "metrics": [
       2,
       3,
@@ -4079,6 +4114,7 @@
     "user": 1,
     "dashboard": 18,
     "widgettype": 2,
+    "stattype_id":1,
     "metrics": [
       22
     ]
@@ -4090,6 +4126,127 @@
   "fields": {
     "user": 1,
     "created": "2019-08-21T21:50:03.474Z"
+  }
+},
+
+{
+  "model": "dashboard.stattype",
+  "pk": 1,
+  "fields": {
+    "name": "Average",
+    "description": "",
+    "created_at": "2019-10-16T22:00:52.775Z",
+    "updated_at": "2019-10-16T22:00:52.775Z",
+    "user": 1,
+    "type": "ave"
+  }
+},
+{
+  "model": "dashboard.stattype",
+  "pk": 2,
+  "fields": {
+    "name": "Median",
+    "description": "",
+    "created_at": "2019-10-16T22:00:52.778Z",
+    "updated_at": "2019-10-16T22:00:52.778Z",
+    "user": 1,
+    "type": "med"
+  }
+},
+{
+  "model": "dashboard.stattype",
+  "pk": 3,
+  "fields": {
+    "name": "Minimum",
+    "description": "",
+    "created_at": "2019-10-16T22:00:52.781Z",
+    "updated_at": "2019-10-16T22:00:52.781Z",
+    "user": 1,
+    "type": "min"
+  }
+},
+{
+  "model": "dashboard.stattype",
+  "pk": 4,
+  "fields": {
+    "name": "Maximum",
+    "description": "",
+    "created_at": "2019-10-16T22:00:52.783Z",
+    "updated_at": "2019-10-16T22:00:52.783Z",
+    "user": 1,
+    "type": "max"
+  }
+},
+{
+  "model": "dashboard.stattype",
+  "pk": 5,
+  "fields": {
+    "name": "Sample Count",
+    "description": "",
+    "created_at": "2019-10-16T22:00:52.786Z",
+    "updated_at": "2019-10-16T22:00:52.786Z",
+    "user": 1,
+    "type": "num_samp"
+  }
+},
+{
+  "model": "dashboard.stattype",
+  "pk": 6,
+  "fields": {
+    "name": "99th percentile",
+    "description": "",
+    "created_at": "2019-10-16T22:00:52.789Z",
+    "updated_at": "2019-10-16T22:00:52.789Z",
+    "user": 1,
+    "type": "p99"
+  }
+},
+{
+  "model": "dashboard.stattype",
+  "pk": 7,
+  "fields": {
+    "name": "95th percentile",
+    "description": "",
+    "created_at": "2019-10-16T22:00:52.792Z",
+    "updated_at": "2019-10-16T22:00:52.792Z",
+    "user": 1,
+    "type": "p95"
+  }
+},
+{
+  "model": "dashboard.stattype",
+  "pk": 8,
+  "fields": {
+    "name": "90th percentile",
+    "description": "",
+    "created_at": "2019-10-16T22:00:52.794Z",
+    "updated_at": "2019-10-16T22:00:52.794Z",
+    "user": 1,
+    "type": "p90"
+  }
+},
+{
+  "model": "dashboard.stattype",
+  "pk": 9,
+  "fields": {
+    "name": "50th percentile",
+    "description": "",
+    "created_at": "2019-10-16T22:00:52.797Z",
+    "updated_at": "2019-10-16T22:00:52.797Z",
+    "user": 1,
+    "type": "p50"
+  }
+},
+{
+  "model": "dashboard.stattype",
+  "pk": 10,
+  "fields": {
+    "name": "10th percentile",
+    "description": "",
+    "created_at": "2019-10-16T22:00:52.799Z",
+    "updated_at": "2019-10-16T22:00:52.799Z",
+    "user": 1,
+    "type": "p10"
   }
 }
 ]

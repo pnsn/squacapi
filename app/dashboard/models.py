@@ -33,7 +33,7 @@ class WidgetType(DashboardBase):
 class StatType(DashboardBase):
     '''describes the stat used on widget'''
     type = models.CharField(max_length=255, unique=True)
-    
+
 
 class Dashboard(DashboardBase):
     '''describes the container the holds widgets'''
@@ -57,7 +57,7 @@ class Widget(DashboardBase):
         on_delete=models.CASCADE,
         related_name='widgets',
     )
-    statttype = models.ForeignKey(
+    stattype = models.ForeignKey(
         StatType,
         on_delete=models.CASCADE,
         related_name='stat',

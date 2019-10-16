@@ -5,7 +5,7 @@ from django.utils import timezone
 
 from measurement.models import Metric
 from nslc.models import Network, Channel, Group
-from dashboard.models import Dashboard, Widget, WidgetType
+from dashboard.models import Dashboard, Widget, WidgetType, StatType
 
 from rest_framework.test import APIClient
 from rest_framework import status
@@ -15,7 +15,7 @@ import pytz
 
 '''Tests for all measurement models:
 to run only these tests:
- ./mg.sh "test measurement && flake8"
+ ./mg.sh "test dashboard && flake8"
 '''
 
 
@@ -73,10 +73,16 @@ class UnathenticatedMeasurementApiTests(TestCase):
             type='Some type',
             user=self.user
         )
+        self.stattype = StatType.objects.create(
+            name="Average",
+            type="ave",
+            user=self.user
+        )
         self.widget = Widget.objects.create(
             name='Test widget',
             dashboard=self.dashboard,
             widgettype=self.widtype,
+            stattype=self.stattype,
             user=self.user
         )
         self.widget.metrics.add(self.metric)
@@ -150,10 +156,16 @@ class PrivateMeasurementAPITests(TestCase):
             type='Some type',
             user=self.user
         )
+        self.stattype = StatType.objects.create(
+            name="Average",
+            type="ave",
+            user=self.user
+        )
         self.widget = Widget.objects.create(
             name='Test widget',
             dashboard=self.dashboard,
             widgettype=self.widtype,
+            stattype=self.stattype,
             user=self.user
         )
 
@@ -213,6 +225,7 @@ class PrivateMeasurementAPITests(TestCase):
             'name': 'Test widget',
             'dashboard': self.dashboard.id,
             'widgettype': self.widtype.id,
+            'stattype': self.stattype.id,
             'metrics': [self.metric.id]
         }
         res = self.client.post(url, payload)
@@ -223,6 +236,8 @@ class PrivateMeasurementAPITests(TestCase):
                 self.assertEqual(payload[key], widget.dashboard.id)
             elif key == 'widgettype':
                 self.assertEqual(payload[key], widget.widgettype.id)
+            elif key == 'stattype':
+                self.assertEqual(payload[key], widget.stattype.id)
             elif key == 'metrics':
                 metrics = widget.metrics.all()
                 self.assertIn(self.metric, metrics)

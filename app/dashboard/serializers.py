@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Widget, WidgetType, Dashboard
+from .models import Widget, WidgetType, Dashboard, StatType
 from nslc.models import Group
 from measurement.models import Metric
 from measurement.serializers import MetricSerializer
@@ -16,12 +16,15 @@ class WidgetSerializer(serializers.HyperlinkedModelSerializer):
         many=True,
         queryset=Metric.objects.all()
     )
+    stattype = serializers.PrimaryKeyRelatedField(
+        queryset=StatType.objects.all()
+    )
 
     class Meta:
         model = Widget
         fields = (
             'id', 'name', 'dashboard', 'widgettype', 'description', 'metrics',
-            'created_at', 'updated_at'
+            'created_at', 'updated_at', 'stattype'
         )
         read_only_fields = ('id',)
 
@@ -64,10 +67,20 @@ class DashboardDetailSerializer(DashboardSerializer):
         read_only_fields = ('id',)
 
 
+class StatTypeSerializer(WidgetSerializer):
+
+    class Meta:
+        model = StatType
+        fields = (
+            'type', 'name', 'description'
+        )
+
+
 class WidgetDetailSerializer(WidgetSerializer):
     dashboard = DashboardSerializer(read_only=True)
     widgettype = WidgetTypeSerializer(read_only=True)
     metrics = MetricSerializer(many=True, read_only=True)
+    stattype = StatTypeSerializer(read_only=True)
 
     class Meta:
         model = Widget

@@ -3,7 +3,7 @@ from rest_framework.authentication import TokenAuthentication, \
     SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
 
-from .models import Dashboard, WidgetType, Widget
+from .models import Dashboard, WidgetType, Widget, StatType
 from dashboard import serializers
 
 
@@ -31,6 +31,11 @@ class DashboardViewSet(BaseDashboardViewSet):
 class WidgetTypeViewSet(BaseDashboardViewSet):
     serializer_class = serializers.WidgetTypeSerializer
     queryset = WidgetType.objects.all()
+
+
+class StatTypeViewSet(BaseDashboardViewSet):
+    serializer_class = serializers.StatTypeSerializer
+    queryset = StatType.objects.all()
 
 
 class WidgetViewSet(BaseDashboardViewSet):
