@@ -17,6 +17,9 @@ class DashboardBase(models.Model):
 
     class Meta:
         abstract = True
+        indexes = [
+            models.Index(fields=['name'])
+        ]
 
     def __str__(self):
         return self.name
@@ -29,10 +32,20 @@ class WidgetType(DashboardBase):
     '''describes the type of widget'''
     type = models.CharField(max_length=255, unique=True)
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['type'])
+        ]
+
 
 class StatType(DashboardBase):
     '''describes the stat used on widget'''
     type = models.CharField(max_length=255, unique=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['type'])
+        ]
 
 
 class Dashboard(DashboardBase):

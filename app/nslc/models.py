@@ -18,6 +18,10 @@ class Nslc(models.Model):
 
     class Meta:
         abstract = True
+        indexes = [
+            models.Index(fields=['code']),
+            models.Index(fields=['name'])
+        ]
 
     '''force lowercase on code to provide for consistent url slug lookups'''
     def clean(self):
@@ -59,6 +63,15 @@ class Channel(Nslc):
 
     class Meta:
         unique_together = (("code", "network", 'station_code', 'loc'),)
+        indexes = [
+            models.Index(fields=['station_code']),
+            models.Index(fields=['station_name']),
+            models.Index(fields=['loc']),
+            models.Index(fields=['lat']),
+            models.Index(fields=['lon']),
+            models.Index(fields=['-starttime']),
+            models.Index(fields=['-endtime'])
+        ]
 
     def __str__(self):
         return str(self.network) + ":" + self.station_code.upper() + ":" + \
@@ -77,6 +90,11 @@ class Group(models.Model):
     is_public = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['is_public'])
+        ]
 
     def __str__(self):
         return self.name

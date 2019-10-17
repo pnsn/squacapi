@@ -30,6 +30,11 @@ class Metric(MeasurementBase):
     url = models.CharField(max_length=255, default='')
     updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['name'])
+        ]
+
 
 class Measurement(MeasurementBase):
     '''describes the observable metrics'''
@@ -47,8 +52,14 @@ class Measurement(MeasurementBase):
     starttime = models.DateTimeField()
     endtime = models.DateTimeField()
 
-    # class Meta:
-    #     unique_together = (("metric", "channel", 'starttime', 'endtime'),)
+    class Meta:
+        indexes = [
+            # index in desc order (newest first)
+            models.Index(fields=['-starttime']),
+            models.Index(fields=['-endtime']),
+            models.Index(fields=['value'])
+
+        ]
 
     def __str__(self):
         return f"Metric: {str(self.metric)} Channel: {str(self.channel)}"
