@@ -122,10 +122,11 @@ class NetworkViewSet(BaseNslcViewSet):
 
 
 class ChannelViewSet(BaseNslcViewSet):
-    serializer_class = ChannelSerializer
     filter_class = ChannelFilter
     q = Channel.objects.all()
+    serializer_class = ChannelSerializer
     queryset = serializer_class.setup_eager_loading(q)
+
 
 
 class GroupViewSet(BaseNslcViewSet):

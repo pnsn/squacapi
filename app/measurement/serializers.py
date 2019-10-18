@@ -7,9 +7,7 @@ class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
     metric = serializers.PrimaryKeyRelatedField(
         queryset=Metric.objects.all()
     )
-    channel = serializers.PrimaryKeyRelatedField(
-        queryset=Channel.objects.all()
-    )
+    channel = serializers.StringRelatedField()
 
     class Meta:
         model = Measurement
@@ -18,6 +16,11 @@ class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
             'created_at'
         )
         read_only_fields = ('id',)
+
+    @staticmethod
+    def setup_eager_loading(queryset):
+        queryset = queryset.select_related('channel')
+        return queryset
 
 
 class MetricSerializer(serializers.HyperlinkedModelSerializer):

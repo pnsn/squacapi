@@ -74,7 +74,7 @@ class Channel(Nslc):
         ]
 
     def __str__(self):
-        return str(self.network) + ":" + self.station_code.upper() + ":" + \
+        return str(self.network_id.upper()) + ":" + self.station_code.upper() + ":" + \
             self.loc.upper() + ":" + self.code.upper()
 
 

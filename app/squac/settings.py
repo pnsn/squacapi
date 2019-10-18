@@ -23,12 +23,32 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.environ.get('SQUAC_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('SQUAC_DEBUG_MODE') == 'True',
 
 ALLOWED_HOSTS = ['squac.pnsn.org','squacapi.pnsn.org', 'localhost']
 
+# For debug toolbar
+INTERNAL_IPS = [
+    'localhost',
+    '10.0.2.2',
+]
 
-# Application definition
+
+import os
+# tricks to have debug toolbar when developing with docker
+if os.environ.get('USE_DOCKER') == 'yes':
+    import socket
+    ip = socket.gethostbyname(socket.gethostname())
+    INTERNAL_IPS += [ip[:-1] + '1']
+
+DEBUG_TOOLBAR_CONFIG = {
+    'DISABLE_PANELS': [
+        'debug_toolbar.panels.redirects.RedirectsPanel',
+    ],
+    'SHOW_TEMPLATE_CONTEXT': True,
+}
+
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -47,10 +67,12 @@ INSTALLED_APPS = [
     'measurement',
     'dashboard',
     'import',
-    'corsheaders'
+    'corsheaders',
+    'debug_toolbar',
 ]
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

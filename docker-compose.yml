@@ -20,6 +20,8 @@ services:
       - SQUAC_DB_USER=postgres
       - SQUAC_DB_PASS=supersecret
       - SQUAC_SECRET_KEY=thisisnottherealkey
+      - SQUAC_DEBUG_MODE=True
+      - USE_DOCKER=yes
     depends_on:
       - db
   db:

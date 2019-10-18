@@ -15,6 +15,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -24,6 +26,14 @@ urlpatterns = [
     path('v1.0/measurement/', include('measurement.urls')),
     path('v1.0/dashboard/', include('dashboard.urls'))
 ]
+
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns = [
+        path('__debug__/', include(debug_toolbar.urls)),
+    ] + urlpatterns
+
+
 '''To access password reset: localhost:8000/acounts/password_reset/
 For test reseting password: reset email text file will be created in a
 new directory app/sent_emails/(reset email) and link to password reset
