@@ -128,7 +128,6 @@ class ChannelViewSet(BaseNslcViewSet):
     queryset = serializer_class.setup_eager_loading(q)
 
 
-
 class GroupViewSet(BaseNslcViewSet):
     serializer_class = GroupSerializer
     queryset = Group.objects.all()

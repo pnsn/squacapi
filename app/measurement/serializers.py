@@ -7,7 +7,9 @@ class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
     metric = serializers.PrimaryKeyRelatedField(
         queryset=Metric.objects.all()
     )
-    channel = serializers.StringRelatedField()
+    channel = serializers.PrimaryKeyRelatedField(
+        queryset=Channel.objects.all()
+    )
 
     class Meta:
         model = Measurement
