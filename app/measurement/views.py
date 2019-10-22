@@ -3,7 +3,7 @@ from rest_framework.authentication import TokenAuthentication, \
     SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
 
-from .models import Metric, Measurement
+from .models import Metric, Measurement, Threshold
 from measurement import serializers
 from .exceptions import MissingParameterException
 from django_filters import rest_framework as filters
@@ -13,6 +13,13 @@ from squac.filters import CharInFilter
 class MetricFilter(filters.FilterSet):
     # CharInFilter is custom filter see imports
     name = CharInFilter(lookup_expr='in')
+
+
+class ThresholdFilter(filters.FilterSet):
+    # CharInFilter is custom filter see imports
+    class Meta:
+        model = Threshold
+        fields = ('metric', 'widget')
 
 
 class BaseMeasurementViewSet(viewsets.ModelViewSet):
@@ -73,3 +80,9 @@ class MeasurementViewSet(BaseMeasurementViewSet):
             else:
                 raise MissingParameterException
         return queryset
+
+
+class ThresholdViewSet(BaseMeasurementViewSet):
+    serializer_class = serializers.ThresholdSerializer
+    filter_class = ThresholdFilter
+    queryset = Threshold.objects.all()

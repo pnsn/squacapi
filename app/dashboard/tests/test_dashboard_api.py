@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.utils import timezone
 
-from measurement.models import Metric
+from measurement.models import Metric, Threshold
 from nslc.models import Network, Channel, Group
 from dashboard.models import Dashboard, Widget, WidgetType, StatType
 
@@ -169,6 +169,14 @@ class PrivateMeasurementAPITests(TestCase):
             user=self.user
         )
 
+        self.threshold = Threshold.objects.create(
+            widget=self.widget,
+            metric=self.metric,
+            minval=9.0,
+            maxval=10.0,
+            user=self.user
+        )
+
     def test_get_dashboard(self):
         url = reverse(
             'dashboard:dashboard-detail',
@@ -244,51 +252,21 @@ class PrivateMeasurementAPITests(TestCase):
             else:
                 self.assertEqual(payload[key], getattr(widget, key))
 
-#     def test_create_threshold(self):
-#         url = reverse('measurement:threshold-list')
-#         payload = {
-#             'name': 'Test',
-#             'min': 2.1,
-#             'max': 2.2,
-#             'metricgroup': self.metricgroup.id
-#         }
-#         res = self.client.post(url, payload)
-#         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-#         threshold = Threshold.objects.get(id=res.data['id'])
-#         for key in payload.keys():
-#             if key == 'metricgroup':
-#                 self.assertEqual(payload[key], threshold.metricgroup.id)
-#             else:
-#                 self.assertEqual(payload[key], getattr(threshold, key))
+    def test_get_threshold(self):
+        url = reverse('measurement:threshold-detail',
+                      kwargs={'pk': self.threshold.id})
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(float(res.data['maxval']), 10.0)
+        self.assertEqual(float(res.data['minval']), 9.0)
 
-#     def test_create_alarm(self):
-#         url = reverse('measurement:alarm-list')
-#         payload = {
-#             'name': 'Alarm test',
-#             'period': 2,
-#             'num_period': 3,
-#             'threshold': self.threshold.id
-#         }
-#         res = self.client.post(url, payload)
-#         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-#         alarm = Alarm.objects.get(id=res.data['id'])
-#         for key in payload.keys():
-#             if key == 'threshold':
-#                 self.assertEqual(payload[key], alarm.threshold.id)
-#             else:
-#                 self.assertEqual(payload[key], getattr(alarm, key))
-
-#     def test_create_trigger(self):
-#         url = reverse('measurement:trigger-list')
-#         payload = {
-#             'count': 0,
-#             'alarm': self.alarm.id
-#         }
-#         res = self.client.post(url, payload)
-#         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-#         trigger = Trigger.objects.get(id=res.data['id'])
-#         for key in payload.keys():
-#             if key == 'alarm':
-#                 self.assertEqual(payload[key], trigger.alarm.id)
-#             else:
-#                 self.assertEqual(payload[key], getattr(trigger, key))
+    def test_create_threshold(self):
+        url = reverse('measurement:threshold-list')
+        payload = {
+            'maxval': 10.0,
+            'minval': 9.0,
+            'widget': self.widget.id,
+            'metric': self.metric.id
+        }
+        res = self.client.post(url, payload)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)

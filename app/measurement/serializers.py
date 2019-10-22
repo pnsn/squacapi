@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import Metric, Measurement
+from .models import Metric, Measurement, Threshold
+from dashboard.models import Widget
 from nslc.models import Channel
 
 
@@ -34,6 +35,26 @@ class MetricSerializer(serializers.HyperlinkedModelSerializer):
         model = Metric
         fields = (
             'id', 'name', 'url', 'description', 'unit', 'created_at',
+            'updated_at'
+        )
+        read_only_fields = ('id',)
+
+
+class ThresholdSerializer(serializers.HyperlinkedModelSerializer):
+    url = serializers.HyperlinkedIdentityField(
+        view_name="measurement:threshold-detail")
+
+    metric = serializers.PrimaryKeyRelatedField(
+        queryset=Metric.objects.all())
+
+    widget = serializers.PrimaryKeyRelatedField(
+        queryset=Widget.objects.all()
+    )
+
+    class Meta:
+        model = Threshold
+        fields = (
+            'id', 'url', 'metric', 'widget', 'minval', 'maxval', 'created_at',
             'updated_at'
         )
         read_only_fields = ('id',)

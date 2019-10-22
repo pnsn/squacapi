@@ -59,31 +59,6 @@ def api_root(request, format=None):
 """
 
 
-# class ObjPermissionOrReadOnly(BasePermission):
-#     """Object-level permission on scarey methods,
-# read only on safe methods """
-
-#     def has_permission(self, request, view):
-#         '''http permission?'''
-
-#         # if request.method in SAFE_METHODS:
-#         #     return True
-#         # user must be authenticated
-#         return request.user and request.user.is_authenticated
-
-#     def has_obj_permission(self, request, view, obj):
-#         '''object level permissions, set by adding user to group
-
-#         Read permissions are allowed to any request,
-#         so we'll always allow GET, HEAD or OPTIONS requests.
-#         '''
-#         # if request.method in SAFE_METHODS:
-#         #     return True
-
-#         # user must have permission
-#         return self.check_object_permissions(request, obj)
-
-
 class BaseNslcViewSet(viewsets.ModelViewSet):
     '''base class for all nslc viewsets:
 
@@ -105,20 +80,6 @@ class NetworkViewSet(BaseNslcViewSet):
     q = Network.objects.all()
     filter_class = NetworkFilter
     queryset = serializer_class.setup_eager_loading(q)
-
-
-# class StationViewSet(BaseNslcViewSet):
-#     serializer_class = StationSerializer
-#     filter_class = StationFilter
-#     q = Station.objects.all()
-#     queryset = serializer_class.setup_eager_loading(q)
-
-
-# class LocationViewSet(BaseNslcViewSet):
-#     serializer_class = LocationSerializer
-#     # filter_class = LocationFilter
-#     q = Location.objects.all()
-#     queryset = serializer_class.setup_eager_loading(q)
 
 
 class ChannelViewSet(BaseNslcViewSet):

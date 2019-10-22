@@ -34,3 +34,10 @@ class PublicDashboardFilterTests(TestCase):
             self.assertEqual(len(widgets), len(res.data))
             for dict in res.data:
                 self.assertEqual(dict['dashboard']['id'], d.id)
+
+    def test_threshold_filter(self):
+        url = reverse('measurement:threshold-list')
+        url += f'?metric={2}&widget={1}'
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data), 2)

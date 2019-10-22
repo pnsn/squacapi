@@ -6,6 +6,7 @@ from measurement import views
 router = DefaultRouter()
 router.register('metrics', views.MetricViewSet)
 router.register('measurements', views.MeasurementViewSet)
+router.register('thresholds', views.ThresholdViewSet)
 
 app_name = "measurement"
 urlpatterns = [path('', include(router.urls))]

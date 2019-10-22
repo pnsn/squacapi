@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-
+from dashboard.models import Widget
 from nslc.models import Channel
 
 
@@ -63,3 +63,18 @@ class Measurement(MeasurementBase):
 
     def __str__(self):
         return f"Metric: {str(self.metric)} Channel: {str(self.channel)}"
+
+
+class Threshold(MeasurementBase):
+    widget = models.ForeignKey(
+        Widget,
+        on_delete=models.CASCADE,
+        related_name='threshold')
+
+    metric = models.ForeignKey(
+        Metric,
+        on_delete=models.CASCADE,
+        related_name='threshold')
+    minval = models.FloatField()
+    maxval = models.FloatField()
+    updated_at = models.DateTimeField(auto_now=True)
