@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import Widget, WidgetType, Dashboard, StatType
 from nslc.models import Group
 from measurement.models import Metric
-from measurement.serializers import MetricSerializer
+from measurement.serializers import ThresholdSerializer, MetricSerializer
 
 
 class WidgetSerializer(serializers.HyperlinkedModelSerializer):
@@ -81,11 +81,12 @@ class WidgetDetailSerializer(WidgetSerializer):
     widgettype = WidgetTypeSerializer(read_only=True)
     metrics = MetricSerializer(many=True, read_only=True)
     stattype = StatTypeSerializer(read_only=True)
+    thresholds = ThresholdSerializer(many=True, read_only=True)
 
     class Meta:
         model = Widget
         fields = (
             'id', 'name', 'dashboard', 'description', 'widgettype', 'metrics',
-            'created_at', 'updated_at'
+            'created_at', 'updated_at', 'thresholds'
         )
         read_only_fields = ('id',)

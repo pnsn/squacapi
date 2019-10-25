@@ -69,7 +69,7 @@ class Threshold(MeasurementBase):
     widget = models.ForeignKey(
         Widget,
         on_delete=models.CASCADE,
-        related_name='threshold')
+        related_name='thresholds')
 
     metric = models.ForeignKey(
         Metric,

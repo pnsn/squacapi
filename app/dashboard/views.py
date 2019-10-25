@@ -39,6 +39,7 @@ class StatTypeViewSet(BaseDashboardViewSet):
 
 
 class WidgetViewSet(BaseDashboardViewSet):
+
     serializer_class = serializers.WidgetSerializer
     queryset = Widget.objects.all()
 
@@ -58,6 +59,6 @@ class WidgetViewSet(BaseDashboardViewSet):
         return queryset
 
     def get_serializer_class(self):
-        if self.action == 'retrieve':
+        if self.action == 'retrieve' or self.action == 'list':
             return serializers.WidgetDetailSerializer
         return self.serializer_class
