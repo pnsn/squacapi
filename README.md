@@ -1,4 +1,4 @@
-<img alt="Squacapi" class="right" style="width: 40%" src="./blue_squacLogo_rgb.png" />
+<img alt="Squacapi" class="right" style="max-width:50%" src="./blue_squacLogo_rgb.png" />
 
 # Squacapi - Seismic Quality Assesment Console API 
 
