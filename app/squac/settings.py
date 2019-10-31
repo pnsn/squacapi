@@ -162,7 +162,7 @@ STATIC_ROOT = "/var/www/squac_api/static/"
 
 AUTH_USER_MODEL = 'core.User'
 
-# LOGIN_REDIRECT_URL = "/accounts/"
+LOGIN_REDIRECT_URL = "/"
 
 '''Email backend and filepath allow for storing generated emails
 locally for password reset to test functionality'''

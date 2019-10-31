@@ -27,7 +27,10 @@ urlpatterns = [
     path('v1.0/', views.home_v1, name='Squacapi V1.0'),
     path('v1.0/nslc/', include('nslc.urls')),
     path('v1.0/measurement/', include('measurement.urls')),
-    path('v1.0/dashboard/', include('dashboard.urls'))
+    path('v1.0/dashboard/', include('dashboard.urls')),
+    path('api-auth/', include('rest_framework.urls', 
+         namespace='rest_framework'))
+
 ]
 
 if settings.DEBUG:
