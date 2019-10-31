@@ -3024,6 +3024,9 @@
     "updated_at": "2019-08-28T23:30:52.173Z",
     "user": 1,
     "dashboard": 1,
+    "columns": 6,
+    "rows": 3,
+    "order": 1,
     "widgettype": 1,
     "stattype_id":1,
     "metrics": [
@@ -3074,6 +3077,9 @@
     "dashboard": 1,
     "widgettype": 2,
     "stattype_id":1,
+    "columns": 6,
+    "rows": 3,
+    "order": 1,
     "metrics": [
       22
     ]
@@ -3091,6 +3097,9 @@
     "dashboard": 2,
     "widgettype": 1,
     "stattype_id":1,
+    "columns": 6,
+    "rows": 3,
+    "order": 1,
     "metrics": [
       2,
       3,
@@ -3139,6 +3148,9 @@
     "dashboard": 2,
     "widgettype": 2,
     "stattype_id":1,
+    "columns": 6,
+    "rows": 3,
+    "order": 1,
     "metrics": [
       22
     ]
@@ -3155,7 +3167,11 @@
     "user": 1,
     "dashboard": 3,
     "widgettype": 1,
+    "columns": 6,
+    "rows": 3,
+    "order": 1,
     "stattype_id":1,
+
     "metrics": [
       2,
       3,
@@ -3204,6 +3220,9 @@
     "dashboard": 3,
     "widgettype": 2,
     "stattype_id":1,
+    "columns": 6,
+    "rows": 3,
+    "order": 1,
     "metrics": [
       22
     ]
@@ -3221,6 +3240,9 @@
     "dashboard": 4,
     "widgettype": 1,
     "stattype_id":1,
+    "columns": 6,
+    "rows": 3,
+    "order": 1,
     "metrics": [
       2,
       3,
@@ -3269,6 +3291,9 @@
     "dashboard": 4,
     "widgettype": 2,
     "stattype_id":1,
+    "columns": 6,
+    "rows": 3,
+    "order": 1,
     "metrics": [
       22
     ]
@@ -3286,6 +3311,9 @@
     "dashboard": 5,
     "widgettype": 1,
     "stattype_id":1,
+    "columns": 6,
+    "rows": 3,
+    "order": 1,
     "metrics": [
       2,
       3,
@@ -3334,6 +3362,9 @@
     "dashboard": 5,
     "widgettype": 2,
     "stattype_id":1,
+    "columns": 6,
+    "rows": 3,
+    "order": 1,
     "metrics": [
       22
     ]
@@ -3351,6 +3382,9 @@
     "dashboard": 6,
     "widgettype": 1,
     "stattype_id":1,
+    "columns": 6,
+    "rows": 3,
+    "order": 1,
     "metrics": [
       2,
       3,
@@ -3399,6 +3433,9 @@
     "dashboard": 6,
     "widgettype": 2,
     "stattype_id":1,
+    "columns": 6,
+    "rows": 3,
+    "order": 1,
     "metrics": [
       22
     ]
@@ -3416,6 +3453,9 @@
     "dashboard": 7,
     "widgettype": 1,
     "stattype_id":1,
+    "columns": 6,
+    "rows": 3,
+    "order": 1,
     "metrics": [
       2,
       3,
@@ -3464,6 +3504,9 @@
     "dashboard": 7,
     "widgettype": 2,
     "stattype_id":1,
+    "columns": 6,
+    "rows": 3,
+    "order": 1,
     "metrics": [
       22
     ]
@@ -3481,6 +3524,9 @@
     "dashboard": 8,
     "widgettype": 1,
     "stattype_id":1,
+    "columns": 6,
+    "rows": 3,
+    "order": 1,
     "metrics": [
       2,
       3,
@@ -3529,6 +3575,9 @@
     "dashboard": 8,
     "widgettype": 2,
     "stattype_id":1,
+    "columns": 6,
+    "rows": 3,
+    "order": 1,
     "metrics": [
       22
     ]
@@ -3546,6 +3595,9 @@
     "dashboard": 9,
     "widgettype": 1,
     "stattype_id":1,
+    "columns": 6,
+    "rows": 3,
+    "order": 1,
     "metrics": [
       2,
       3,
@@ -3594,6 +3646,9 @@
     "dashboard": 9,
     "widgettype": 2,
     "stattype_id":1,
+    "columns": 6,
+    "rows": 3,
+    "order": 1,
     "metrics": [
       22
     ]
@@ -3611,6 +3666,9 @@
     "dashboard": 10,
     "widgettype": 1,
     "stattype_id":1,
+    "columns": 6,
+    "rows": 3,
+    "order": 1,
     "metrics": [
       2,
       3,
@@ -3659,6 +3717,9 @@
     "dashboard": 10,
     "widgettype": 2,
     "stattype_id":1,
+    "columns": 6,
+    "rows": 3,
+    "order": 1,
     "metrics": [
       22
     ]
@@ -3676,6 +3737,9 @@
     "dashboard": 11,
     "widgettype": 1,
     "stattype_id":1,
+    "columns": 6,
+    "rows": 3,
+    "order": 1,
     "metrics": [
       2,
       3,
@@ -3724,6 +3788,9 @@
     "dashboard": 11,
     "widgettype": 2,
     "stattype_id":1,
+    "columns": 6,
+    "rows": 3,
+    "order": 1,
     "metrics": [
       22
     ]
@@ -3741,6 +3808,9 @@
     "dashboard": 12,
     "widgettype": 1,
     "stattype_id":1,
+    "columns": 6,
+    "rows": 3,
+    "order": 1,
     "metrics": [
       2,
       3,
@@ -3789,6 +3859,9 @@
     "dashboard": 12,
     "widgettype": 2,
     "stattype_id":1,
+    "columns": 6,
+    "rows": 3,
+    "order": 1,
     "metrics": [
       22
     ]
@@ -3806,6 +3879,9 @@
     "dashboard": 13,
     "widgettype": 1,
     "stattype_id":1,
+    "columns": 6,
+    "rows": 3,
+    "order": 1,
     "metrics": [
       2,
       3,
@@ -3854,6 +3930,9 @@
     "dashboard": 13,
     "widgettype": 2,
     "stattype_id":1,
+    "columns": 6,
+    "rows": 3,
+    "order": 1,
     "metrics": [
       22
     ]
@@ -3871,6 +3950,9 @@
     "dashboard": 14,
     "widgettype": 1,
     "stattype_id":1,
+    "columns": 6,
+    "rows": 3,
+    "order": 1,
     "metrics": [
       2,
       3,
@@ -3919,6 +4001,9 @@
     "dashboard": 14,
     "widgettype": 2,
     "stattype_id":1,
+    "columns": 6,
+    "rows": 3,
+    "order": 1,
     "metrics": [
       22
     ]
@@ -3936,6 +4021,9 @@
     "dashboard": 15,
     "widgettype": 1,
     "stattype_id":1,
+    "columns": 6,
+    "rows": 3,
+    "order": 1,
     "metrics": [
       2,
       3,
@@ -3984,6 +4072,9 @@
     "dashboard": 15,
     "widgettype": 2,
     "stattype_id":1,
+    "columns": 6,
+    "rows": 3,
+    "order": 1,
     "metrics": [
       22
     ]
@@ -4001,6 +4092,9 @@
     "dashboard": 16,
     "widgettype": 1,
     "stattype_id":1,
+    "columns": 6,
+    "rows": 3,
+    "order": 1,
     "metrics": [
       2,
       3,
@@ -4049,6 +4143,9 @@
     "dashboard": 16,
     "widgettype": 2,
     "stattype_id":1,
+    "columns": 6,
+    "rows": 3,
+    "order": 1,
     "metrics": [
       22
     ]
@@ -4066,6 +4163,9 @@
     "dashboard": 17,
     "widgettype": 1,
     "stattype_id":1,
+    "columns": 6,
+    "rows": 3,
+    "order": 1,
     "metrics": [
       2,
       3,
@@ -4114,6 +4214,9 @@
     "dashboard": 17,
     "widgettype": 2,
     "stattype_id":1,
+    "columns": 6,
+    "rows": 3,
+    "order": 1,
     "metrics": [
       22
     ]
@@ -4131,6 +4234,9 @@
     "dashboard": 18,
     "widgettype": 1,
     "stattype_id":1,
+    "columns": 6,
+    "rows": 3,
+    "order": 1,
     "metrics": [
       2,
       3,
@@ -4179,6 +4285,9 @@
     "dashboard": 18,
     "widgettype": 2,
     "stattype_id":1,
+    "columns": 6,
+    "rows": 3,
+    "order": 1,
     "metrics": [
       22
     ]

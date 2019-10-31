@@ -75,3 +75,6 @@ class Widget(DashboardBase):
         on_delete=models.CASCADE,
         related_name='stat',
     )
+    columns = models.IntegerField()
+    rows = models.IntegerField()
+    order = models.IntegerField()

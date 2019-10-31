@@ -85,6 +85,9 @@ class UnathenticatedMeasurementApiTests(TestCase):
             dashboard=self.dashboard,
             widgettype=self.widtype,
             stattype=self.stattype,
+            columns=6,
+            rows=3,
+            order=1,
             user=self.user
         )
         self.widget.metrics.add(self.metric)
@@ -170,6 +173,9 @@ class PrivateMeasurementAPITests(TestCase):
             dashboard=self.dashboard,
             widgettype=self.widtype,
             stattype=self.stattype,
+            columns=6,
+            rows=3,
+            order=1,
             user=self.user
         )
 
@@ -238,6 +244,9 @@ class PrivateMeasurementAPITests(TestCase):
             'dashboard': self.dashboard.id,
             'widgettype': self.widtype.id,
             'stattype': self.stattype.id,
+            'columns': 6,
+            'rows': 3,
+            'order': 1,
             'metrics': [self.metric.id]
         }
         res = self.client.post(url, payload)
