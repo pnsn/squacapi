@@ -28,7 +28,7 @@ urlpatterns = [
     path('v1.0/nslc/', include('nslc.urls')),
     path('v1.0/measurement/', include('measurement.urls')),
     path('v1.0/dashboard/', include('dashboard.urls')),
-    path('api-auth/', include('rest_framework.urls', 
+    path('api-auth/', include('rest_framework.urls',
          namespace='rest_framework'))
 
 ]
