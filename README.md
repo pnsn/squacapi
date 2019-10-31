@@ -1,4 +1,4 @@
-![](https://github.com/pnsn/squacapi/blob/master/blue_squacLogo_rgb.png | width=50)
+![](https://github.com/pnsn/squacapi/blob/master/blue_squacLogo_rgb.png)
 
 # Squacapi - Seismic Quality Assesment Console API 
 
