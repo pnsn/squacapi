@@ -35,7 +35,7 @@ class MetricSerializer(serializers.HyperlinkedModelSerializer):
         model = Metric
         fields = (
             'id', 'name', 'url', 'description', 'unit', 'created_at',
-            'updated_at'
+            'updated_at', 'default_minval', 'default_maxval'
         )
         read_only_fields = ('id',)
 

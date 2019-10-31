@@ -1472,6 +1472,8 @@
     "name": "snr10_0p01cm",
     "description": "Number of spikes with SNR > 10 and amplitude exceeding 0.01 cm/s^2 using filterd acceleration data.\n",
     "unit": "integer",
+    "default_minval": 1,
+    "default_maxval": 10.0,
     "url": ""
   }
 },
@@ -1485,6 +1487,8 @@
     "name": "snr20_0p05cm",
     "description": "Number of spikes with SNR > 20 and amplitude exceeding 0.05 cm/s^2 using filterd acceleration data.\n",
     "unit": "integer",
+    "default_minval": 1,
+    "default_maxval": 10.0,
     "url": ""
   }
 },
@@ -1498,6 +1502,8 @@
     "name": "snr20_0p17cm",
     "description": "Number of spikes with SNR > 20 and amplitude exceeding 0.17 cm/s^2 using filterd acceleration data (ShakeAlert station acceptance threshold using filter of 0.3 - 15Hz).\n",
     "unit": "integer",
+    "default_minval": 1,
+    "default_maxval": 10.0,
     "url": ""
   }
 },
@@ -1511,6 +1517,8 @@
     "name": "snr20_1cm",
     "description": "Number of spikes with SNR > 20 and amplitude exceeding 1 cm/s^2 using filterd acceleration data.\n",
     "unit": "integer",
+    "default_minval": 1,
+    "default_maxval": 10.0,
     "url": ""
   }
 },
@@ -1524,6 +1532,8 @@
     "name": "snr20_3cm",
     "description": "Number of spikes with SNR > 20 and amplitude exceeding 3 cm/s^2 using filterd acceleration data.\n",
     "unit": "integer",
+    "default_minval": 1,
+    "default_maxval": 10.0,
     "url": ""
   }
 },
@@ -1537,6 +1547,8 @@
     "name": "snr20_5cm",
     "description": "Number of spikes with SNR > 20 and amplitude exceeding 5 cm/s^2 using filterd acceleration data.\n",
     "unit": "integer",
+    "default_minval": 1,
+    "default_maxval": 10.0,
     "url": ""
   }
 },
@@ -1550,6 +1562,8 @@
     "name": "pow50sec",
     "description": "Power at 50 seconds.\n",
     "unit": "dB",
+    "default_minval": 1,
+    "default_maxval": 10.0,
     "url": ""
   }
 },
@@ -1563,6 +1577,8 @@
     "name": "pow30sec",
     "description": "Power at 30 seconds.\n",
     "unit": "dB",
+    "default_minval": 1,
+    "default_maxval": 10.0,
     "url": ""
   }
 },
@@ -1576,6 +1592,8 @@
     "name": "pow20sec",
     "description": "Power at 20 seconds.\n",
     "unit": "dB",
+    "default_minval": 1,
+    "default_maxval": 10.0,
     "url": ""
   }
 },
@@ -1589,6 +1607,8 @@
     "name": "pow12sec",
     "description": "Power at 12 seconds.\n",
     "unit": "dB",
+    "default_minval": 1,
+    "default_maxval": 10.0,
     "url": ""
   }
 },
@@ -1602,6 +1622,8 @@
     "name": "pow10sec",
     "description": "Power at 10 seconds.\n",
     "unit": "dB",
+    "default_minval": 1,
+    "default_maxval": 10.0,
     "url": ""
   }
 },
@@ -1615,6 +1637,8 @@
     "name": "pow5sec",
     "description": "Power at 5 seconds.\n",
     "unit": "dB",
+    "default_minval": 1,
+    "default_maxval": 10.0,
     "url": ""
   }
 },
@@ -1628,6 +1652,8 @@
     "name": "pow1Hz",
     "description": "Power at 1 Hertz.\n",
     "unit": "dB",
+    "default_minval": 1,
+    "default_maxval": 10.0,
     "url": ""
   }
 },
@@ -1641,6 +1667,8 @@
     "name": "pow5Hz",
     "description": "Power at 5 Hertz.\n",
     "unit": "dB",
+    "default_minval": 1,
+    "default_maxval": 10.0,
     "url": ""
   }
 },
@@ -1654,6 +1682,8 @@
     "name": "pow10Hz",
     "description": "Power at 10 Hertz.\n",
     "unit": "dB",
+    "default_minval": 1,
+    "default_maxval": 10.0,
     "url": ""
   }
 },
@@ -1667,6 +1697,8 @@
     "name": "pow20Hz",
     "description": "Power at 20 Hertz.\n",
     "unit": "dB",
+    "default_minval": 1,
+    "default_maxval": 10.0,
     "url": ""
   }
 },
@@ -1680,6 +1712,8 @@
     "name": "pow50Hz",
     "description": "Power at 50 Hertz.\n",
     "unit": "dB",
+    "default_minval": 1,
+    "default_maxval": 10.0,
     "url": ""
   }
 },
@@ -1693,6 +1727,8 @@
     "name": "NoiseFloorAcc",
     "description": "Range the 2nd to 98th percentile of sorted acceleration amplitudes which approximates median envelope amplitude.\n",
     "unit": "cm/s^2",
+    "default_minval": 1,
+    "default_maxval": 10.0,
     "url": ""
   }
 },
@@ -1706,6 +1742,8 @@
     "name": "NoiseFloorVel",
     "description": "Range of the 2nd to 98th percentile of sorted velocity amplitudes which approximates median envelope amplitude.\n",
     "unit": "cm/s",
+    "default_minval": 1,
+    "default_maxval": 10.0,
     "url": ""
   }
 },
@@ -1719,6 +1757,8 @@
     "name": "rawrange",
     "description": "Range in counts.\n",
     "unit": "counts",
+    "default_minval": 1,
+    "default_maxval": 10.0,
     "url": ""
   }
 },
@@ -1732,6 +1772,8 @@
     "name": "rawmean",
     "description": "Mean.\n",
     "unit": "counts",
+    "default_minval": 1,
+    "default_maxval": 10.0,
     "url": ""
   }
 },
@@ -1745,6 +1787,8 @@
     "name": "rawrms",
     "description": "RMS.\n",
     "unit": "counts",
+    "default_minval": 1,
+    "default_maxval": 10.0,
     "url": ""
   }
 },
@@ -1758,6 +1802,8 @@
     "name": "rawmin",
     "description": "Minimum amplitude.\n",
     "unit": "counts",
+    "default_minval": 1,
+    "default_maxval": 10.0,
     "url": ""
   }
 },
@@ -1771,6 +1817,8 @@
     "name": "rawmax",
     "description": "Maximum amplitude.\n",
     "unit": "counts",
+    "default_minval": 1,
+    "default_maxval": 10.0,
     "url": ""
   }
 },
@@ -1784,6 +1832,8 @@
     "name": "segmentshort",
     "description": "Duration of the shortest segment.\n",
     "unit": "s",
+    "default_minval": 1,
+    "default_maxval": 10.0,
     "url": ""
   }
 },
@@ -1797,6 +1847,8 @@
     "name": "segmentlong",
     "description": "Duration of the longest segment.\n",
     "unit": "s",
+    "default_minval": 1,
+    "default_maxval": 10.0,
     "url": ""
   }
 },
@@ -1810,6 +1862,8 @@
     "name": "pctavailable",
     "description": "Percentage of data returned of data requested.\n",
     "unit": "percent",
+    "default_minval": 1,
+    "default_maxval": 10.0,
     "url": ""
   }
 },
@@ -1823,6 +1877,8 @@
     "name": "ngaps",
     "description": "Number of gaps.\n",
     "unit": "integer",
+    "default_minval": 1,
+    "default_maxval": 10.0,
     "url": ""
   }
 },
@@ -1836,6 +1892,8 @@
     "name": "RMSduration_0p01cm",
     "description": "Total duration of RMS acceleration amplitude exceeding 0.01 cm/s^2 using a 5 sec RMS window.\n",
     "unit": "s",
+    "default_minval": 1,
+    "default_maxval": 10.0,
     "url": ""
   }
 },
@@ -1849,6 +1907,8 @@
     "name": "RMSduration_0p035cm",
     "description": "Total duration of RMS acceleration amplitude exceeding 0.035 cm/s^2 using a 5 sec RMS window (ShakeAlert station acceptance threshold).\n",
     "unit": "s",
+    "default_minval": 1,
+    "default_maxval": 10.0,
     "url": ""
   }
 },
@@ -1862,6 +1922,8 @@
     "name": "RMSduration_0p1cm",
     "description": "Total duration of RMS acceleration amplitude exceeding 0.1 cm/s^2 using a 5 sec RMS window.\n",
     "unit": "s",
+    "default_minval": 1,
+    "default_maxval": 10.0,
     "url": ""
   }
 },
@@ -1875,6 +1937,8 @@
     "name": "RMSduration_1cm",
     "description": "Total duration of RMS acceleration amplitude exceeding 1 cm/s^2 using a 5 sec RMS window.\n",
     "unit": "s",
+    "default_minval": 1,
+    "default_maxval": 10.0,
     "url": ""
   }
 },

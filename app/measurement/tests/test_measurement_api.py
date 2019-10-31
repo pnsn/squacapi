@@ -37,6 +37,8 @@ class UnauthenticatedMeasurementApiTests(TestCase):
         self.metric = Metric.objects.create(
             name='Metric test',
             unit='meter',
+            default_minval=1,
+            default_maxval=10.0,
             user=self.user
         )
         self.net = Network.objects.create(
@@ -104,6 +106,8 @@ class PrivateMeasurementAPITests(TestCase):
         self.metric = Metric.objects.create(
             name='Sample metric',
             unit='furlong',
+            default_minval=1,
+            default_maxval=10.0,
             user=self.user
         )
         self.net = Network.objects.create(
@@ -152,6 +156,8 @@ class PrivateMeasurementAPITests(TestCase):
             'name': 'Metric test',
             'description': 'Test description',
             'unit': 'meter',
+            'default_minval': 1,
+            'default_maxval': 10.0,
             'user': self.user
         }
         res = self.client.post(url, payload)
