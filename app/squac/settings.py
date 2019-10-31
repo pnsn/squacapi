@@ -27,11 +27,28 @@ DEBUG = os.environ.get('SQUAC_DEBUG_MODE') == 'True',
 
 ALLOWED_HOSTS = ['squac.pnsn.org','squacapi.pnsn.org', 'localhost']
 
+
 # For debug toolbar
 INTERNAL_IPS = [
     'localhost',
     '10.0.2.2',
 ]
+
+
+import os
+# tricks to have debug toolbar when developing with docker
+if os.environ.get('USE_DOCKER') == 'yes':
+    import socket
+    ip = socket.gethostbyname(socket.gethostname())
+    INTERNAL_IPS += [ip[:-1] + '1']
+
+DEBUG_TOOLBAR_CONFIG = {
+    'DISABLE_PANELS': [
+        'debug_toolbar.panels.redirects.RedirectsPanel',
+    ],
+    'SHOW_TEMPLATE_CONTEXT': True,
+}
+
 
 
 import os
