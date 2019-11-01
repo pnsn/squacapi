@@ -27,9 +27,10 @@ class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class MetricSerializer(serializers.HyperlinkedModelSerializer):
-    url = serializers.HyperlinkedIdentityField(
-        view_name="measurement:metric-detail"
-    )
+    # commenting this out since we have a valid model attr called url
+    # url = serializers.HyperlinkedIdentityField(
+    #     view_name="measurement:metric-detail"
+    # )
 
     class Meta:
         model = Metric
