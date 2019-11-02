@@ -1,6 +1,6 @@
 <img alt="Squacapi" class="right" src="./blue_squacLogo_rgb_med.png" />
 
-# Squacapi - Seismic Quality Assesment Console API 
+# SQUACapi - Seismic Quality Assesment Console API 
 
 [![Build Status](https://travis-ci.com/travis-ci/travis-web.svg?branch=master)](https://travis-ci.com/travis-ci/travis-web)
 
