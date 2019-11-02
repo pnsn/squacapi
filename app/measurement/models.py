@@ -28,8 +28,8 @@ class Metric(MeasurementBase):
     description = models.CharField(max_length=255, blank=True, default='')
     unit = models.CharField(max_length=255)
     url = models.CharField(max_length=255, default='')
-    default_minval = models.FloatField()
-    default_maxval = models.FloatField()
+    default_minval = models.FloatField(blank=True)
+    default_maxval = models.FloatField(blank=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
