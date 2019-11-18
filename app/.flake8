@@ -4,6 +4,7 @@ exclude =
   __pycache__,
   manage.py,
   settings.py
+  docs/*
 ignore = 
   E402,
   E999
