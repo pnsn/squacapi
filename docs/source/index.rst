@@ -1,27 +1,22 @@
-Squacapi
-==============
+SQUACapi
+********
 
-Simple header
-==============
+Intro
+=====
+SQUACapi is a RESTful API to manage metrics for seismic station data.
+This docuement covers the use of the API and not how to set up an instance
+of SQUACapi.
 
-Here is some text
 
-    print 'hello'
-    >>hello
+`SQUACapi GitHub <http://github.com/pnsn/squacapi>`_
 
-Guide:
-^^^^^^^
+API Endpoints:
+--------------
+
 .. toctree::
    :maxdepth: 2
-   licence
-   help
 
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
+   user
+   nslc
+   measurement
+   dashboard
