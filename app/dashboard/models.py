@@ -77,4 +77,5 @@ class Widget(DashboardBase):
     )
     columns = models.IntegerField()
     rows = models.IntegerField()
-    order = models.IntegerField()
+    x_position = models.IntegerField()
+    y_position = models.IntegerField()
