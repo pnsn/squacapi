@@ -6,6 +6,7 @@ from measurement.serializers import ThresholdSerializer, MetricSerializer
 
 
 class WidgetSerializer(serializers.HyperlinkedModelSerializer):
+    '''Post/PUT serializer'''
     dashboard = serializers.PrimaryKeyRelatedField(
         queryset=Dashboard.objects.all()
     )
@@ -77,7 +78,8 @@ class StatTypeSerializer(WidgetSerializer):
         )
 
 
-class WidgetDetailSerializer(WidgetSerializer):
+class WidgetDetailSerializer(serializers.HyperlinkedModelSerializer):
+    '''Detail and list view'''
     dashboard = DashboardSerializer(read_only=True)
     widgettype = WidgetTypeSerializer(read_only=True)
     metrics = MetricSerializer(many=True, read_only=True)
@@ -89,6 +91,6 @@ class WidgetDetailSerializer(WidgetSerializer):
         fields = (
             'id', 'name', 'dashboard', 'description', 'widgettype', 'metrics',
             'created_at', 'updated_at', 'thresholds', 'columns', 'rows',
-            'x_position', 'y_position'
+            'x_position', 'y_position', 'stattype'
         )
         read_only_fields = ('id',)

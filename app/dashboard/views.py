@@ -54,7 +54,6 @@ class WidgetViewSet(BaseDashboardViewSet):
         if dashboard:
             dashboard_id = self._params_to_ints(dashboard)
             queryset = queryset.filter(dashboard__id__in=dashboard_id)
-            self.serializer_class = serializers.WidgetDetailSerializer
 
         return queryset
 
