@@ -14,10 +14,11 @@ class Migration(migrations.Migration):
         '''
         metrics = Metric.objects.all()
         unique_metrics = []
-        def check_unique(name=name, count=count):
+        def check_unique(name=name, count=0):
             '''be lazy and just append incremented number '''
             if name in unique_metrics:
                 name = name + str(count)
+                
                 count += 1
                 check_unique(name, count)
             else:
@@ -41,10 +42,5 @@ class Migration(migrations.Migration):
             name='code',
             field=models.CharField(max_length=255, null=True),
         ),
-        migrations.RunPython(set_defaults),
-        migrations.AlterField(
-            model_name='metric',
-            name='code',
-            field=models.CharField(max_length=255, unique=True)
-        )
+       migrations.RunPython(set_defaults),
     ]
