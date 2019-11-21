@@ -25,7 +25,7 @@ class MeasurementBase(models.Model):
 class Metric(MeasurementBase):
     '''Describes the kind of metric'''
 
-    code = models.CharField(max_length=255, null=True)
+    code = models.CharField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=255, blank=True, default='')
     unit = models.CharField(max_length=255)
