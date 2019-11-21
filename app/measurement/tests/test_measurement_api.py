@@ -36,6 +36,7 @@ class UnauthenticatedMeasurementApiTests(TestCase):
         timezone.now()
         self.metric = Metric.objects.create(
             name='Metric test',
+            code='123',
             unit='meter',
             default_minval=1,
             default_maxval=10.0,
@@ -81,6 +82,7 @@ class UnauthenticatedMeasurementApiTests(TestCase):
         url = reverse('measurement:metric-list')
         payload = {
             'name': 'Test',
+            'code': 'somefukinthing',
             'unit': 'meter'
         }
         res = self.client.post(url, payload)
@@ -106,6 +108,7 @@ class PrivateMeasurementAPITests(TestCase):
         self.metric = Metric.objects.create(
             name='Sample metric',
             unit='furlong',
+            code="someotherfuknthing",
             default_minval=1,
             default_maxval=10.0,
             user=self.user
@@ -154,6 +157,7 @@ class PrivateMeasurementAPITests(TestCase):
         url = reverse('measurement:metric-list')
         payload = {
             'name': 'Metric test',
+            'code': 'coolname',
             'description': 'Test description',
             'unit': 'meter',
             'default_minval': 1,

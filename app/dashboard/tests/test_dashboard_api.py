@@ -35,6 +35,7 @@ class UnathenticatedMeasurementApiTests(TestCase):
         timezone.now()
         self.metric = Metric.objects.create(
             name='Metric test',
+            code="code123",
             unit='meter',
             default_minval=1,
             default_maxval=10.0,
@@ -125,6 +126,7 @@ class PrivateMeasurementAPITests(TestCase):
         timezone.now()
         self.metric = Metric.objects.create(
             name='Sample metric',
+            code="asdfjcode",
             unit='furlong',
             default_minval=1,
             default_maxval=10.0,
