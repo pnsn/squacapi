@@ -50,11 +50,7 @@ class StatType(DashboardBase):
 
 class Dashboard(DashboardBase):
     '''describes the container the holds widgets'''
-    group = models.ForeignKey(
-        Group,
-        on_delete=models.CASCADE,
-        related_name='dashboards'
-    )
+    pass
 
 
 class Widget(DashboardBase):
@@ -74,6 +70,11 @@ class Widget(DashboardBase):
         StatType,
         on_delete=models.CASCADE,
         related_name='stat',
+    )
+    channel_group = models.ForeignKey(
+        Group,
+        on_delete=models.CASCADE,
+        related_name='dashboards'
     )
     columns = models.IntegerField()
     rows = models.IntegerField()
