@@ -20,32 +20,30 @@ class WidgetSerializer(serializers.HyperlinkedModelSerializer):
     stattype = serializers.PrimaryKeyRelatedField(
         queryset=StatType.objects.all()
     )
+    channel_group = serializers.PrimaryKeyRelatedField(
+        queryset=Group.objects.all()
+    )
 
     class Meta:
         model = Widget
         fields = (
             'id', 'name', 'dashboard', 'widgettype', 'description', 'metrics',
             'created_at', 'updated_at', 'stattype', 'columns', 'rows',
-            'x_position', 'y_position'
+            'x_position', 'y_position', 'channel_group'
         )
         read_only_fields = ('id',)
 
 
 class DashboardSerializer(serializers.HyperlinkedModelSerializer):
-    group = serializers.PrimaryKeyRelatedField(
-        queryset=Group.objects.all()
-    )
-
     class Meta:
         model = Dashboard
         fields = (
-            'id', 'name', 'group', 'description', 'created_at', 'updated_at'
+            'id', 'name', 'description', 'created_at', 'updated_at'
         )
         read_only_fields = ('id',)
 
 
 class WidgetTypeSerializer(serializers.HyperlinkedModelSerializer):
-
     class Meta:
         model = WidgetType
         fields = (
@@ -63,7 +61,7 @@ class DashboardDetailSerializer(DashboardSerializer):
     class Meta:
         model = Dashboard
         fields = (
-            'id', 'name', 'description', 'group', 'widgets', 'created_at',
+            'id', 'name', 'description', 'widgets', 'created_at',
             'updated_at'
         )
         read_only_fields = ('id',)
@@ -85,12 +83,15 @@ class WidgetDetailSerializer(serializers.HyperlinkedModelSerializer):
     metrics = MetricSerializer(many=True, read_only=True)
     stattype = StatTypeSerializer(read_only=True)
     thresholds = ThresholdSerializer(many=True, read_only=True)
+    channel_group = serializers.PrimaryKeyRelatedField(
+        queryset=Group.objects.all()
+    )
 
     class Meta:
         model = Widget
         fields = (
             'id', 'name', 'dashboard', 'description', 'widgettype', 'metrics',
             'created_at', 'updated_at', 'thresholds', 'columns', 'rows',
-            'x_position', 'y_position', 'stattype'
+            'x_position', 'y_position', 'stattype', 'channel_group'
         )
         read_only_fields = ('id',)

@@ -68,7 +68,6 @@ class UnathenticatedMeasurementApiTests(TestCase):
         self.grp.channels.add(self.chan)
         self.dashboard = Dashboard.objects.create(
             name='Test dashboard',
-            group=self.grp,
             user=self.user
         )
         self.widtype = WidgetType.objects.create(
@@ -90,7 +89,8 @@ class UnathenticatedMeasurementApiTests(TestCase):
             rows=3,
             x_position=1,
             y_position=1,
-            user=self.user
+            user=self.user,
+            channel_group=self.grp
         )
         self.widget.metrics.add(self.metric)
 
@@ -158,7 +158,6 @@ class PrivateMeasurementAPITests(TestCase):
         )
         self.dashboard = Dashboard.objects.create(
             name='Test dashboard',
-            group=self.grp,
             user=self.user
         )
         self.widtype = WidgetType.objects.create(
@@ -180,7 +179,9 @@ class PrivateMeasurementAPITests(TestCase):
             rows=3,
             x_position=1,
             y_position=1,
-            user=self.user
+            user=self.user,
+            channel_group=self.grp,
+
         )
 
         self.threshold = Threshold.objects.create(
@@ -205,15 +206,12 @@ class PrivateMeasurementAPITests(TestCase):
 
     def test_create_dashboard(self):
         url = reverse('dashboard:dashboard-list')
-        payload = {'name': 'Test dashboard', 'group': self.grp.id}
+        payload = {'name': 'Test dashboard'}
         res = self.client.post(url, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         dashboard = Dashboard.objects.get(id=res.data['id'])
         for key in payload.keys():
-            if key == 'group':
-                self.assertEqual(payload[key], dashboard.group.id)
-            else:
-                self.assertEqual(payload[key], getattr(dashboard, key))
+            self.assertEqual(payload[key], getattr(dashboard, key))
 
     def test_get_widget_type(self):
         url = reverse(
@@ -252,7 +250,8 @@ class PrivateMeasurementAPITests(TestCase):
             'rows': 3,
             'x_position': 1,
             'y_position': 1,
-            'metrics': [self.metric.id]
+            'metrics': [self.metric.id],
+            'channel_group': self.grp.id
         }
         res = self.client.post(url, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
@@ -267,6 +266,8 @@ class PrivateMeasurementAPITests(TestCase):
             elif key == 'metrics':
                 metrics = widget.metrics.all()
                 self.assertIn(self.metric, metrics)
+            elif key == 'channel_group':
+                self.assertEqual(payload[key], widget.channel_group.id)
             else:
                 self.assertEqual(payload[key], getattr(widget, key))
 

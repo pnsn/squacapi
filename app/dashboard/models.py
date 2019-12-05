@@ -69,12 +69,12 @@ class Widget(DashboardBase):
     stattype = models.ForeignKey(
         StatType,
         on_delete=models.CASCADE,
-        related_name='stat',
+        related_name='widgets',
     )
     channel_group = models.ForeignKey(
         Group,
         on_delete=models.CASCADE,
-        related_name='dashboards'
+        related_name='widgets'
     )
     columns = models.IntegerField()
     rows = models.IntegerField()
