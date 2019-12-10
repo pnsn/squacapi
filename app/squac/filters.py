@@ -3,5 +3,9 @@ from django_filters import rest_framework as filters
 
 
 class CharInFilter(filters.BaseInFilter, filters.CharFilter):
-    '''mixin required to get SQL 'in' expression to behave as expected'''
+    '''mixin required to get SQL 'in' expression to behave as expected
+
+        BaseInFilter validates comman seperated list, CharFilter validates
+        individual char strings.
+    '''
     pass
