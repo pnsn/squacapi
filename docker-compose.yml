@@ -4,6 +4,7 @@ version: "3"
 
 services:
   app:
+    container_name: squacapi_app
     build:
       context: .
     ports:
@@ -25,6 +26,7 @@ services:
     depends_on:
       - db
   db:
+    container_name: squacapi_db
     image: postgres:10-alpine
     environment:
       - POSTGRES_DB=squac_dev
