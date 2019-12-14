@@ -1,5 +1,20 @@
 To create fixtures from existing test data run:
-./mg.sh "dumpdata  --indent=2" > app/fixtures/fixtures_all.json
+./mg.sh "dumpdata  --indent=2" > fixtures/fixtures_all.json
 
+to dump a single app
+
+./mg.sh "dumpdata app_label --indent=2 > fixtures/fixtures_app_label.json"
+
+to dump single model 
+
+./mg.sh "dumpdata app_label.model --indent=2 > fixtures/fixtures_model.json"
+
+Example:
+To recreate permissions for testing:
+./mg.sh "dumpdata auth --indent=2 > fixtures/fixtures_auth.json"
+./mg.sh "dumpdata django.content_type --indent=2 > fixtures/fixtures_content_type.json"
 Then open file and delete first line
 Congratulations, you just fixtured
+
+to load fixture data into dev db
+./mg.sh "loaddata fixtures/fixtures_all.json"

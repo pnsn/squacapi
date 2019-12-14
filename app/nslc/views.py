@@ -66,6 +66,7 @@ class BaseNslcViewSet(viewsets.ModelViewSet):
         This allows auth user to fully crud but unathorized user to view
         all data
      '''
+
     authentication_classes = (TokenAuthentication, SessionAuthentication)
     permission_classes = (IsAuthenticated, )
     filter_backends = (filters.DjangoFilterBackend,)

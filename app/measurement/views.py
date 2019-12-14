@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 from rest_framework.authentication import TokenAuthentication, \
     SessionAuthentication
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
 
 from .models import Metric, Measurement, Threshold
 from measurement import serializers
@@ -26,7 +26,7 @@ class BaseMeasurementViewSet(viewsets.ModelViewSet):
     '''base class for measurement viewsets '''
 
     authentication_classes = (TokenAuthentication, SessionAuthentication)
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated, DjangoModelPermissions)
     filter_backends = (filters.DjangoFilterBackend,)
 
     # all models require an auth user, set on create
