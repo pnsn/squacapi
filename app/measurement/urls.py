@@ -5,7 +5,9 @@ from measurement import views
 
 router = DefaultRouter()
 router.register('metrics', views.MetricViewSet)
-router.register('measurements', views.MeasurementViewSet)
+# basename required for views with get_queryset ovride
+router.register('measurements', views.MeasurementViewSet,
+                basename='measurement')
 router.register('thresholds', views.ThresholdViewSet)
 
 app_name = "measurement"

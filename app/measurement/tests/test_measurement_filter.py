@@ -4,6 +4,7 @@ from rest_framework.test import APIClient
 from rest_framework import status
 from django.urls import reverse
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 
 
 '''Tests for custom measurement filters in views.py'''
@@ -11,13 +12,16 @@ from django.contrib.auth import get_user_model
 
 class AuthenticatedMeasurementFilterTests(TestCase):
     # Public tests for filters
-    fixtures = ['fixtures_all.json']
+    fixtures = ['fixtures_all.json', 'fixtures_auth.json',
+                'fixtures_content_type.json']
     # Fixtures load from fixture directory within measurement app
 
     def setUp(self):
         self.client = APIClient()
         self.user = get_user_model().objects.create_user(
             "test@pnsn.org", "secret")
+        group = Group.objects.get(name='admin')
+        group.user_set.add(self.user)
         self.client.force_authenticate(self.user)
 
     def test_measurement_invalid_filter_input(self):
