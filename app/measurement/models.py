@@ -101,5 +101,5 @@ class Archive(models.Model):
     mean = models.FloatField()
     median = models.FloatField()
     stdev = models.FloatField()
-    start_time = models.DateTimeField(auto_now=False)
-    end_time = models.DateTimeField(auto_now=False)
+    starttime = models.DateTimeField(auto_now=False)
+    endtime = models.DateTimeField(auto_now=False)

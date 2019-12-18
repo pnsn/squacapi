@@ -69,8 +69,8 @@ class UnauthenticatedArchiveApiTests(TestCase):
             channel_id=chan,
             metric_id=metric,
             min=0, max=0, mean=0, median=0, stdev=0,
-            start_time=datetime(2019, 5, 5, 8, 8, 7, 127325, tzinfo=pytz.UTC),
-            end_time=datetime(2019, 5, 5, 8, 8, 7, 127325, tzinfo=pytz.UTC)
+            starttime=datetime(2019, 5, 5, 8, 8, 7, 127325, tzinfo=pytz.UTC),
+            endtime=datetime(2019, 5, 5, 8, 8, 7, 127325, tzinfo=pytz.UTC)
         )
 
     def test_unauthenticated_archive(self):
@@ -134,8 +134,8 @@ class ArchiveApiTests(TestCase):
             channel_id=self.chan,
             metric_id=self.metric,
             min=0, max=0, mean=0, median=0, stdev=0,
-            start_time=datetime(2019, 5, 5, 8, 8, 7, 127325, tzinfo=pytz.UTC),
-            end_time=datetime(2019, 5, 5, 8, 8, 7, 127325, tzinfo=pytz.UTC)
+            starttime=datetime(2019, 5, 5, 8, 8, 7, 127325, tzinfo=pytz.UTC),
+            endtime=datetime(2019, 5, 5, 8, 8, 7, 127325, tzinfo=pytz.UTC)
         )
 
     def test_get_archive(self):
@@ -145,9 +145,9 @@ class ArchiveApiTests(TestCase):
         data = {
             "metric_id": self.metric.id,
             "channel_id": self.chan.id,
-            "start_time":
+            "starttime":
                 str(datetime(2019, 5, 5, 8, 8, 7, 127325, tzinfo=pytz.UTC)),
-            "end_time":
+            "endtime":
                 str(datetime(2019, 5, 5, 8, 8, 7, 127325, tzinfo=pytz.UTC))
         }
         res = self.client.get(url, data)

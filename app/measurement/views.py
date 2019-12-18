@@ -26,7 +26,7 @@ class ArchiveFilter(filters.FilterSet):
     """ filters archives by metric, channel , starttime, type, and endtime """
     class Meta:
         model = Archive
-        fields = ('metric_id', 'channel_id', 'start_time', 'end_time',
+        fields = ('metric_id', 'channel_id', 'starttime', 'endtime',
                   'archive_type_id')
 
 
@@ -107,7 +107,7 @@ class ArchiveTypeViewSet(MeasurementViewSet):
 class ArchiveViewSet(MeasurementViewSetMixin, viewsets.ReadOnlyModelViewSet):
     """ Viewset that provides acces to Archive data """
 
-    REQUIRED_PARAMS = ("metric_id", "channel_id", "start_time", "end_time")
+    REQUIRED_PARAMS = ("metric_id", "channel_id", "starttime", "endtime")
 
     serializer_class = serializers.ArchiveSerializer
     filter_class = ArchiveFilter
