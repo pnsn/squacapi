@@ -9,6 +9,7 @@ router.register('metrics', views.MetricViewSet)
 router.register('measurements', views.MeasurementViewSet,
                 basename='measurement')
 router.register('thresholds', views.ThresholdViewSet)
+router.register('archives', views.ArchiveViewSet)
 
 app_name = "measurement"
 urlpatterns = [path('', include(router.urls))]
