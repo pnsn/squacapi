@@ -82,3 +82,24 @@ class Threshold(MeasurementBase):
     minval = models.FloatField()
     maxval = models.FloatField()
     updated_at = models.DateTimeField(auto_now=True)
+
+
+class ArchiveType(models.Model):
+    """ The duration that an archive spans """
+
+    name = models.CharField(max_length=8, unique=True)
+
+
+class Archive(models.Model):
+    """ An archive-summary of measurements """
+
+    archive_type_id = models.ForeignKey(ArchiveType, on_delete=models.CASCADE)
+    channel_id = models.ForeignKey(Channel, on_delete=models.CASCADE)
+    metric_id = models.ForeignKey(Metric, on_delete=models.CASCADE)
+    min = models.FloatField()
+    max = models.FloatField()
+    mean = models.FloatField()
+    median = models.FloatField()
+    stdev = models.FloatField()
+    start_time = models.DateTimeField(auto_now=False)
+    end_time = models.DateTimeField(auto_now=False)
