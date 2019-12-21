@@ -84,22 +84,34 @@ class Threshold(MeasurementBase):
     updated_at = models.DateTimeField(auto_now=True)
 
 
-class ArchiveType(models.Model):
-    """ The duration that an archive spans """
-
-    name = models.CharField(max_length=8, unique=True)
-
-
 class Archive(models.Model):
     """ An archive-summary of measurements """
 
-    archive_type_id = models.ForeignKey(ArchiveType, on_delete=models.CASCADE)
-    channel_id = models.ForeignKey(Channel, on_delete=models.CASCADE)
-    metric_id = models.ForeignKey(Metric, on_delete=models.CASCADE)
+    # TODO: collapse into TextChoices innerclass after Django 3 upgrade
+    DAY = 'day'
+    WEEK = 'week'
+    MONTH = 'month'
+    YEAR = 'year'
+
+    ARCHIVE_TYPE_CHOICES = [
+        (DAY, "Day"),
+        (WEEK, "Week"),
+        (MONTH, "Month"),
+        (YEAR, "Year")
+    ]
+
+    class Meta:
+        unique_together = (('metric', 'channel', 'archive_type', 'starttime'),)
+
+    archive_type = models.CharField(max_length=8, unique=True,
+                                    choices=ARCHIVE_TYPE_CHOICES)
+    channel = models.ForeignKey(Channel, on_delete=models.CASCADE)
+    metric = models.ForeignKey(Metric, on_delete=models.CASCADE)
     min = models.FloatField()
     max = models.FloatField()
     mean = models.FloatField()
     median = models.FloatField()
     stdev = models.FloatField()
+    n = models.IntegerField()
     starttime = models.DateTimeField(auto_now=False)
     endtime = models.DateTimeField(auto_now=False)
