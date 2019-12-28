@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from django.db.models import Avg, StdDev, Min, Max, Count
+from django.db.models import Avg, StdDev, Min, Max, Count, Value, CharField, F
 from django.db.models.functions import ExtractDay, ExtractWeek, ExtractMonth,\
     ExtractYear
 from measurement.models import Measurement, Archive
@@ -8,7 +8,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
 
-class ArchiveMeasurements(BaseCommand):
+class Command(BaseCommand):
     """ Command for creating archive entries"""
 
     help = 'Archives Measurements older than the specified age'
@@ -22,14 +22,10 @@ class ArchiveMeasurements(BaseCommand):
     """" Django datetime extractors for dealing with portions of datetimes """
 
     DURATIONS = {
-        Archive.ARCHIVE_TYPE_CHOICES.DAY:
-            lambda count: relativedelta(day=count),
-        Archive.ARCHIVE_TYPE_CHOICES.WEEK:
-            lambda count: relativedelta(week=count),
-        Archive.ARCHIVE_TYPE_CHOICES.MONTH:
-            lambda count: relativedelta(month=count),
-        Archive.ARCHIVE_TYPE_CHOICES.YEAR:
-            lambda count: relativedelta(year=count),
+        Archive.DAY: lambda count: relativedelta(day=count),
+        Archive.WEEK: lambda count: relativedelta(week=count),
+        Archive.MONTH: lambda count: relativedelta(month=count),
+        Archive.YEAR: lambda count: relativedelta(year=count),
     }
     """ functions for generating timesteps of sizes """
 
@@ -85,11 +81,13 @@ class ArchiveMeasurements(BaseCommand):
         grouped_measurements = qs.annotate(
             # first add day/week/month/year to tuple so we can group on it
             time=self.TIME_EXTRACTOR[archive_type]('endtime')) \
-            .values('metric', 'channel' 'time')
+            .values('metric', 'channel', 'time')
 
         # calculate archive stats
         archive_data = grouped_measurements.annotate(
-                archive_type=archive_type,  # also annotate type for select
+                # also annotate type so it can be directly transferred over to
+                # Archive
+                archive_type=Value(archive_type, CharField(max_length=8)),
                 mean=Avg('value'),
                 median=Percentile('value', percentile=0.5),
                 min=Min('value'),
@@ -97,11 +95,15 @@ class ArchiveMeasurements(BaseCommand):
                 stdev=StdDev('value'),
                 n=Count('value'),
                 starttime=Min('starttime'),
-                endtime=Max('endtime'))
+                endtime=Max('endtime'),
+                # add _id suffix to fields so they can be assigned to
+                # Archive's fk directly
+                metric_id=F('metric'),
+                channel_id=F('channel'))
 
         # select only columns that will be stored in Archive model
         filtered_archive_data = archive_data.values(
-            'archive_type', 'channel', 'metric', 'min', 'max', 'mean',
+            'archive_type', 'channel_id', 'metric_id', 'min', 'max', 'mean',
             'median', 'stdev', 'n', 'starttime', 'endtime')
 
         return filtered_archive_data
