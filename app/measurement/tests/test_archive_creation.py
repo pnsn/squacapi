@@ -33,8 +33,8 @@ def generate_measurements(day):
                                 max_value=(10**16) - 1),
                             # constrain end times to be in range
                             endtime=datetimes(
-                                min_value=day+relativedelta(seconds=1),
-                                max_value=day+relativedelta(hours=23),
+                                min_value=day + relativedelta(seconds=1),
+                                max_value=day + relativedelta(hours=23),
                                 timezones=just(pytz.UTC))))
 
 
@@ -154,8 +154,8 @@ class TestArchiveCreation(TestCase):
                                    self.DOUBLE_DECIMAL_PLACES))
 
         # python and sql calculate stdev differently, break down the cases
-        if len(measurements) > 1 and all(
-          [isfinite(value) for value in measurement_data]):
+        if len(measurements) > 1 and all([isfinite(value)
+                                          for value in measurement_data]):
             self.assertAlmostEqual(
                 self.round_to_decimals(np.std(measurement_data, ddof=1).item(),
                                        self.DOUBLE_DECIMAL_PLACES),

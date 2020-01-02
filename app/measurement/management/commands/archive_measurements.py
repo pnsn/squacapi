@@ -86,22 +86,22 @@ class Command(BaseCommand):
 
         # calculate archive stats
         archive_data = grouped_measurements.annotate(
-                # also annotate type so it can be directly transferred over to
-                # Archive
-                archive_type=Value(archive_type, CharField(max_length=8)),
-                mean=Avg('value'),
-                median=Percentile('value', percentile=0.5),
-                min=Min('value'),
-                max=Max('value'),
-                stdev=Coalesce(StdDev('value', sample=True), 0,
-                               output_field=FloatField()),
-                n=Count('value'),
-                starttime=Min('starttime'),
-                endtime=Max('endtime'),
-                # add _id suffix to fields so they can be assigned to
-                # Archive's fk directly
-                metric_id=F('metric'),
-                channel_id=F('channel'))
+            # also annotate type so it can be directly transferred over to
+            # Archive
+            archive_type=Value(archive_type, CharField(max_length=8)),
+            mean=Avg('value'),
+            median=Percentile('value', percentile=0.5),
+            min=Min('value'),
+            max=Max('value'),
+            stdev=Coalesce(StdDev('value', sample=True), 0,
+                           output_field=FloatField()),
+            n=Count('value'),
+            starttime=Min('starttime'),
+            endtime=Max('endtime'),
+            # add _id suffix to fields so they can be assigned to
+            # Archive's fk directly
+            metric_id=F('metric'),
+            channel_id=F('channel'))
 
         # select only columns that will be stored in Archive model
         filtered_archive_data = archive_data.values(
