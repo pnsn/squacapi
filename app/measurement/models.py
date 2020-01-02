@@ -100,9 +100,6 @@ class Archive(models.Model):
         (YEAR, "Year")
     ]
 
-    class Meta:
-        unique_together = (('metric', 'channel', 'archive_type', 'starttime'),)
-
     archive_type = models.CharField(max_length=8, choices=ARCHIVE_TYPE_CHOICES)
     channel = models.ForeignKey(Channel, on_delete=models.CASCADE)
     metric = models.ForeignKey(Metric, on_delete=models.CASCADE)

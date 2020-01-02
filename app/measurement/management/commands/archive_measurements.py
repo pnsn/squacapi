@@ -1,7 +1,8 @@
 from django.core.management.base import BaseCommand
-from django.db.models import Avg, StdDev, Min, Max, Count, Value, CharField, F
-from django.db.models.functions import ExtractDay, ExtractWeek, ExtractMonth,\
-    ExtractYear
+from django.db.models import (Avg, StdDev, Min, Max, Count, Value, CharField,
+                              F, FloatField)
+from django.db.models.functions import (ExtractDay, ExtractWeek, ExtractMonth,
+                                        ExtractYear, Coalesce)
 from measurement.models import Measurement, Archive
 from measurement.aggregates.percentile import Percentile
 from datetime import datetime
@@ -92,7 +93,8 @@ class Command(BaseCommand):
                 median=Percentile('value', percentile=0.5),
                 min=Min('value'),
                 max=Max('value'),
-                stdev=StdDev('value'),
+                stdev=Coalesce(StdDev('value', sample=True), 0,
+                               output_field=FloatField()),
                 n=Count('value'),
                 starttime=Min('starttime'),
                 endtime=Max('endtime'),
