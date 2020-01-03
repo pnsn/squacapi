@@ -65,7 +65,7 @@ class UnauthenticatedArchiveApiTests(TestCase):
             archive_type=Archive.DAY,
             channel=chan,
             metric=metric,
-            min=0, max=0, mean=0, median=0, stdev=0, n=1,
+            min=0, max=0, mean=0, median=0, stdev=0, num_samps=1,
             starttime=datetime(2019, 5, 5, 8, 8, 7, 127325, tzinfo=pytz.UTC),
             endtime=datetime(2019, 5, 5, 8, 8, 7, 127325, tzinfo=pytz.UTC)
         )
@@ -127,7 +127,7 @@ class ArchiveApiTests(TestCase):
             archive_type=Archive.DAY,
             channel=self.chan,
             metric=self.metric,
-            min=0, max=0, mean=0, median=0, stdev=0, n=1,
+            min=0, max=0, mean=0, median=0, stdev=0, num_samps=1,
             starttime=datetime(2019, 5, 5, 8, 8, 7, 127325, tzinfo=pytz.UTC),
             endtime=datetime(2019, 5, 5, 8, 8, 7, 127325, tzinfo=pytz.UTC)
         )

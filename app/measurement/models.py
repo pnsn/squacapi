@@ -108,12 +108,12 @@ class Archive(models.Model):
     mean = models.FloatField()
     median = models.FloatField()
     stdev = models.FloatField()
-    n = models.IntegerField()
+    num_samps = models.IntegerField()
     starttime = models.DateTimeField(auto_now=False)
     endtime = models.DateTimeField(auto_now=False)
 
     def __str__(self):
-        return f"Archive of Metric: {str(self.metric)}\
-                 Channel: {str(self.channel)}\
-                 from {format(self.starttime, '%m-%d-%Y')}\
-                 to {format(self.endtime, '%m-%d-%Y')}"
+        return (f"Archive of Metric: {str(self.metric)} "
+                f"Channel: {str(self.channel)} "
+                f"from {format(self.starttime, '%m-%d-%Y')} "
+                f"to {format(self.endtime, '%m-%d-%Y')}")

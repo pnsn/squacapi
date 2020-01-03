@@ -95,7 +95,7 @@ class Command(BaseCommand):
             max=Max('value'),
             stdev=Coalesce(StdDev('value', sample=True), 0,
                            output_field=FloatField()),
-            n=Count('value'),
+            num_samps=Count('value'),
             starttime=Min('starttime'),
             endtime=Max('endtime'),
             # add _id suffix to fields so they can be assigned to
@@ -106,6 +106,6 @@ class Command(BaseCommand):
         # select only columns that will be stored in Archive model
         filtered_archive_data = archive_data.values(
             'archive_type', 'channel_id', 'metric_id', 'min', 'max', 'mean',
-            'median', 'stdev', 'n', 'starttime', 'endtime')
+            'median', 'stdev', 'num_samps', 'starttime', 'endtime')
 
         return filtered_archive_data

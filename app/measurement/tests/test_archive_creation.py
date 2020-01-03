@@ -17,27 +17,6 @@ from measurement.models import Metric, Measurement, Archive
 from nslc.models import Network, Channel
 
 
-def generate_measurements(day):
-    return lists(from_model(Measurement,
-                            # deferred so that select happens only after they
-                            # are guaranteed to exist (created in setUp)
-                            metric=deferred(
-                                lambda: just(Metric.objects.first())),
-                            channel=deferred(
-                                lambda: just(Channel.objects.first())),
-                            user=deferred(
-                                lambda: just(get_user_model().objects.first())
-                            ),
-                            value=integers(
-                                min_value=-(10**16) + 1,
-                                max_value=(10**16) - 1),
-                            # constrain end times to be in range
-                            endtime=datetimes(
-                                min_value=day + relativedelta(seconds=1),
-                                max_value=day + relativedelta(hours=23),
-                                timezones=just(pytz.UTC))))
-
-
 def sample_user(email='test@pnsn.org', password="secret"):
     '''create a sample user for testing'''
     return get_user_model().objects.create_user(email, password)
@@ -48,6 +27,28 @@ class TestArchiveCreation(TestCase):
 
     TEST_TIME = datetime(2019, 5, 5)
     DOUBLE_DECIMAL_PLACES = 7
+
+    def generate_measurements(day):
+        return lists(from_model(Measurement,
+                                # deferred so that select happens only after
+                                # they are guaranteed to exist (created in
+                                # setUp)
+                                metric=deferred(
+                                    lambda: just(Metric.objects.first())),
+                                channel=deferred(
+                                    lambda: just(Channel.objects.first())),
+                                user=deferred(
+                                    lambda: just(get_user_model().objects\
+                                                                 .first())
+                                ),
+                                value=integers(
+                                    min_value=-(10**16) + 1,
+                                    max_value=(10**16) - 1),
+                                # constrain end times to be in range
+                                endtime=datetimes(
+                                    min_value=day + relativedelta(seconds=1),
+                                    max_value=day + relativedelta(hours=23),
+                                    timezones=just(pytz.UTC))))
 
     def setUp(self):
         timezone.now()
@@ -102,12 +103,12 @@ class TestArchiveCreation(TestCase):
 
     @given(data())
     def test_multi_day_archive(self, data):
-        """ make sure a a single day's stats are correctly summarized """
+        """ make sure a a multiple days' stats are correctly summarized """
 
         # generate measurements for yesterday and today
-        yesterday = data.draw(generate_measurements(
+        yesterday = data.draw(TestArchiveCreation.generate_measurements(
             TestArchiveCreation.TEST_TIME - relativedelta(days=1)))
-        today = data.draw(generate_measurements(
+        today = data.draw(TestArchiveCreation.generate_measurements(
             TestArchiveCreation.TEST_TIME))
 
         # create archives of past 2 days
@@ -166,7 +167,7 @@ class TestArchiveCreation(TestCase):
         else:
             self.assertTrue(isnan(archive.stdev))
 
-        self.assertEqual(len(measurements), archive.n)
+        self.assertEqual(len(measurements), archive.num_samps)
         self.assertEqual(min_start, archive.starttime)
         self.assertEqual(max_end, archive.endtime)
 
