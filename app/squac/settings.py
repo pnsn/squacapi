@@ -25,7 +25,7 @@ SECRET_KEY = os.environ.get('SQUAC_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('SQUAC_DEBUG_MODE') == 'True',
 
-ALLOWED_HOSTS = ['squac.pnsn.org','squacapi.pnsn.org', 'localhost']
+ALLOWED_HOSTS = ['squac.pnsn.org', 'squacapi.pnsn.org', 'localhost']
 
 
 # For debug toolbar
@@ -35,7 +35,6 @@ INTERNAL_IPS = [
 ]
 
 
-import os
 # tricks to have debug toolbar when developing with docker
 if os.environ.get('USE_DOCKER') == 'yes':
     import socket
@@ -50,8 +49,6 @@ DEBUG_TOOLBAR_CONFIG = {
 }
 
 
-
-import os
 # tricks to have debug toolbar when developing with docker
 if os.environ.get('USE_DOCKER') == 'yes':
     import socket
@@ -64,7 +61,6 @@ DEBUG_TOOLBAR_CONFIG = {
     ],
     'SHOW_TEMPLATE_CONTEXT': True,
 }
-
 
 
 INSTALLED_APPS = [
@@ -86,6 +82,7 @@ INSTALLED_APPS = [
     'import',
     'corsheaders',
     'debug_toolbar',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [

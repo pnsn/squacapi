@@ -9,3 +9,4 @@ requests>=2.22.0,<2.23
 django-debug-toolbar>=2.0,<2.1
 python-dateutil>=2.8.1,<2.9
 numpy>1.1,<2.0
+drf-yasg>=1.17,<2.0
