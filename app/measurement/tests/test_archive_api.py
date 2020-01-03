@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.utils import timezone
 
-from measurement.models import Metric, Archive, ArchiveType
+from measurement.models import Metric, Archive
 from nslc.models import Network, Channel
 
 from rest_framework.test import APIClient
@@ -34,9 +34,6 @@ class UnauthenticatedArchiveApiTests(TestCase):
         # unauthenticate all requests
         self.client.force_authenticate(user=None)
         timezone.now()
-        day_archive = ArchiveType.objects.create(
-            name="day"
-        )
         metric = Metric.objects.create(
             name='Metric test',
             code='123',
@@ -65,10 +62,10 @@ class UnauthenticatedArchiveApiTests(TestCase):
             endtime=datetime(2599, 12, 31, tzinfo=pytz.UTC)
         )
         self.archive = Archive.objects.create(
-            archive_type_id=day_archive,
-            channel_id=chan,
-            metric_id=metric,
-            min=0, max=0, mean=0, median=0, stdev=0,
+            archive_type=Archive.DAY,
+            channel=chan,
+            metric=metric,
+            min=0, max=0, mean=0, median=0, stdev=0, num_samps=1,
             starttime=datetime(2019, 5, 5, 8, 8, 7, 127325, tzinfo=pytz.UTC),
             endtime=datetime(2019, 5, 5, 8, 8, 7, 127325, tzinfo=pytz.UTC)
         )
@@ -99,9 +96,6 @@ class ArchiveApiTests(TestCase):
         # unauthenticate all requests
         self.client.force_authenticate(user=self.user)
         timezone.now()
-        day_archive = ArchiveType.objects.create(
-            name="day"
-        )
         self.metric = Metric.objects.create(
             name='Metric test',
             code='123',
@@ -130,10 +124,10 @@ class ArchiveApiTests(TestCase):
             endtime=datetime(2599, 12, 31, tzinfo=pytz.UTC)
         )
         self.archive = Archive.objects.create(
-            archive_type_id=day_archive,
-            channel_id=self.chan,
-            metric_id=self.metric,
-            min=0, max=0, mean=0, median=0, stdev=0,
+            archive_type=Archive.DAY,
+            channel=self.chan,
+            metric=self.metric,
+            min=0, max=0, mean=0, median=0, stdev=0, num_samps=1,
             starttime=datetime(2019, 5, 5, 8, 8, 7, 127325, tzinfo=pytz.UTC),
             endtime=datetime(2019, 5, 5, 8, 8, 7, 127325, tzinfo=pytz.UTC)
         )
@@ -143,8 +137,8 @@ class ArchiveApiTests(TestCase):
             'measurement:archive-list'
         )
         data = {
-            "metric_id": self.metric.id,
-            "channel_id": self.chan.id,
+            "metric": self.metric.id,
+            "channel": self.chan.id,
             "starttime":
                 str(datetime(2019, 5, 5, 8, 8, 7, 127325, tzinfo=pytz.UTC)),
             "endtime":
