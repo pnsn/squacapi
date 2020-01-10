@@ -6,12 +6,7 @@ django-extensions>=2.1.7,<2.2
 python-dotenv>=0.9.1,<1.0
 django-cors-headers>=3.1.0,<3.2
 requests>=2.22.0,<2.23
-<<<<<<< HEAD
-
-
-=======
 django-debug-toolbar>=2.0,<2.1
 python-dateutil>=2.8.1,<2.9
 numpy>1.1,<2.0
 drf-yasg>=1.17,<2.0
->>>>>>> 88067efc5cea147a369a798dc077b8a6b3f52e9e
