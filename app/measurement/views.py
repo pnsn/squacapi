@@ -34,10 +34,12 @@ class MeasurementFilter(filters.FilterSet):
 
 class ArchiveFilter(filters.FilterSet):
     """filters archives by metric, channel, starttime, type, and endtime"""
+    starttime = filters.CharFilter(field_name='starttime', lookup_expr='gte')
+    endtime = filters.CharFilter(field_name='endtime', lookup_expr='lte')
+
     class Meta:
         model = Archive
-        fields = ('metric', 'channel', 'starttime', 'endtime',
-                  'archive_type')
+        fields = ('metric', 'channel', 'archive_type')
 
 
 class MeasurementViewSetMixin:
