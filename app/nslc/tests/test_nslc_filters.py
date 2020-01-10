@@ -4,6 +4,7 @@ from rest_framework.test import APIClient
 from rest_framework import status
 from django.urls import reverse
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group as UserGroup
 
 
 '''Tests for custom nslc filters in views.py
@@ -18,16 +19,15 @@ from django.contrib.auth import get_user_model
 
 class NslcFilterTests(TestCase):
     # Tests for nslc filters
-    fixtures = ['fixtures_all.json']
-    # Fixtures load from the fixtures directory within /nslc
-    # to dump data to an nslc folder run:
-    # ./mg.sh "dumpdata nslc --indent=2" > app/nslc/fixtures/nslc_tests.json
-    # then delete the first line of file
+    fixtures = ['fixtures_all.json', 'fixtures_auth.json',
+                'fixtures_content_type.json']
 
     def setUp(self):
         self.client = APIClient()
         self.user = get_user_model().objects.create_user(
             email="test@pnsn.org", password="secret")
+        group = UserGroup.objects.get(name='admin')
+        group.user_set.add(self.user)
         self.client.force_authenticate(self.user)
 
     def test_network_filter(self):

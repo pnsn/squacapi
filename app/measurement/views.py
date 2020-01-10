@@ -22,8 +22,18 @@ class ThresholdFilter(filters.FilterSet):
         fields = ('metric', 'widget')
 
 
+class MeasurementFilter(filters.FilterSet):
+    """filters measurment by metric, channel, starttime, and endtime"""
+    starttime = filters.CharFilter(field_name='starttime', lookup_expr='gte')
+    endtime = filters.CharFilter(field_name='endtime', lookup_expr='lte')
+
+    class Meta:
+        model = Measurement
+        fields = ('metric', 'channel')
+
+
 class ArchiveFilter(filters.FilterSet):
-    """ filters archives by metric, channel , starttime, type, and endtime """
+    """filters archives by metric, channel, starttime, type, and endtime"""
     class Meta:
         model = Archive
         fields = ('metric_id', 'channel_id', 'starttime', 'endtime',
@@ -51,7 +61,11 @@ class MetricViewSet(BaseMeasurementViewSet):
 
 
 class MeasurementViewSet(BaseMeasurementViewSet):
+    REQUIRED_PARAMS = ("metric", "channel", "starttime", "endtime")
     serializer_class = serializers.MeasurementSerializer
+    q = Measurement.objects.all().order_by('channel', 'metric')
+    filter_class = MeasurementFilter
+    queryset = serializer_class.setup_eager_loading(q)
 
     def get_serializer(self, *args, **kwargs):
         """Allow bulk update
@@ -66,32 +80,12 @@ class MeasurementViewSet(BaseMeasurementViewSet):
         # Convert a list of string IDs to a list of integers
         return [int(str_id) for str_id in qs.split(',')]
 
-    def get_queryset(self):
-        '''Filter measurements by metric, channel, start and end times
+    def list(self, request, *args, **kwargs):
+        if not all([required_param in request.query_params
+           for required_param in self.REQUIRED_PARAMS]):
+            raise MissingParameterException
 
-         All 4 params are required for filter to function
-         '''
-        q = Measurement.objects.all().order_by('channel', 'metric')
-        queryset = self.serializer_class.setup_eager_loading(q)
-        if self.action not in ['create']:
-            pk = self.kwargs.get('pk')
-            metric = self.request.query_params.get('metric')
-            chan = self.request.query_params.get('channel')
-            stime = self.request.query_params.get('starttime')
-            etime = self.request.query_params.get('endtime')
-            if pk:
-                return queryset.filter(id=pk)
-            else:
-                if metric and chan and stime and etime:
-                    metric_ids = self._params_to_ints(metric)
-                    chan_ids = self._params_to_ints(chan)
-                    queryset = queryset.filter(metric__id__in=metric_ids)
-                    queryset = queryset.filter(channel__id__in=chan_ids)
-                    queryset = queryset.filter(starttime__gte=stime)
-                    queryset = queryset.filter(endtime__lte=etime)
-                else:
-                    raise MissingParameterException
-        return queryset
+        return super().list(self, request, *args, **kwargs)
 
 
 class ThresholdViewSet(BaseMeasurementViewSet):
@@ -101,13 +95,13 @@ class ThresholdViewSet(BaseMeasurementViewSet):
 
 
 class ArchiveTypeViewSet(MeasurementViewSet):
-    """ Viewset that provides acces to Archive data """
+    """Viewset that provides acces to Archive data"""
     serializer_class = serializers.ArchiveTypeSerializer
     queryset = ArchiveType.objects.all()
 
 
 class ArchiveViewSet(MeasurementViewSetMixin, viewsets.ReadOnlyModelViewSet):
-    """ Viewset that provides acces to Archive data """
+    """Viewset that provides acces to Archive data"""
 
     REQUIRED_PARAMS = ("metric_id", "channel_id", "starttime", "endtime")
 

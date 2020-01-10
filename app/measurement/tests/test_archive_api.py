@@ -1,5 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group as UserGroup
 from django.urls import reverse
 from django.utils import timezone
 
@@ -92,9 +93,12 @@ class UnauthenticatedArchiveApiTests(TestCase):
 
 class ArchiveApiTests(TestCase):
     '''Test the measurement api (public)'''
+    fixtures = ['fixtures_auth.json', 'fixtures_content_type.json']
 
     def setUp(self):
         self.user = sample_user()
+        group = UserGroup.objects.get(name='admin')
+        group.user_set.add(self.user)
         self.client = APIClient()
         # unauthenticate all requests
         self.client.force_authenticate(user=self.user)

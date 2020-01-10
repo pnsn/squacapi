@@ -65,7 +65,7 @@ class ThresholdSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class ArchiveTypeSerializer(serializers.HyperlinkedModelSerializer):
-    """ converts an Archive type into a serialized representation """
+    """converts an Archive type into a serialized representation """
     class Meta:
         model = ArchiveType
         fields = (
@@ -75,7 +75,7 @@ class ArchiveTypeSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class ArchiveSerializer(serializers.HyperlinkedModelSerializer):
-    """ converts an Archive into a serialized representation """
+    """converts an Archive into a serialized representation """
     id = serializers.HyperlinkedIdentityField(
         view_name="measurement:archive-detail", read_only=True)
     archive_type_id = serializers.PrimaryKeyRelatedField(

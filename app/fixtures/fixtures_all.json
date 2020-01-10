@@ -1,14 +1,14 @@
 [
 {
-  "model": "core.user",
+"model": "core.user",
   "fields": {
     "password": "pbkdf2_sha256$150000$Maki0QGWXOfV$d+iR6jNQ5v4X4QhgZ58qsloHqqF98lnf5yf/feQBaIo=",
     "last_login": null,
-    "is_superuser": false,
+    "is_superuser": true,
     "email": "loader@pnsn.org",
     "name": "",
     "is_active": true,
-    "is_staff": false,
+    "is_staff": true,
     "groups": [],
     "user_permissions": []
   }
@@ -2490,20 +2490,7 @@
     "type": "min"
   }
 },
-{
-  "model": "dashboard.stattype",
-  "pk": 4,
-  "fields": {
-    "name": "Maximum",
-    "description": "",
-    "created_at": "2019-10-16T22:00:52.783Z",
-    "updated_at": "2019-10-16T22:00:52.783Z",
-    "user": [
-      "loader@pnsn.org"
-    ],
-    "type": "max"
-  }
-},
+
 {
   "model": "dashboard.stattype",
   "pk": 5,

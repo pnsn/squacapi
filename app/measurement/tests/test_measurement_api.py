@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group as UserGroup
 
 from django.urls import reverse
 from django.utils import timezone
@@ -112,7 +112,7 @@ class PrivateMeasurementAPITests(TestCase):
     def setUp(self):
         self.client = APIClient()
         self.user = sample_user()
-        group = Group.objects.get(name='admin')
+        group = UserGroup.objects.get(name='admin')
         group.user_set.add(self.user)
         self.client.force_authenticate(self.user)
         timezone.now()
