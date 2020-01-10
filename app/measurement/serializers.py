@@ -64,19 +64,6 @@ class ThresholdSerializer(serializers.HyperlinkedModelSerializer):
         read_only_fields = ('id',)
 
 
-<<<<<<< HEAD
-class ArchiveTypeSerializer(serializers.HyperlinkedModelSerializer):
-    """converts an Archive type into a serialized representation """
-    class Meta:
-        model = ArchiveType
-        fields = (
-            'id', 'name'
-        )
-        read_only_fields = ('id',)
-
-
-=======
->>>>>>> 88067efc5cea147a369a798dc077b8a6b3f52e9e
 class ArchiveSerializer(serializers.HyperlinkedModelSerializer):
     """converts an Archive into a serialized representation """
     id = serializers.HyperlinkedIdentityField(
