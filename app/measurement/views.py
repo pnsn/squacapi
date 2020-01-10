@@ -3,7 +3,7 @@ from rest_framework.authentication import TokenAuthentication, \
     SessionAuthentication
 from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
 
-from .models import Metric, Measurement, Threshold, Archive, ArchiveType
+from .models import Metric, Measurement, Threshold, Archive
 from measurement import serializers
 from django_filters import rest_framework as filters
 from squac.filters import CharInFilter
@@ -36,8 +36,8 @@ class ArchiveFilter(filters.FilterSet):
     """filters archives by metric, channel, starttime, type, and endtime"""
     class Meta:
         model = Archive
-        fields = ('metric_id', 'channel_id', 'starttime', 'endtime',
-                  'archive_type_id')
+        fields = ('metric', 'channel', 'starttime', 'endtime',
+                  'archive_type')
 
 
 class MeasurementViewSetMixin:
@@ -94,16 +94,10 @@ class ThresholdViewSet(BaseMeasurementViewSet):
     queryset = Threshold.objects.all()
 
 
-class ArchiveTypeViewSet(MeasurementViewSet):
-    """Viewset that provides acces to Archive data"""
-    serializer_class = serializers.ArchiveTypeSerializer
-    queryset = ArchiveType.objects.all()
-
-
 class ArchiveViewSet(MeasurementViewSetMixin, viewsets.ReadOnlyModelViewSet):
     """Viewset that provides acces to Archive data"""
 
-    REQUIRED_PARAMS = ("metric_id", "channel_id", "starttime", "endtime")
+    REQUIRED_PARAMS = ("metric", "channel", "starttime", "endtime")
 
     serializer_class = serializers.ArchiveSerializer
     filter_class = ArchiveFilter

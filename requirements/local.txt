@@ -1,3 +1,7 @@
 -r base.txt
 flake8>=3.7.8,<3.8.0
+<<<<<<< HEAD
 django-debug-toolbar>=2.0,<2.1
+=======
+hypothesis>=4.56.1,<4.57
+>>>>>>> 88067efc5cea147a369a798dc077b8a6b3f52e9e
