@@ -82,3 +82,38 @@ class Threshold(MeasurementBase):
     minval = models.FloatField()
     maxval = models.FloatField()
     updated_at = models.DateTimeField(auto_now=True)
+
+
+class Archive(models.Model):
+    """ An archive-summary of measurements """
+
+    # TODO: collapse into TextChoices innerclass after Django 3 upgrade
+    DAY = 'day'
+    WEEK = 'week'
+    MONTH = 'month'
+    YEAR = 'year'
+
+    ARCHIVE_TYPE_CHOICES = [
+        (DAY, "Day"),
+        (WEEK, "Week"),
+        (MONTH, "Month"),
+        (YEAR, "Year")
+    ]
+
+    archive_type = models.CharField(max_length=8, choices=ARCHIVE_TYPE_CHOICES)
+    channel = models.ForeignKey(Channel, on_delete=models.CASCADE)
+    metric = models.ForeignKey(Metric, on_delete=models.CASCADE)
+    min = models.FloatField()
+    max = models.FloatField()
+    mean = models.FloatField()
+    median = models.FloatField()
+    stdev = models.FloatField()
+    num_samps = models.IntegerField()
+    starttime = models.DateTimeField(auto_now=False)
+    endtime = models.DateTimeField(auto_now=False)
+
+    def __str__(self):
+        return (f"Archive of Metric: {str(self.metric)} "
+                f"Channel: {str(self.channel)} "
+                f"from {format(self.starttime, '%m-%d-%Y')} "
+                f"to {format(self.endtime, '%m-%d-%Y')}")

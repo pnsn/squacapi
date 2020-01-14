@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Metric, Measurement, Threshold
+from .models import Metric, Measurement, Threshold, Archive
 from dashboard.models import Widget
 from nslc.models import Channel
 
@@ -59,3 +59,17 @@ class ThresholdSerializer(serializers.HyperlinkedModelSerializer):
             'updated_at'
         )
         read_only_fields = ('id',)
+
+
+class ArchiveSerializer(serializers.HyperlinkedModelSerializer):
+    """ converts an Archive into a serialized representation """
+    id = serializers.HyperlinkedIdentityField(
+        view_name="measurement:archive-detail", read_only=True)
+    channel = serializers.PrimaryKeyRelatedField(
+        queryset=Channel.objects.all())
+    metric = serializers.PrimaryKeyRelatedField(
+        queryset=Metric.objects.all())
+
+    class Meta:
+        model = Archive
+        exclude = ("url",)

@@ -3,7 +3,7 @@ from rest_framework.authentication import TokenAuthentication, \
     SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
 
-from .models import Metric, Measurement, Threshold
+from .models import Metric, Measurement, Threshold, Archive
 from measurement import serializers
 from .exceptions import MissingParameterException
 from django_filters import rest_framework as filters
@@ -22,12 +22,22 @@ class ThresholdFilter(filters.FilterSet):
         fields = ('metric', 'widget')
 
 
-class BaseMeasurementViewSet(viewsets.ModelViewSet):
-    '''base class for measurement viewsets '''
+class ArchiveFilter(filters.FilterSet):
+    """ filters archives by metric, channel , starttime, type, and endtime """
+    class Meta:
+        model = Archive
+        fields = ('metric', 'channel', 'starttime', 'endtime',
+                  'archive_type')
 
+
+class MeasurementViewSetMixin:
     authentication_classes = (TokenAuthentication, SessionAuthentication)
     permission_classes = (IsAuthenticated, )
     filter_backends = (filters.DjangoFilterBackend,)
+
+
+class BaseMeasurementViewSet(MeasurementViewSetMixin, viewsets.ModelViewSet):
+    '''base class for measurement viewsets '''
 
     # all models require an auth user, set on create
     def perform_create(self, serializer):
@@ -86,3 +96,20 @@ class ThresholdViewSet(BaseMeasurementViewSet):
     serializer_class = serializers.ThresholdSerializer
     filter_class = ThresholdFilter
     queryset = Threshold.objects.all()
+
+
+class ArchiveViewSet(MeasurementViewSetMixin, viewsets.ReadOnlyModelViewSet):
+    """ Viewset that provides acces to Archive data """
+
+    REQUIRED_PARAMS = ("metric", "channel", "starttime", "endtime")
+
+    serializer_class = serializers.ArchiveSerializer
+    filter_class = ArchiveFilter
+    queryset = Archive.objects.all()
+
+    def list(self, request, *args, **kwargs):
+        if not all([required_param in request.query_params
+           for required_param in self.REQUIRED_PARAMS]):
+            raise MissingParameterException
+
+        return super().list(self, request, *args, **kwargs)

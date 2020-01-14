@@ -4,3 +4,5 @@ app/sent_emails/*
 dev_notes.md
 app/.env
 docs/build
+**/.hypothesis/**
+.codegen/*
