@@ -2,7 +2,6 @@ from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from nslc.models import Network, Channel, Group
-from django.contrib.auth.models import Group as UserGroup
 
 
 from rest_framework.test import APIClient
@@ -78,16 +77,14 @@ class UnAuthenticatedNslcApiTests(TestCase):
 class PrivateNslcAPITests(TestCase):
     '''all authenticated tests go here'''
 
-    fixtures = ['fixtures_all.json', 'fixtures_auth.json',
-                'fixtures_content_type.json']
+    fixtures = ['fixtures_all.json']
     # Fixtures load from the fixtures directory in app
     # Fixture for testing patch/put on group
 
     def setUp(self):
         self.client = APIClient()
         self.user = sample_user(email="test@pnsn.org", password="secret")
-        group = UserGroup.objects.get(name='admin')
-        group.user_set.add(self.user)
+        self.user.is_staff = True
         self.client.force_authenticate(self.user)
         self.net = Network.objects.create(
             code="UW", name="University of Washington", user=self.user)

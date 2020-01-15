@@ -1,7 +1,8 @@
 from rest_framework import viewsets
 from rest_framework.authentication import TokenAuthentication, \
     SessionAuthentication
-from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
+from rest_framework.permissions import IsAuthenticated, \
+    DjangoModelPermissions, IsAdminUser
 
 from .models import Dashboard, WidgetType, Widget, StatType
 from dashboard import serializers
@@ -11,9 +12,9 @@ class BaseDashboardViewSet(viewsets.ModelViewSet):
     '''base class for dashboard viewsets'''
 
     authentication_classes = (TokenAuthentication, SessionAuthentication)
-    permission_classes = (IsAuthenticated, DjangoModelPermissions)
+    permission_classes = \
+        [IsAuthenticated & IsAdminUser | DjangoModelPermissions]
 
-    # all models require an auth user, set on create
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 

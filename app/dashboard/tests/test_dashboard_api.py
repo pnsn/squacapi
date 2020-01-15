@@ -1,6 +1,5 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Group as UserGroup
 from django.urls import reverse
 from django.utils import timezone
 
@@ -119,20 +118,13 @@ class UnathenticatedMeasurementApiTests(TestCase):
 class PrivateMeasurementAPITests(TestCase):
     '''For authenticated tests in dashboard API'''
 
-    fixtures = ['fixtures_all.json', 'fixtures_auth.json',
-                'fixtures_content_type.json']
+    fixtures = ['fixtures_all.json']
 
     def setUp(self):
         self.client = APIClient()
         self.user = sample_user()
-        group = UserGroup.objects.get(name='admin')
-        group.user_set.add(self.user)
-        # self.user.is_staff = True
-        # self.user.save()
+        self.user.is_staff = True
         self.client.force_authenticate(self.user)
-        self.assertFalse(self.user.has_perm('can_add_threshold'))
-        # group = Group.objects.get(name='admin')
-        # group.user_set.add(self.user)
         timezone.now()
         self.metric = Metric.objects.create(
             name='Sample metric',

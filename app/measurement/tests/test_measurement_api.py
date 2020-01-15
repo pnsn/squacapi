@@ -1,6 +1,5 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Group as UserGroup
 
 from django.urls import reverse
 from django.utils import timezone
@@ -107,13 +106,10 @@ class PrivateMeasurementAPITests(TestCase):
         routes and methods
     '''
 
-    fixtures = ['fixtures_auth.json', 'fixtures_content_type.json']
-
     def setUp(self):
         self.client = APIClient()
         self.user = sample_user()
-        group = UserGroup.objects.get(name='admin')
-        group.user_set.add(self.user)
+        self.user.is_staff = True
         self.client.force_authenticate(self.user)
         timezone.now()
         self.metric = Metric.objects.create(
@@ -196,7 +192,6 @@ class PrivateMeasurementAPITests(TestCase):
         )
 
     def test_create_measurement(self):
-        self.assertTrue(self.user.has_perm("measurement.add_measurement"))
         url = reverse('measurement:measurement-list')
         payload = {
             'metric': self.metric.id,

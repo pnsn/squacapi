@@ -5,7 +5,8 @@ from rest_framework.reverse import reverse
 from rest_framework.authentication import TokenAuthentication, \
     SessionAuthentication
 
-from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
+from rest_framework.permissions import IsAuthenticated, \
+    DjangoModelPermissions, IsAdminUser
 
 from .models import Network, Channel, Group
 from nslc.serializers import NetworkSerializer, ChannelSerializer, \
@@ -68,7 +69,8 @@ class BaseNslcViewSet(viewsets.ModelViewSet):
      '''
 
     authentication_classes = (TokenAuthentication, SessionAuthentication)
-    permission_classes = (IsAuthenticated, DjangoModelPermissions)
+    permission_classes = \
+        [IsAuthenticated & IsAdminUser | DjangoModelPermissions]
     filter_backends = (filters.DjangoFilterBackend,)
 
     # all models have require an auth user, set on create

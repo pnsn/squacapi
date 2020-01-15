@@ -4,7 +4,6 @@ from rest_framework.test import APIClient
 from rest_framework import status
 from django.urls import reverse
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Group as UserGroup
 
 
 from dashboard.models import Dashboard
@@ -14,15 +13,13 @@ from dashboard.models import Dashboard
 
 class PublicDashboardFilterTests(TestCase):
     # Public tests for dashboard filters
-    fixtures = ['fixtures_all.json', 'fixtures_auth.json',
-                'fixtures_content_type.json']
+    fixtures = ['fixtures_all.json']
 
     def setUp(self):
         self.client = APIClient()
         self.user = get_user_model().objects.create_user(
             'test@pnsn.org', "secret")
-        group = UserGroup.objects.get(name='admin')
-        group.user_set.add(self.user)
+        self.user.is_staff = True
         self.client.force_authenticate(self.user)
 
     def test_widget_dashboard_filter(self):

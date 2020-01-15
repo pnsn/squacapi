@@ -1,7 +1,8 @@
 from rest_framework import viewsets
 from rest_framework.authentication import TokenAuthentication, \
     SessionAuthentication
-from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
+from rest_framework.permissions import IsAuthenticated, \
+    DjangoModelPermissions, IsAdminUser
 
 from .models import Metric, Measurement, Threshold, Archive
 from measurement import serializers
@@ -44,7 +45,9 @@ class ArchiveFilter(filters.FilterSet):
 
 class MeasurementViewSetMixin:
     authentication_classes = (TokenAuthentication, SessionAuthentication)
-    permission_classes = (IsAuthenticated, DjangoModelPermissions)
+    permission_classes = \
+        [IsAuthenticated & IsAdminUser | DjangoModelPermissions]
+
     filter_backends = (filters.DjangoFilterBackend,)
 
 

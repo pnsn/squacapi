@@ -31,13 +31,9 @@ class ViewerMeasurementPermissionTests(TestCase):
         return 401
     '''
 
-    fixtures = ['fixtures_auth.json', 'fixtures_content_type.json']
-
     def setUp(self):
         '''create sample authenticated user'''
         self.user = sample_user()
-        # viewer_group = Group.objects.get(name='viewer')
-        # viewer_group.user_set.add(self.user)
         self.client = APIClient()
         # unauthenticate all requests
         self.client.force_authenticate(user=self.user)
