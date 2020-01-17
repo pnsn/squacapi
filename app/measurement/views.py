@@ -1,13 +1,10 @@
 from rest_framework import viewsets
-from rest_framework.authentication import TokenAuthentication, \
-    SessionAuthentication
-from rest_framework.permissions import IsAuthenticated, \
-    DjangoModelPermissions, IsAdminUser
-
 from .models import Metric, Measurement, Threshold, Archive
 from measurement import serializers
 from django_filters import rest_framework as filters
 from squac.filters import CharInFilter
+from squac.permissions import IsOwner, IsReadOnly
+from squac.mixins import SetUserMixin, PermissionsMixin
 from .exceptions import MissingParameterException
 
 
@@ -43,31 +40,22 @@ class ArchiveFilter(filters.FilterSet):
         fields = ('metric', 'channel', 'archive_type')
 
 
-class MeasurementViewSetMixin:
-    authentication_classes = (TokenAuthentication, SessionAuthentication)
-    permission_classes = \
-        [IsAuthenticated & IsAdminUser | DjangoModelPermissions]
-
-    filter_backends = (filters.DjangoFilterBackend,)
-
-
-class BaseMeasurementViewSet(MeasurementViewSetMixin, viewsets.ModelViewSet):
-    '''base class for measurement viewsets '''
-
-    # all models require an auth user, set on create
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+class BaseMeasurementViewSet(SetUserMixin, PermissionsMixin,
+                             viewsets.ModelViewSet):
+    pass
 
 
 class MetricViewSet(BaseMeasurementViewSet):
     serializer_class = serializers.MetricSerializer
     filter_class = MetricFilter
+    object_permissions = (IsReadOnly | IsOwner,)
     queryset = Metric.objects.all()
 
 
 class MeasurementViewSet(BaseMeasurementViewSet):
     REQUIRED_PARAMS = ("metric", "channel", "starttime", "endtime")
     serializer_class = serializers.MeasurementSerializer
+    object_permissions = (IsReadOnly | IsOwner,)
     q = Measurement.objects.all().order_by('channel', 'metric')
     filter_class = MeasurementFilter
     queryset = serializer_class.setup_eager_loading(q)
@@ -99,11 +87,14 @@ class ThresholdViewSet(BaseMeasurementViewSet):
     queryset = Threshold.objects.all()
 
 
-class ArchiveViewSet(MeasurementViewSetMixin, viewsets.ReadOnlyModelViewSet):
-    """Viewset that provides acces to Archive data"""
+class ArchiveViewSet(PermissionsMixin, viewsets.ReadOnlyModelViewSet):
+    """Viewset that provides access to Archive data
+
+        since there is not a user set on archive, all permissions will be 
+        model
+    """
 
     REQUIRED_PARAMS = ("metric", "channel", "starttime", "endtime")
-
     serializer_class = serializers.ArchiveSerializer
     filter_class = ArchiveFilter
     queryset = Archive.objects.all()

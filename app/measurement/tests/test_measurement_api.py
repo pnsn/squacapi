@@ -138,7 +138,6 @@ class PrivateMeasurementAPITests(TestCase):
             user=self.user,
             starttime=datetime(1970, 1, 1, tzinfo=pytz.UTC),
             endtime=datetime(2599, 12, 31, tzinfo=pytz.UTC)
-
         )
 
         self.measurement = Measurement.objects.create(
