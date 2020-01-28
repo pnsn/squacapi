@@ -1,32 +1,30 @@
 from rest_framework import viewsets
-from rest_framework.authentication import TokenAuthentication, \
-    SessionAuthentication
-from rest_framework.permissions import IsAuthenticated, \
-    DjangoModelPermissions, IsAdminUser
+from squac.mixins import SetUserMixin, PermissionsMixin
 
 from .models import Dashboard, WidgetType, Widget, StatType
 from dashboard import serializers
+from squac.permissions import IsOwner, IsReadOnly
 
 
-class BaseDashboardViewSet(viewsets.ModelViewSet):
-    '''base class for dashboard viewsets'''
-
-    authentication_classes = (TokenAuthentication, SessionAuthentication)
-    permission_classes = \
-        [IsAuthenticated & IsAdminUser | DjangoModelPermissions]
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+class BaseDashboardViewSet(SetUserMixin, PermissionsMixin,
+                           viewsets.ModelViewSet):
+    pass
 
 
 class DashboardViewSet(BaseDashboardViewSet):
     serializer_class = serializers.DashboardSerializer
+    object_permissions = (IsReadOnly | IsOwner,)
     queryset = Dashboard.objects.all()
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
             return serializers.DashboardDetailSerializer
         return self.serializer_class
+
+    def get_queryset(self):
+        queryset = Dashboard.objects.filter(user=self.request.user) | \
+            Dashboard.objects.filter(is_public=True)
+        return queryset
 
 
 class WidgetTypeViewSet(BaseDashboardViewSet):
@@ -43,6 +41,7 @@ class WidgetViewSet(BaseDashboardViewSet):
 
     serializer_class = serializers.WidgetSerializer
     queryset = Widget.objects.all()
+    object_permissions = (IsReadOnly | IsOwner,)
 
     def _params_to_ints(self, qs):
         # Convert a list of string IDs to a list of integers
@@ -55,7 +54,8 @@ class WidgetViewSet(BaseDashboardViewSet):
         if dashboard:
             dashboard_id = self._params_to_ints(dashboard)
             queryset = queryset.filter(dashboard__id__in=dashboard_id)
-
+        queryset = queryset.filter(user=self.request.user) | \
+            queryset.filter(is_public=True)
         return queryset
 
     def get_serializer_class(self):

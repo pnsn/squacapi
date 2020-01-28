@@ -2583,6 +2583,7 @@
     "description": "",
     "created_at": "2019-08-28T23:30:52.148Z",
     "updated_at": "2019-08-28T23:30:52.148Z",
+    "is_public": true,
     "user": [
       "loader@pnsn.org"
     ]
@@ -2596,6 +2597,8 @@
     "description": "",
     "created_at": "2019-08-28T23:30:52.150Z",
     "updated_at": "2019-08-28T23:30:52.150Z",
+    "is_public": true,
+
     "user": [
       "loader@pnsn.org"
     ]
@@ -2609,6 +2612,7 @@
     "description": "",
     "created_at": "2019-08-28T23:30:52.152Z",
     "updated_at": "2019-08-28T23:30:52.152Z",
+    "is_public": true,
     "user": [
       "loader@pnsn.org"
     ]
@@ -2622,6 +2626,7 @@
     "description": "",
     "created_at": "2019-08-28T23:30:52.153Z",
     "updated_at": "2019-08-28T23:30:52.153Z",
+    "is_public": true,
     "user": [
       "loader@pnsn.org"
     ]
@@ -2635,6 +2640,7 @@
     "description": "",
     "created_at": "2019-08-28T23:30:52.154Z",
     "updated_at": "2019-08-28T23:30:52.154Z",
+    "is_public": true,
     "user": [
       "loader@pnsn.org"
     ]
@@ -2648,6 +2654,7 @@
     "description": "",
     "created_at": "2019-08-28T23:30:52.155Z",
     "updated_at": "2019-08-28T23:30:52.155Z",
+    "is_public": true,
     "user": [
       "loader@pnsn.org"
     ]
@@ -2661,6 +2668,7 @@
     "description": "",
     "created_at": "2019-08-28T23:30:52.173Z",
     "updated_at": "2019-08-28T23:30:52.173Z",
+    "is_public": true,
     "user": [
       "loader@pnsn.org"
     ],
@@ -2716,6 +2724,7 @@
     "description": "",
     "created_at": "2019-08-28T23:30:52.175Z",
     "updated_at": "2019-08-28T23:30:52.175Z",
+    "is_public": true,
     "user": [
       "loader@pnsn.org"
     ],
@@ -2740,6 +2749,7 @@
     "description": "",
     "created_at": "2019-08-28T23:30:52.274Z",
     "updated_at": "2019-08-28T23:30:52.274Z",
+    "is_public": true,
     "user": [
       "loader@pnsn.org"
     ],
@@ -2795,6 +2805,7 @@
     "description": "",
     "created_at": "2019-08-28T23:30:52.275Z",
     "updated_at": "2019-08-28T23:30:52.276Z",
+    "is_public": true,
     "user": [
       "loader@pnsn.org"
     ],
@@ -2819,6 +2830,7 @@
     "description": "",
     "created_at": "2019-08-28T23:30:52.375Z",
     "updated_at": "2019-08-28T23:30:52.375Z",
+    "is_public": true,
     "user": [
       "loader@pnsn.org"
     ],
@@ -2874,6 +2886,7 @@
     "description": "",
     "created_at": "2019-08-28T23:30:52.376Z",
     "updated_at": "2019-08-28T23:30:52.376Z",
+    "is_public": true,
     "user": [
       "loader@pnsn.org"
     ],
@@ -2898,6 +2911,7 @@
     "description": "",
     "created_at": "2019-08-28T23:30:52.476Z",
     "updated_at": "2019-08-28T23:30:52.476Z",
+    "is_public": true,
     "user": [
       "loader@pnsn.org"
     ],
@@ -2953,6 +2967,7 @@
     "description": "",
     "created_at": "2019-08-28T23:30:52.478Z",
     "updated_at": "2019-08-28T23:30:52.478Z",
+    "is_public": true,
     "user": [
       "loader@pnsn.org"
     ],
@@ -2977,6 +2992,7 @@
     "description": "",
     "created_at": "2019-08-28T23:30:52.573Z",
     "updated_at": "2019-08-28T23:30:52.573Z",
+    "is_public": true,
     "user": [
       "loader@pnsn.org"
     ],
@@ -3032,6 +3048,7 @@
     "description": "",
     "created_at": "2019-08-28T23:30:52.574Z",
     "updated_at": "2019-08-28T23:30:52.574Z",
+    "is_public": true,
     "user": [
       "loader@pnsn.org"
     ],
@@ -3056,6 +3073,7 @@
     "description": "",
     "created_at": "2019-08-28T23:30:52.674Z",
     "updated_at": "2019-08-28T23:30:52.674Z",
+    "is_public": true,
     "user": [
       "loader@pnsn.org"
     ],
@@ -3111,6 +3129,7 @@
     "description": "",
     "created_at": "2019-08-28T23:30:52.675Z",
     "updated_at": "2019-08-28T23:30:52.675Z",
+    "is_public": true,
     "user": [
       "loader@pnsn.org"
     ],

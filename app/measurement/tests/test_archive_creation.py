@@ -26,7 +26,7 @@ class TestArchiveCreation(TestCase):
     """ Tests archive creation functionality """
 
     TEST_TIME = datetime(2019, 5, 5)
-    DOUBLE_DECIMAL_PLACES = 7
+    DOUBLE_DECIMAL_PLACES = 6
 
     def generate_measurements(day):
         return lists(from_model(Measurement,

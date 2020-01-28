@@ -20,7 +20,7 @@ class PermissionsMixin:
             objecect level permissions can then be appended by setting
             object_permissions on the view
     '''
-    # base permission classes
+    # base permission classes, can be overridden in view.
     permission_classes = (
         IsAuthenticated, IsAdminUser | DjangoModelPermissions)
     # object level permissions are set in view

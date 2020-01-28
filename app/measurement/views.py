@@ -90,7 +90,7 @@ class ThresholdViewSet(BaseMeasurementViewSet):
 class ArchiveViewSet(PermissionsMixin, viewsets.ReadOnlyModelViewSet):
     """Viewset that provides access to Archive data
 
-        since there is not a user set on archive, all permissions will be 
+        since there is not a user set on archive, all permissions will be
         model
     """
 
