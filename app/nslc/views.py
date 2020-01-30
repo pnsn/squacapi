@@ -2,17 +2,14 @@ from rest_framework import viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-from rest_framework.authentication import TokenAuthentication, \
-    SessionAuthentication
-
-from rest_framework.permissions import IsAuthenticated, \
-    DjangoModelPermissions, IsAdminUser
-
+from rest_framework.permissions import IsAuthenticated
+from django_filters import rest_framework as filters
+from squac.permissions import IsAdminOwnerOrPublicReadOnly
+from squac.filters import CharInFilter
+from squac.mixins import SetUserMixin, PermissionsMixin
 from .models import Network, Channel, Group
 from nslc.serializers import NetworkSerializer, ChannelSerializer, \
     GroupSerializer, GroupDetailSerializer
-from django_filters import rest_framework as filters
-from squac.filters import CharInFilter
 
 """Filter classes used for view filtering"""
 
@@ -60,22 +57,8 @@ def api_root(request, format=None):
 """
 
 
-class BaseNslcViewSet(viewsets.ModelViewSet):
-    '''base class for all nslc viewsets:
-
-     Permissions are IsAuthticatedOrReadOnly
-        This allows auth user to fully crud but unathorized user to view
-        all data
-     '''
-
-    authentication_classes = (TokenAuthentication, SessionAuthentication)
-    permission_classes = \
-        [IsAuthenticated & IsAdminUser | DjangoModelPermissions]
-    filter_backends = (filters.DjangoFilterBackend,)
-
-    # all models have require an auth user, set on create
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+class BaseNslcViewSet(SetUserMixin, PermissionsMixin, viewsets.ModelViewSet):
+    pass
 
 
 class NetworkViewSet(BaseNslcViewSet):
@@ -95,8 +78,16 @@ class ChannelViewSet(BaseNslcViewSet):
 class GroupViewSet(BaseNslcViewSet):
     serializer_class = GroupSerializer
     queryset = Group.objects.all()
+    # commas act as 'ands'
+    permission_classes = (
+        IsAuthenticated, IsAdminOwnerOrPublicReadOnly)
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
             return GroupDetailSerializer
         return self.serializer_class
+
+    def get_queryset(self):
+        '''view public and own resources'''
+        return self.queryset.filter(user=self.request.user) | \
+            self.queryset.filter(is_public=True)

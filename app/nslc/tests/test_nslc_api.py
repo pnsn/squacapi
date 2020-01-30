@@ -1,13 +1,11 @@
 from django.test import TestCase
-from django.contrib.auth import get_user_model
 from django.urls import reverse
-from nslc.models import Network, Channel, Group
-
-
-from rest_framework.test import APIClient
+from django.contrib.auth import get_user_model
 from rest_framework import status
+from rest_framework.test import APIClient
 from datetime import datetime
 import pytz
+from nslc.models import Network, Channel, Group
 
 
 '''Tests for all nscl models:
@@ -85,6 +83,7 @@ class PrivateNslcAPITests(TestCase):
         self.client = APIClient()
         self.user = sample_user(email="test@pnsn.org", password="secret")
         self.user.is_staff = True
+        self.user.save()
         self.client.force_authenticate(self.user)
         self.net = Network.objects.create(
             code="UW", name="University of Washington", user=self.user)
@@ -180,11 +179,14 @@ class PrivateNslcAPITests(TestCase):
                 self.assertEqual(payload[key], getattr(group, key))
 
     def test_partial_update_group(self):
+        # self.assertTrue(self.user.has_perm('nslc.change_group'))
         group = Group.objects.get(name='UW-All')
         payload = {
             'name': 'UW-All-partial-update',
-            'channels': [self.chan.id]
+            'channels': [self.chan.id],
+            'is_public': True
         }
+        self.assertTrue(self.user.is_staff)
         url = reverse('nslc:group-detail', args=[group.id])
         res = self.client.patch(url, payload)
         self.assertEqual(res.status_code, status.HTTP_200_OK)

@@ -15,18 +15,23 @@ class PermissionsMixin:
 
         permission_classes acts as base permissions:
             all views must be autheticated and if user is admin we are done
-            otherwise check model permissions.
-
-            objecect level permissions can then be appended by setting
-            object_permissions on the view
-    '''
-    # base permission classes, can be overridden in view.
+            otherwise check model permission.
+         '''
     permission_classes = (
-        IsAuthenticated, IsAdminUser | DjangoModelPermissions)
-    # object level permissions are set in view
-    object_permissions = ()
+        IsAuthenticated, (IsAdminUser | DjangoModelPermissions),)
+    # object_permissions = ()
 
-    # append object perms to base
-    def get_permissions(self):
-        self.permission_classes += self.object_permissions
-        return super(PermissionsMixin, self).get_permissions()
+    '''this didn't pan out but leaving it in for now
+
+        the idea was to set object level permissions on views, and append
+        to the permission classes above. The problme being that they appended
+        permissions act as an '&' while they were needed as part of the 'or'
+        with DjangoModelPermissions e.g.:
+
+        IsAuthenticated, (IsAdminUser |
+             DjangoModelPermissions & cond1 & cond2),)
+
+    '''
+    # def get_permissions(self):
+    #     self.permission_classes += self.object_permissions
+    #     return super(PermissionsMixin, self).get_permissions()

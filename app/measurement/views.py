@@ -1,11 +1,12 @@
 from rest_framework import viewsets
-from .models import Metric, Measurement, Threshold, Archive
-from measurement import serializers
+from rest_framework.permissions import IsAuthenticated
 from django_filters import rest_framework as filters
 from squac.filters import CharInFilter
-from squac.permissions import IsOwner, IsReadOnly
 from squac.mixins import SetUserMixin, PermissionsMixin
 from .exceptions import MissingParameterException
+from squac.permissions import IsAdminOwnerOrPublicReadOnly
+from .models import Metric, Measurement, Threshold, Archive
+from measurement import serializers
 
 
 class MetricFilter(filters.FilterSet):
@@ -48,14 +49,16 @@ class BaseMeasurementViewSet(SetUserMixin, PermissionsMixin,
 class MetricViewSet(BaseMeasurementViewSet):
     serializer_class = serializers.MetricSerializer
     filter_class = MetricFilter
-    object_permissions = (IsReadOnly | IsOwner,)
+    permission_classes = (
+        IsAuthenticated, IsAdminOwnerOrPublicReadOnly)
     queryset = Metric.objects.all()
 
 
 class MeasurementViewSet(BaseMeasurementViewSet):
     REQUIRED_PARAMS = ("metric", "channel", "starttime", "endtime")
     serializer_class = serializers.MeasurementSerializer
-    object_permissions = (IsReadOnly | IsOwner,)
+    permission_classes = (
+        IsAuthenticated, IsAdminOwnerOrPublicReadOnly)
     q = Measurement.objects.all().order_by('channel', 'metric')
     filter_class = MeasurementFilter
     queryset = serializer_class.setup_eager_loading(q)
