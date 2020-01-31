@@ -25,7 +25,9 @@ SECRET_KEY = os.environ.get('SQUAC_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('SQUAC_DEBUG_MODE') == 'True',
 
-ALLOWED_HOSTS = ['squac.pnsn.org', 'squacapi.pnsn.org', 'localhost']
+ALLOWED_HOSTS = ['squac.pnsn.org', 'squacapi.pnsn.org', 
+                 'localhost', 'staging-squac.pnsn.org',
+                 'staging-squac.pnsn.org']
 
 
 # For debug toolbar
