@@ -79,13 +79,13 @@ class Threshold(MeasurementBase):
         Metric,
         on_delete=models.CASCADE,
         related_name='threshold')
-    minval = models.FloatField()
-    maxval = models.FloatField()
+    minval = models.FloatField(blank=True)
+    maxval = models.FloatField(blank=True)
     updated_at = models.DateTimeField(auto_now=True)
 
 
 class Archive(models.Model):
-    """ An archive-summary of measurements """
+    """An archive-summary of measurements"""
 
     # TODO: collapse into TextChoices innerclass after Django 3 upgrade
     DAY = 'day'
