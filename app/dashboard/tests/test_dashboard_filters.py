@@ -8,7 +8,10 @@ from django.contrib.auth import get_user_model
 
 from dashboard.models import Dashboard
 
-'''Tests for custom dashboard filter in views.py'''
+'''Tests for custom dashboard filter in views.py
+
+     ./mg.sh "test dashboard.tests.test_dashboard_filters && flake8"
+'''
 
 
 class PublicDashboardFilterTests(TestCase):

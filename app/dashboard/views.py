@@ -23,6 +23,8 @@ class DashboardViewSet(BaseDashboardViewSet):
         return self.serializer_class
 
     def get_queryset(self):
+        if self.request.user.is_staff:
+            return self.queryset
         queryset = Dashboard.objects.filter(user=self.request.user) | \
             Dashboard.objects.filter(is_public=True)
         return queryset
@@ -56,6 +58,8 @@ class WidgetViewSet(BaseDashboardViewSet):
         if dashboard:
             dashboard_id = self._params_to_ints(dashboard)
             queryset = queryset.filter(dashboard__id__in=dashboard_id)
+        if self.request.user.is_staff:
+            return queryset
         queryset = queryset.filter(user=self.request.user) | \
             queryset.filter(is_public=True)
         return queryset

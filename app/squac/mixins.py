@@ -19,19 +19,3 @@ class PermissionsMixin:
          '''
     permission_classes = (
         IsAuthenticated, (IsAdminUser | DjangoModelPermissions),)
-    # object_permissions = ()
-
-    '''this didn't pan out but leaving it in for now
-
-        the idea was to set object level permissions on views, and append
-        to the permission classes above. The problme being that they appended
-        permissions act as an '&' while they were needed as part of the 'or'
-        with DjangoModelPermissions e.g.:
-
-        IsAuthenticated, (IsAdminUser |
-             DjangoModelPermissions & cond1 & cond2),)
-
-    '''
-    # def get_permissions(self):
-    #     self.permission_classes += self.object_permissions
-    #     return super(PermissionsMixin, self).get_permissions()

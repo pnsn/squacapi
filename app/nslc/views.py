@@ -88,6 +88,8 @@ class GroupViewSet(BaseNslcViewSet):
         return self.serializer_class
 
     def get_queryset(self):
+        if self.request.user.is_staff:
+            return self.queryset
         '''view public and own resources'''
         return self.queryset.filter(user=self.request.user) | \
             self.queryset.filter(is_public=True)
