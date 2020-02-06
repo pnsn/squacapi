@@ -18,6 +18,7 @@ class AuthenticatedMeasurementFilterTests(TestCase):
         self.client = APIClient()
         self.user = get_user_model().objects.create_user(
             "test@pnsn.org", "secret")
+        self.user.is_staff = True
         self.client.force_authenticate(self.user)
 
     def test_measurement_invalid_filter_input(self):
@@ -31,18 +32,17 @@ class AuthenticatedMeasurementFilterTests(TestCase):
     def test_measurement_filter(self):
         # Test that filter properly finds the measurement that fits params
         url = reverse('measurement:measurement-list')
-        stime, etime = '2018-02-01T03:00:00Z', '2018-02-02T05:00:00Z'
-        url += f'?metric=2&channel=5&starttime={stime}&endtime={etime}'
+        stime, etime = '2016-02-01T03:00:00Z', '2020-02-02T05:00:00Z'
+        url += f'?metric=3&channel=5&starttime={stime}&endtime={etime}'
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data), 1)
-        self.assertEqual(res.data[0]['id'], 1)
 
     def test_measurement_out_of_range_filter(self):
         # Test that filter does not return measurements outside date range
         url = reverse('measurement:measurement-list')
-        stime, etime = '2018-02-01T05:00:00Z', '2018-02-02T05:00:00Z'
-        url += f'?metric=284&channel=4430&starttime={stime}&endtime={etime}'
+        stime, etime = '2020-02-01T05:00:00Z', '2020-02-02T05:00:00Z'
+        url += f'?metric=3&channel=5&starttime={stime}&endtime={etime}'
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data), 0)

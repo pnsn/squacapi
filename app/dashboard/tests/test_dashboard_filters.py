@@ -5,21 +5,24 @@ from rest_framework import status
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 
+
 from dashboard.models import Dashboard
 
-'''Tests for custom dashboard filter in views.py'''
+'''Tests for custom dashboard filter in views.py
+
+     ./mg.sh "test dashboard.tests.test_dashboard_filters && flake8"
+'''
 
 
 class PublicDashboardFilterTests(TestCase):
     # Public tests for dashboard filters
     fixtures = ['fixtures_all.json']
-    # Fixtures load from fixtures directory in app
-    # see README in app/fixutes/README
 
     def setUp(self):
         self.client = APIClient()
         self.user = get_user_model().objects.create_user(
             'test@pnsn.org', "secret")
+        self.user.is_staff = True
         self.client.force_authenticate(self.user)
 
     def test_widget_dashboard_filter(self):

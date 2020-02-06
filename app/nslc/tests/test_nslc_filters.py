@@ -5,7 +5,6 @@ from rest_framework import status
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 
-
 '''Tests for custom nslc filters in views.py
 
     to run only the app tests:
@@ -19,15 +18,12 @@ from django.contrib.auth import get_user_model
 class NslcFilterTests(TestCase):
     # Tests for nslc filters
     fixtures = ['fixtures_all.json']
-    # Fixtures load from the fixtures directory within /nslc
-    # to dump data to an nslc folder run:
-    # ./mg.sh "dumpdata nslc --indent=2" > app/nslc/fixtures/nslc_tests.json
-    # then delete the first line of file
 
     def setUp(self):
         self.client = APIClient()
         self.user = get_user_model().objects.create_user(
             email="test@pnsn.org", password="secret")
+        self.user.is_staff = True
         self.client.force_authenticate(self.user)
 
     def test_network_filter(self):

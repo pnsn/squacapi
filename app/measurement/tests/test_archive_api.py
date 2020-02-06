@@ -93,6 +93,7 @@ class ArchiveApiTests(TestCase):
     def setUp(self):
         self.user = sample_user()
         self.client = APIClient()
+        self.user.is_staff = True
         # unauthenticate all requests
         self.client.force_authenticate(user=self.user)
         timezone.now()

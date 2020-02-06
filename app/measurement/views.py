@@ -1,13 +1,12 @@
 from rest_framework import viewsets
-from rest_framework.authentication import TokenAuthentication, \
-    SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
-
-from .models import Metric, Measurement, Threshold, Archive
-from measurement import serializers
-from .exceptions import MissingParameterException
 from django_filters import rest_framework as filters
 from squac.filters import CharInFilter
+from squac.mixins import SetUserMixin, PermissionsMixin
+from .exceptions import MissingParameterException
+from squac.permissions import IsAdminOwnerOrPublicReadOnly
+from .models import Metric, Measurement, Threshold, Archive
+from measurement import serializers
 
 
 class MetricFilter(filters.FilterSet):
@@ -22,37 +21,46 @@ class ThresholdFilter(filters.FilterSet):
         fields = ('metric', 'widget')
 
 
+class MeasurementFilter(filters.FilterSet):
+    """filters measurment by metric, channel, starttime, and endtime"""
+    starttime = filters.CharFilter(field_name='starttime', lookup_expr='gte')
+    endtime = filters.CharFilter(field_name='endtime', lookup_expr='lte')
+
+    class Meta:
+        model = Measurement
+        fields = ('metric', 'channel')
+
+
 class ArchiveFilter(filters.FilterSet):
-    """ filters archives by metric, channel , starttime, type, and endtime """
+    """filters archives by metric, channel, starttime, type, and endtime"""
+    starttime = filters.CharFilter(field_name='starttime', lookup_expr='gte')
+    endtime = filters.CharFilter(field_name='endtime', lookup_expr='lte')
+
     class Meta:
         model = Archive
-        fields = ('metric', 'channel', 'starttime', 'endtime',
-                  'archive_type')
+        fields = ('metric', 'channel', 'archive_type')
 
 
-class MeasurementViewSetMixin:
-    authentication_classes = (TokenAuthentication, SessionAuthentication)
-    permission_classes = (IsAuthenticated, )
-    filter_backends = (filters.DjangoFilterBackend,)
-
-
-class BaseMeasurementViewSet(MeasurementViewSetMixin, viewsets.ModelViewSet):
-    '''base class for measurement viewsets '''
-
-    # all models require an auth user, set on create
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+class BaseMeasurementViewSet(SetUserMixin, PermissionsMixin,
+                             viewsets.ModelViewSet):
+    pass
 
 
 class MetricViewSet(BaseMeasurementViewSet):
     serializer_class = serializers.MetricSerializer
     filter_class = MetricFilter
+    permission_classes = (
+        IsAuthenticated, IsAdminOwnerOrPublicReadOnly)
     queryset = Metric.objects.all()
 
 
 class MeasurementViewSet(BaseMeasurementViewSet):
+    REQUIRED_PARAMS = ("metric", "channel", "starttime", "endtime")
     serializer_class = serializers.MeasurementSerializer
+    permission_classes = (
+        IsAuthenticated, IsAdminOwnerOrPublicReadOnly)
     q = Measurement.objects.all().order_by('channel', 'metric')
+    filter_class = MeasurementFilter
     queryset = serializer_class.setup_eager_loading(q)
 
     def get_serializer(self, *args, **kwargs):
@@ -68,28 +76,12 @@ class MeasurementViewSet(BaseMeasurementViewSet):
         # Convert a list of string IDs to a list of integers
         return [int(str_id) for str_id in qs.split(',')]
 
-    def get_queryset(self):
-        # Filter measurements by metric, channel, start and end times
-        # All 4 params are required for filter to function
-        queryset = self.queryset
-        pk = self.kwargs.get('pk')
-        metric = self.request.query_params.get('metric')
-        chan = self.request.query_params.get('channel')
-        stime = self.request.query_params.get('starttime')
-        etime = self.request.query_params.get('endtime')
-        if pk:
-            return queryset.filter(id=pk)
-        else:
-            if metric and chan and stime and etime:
-                metric_ids = self._params_to_ints(metric)
-                chan_ids = self._params_to_ints(chan)
-                queryset = queryset.filter(metric__id__in=metric_ids)
-                queryset = queryset.filter(channel__id__in=chan_ids)
-                queryset = queryset.filter(starttime__gte=stime)
-                queryset = queryset.filter(endtime__lte=etime)
-            else:
-                raise MissingParameterException
-        return queryset
+    def list(self, request, *args, **kwargs):
+        if not all([required_param in request.query_params
+           for required_param in self.REQUIRED_PARAMS]):
+            raise MissingParameterException
+
+        return super().list(self, request, *args, **kwargs)
 
 
 class ThresholdViewSet(BaseMeasurementViewSet):
@@ -98,11 +90,14 @@ class ThresholdViewSet(BaseMeasurementViewSet):
     queryset = Threshold.objects.all()
 
 
-class ArchiveViewSet(MeasurementViewSetMixin, viewsets.ReadOnlyModelViewSet):
-    """ Viewset that provides acces to Archive data """
+class ArchiveViewSet(PermissionsMixin, viewsets.ReadOnlyModelViewSet):
+    """Viewset that provides access to Archive data
+
+        since there is not a user set on archive, all permissions will be
+        model
+    """
 
     REQUIRED_PARAMS = ("metric", "channel", "starttime", "endtime")
-
     serializer_class = serializers.ArchiveSerializer
     filter_class = ArchiveFilter
     queryset = Archive.objects.all()

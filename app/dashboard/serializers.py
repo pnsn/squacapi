@@ -23,31 +23,37 @@ class WidgetSerializer(serializers.HyperlinkedModelSerializer):
     channel_group = serializers.PrimaryKeyRelatedField(
         queryset=Group.objects.all()
     )
+    user = serializers.ReadOnlyField(source='user.username')
 
     class Meta:
         model = Widget
         fields = (
             'id', 'name', 'dashboard', 'widgettype', 'description', 'metrics',
             'created_at', 'updated_at', 'stattype', 'columns', 'rows',
-            'x_position', 'y_position', 'channel_group'
+            'x_position', 'y_position', 'channel_group', 'user'
         )
         read_only_fields = ('id',)
 
 
 class DashboardSerializer(serializers.HyperlinkedModelSerializer):
+    user = serializers.ReadOnlyField(source='user.username')
+
     class Meta:
         model = Dashboard
         fields = (
-            'id', 'name', 'description', 'created_at', 'updated_at'
+            'id', 'name', 'description', 'created_at', 'updated_at', 'user'
         )
         read_only_fields = ('id',)
 
 
 class WidgetTypeSerializer(serializers.HyperlinkedModelSerializer):
+    user = serializers.ReadOnlyField(source='user.username')
+
     class Meta:
         model = WidgetType
         fields = (
-            'id', 'name', 'type', 'description', 'created_at', 'updated_at'
+            'id', 'name', 'type', 'description', 'created_at', 'updated_at',
+            'user'
         )
         read_only_fields = ('id',)
 
@@ -57,12 +63,13 @@ class DashboardDetailSerializer(DashboardSerializer):
         many=True,
         queryset=Widget.objects.all()
     )
+    user = serializers.ReadOnlyField(source='user.username')
 
     class Meta:
         model = Dashboard
         fields = (
             'id', 'name', 'description', 'widgets', 'created_at',
-            'updated_at'
+            'updated_at', 'user'
         )
         read_only_fields = ('id',)
 
@@ -86,12 +93,13 @@ class WidgetDetailSerializer(serializers.HyperlinkedModelSerializer):
     channel_group = serializers.PrimaryKeyRelatedField(
         queryset=Group.objects.all()
     )
+    user = serializers.ReadOnlyField(source='user.username')
 
     class Meta:
         model = Widget
         fields = (
             'id', 'name', 'dashboard', 'description', 'widgettype', 'metrics',
             'created_at', 'updated_at', 'thresholds', 'columns', 'rows',
-            'x_position', 'y_position', 'stattype', 'channel_group'
+            'x_position', 'y_position', 'stattype', 'channel_group', 'user'
         )
         read_only_fields = ('id',)

@@ -26,7 +26,6 @@ def sample_user(email='test@pnsn.org', password="secret"):
 
 class UnathenticatedMeasurementApiTests(TestCase):
     '''Test the dashboard api (public)'''
-
     def setUp(self):
         self.user = sample_user()
         self.client = APIClient()
@@ -119,9 +118,12 @@ class UnathenticatedMeasurementApiTests(TestCase):
 class PrivateMeasurementAPITests(TestCase):
     '''For authenticated tests in dashboard API'''
 
+    fixtures = ['fixtures_all.json']
+
     def setUp(self):
         self.client = APIClient()
         self.user = sample_user()
+        self.user.is_staff = True
         self.client.force_authenticate(self.user)
         timezone.now()
         self.metric = Metric.objects.create(
@@ -166,8 +168,8 @@ class PrivateMeasurementAPITests(TestCase):
             user=self.user
         )
         self.stattype = StatType.objects.create(
-            name="Average",
-            type="ave",
+            name="Maxeo",
+            type="max",
             user=self.user
         )
         self.widget = Widget.objects.create(
@@ -279,13 +281,13 @@ class PrivateMeasurementAPITests(TestCase):
         self.assertEqual(float(res.data['maxval']), 10.0)
         self.assertEqual(float(res.data['minval']), 9.0)
 
-    def test_create_threshold(self):
-        url = reverse('measurement:threshold-list')
-        payload = {
-            'maxval': 10.0,
-            'minval': 9.0,
-            'widget': self.widget.id,
-            'metric': self.metric.id
-        }
-        res = self.client.post(url, payload)
-        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+    # def test_create_threshold(self):
+    #     url = reverse('measurement:threshold-list')
+    #     payload = {
+    #         'maxval': 10.0,
+    #         'minval': 9.0,
+    #         'widget': self.widget.id,
+    #         'metric': self.metric.id
+    #     }
+    #     res = self.client.post(url, payload)
+    #     self.assertEqual(res.status_code, status.HTTP_201_CREATED)

@@ -10,6 +10,7 @@ class DashboardBase(models.Model):
     description = models.CharField(max_length=255, blank=True, default='')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -50,7 +51,7 @@ class StatType(DashboardBase):
 
 class Dashboard(DashboardBase):
     '''describes the container the holds widgets'''
-    pass
+    is_public = models.BooleanField(default=False)
 
 
 class Widget(DashboardBase):
@@ -80,3 +81,4 @@ class Widget(DashboardBase):
     rows = models.IntegerField()
     x_position = models.IntegerField()
     y_position = models.IntegerField()
+    is_public = models.BooleanField(default=False)

@@ -11,12 +11,13 @@ class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
     channel = serializers.PrimaryKeyRelatedField(
         queryset=Channel.objects.all()
     )
+    user = serializers.ReadOnlyField(source='user.username')
 
     class Meta:
         model = Measurement
         fields = (
             'id', 'metric', 'channel', 'value', 'starttime', 'endtime',
-            'created_at'
+            'created_at', 'user'
         )
         read_only_fields = ('id',)
 
@@ -31,12 +32,13 @@ class MetricSerializer(serializers.HyperlinkedModelSerializer):
     # url = serializers.HyperlinkedIdentityField(
     #     view_name="measurement:metric-detail"
     # )
+    user = serializers.ReadOnlyField(source='user.username')
 
     class Meta:
         model = Metric
         fields = (
             'id', 'name', 'code', 'url', 'description', 'unit', 'created_at',
-            'updated_at', 'default_minval', 'default_maxval'
+            'updated_at', 'default_minval', 'default_maxval', 'user'
         )
         read_only_fields = ('id',)
 
@@ -51,18 +53,19 @@ class ThresholdSerializer(serializers.HyperlinkedModelSerializer):
     widget = serializers.PrimaryKeyRelatedField(
         queryset=Widget.objects.all()
     )
+    user = serializers.ReadOnlyField(source='user.username')
 
     class Meta:
         model = Threshold
         fields = (
             'id', 'url', 'metric', 'widget', 'minval', 'maxval', 'created_at',
-            'updated_at'
+            'updated_at', 'user'
         )
         read_only_fields = ('id',)
 
 
 class ArchiveSerializer(serializers.HyperlinkedModelSerializer):
-    """ converts an Archive into a serialized representation """
+    """converts an Archive into a serialized representation """
     id = serializers.HyperlinkedIdentityField(
         view_name="measurement:archive-detail", read_only=True)
     channel = serializers.PrimaryKeyRelatedField(

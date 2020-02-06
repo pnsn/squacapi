@@ -1,5 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
+
 from django.urls import reverse
 from django.utils import timezone
 
@@ -11,6 +12,7 @@ from rest_framework import status
 
 from datetime import datetime
 import pytz
+
 
 '''Tests for all measurement models:
     *
@@ -98,11 +100,16 @@ class UnauthenticatedMeasurementApiTests(TestCase):
 
 
 class PrivateMeasurementAPITests(TestCase):
-    '''For authenticated tests in measuremnt API'''
+    '''For authenticated tests in measuremnt API
+
+        Authenticate and make user admin so we are only testing
+        routes and methods
+    '''
 
     def setUp(self):
         self.client = APIClient()
         self.user = sample_user()
+        self.user.is_staff = True
         self.client.force_authenticate(self.user)
         timezone.now()
         self.metric = Metric.objects.create(
@@ -131,7 +138,6 @@ class PrivateMeasurementAPITests(TestCase):
             user=self.user,
             starttime=datetime(1970, 1, 1, tzinfo=pytz.UTC),
             endtime=datetime(2599, 12, 31, tzinfo=pytz.UTC)
-
         )
 
         self.measurement = Measurement.objects.create(
