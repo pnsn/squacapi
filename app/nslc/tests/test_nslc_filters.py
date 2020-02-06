@@ -39,13 +39,22 @@ class NslcFilterTests(TestCase):
 
     def test_channel_filter(self):
         url = reverse('nslc:channel-list')
-        url += '?channel=hnn'
+        url += '?channel=hnn,hnz'
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertNotEqual(len(res.data), 0)
-        for dict in res.data:
-            if dict['class_name'] == 'channel':
-                self.assertEqual(dict['code'], 'hnn')
+        self.assertEqual(len(res.data), 3)
+
+    def test_channel_lat_lon_filter(self):
+        url_root = reverse('nslc:channel-list')
+        url = url_root + \
+            '?lat_min=40.0&lat_max=44.0&lon_min=-124.0&lon_max=-120.0'
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data), 10)
+        url = url_root + \
+            '?lat_min=40.0&lat_max=42.0&lon_min=-124.0&lon_max=-120.0'
+        res = self.client.get(url)
+        self.assertEqual(len(res.data), 6)
 
     def test_channel_date_filter(self):
         baseurl = reverse('nslc:channel-list')
@@ -60,9 +69,9 @@ class NslcFilterTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data), 0)
 
-    def test_channel_wildcard_filter(self):
+    def test_chan_search_filter(self):
         url = reverse('nslc:channel-list')
-        url += '?channel=..z'
+        url += '?chan_search=..z'
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         channel_count = 0

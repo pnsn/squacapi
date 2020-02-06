@@ -25,9 +25,9 @@ SECRET_KEY = os.environ.get('SQUAC_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('SQUAC_DEBUG_MODE') == 'True',
 
-ALLOWED_HOSTS = ['squac.pnsn.org', 'squacapi.pnsn.org', 'localhost',
-                 'staging-squacapi.pnsn.org','staging-squac.pnsn.org']
-
+ALLOWED_HOSTS = ['squac.pnsn.org', 'squacapi.pnsn.org', 
+                 'localhost', 'staging-squacapi.pnsn.org',
+                 'staging-squacapi.pnsn.org']
 
 # For debug toolbar
 INTERNAL_IPS = [
@@ -174,7 +174,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/dev/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = "/var/www/squacapi/static/"
+STATIC_ROOT = os.environ.get('SQUACAPI_STATIC_ROOT')
 
 AUTH_USER_MODEL = 'core.User'
 
