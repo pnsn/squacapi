@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from django_filters import rest_framework as filters
-from squac.filters import CharInFilter
+from squac.filters import CharInFilter, NumberInFilter
 from squac.mixins import SetUserMixin, PermissionsMixin
 from .exceptions import MissingParameterException
 from squac.permissions import IsAdminOwnerOrPublicReadOnly
@@ -15,7 +15,6 @@ class MetricFilter(filters.FilterSet):
 
 
 class ThresholdFilter(filters.FilterSet):
-    # CharInFilter is custom filter see imports
     class Meta:
         model = Threshold
         fields = ('metric', 'widget')
@@ -25,10 +24,8 @@ class MeasurementFilter(filters.FilterSet):
     """filters measurment by metric, channel, starttime, and endtime"""
     starttime = filters.CharFilter(field_name='starttime', lookup_expr='gte')
     endtime = filters.CharFilter(field_name='endtime', lookup_expr='lte')
-
-    class Meta:
-        model = Measurement
-        fields = ('metric', 'channel')
+    metric = NumberInFilter(field_name='metric')
+    channel = NumberInFilter(field_name='channel')
 
 
 class ArchiveFilter(filters.FilterSet):
@@ -78,7 +75,7 @@ class MeasurementViewSet(BaseMeasurementViewSet):
 
     def list(self, request, *args, **kwargs):
         if not all([required_param in request.query_params
-           for required_param in self.REQUIRED_PARAMS]):
+                    for required_param in self.REQUIRED_PARAMS]):
             raise MissingParameterException
 
         return super().list(self, request, *args, **kwargs)

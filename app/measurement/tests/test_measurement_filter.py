@@ -29,6 +29,15 @@ class AuthenticatedMeasurementFilterTests(TestCase):
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
 
+    def test_measurement_null_values(self):
+        # if any channels or metrics are not found, should still return values
+        # available.
+        url = reverse('measurement:measurement-list')
+        stime, etime = '2020-02-01T05:00:00Z', '2020-02-02T05:00:00Z'
+        url += f'?metric=3,420&channel=5,420&starttime={stime}&endtime={etime}'
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
     def test_measurement_filter(self):
         # Test that filter properly finds the measurement that fits params
         url = reverse('measurement:measurement-list')

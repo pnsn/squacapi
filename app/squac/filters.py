@@ -9,3 +9,13 @@ class CharInFilter(filters.BaseInFilter, filters.CharFilter):
         individual char strings.
     '''
     pass
+
+
+class NumberInFilter(filters.BaseInFilter, filters.NumberFilter):
+    '''mixin required to get SQL 'in' expression to behave as expected
+
+        BaseInFilter validates comman seperated list, NumberFilter validates
+        fk.
+    '''
+
+    pass
