@@ -34,6 +34,24 @@ class PublicUserApiTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
+class AuthenticateApiUser(TestCase):
+    '''actually test the auth route'''
+
+    def setUp(self):
+        self.client = APIClient()
+
+    def test_create_token_success(self):
+        '''test token success'''
+        create_user(
+            email='test123@pnsn.org',
+            password="secret",
+            name='name'
+        )
+        payload = {'email': 'test123@pnsn.org', 'password': "secret"}
+        res = self.client.post(CREATE_TOKEN_URL, payload)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+
 class PrivateUserAPITests(TestCase):
     '''test api request that require auth'''
 
@@ -82,6 +100,7 @@ class PrivateUserAPITests(TestCase):
         self.assertNotIn('token', res.data)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
+    
     def test_create_token_invalid_credentials(self):
         '''test that token is not created if invalid creds are given'''
         create_user(email="test2@pnsn.org", password='secretpass')
