@@ -27,84 +27,6 @@ class PublicUserApiTests(TestCase):
     def setUp(self):
         self.client = APIClient()
 
-    def test_create_valid_user_success(self):
-        '''test creating user with valid payload is succssful
-
-           This test will be turned into a 403 since creating a user
-           from an unathenticated user is NOT allowed
-
-        '''
-
-        payload = {
-            'email': 'test@test.com',
-            'password': 'supersecret',
-            'name': 'some name'
-        }
-
-        res = self.client.post(CREATE_USER_URL, payload)
-
-        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-        user = get_user_model().objects.get(**res.data)
-        self.assertTrue(user.check_password(payload['password']))
-        self.assertNotIn('password', res.data)
-
-    def test_user_exists(self):
-        '''test creating user that exists fails'''
-        payload = {
-            'email': "test@test.com",
-            'password': 'supersecret'
-        }
-        create_user(**payload)
-
-        res = self.client.post(CREATE_USER_URL, payload)
-        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_password_too_short(self):
-        '''the password must be more than 5 chars'''
-
-        payload = {'email': "test.test.com", 'password': 'js'}
-
-        res = self.client.post(CREATE_USER_URL, payload)
-        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-        user_exists = get_user_model().objects.filter(
-            email=payload['email']
-        ).exists()
-        self.assertFalse(user_exists)
-
-    def test_create_token_for_user(self):
-        '''test that token is created for the user'''
-        payload = {'email': 'test@pnsn.org', 'password': 'testpasswd'}
-        create_user(**payload)
-        res = self.client.post(CREATE_TOKEN_URL, payload)
-
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertIn('token', res.data)
-
-    def test_create_token_invalid_credentials(self):
-        '''test that token is not created if invalid creds are given'''
-        create_user(email="test@pnsn.org", password='secretpass')
-        payload = {'email': 'test@pnsn.org', 'password': "wrongpass"}
-        res = self.client.post(CREATE_TOKEN_URL, payload)
-
-        self.assertNotIn('token', res.data)
-        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_create_token_no_user(self):
-        '''test token is not created if user doesn't exist'''
-        payload = {'email': 'test@pnsn.org', 'password': "nouser"}
-        res = self.client.post(CREATE_TOKEN_URL, payload)
-
-        self.assertNotIn('token', res.data)
-        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_create_token_missing_field(self):
-        '''test that email and password are required'''
-        payload = {'email': "", "password": ""}
-        res = self.client.post(CREATE_TOKEN_URL, payload)
-        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-
-        res = self.client.post
-
     def test_retrieve_user_unauthorized(self):
         '''test that auth is required for users'''
         res = self.client.get(ME_URL)
@@ -130,7 +52,9 @@ class PrivateUserAPITests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, {
             'name': self.user.name,
-            'email': self.user.email
+            'email': self.user.email,
+            'is_staff': False,
+            'groups': []
         })
 
     def test_post_me_not_allowed(self):
@@ -149,3 +73,69 @@ class PrivateUserAPITests(TestCase):
         self.assertEqual(self.user.name, payload['name'])
         self.assertTrue(self.user.check_password, payload['password'])
         self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+    def test_create_token_no_user(self):
+        '''test token is not created if user doesn't exist'''
+        payload = {'email': 'test1@pnsn.org', 'password': "nouser"}
+        res = self.client.post(CREATE_TOKEN_URL, payload)
+
+        self.assertNotIn('token', res.data)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_token_invalid_credentials(self):
+        '''test that token is not created if invalid creds are given'''
+        create_user(email="test2@pnsn.org", password='secretpass')
+        payload = {'email': 'test2@pnsn.org', 'password': "wrongpass"}
+        res = self.client.post(CREATE_TOKEN_URL, payload)
+
+        self.assertNotIn('token', res.data)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_token_missing_field(self):
+        '''test that email and password are required'''
+        payload = {'email': "", "password": ""}
+        res = self.client.post(CREATE_TOKEN_URL, payload)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+        res = self.client.post
+
+    def test_create_valid_user_success(self):
+        '''test creating user with valid payload is succssful'''
+
+        payload = {
+            'email': 'test3@test.com',
+            'password': 'supersecret',
+            'name': 'some name',
+        }
+
+        res = self.client.post(CREATE_USER_URL, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        # user = get_user_model().objects.get(**res.data)
+        user = get_user_model().objects.get(
+            email=payload['email'])
+        self.assertTrue(user.check_password(payload['password']))
+        self.assertNotIn('password', res.data)
+
+    def test_user_exists(self):
+        '''test creating user that exists fails'''
+        payload = {
+            'email': "test@test.com",
+            'password': 'supersecret'
+        }
+        create_user(**payload)
+
+        res = self.client.post(CREATE_USER_URL, payload)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_password_too_short(self):
+        '''the password must be more than 5 chars'''
+
+        payload = {'email': "test.test.com", 'password': 'js'}
+
+        res = self.client.post(CREATE_USER_URL, payload)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        user_exists = get_user_model().objects.filter(
+            email=payload['email']
+        ).exists()
+        self.assertFalse(user_exists)
