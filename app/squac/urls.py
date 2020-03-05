@@ -40,7 +40,8 @@ urlpatterns = [
     path('', views.home_v1, name='Squacapi V1.0'),
     path('admin/', admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')),
-    path('user/', include('user.urls')),
+    path('user/', include('user.urls')),  # deprecated
+    path('v1.0/user/', include('user.urls')),
     path('v1.0/', views.home_v1, name='Squacapi V1.0'),
     path('v1.0/nslc/', include('nslc.urls')),
     path('v1.0/measurement/', include('measurement.urls')),

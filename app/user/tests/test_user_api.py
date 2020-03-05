@@ -100,7 +100,6 @@ class PrivateUserAPITests(TestCase):
         self.assertNotIn('token', res.data)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
-    
     def test_create_token_invalid_credentials(self):
         '''test that token is not created if invalid creds are given'''
         create_user(email="test2@pnsn.org", password='secretpass')
