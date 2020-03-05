@@ -26,6 +26,7 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
             'created_at', 'updated_at', 'user'
         )
         read_only_fields = ('id',)
+        ref_name = "NslcGroup"
 
 
 class ChannelSerializer(serializers.HyperlinkedModelSerializer):
