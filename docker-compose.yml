@@ -23,6 +23,8 @@ services:
       - SQUAC_SECRET_KEY=thisisnottherealkey
       - SQUAC_DEBUG_MODE=True
       - USE_DOCKER=yes
+      - SQUAC_EMAIL_HOST=mailhog
+      - SQUAC_EMAIL_PORT=1025
     depends_on:
       - db
   db:
@@ -32,3 +34,13 @@ services:
       - POSTGRES_DB=squac_dev
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=supersecret
+
+  mailhog:
+    container_name: mailhog
+    image: mailhog/mailhog
+    expose:
+      - 1025
+      - 8025
+    ports:
+      - '1025:1025'
+      - '8025:8025'
