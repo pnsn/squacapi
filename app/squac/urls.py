@@ -39,9 +39,8 @@ schema_view = get_schema_view(
 urlpatterns = [
     path('', views.home_v1, name='Squacapi V1.0'),
     path('admin/', admin.site.urls),
-    path('accounts/', include('django.contrib.auth.urls')),
-    path('v1.0/user/', include('user.urls')),
     path('user/', include('user.urls', namespace='legacy')),
+    path('v1.0/user/', include('user.urls')),
     path('v1.0/', views.home_v1, name='Squacapi V1.0'),
     path('v1.0/nslc/', include('nslc.urls')),
     path('v1.0/measurement/', include('measurement.urls')),
@@ -54,6 +53,17 @@ urlpatterns = [
     re_path(r'^swagger(?P<format>\.json|\.yaml)$',
             schema_view.without_ui(cache_timeout=0),
             name='schema-json'),
+
+    path('accounts/', include('django.contrib.auth.urls')),
+    #  auth.urls comes with the following urls
+    #   accounts/login/ [name='login']
+    #   accounts/logout/ [name='logout']
+    #   accounts/password_change/ [name='password_change']
+    #   accounts/password_change/done/ [name='password_change_done']
+    #   accounts/password_reset/ [name='password_reset']
+    #   accounts/password_reset/done/ [name='password_reset_done']
+    #   accounts/reset/<uidb64>/<token>/ [name='password_reset_confirm']
+    #   accounts/reset/done/ [name='password_reset_complete']
 ]
 
 if settings.DEBUG:
