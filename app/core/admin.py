@@ -7,11 +7,15 @@ from core import models
 class UserAdmin(BaseUserAdmin):
     ordering = ['id']
     # list
-    list_display = ['email', 'name']
+    list_display = ['email', 'firstname', 'lastname']
     # edit user form
     fieldsets = (
         (None, {'fields': ('email', )}),
-        ('Personal Info', {'fields': ('name',)}),
+        ('Personal Info', {'fields': (
+            'firstname',
+            'lastname',
+            'organization',
+        )}),
         (
             'Permissions',
             {
