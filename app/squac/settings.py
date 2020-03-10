@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'debug_toolbar',
     'drf_yasg',
+    'django_rest_passwordreset',
 ]
 
 MIDDLEWARE = [

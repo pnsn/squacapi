@@ -45,6 +45,11 @@ urlpatterns = [
     path('v1.0/nslc/', include('nslc.urls')),
     path('v1.0/measurement/', include('measurement.urls')),
     path('v1.0/dashboard/', include('dashboard.urls')),
+    # api password reset endpoints
+    path('v1.0/password_reset/', include('django_rest_passwordreset.urls',
+         namespace='password_reset')),
+
+    # default paths for thel login /logout
     path('api-auth/', include('rest_framework.urls',
          namespace='rest_framework')),
     path('swagger/',
@@ -53,7 +58,7 @@ urlpatterns = [
     re_path(r'^swagger(?P<format>\.json|\.yaml)$',
             schema_view.without_ui(cache_timeout=0),
             name='schema-json'),
-
+    # browser routes
     path('accounts/', include('django.contrib.auth.urls')),
     #  auth.urls comes with the following urls
     #   accounts/login/ [name='login']
