@@ -39,13 +39,17 @@ schema_view = get_schema_view(
 urlpatterns = [
     path('', views.home_v1, name='Squacapi V1.0'),
     path('admin/', admin.site.urls),
-    path('accounts/', include('django.contrib.auth.urls')),
-    path('v1.0/user/', include('user.urls')),
     path('user/', include('user.urls', namespace='legacy')),
+    path('v1.0/user/', include('user.urls')),
     path('v1.0/', views.home_v1, name='Squacapi V1.0'),
     path('v1.0/nslc/', include('nslc.urls')),
     path('v1.0/measurement/', include('measurement.urls')),
     path('v1.0/dashboard/', include('dashboard.urls')),
+    # api password reset endpoints
+    path('v1.0/password_reset/', include('django_rest_passwordreset.urls',
+         namespace='password_reset')),
+
+    # default path for thel login /logout
     path('api-auth/', include('rest_framework.urls',
          namespace='rest_framework')),
     path('swagger/',
@@ -54,6 +58,8 @@ urlpatterns = [
     re_path(r'^swagger(?P<format>\.json|\.yaml)$',
             schema_view.without_ui(cache_timeout=0),
             name='schema-json'),
+    # browser routes for password resets
+    path('accounts/', include('django.contrib.auth.urls')),
 ]
 
 if settings.DEBUG:
@@ -61,9 +67,3 @@ if settings.DEBUG:
     urlpatterns = [
         path('__debug__/', include(debug_toolbar.urls)),
     ] + urlpatterns
-
-
-'''To access password reset: localhost:8000/acounts/password_reset/
-For test reseting password: reset email text file will be created in a
-new directory app/sent_emails/(reset email) and link to password reset
-form will be found in the email text file'''

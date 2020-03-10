@@ -45,7 +45,9 @@ class AuthenticateApiUser(TestCase):
         create_user(
             email='test123@pnsn.org',
             password="secret",
-            name='name'
+            firstname='your',
+            lastname='mom',
+            organization='pnsn',
         )
         payload = {'email': 'test123@pnsn.org', 'password': "secret"}
         res = self.client.post(CREATE_TOKEN_URL, payload)
@@ -59,7 +61,9 @@ class PrivateUserAPITests(TestCase):
         self.user = create_user(
             email='test@pnsn.org',
             password="secret",
-            name='name'
+            firstname='your',
+            lastname='mom',
+            organization='pnsn'
         )
         self.client = APIClient()
         self.client.force_authenticate(user=self.user)
@@ -69,7 +73,9 @@ class PrivateUserAPITests(TestCase):
         res = self.client.get(ME_URL)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, {
-            'name': self.user.name,
+            'firstname': self.user.firstname,
+            'lastname': self.user.lastname,
+            'organization': self.user.organization,
             'email': self.user.email,
             'is_staff': False,
             'groups': []
@@ -83,12 +89,12 @@ class PrivateUserAPITests(TestCase):
 
     def test_update_user_profile(self):
         '''test updating the user profile for authenticated user'''
-        payload = {'name': 'cool_name', 'password': "secret"}
+        payload = {'firstname': 'cool_name', 'password': "secret"}
 
         res = self.client.patch(ME_URL, payload)
 
         self.user.refresh_from_db()
-        self.assertEqual(self.user.name, payload['name'])
+        self.assertEqual(self.user.firstname, payload['firstname'])
         self.assertTrue(self.user.check_password, payload['password'])
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
@@ -123,7 +129,9 @@ class PrivateUserAPITests(TestCase):
         payload = {
             'email': 'test3@test.com',
             'password': 'supersecret',
-            'name': 'some name',
+            'firstname': 'some',
+            'lastname': 'name',
+            'organization': 'pnsn',
         }
 
         res = self.client.post(CREATE_USER_URL, payload)
