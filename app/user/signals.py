@@ -1,7 +1,6 @@
 from django.core.mail import EmailMultiAlternatives
 from django.dispatch import receiver
 from django.template.loader import render_to_string
-from django.urls import reverse
 
 from django_rest_passwordreset.signals import reset_password_token_created
 
@@ -19,13 +18,18 @@ def password_reset_token_created(sender, instance, reset_password_token,
     :param kwargs:
     :return:
     """
-    # send an e-mail to the user
+    # check the view instance for remote_host
+    remote_host = instance.request.META['REMOTE_HOST']
+    if len(remote_host) < 1:
+        remote_host = "squac.pnsn.org"
+
     context = {
-        'current_user': reset_password_token.user,
-        'username': reset_password_token.user.username,
+        'user': reset_password_token.user,
+        'username': reset_password_token.user.email,
         'email': reset_password_token.user.email,
-        'reset_password_url': "{}?token={}".format(
-            reverse('password_reset:reset-password-request'),
+        'remote_host': remote_host,
+        'reset_password_url': "https://{}{}?token={}".format(
+            remote_host, "/password_reset/confirm",
             reset_password_token.key)
     }
 
@@ -37,11 +41,11 @@ def password_reset_token_created(sender, instance, reset_password_token,
 
     msg = EmailMultiAlternatives(
         # title:
-        "Password Reset for {title}".format(title="Some website title"),
+        "Password Reset for {title}".format(title="SQUAC"),
         # message:
         email_plaintext_message,
         # from:
-        "noreply@somehost.local",
+        "pnsn_web@uw.org",
         # to:
         [reset_password_token.user.email]
     )
