@@ -49,7 +49,7 @@ urlpatterns = [
     path('v1.0/password_reset/', include('django_rest_passwordreset.urls',
          namespace='password_reset')),
 
-    # default paths for thel login /logout
+    # default path for thel login /logout
     path('api-auth/', include('rest_framework.urls',
          namespace='rest_framework')),
     path('swagger/',
@@ -58,17 +58,8 @@ urlpatterns = [
     re_path(r'^swagger(?P<format>\.json|\.yaml)$',
             schema_view.without_ui(cache_timeout=0),
             name='schema-json'),
-    # browser routes
+    # browser routes for password resets
     path('accounts/', include('django.contrib.auth.urls')),
-    #  auth.urls comes with the following urls
-    #   accounts/login/ [name='login']
-    #   accounts/logout/ [name='logout']
-    #   accounts/password_change/ [name='password_change']
-    #   accounts/password_change/done/ [name='password_change_done']
-    #   accounts/password_reset/ [name='password_reset']
-    #   accounts/password_reset/done/ [name='password_reset_done']
-    #   accounts/reset/<uidb64>/<token>/ [name='password_reset_confirm']
-    #   accounts/reset/done/ [name='password_reset_complete']
 ]
 
 if settings.DEBUG:
@@ -77,8 +68,3 @@ if settings.DEBUG:
         path('__debug__/', include(debug_toolbar.urls)),
     ] + urlpatterns
 
-
-'''To access password reset: localhost:8000/acounts/password_reset/
-For test reseting password: reset email text file will be created in a
-new directory app/sent_emails/(reset email) and link to password reset
-form will be found in the email text file'''
