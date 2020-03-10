@@ -5,4 +5,4 @@ class UserConfig(AppConfig):
     name = 'user'
 
     def ready(self):
-        from user import signals
+        from user import signals  # noqa
