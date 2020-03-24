@@ -6,6 +6,10 @@ from rest_framework.settings import api_settings
 from squac.mixins import PermissionsMixin
 from user.serializers import UserSerializer, AuthTokenSerializer
 
+from django.utils.decorators import method_decorator
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg.openapi import Parameter
+
 
 class BaseMeasurementViewSet(PermissionsMixin):
     # TODO implement permission mixins on user
@@ -17,7 +21,9 @@ class CreateUserView(generics.CreateAPIView):
     serializer_class = UserSerializer
     permission_classes = (IsAuthenticated,)
 
-
+@method_decorator(name="post", decorator=swagger_auto_schema(
+    request_body=AuthTokenSerializer
+))
 class CreateTokenView(ObtainAuthToken):
     '''create a new auth token for user'''
     serializer_class = AuthTokenSerializer
