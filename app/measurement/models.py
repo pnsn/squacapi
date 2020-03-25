@@ -7,6 +7,8 @@ from nslc.models import Channel
 class MeasurementBase(models.Model):
     '''Base class for all measurement models'''
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -32,7 +34,6 @@ class Metric(MeasurementBase):
     url = models.CharField(max_length=255, default='')
     default_minval = models.FloatField(blank=True)
     default_maxval = models.FloatField(blank=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         indexes = [
@@ -81,7 +82,6 @@ class Threshold(MeasurementBase):
         related_name='threshold')
     minval = models.FloatField(blank=True)
     maxval = models.FloatField(blank=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
 
 class Archive(models.Model):
@@ -111,6 +111,8 @@ class Archive(models.Model):
     num_samps = models.IntegerField()
     starttime = models.DateTimeField(auto_now=False)
     endtime = models.DateTimeField(auto_now=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return (f"Archive of Metric: {str(self.metric)} "
