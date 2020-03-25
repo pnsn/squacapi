@@ -65,6 +65,8 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'drf_yasg',
     'django_rest_passwordreset',
+    'organizations',
+    'account',
 ]
 
 MIDDLEWARE = [
