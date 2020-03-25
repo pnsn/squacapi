@@ -17,8 +17,11 @@ import pytz
 '''Tests for all measurement models:
     *
 
-to run only these tests:
+to run only measurement tests:
     ./mg.sh "test measurement && flake8"
+to run only this file
+    ./mg.sh "test measurement.tests.test_measurement_api && flake8"
+
 '''
 
 
@@ -211,6 +214,35 @@ class PrivateMeasurementAPITests(TestCase):
                 self.assertEqual(payload[key], measurement.channel.id)
             else:
                 self.assertEqual(payload[key], getattr(measurement, key))
+
+    def test_update_or_create_measurement(self):
+        url = reverse('measurement:measurement-list')
+        payload = {
+            'metric': self.metric.id,
+            'channel': self.chan.id,
+            'value': 47.0,
+            'starttime': datetime(
+                2019, 4, 5, 8, 8, 7, 127325, tzinfo=pytz.UTC),
+            'endtime': datetime(2019, 4, 5, 9, 8, 7, 127325, tzinfo=pytz.UTC),
+            'user': self.user
+        }
+        res = self.client.post(url, payload)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
+        payload = {
+            'metric': self.metric.id,
+            'channel': self.chan.id,
+            'value': 49.0,
+            'starttime': datetime(
+                2019, 4, 5, 8, 8, 7, 127325, tzinfo=pytz.UTC),
+            'endtime': datetime(2019, 4, 5, 9, 8, 7, 127325, tzinfo=pytz.UTC),
+            'user': self.user
+        }
+        res_update = self.client.post(url, payload)
+        self.assertEqual(res_update.status_code, status.HTTP_201_CREATED)
+
+        self.assertEqual(res.data['id'], res_update.data['id'])
+        self.assertEqual(res_update.data['value'], 49)
 
     def test_create_multiple_measurements(self):
         url = reverse('measurement:measurement-list')

@@ -21,6 +21,19 @@ class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
         )
         read_only_fields = ('id',)
 
+    def create(self, validated_data):
+        # print(validated_data)
+        measurement, created = Measurement.objects.update_or_create(
+            metric=validated_data.get('metric', None),
+            channel=validated_data.get('channel', None),
+            starttime=validated_data.get('starttime', None),
+            defaults={
+                'value': validated_data.get('value', None),
+                'endtime': validated_data.get('endtime', None),
+                'user': validated_data.get('user', None)
+            })
+        return measurement
+
     @staticmethod
     def setup_eager_loading(queryset):
         queryset = queryset.select_related('channel')
