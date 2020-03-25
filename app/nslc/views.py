@@ -33,7 +33,7 @@ class ChannelFilter(filters.FilterSet):
     network = CharInFilter(field_name='network__code')
     channel = CharInFilter(field_name='code', lookup_expr='in')
     chan_search = filters.CharFilter(field_name='code', lookup_expr='iregex')
-    station = filters.CharFilter(field_name='station_code')
+    station = CharInFilter(field_name='station_code', lookup_expr='in')
     location = filters.CharFilter(field_name='loc')
     startafter = filters.CharFilter(field_name='starttime', lookup_expr='gte')
     startbefore = filters.CharFilter(field_name='starttime', lookup_expr='lte')
