@@ -31,7 +31,7 @@ class Metric(MeasurementBase):
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=255, blank=True, default='')
     unit = models.CharField(max_length=255)
-    url = models.CharField(max_length=255, default='')
+    url = models.CharField(max_length=255, default='', blank=True)
     default_minval = models.FloatField(blank=True)
     default_maxval = models.FloatField(blank=True)
 
