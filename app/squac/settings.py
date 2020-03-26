@@ -96,6 +96,7 @@ REST_FRAMEWORK = {
 }
 
 SWAGGER_SETTINGS = {
+    'DEFAULT_AUTO_SCHEMA_CLASS': 'squac.doc_generator.ReadWriteAutoSchema',
     'SECURITY_DEFINITIONS': {
         'Token': {
             'type': 'apiKey',
