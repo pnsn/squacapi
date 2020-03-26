@@ -17,13 +17,12 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
         many=True,
         queryset=Channel.objects.all()
     )
-    user = serializers.ReadOnlyField(source='user.username')
 
     class Meta:
         model = Group
         fields = (
             'name', 'id', 'url', 'description', 'channels', 'is_public',
-            'created_at', 'updated_at', 'user'
+            'created_at', 'updated_at', 'user_id'
         )
         read_only_fields = ('id',)
         ref_name = "NslcGroup"
@@ -34,14 +33,13 @@ class ChannelSerializer(serializers.HyperlinkedModelSerializer):
         queryset=Network.objects.all()
     )
     url = serializers.HyperlinkedIdentityField(view_name="nslc:channel-detail")
-    user = serializers.ReadOnlyField(source='user.username')
 
     class Meta:
         model = Channel
         fields = ('id', 'class_name', 'code', 'name', 'station_code',
                   'station_name', 'url', 'description',
                   'sample_rate', 'network', 'loc', 'lat',
-                  'lon', 'elev', 'created_at', 'updated_at', 'user')
+                  'lon', 'elev', 'created_at', 'updated_at', 'user_id')
         read_only_fields = ('id',)
 
     @staticmethod
@@ -53,13 +51,12 @@ class ChannelSerializer(serializers.HyperlinkedModelSerializer):
 class GroupDetailSerializer(GroupSerializer):
     # Serializer when viewing details of specific group
     channels = ChannelSerializer(many=True, read_only=True)
-    user = serializers.ReadOnlyField(source='user.username')
 
     class Meta:
         model = Group
         fields = (
             'name', 'id', 'url', 'description', 'channels', 'is_public',
-            'created_at', 'updated_at', 'user'
+            'created_at', 'updated_at', 'user_id'
         )
         read_only_fields = ('id',)
 
@@ -67,12 +64,11 @@ class GroupDetailSerializer(GroupSerializer):
 class NetworkSerializer(serializers.HyperlinkedModelSerializer):
     # stations = StationSerializer(many=True, read_only=True)
     url = serializers.HyperlinkedIdentityField(view_name="nslc:network-detail")
-    user = serializers.ReadOnlyField(source='user.username')
 
     class Meta:
         model = Network
         fields = ('class_name', 'code', 'name', 'url', 'description',
-                  'created_at', 'updated_at', 'user')
+                  'created_at', 'updated_at', 'user_id')
         # read_only_fields = ('id',)
 
     @staticmethod
