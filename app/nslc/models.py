@@ -50,7 +50,7 @@ class Channel(Nslc):
     depth = models.FloatField(default=0.0)
     azimuth = models.FloatField(default=0.0)
     dip = models.FloatField(default=0.0)
-    sensor_description = models.CharField(max_length=255, default="")
+    sensor_description = models.CharField(max_length=255, default="", blank=True)
     scale = models.FloatField(default=0.0)
     scale_freq = models.FloatField(default=1.0)
     scale_units = models.CharField(max_length=32, default='M/S')
