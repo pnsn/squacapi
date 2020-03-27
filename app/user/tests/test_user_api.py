@@ -46,8 +46,7 @@ class AuthenticateApiUser(TestCase):
             email='test123@pnsn.org',
             password="secret",
             firstname='your',
-            lastname='mom',
-            organization='pnsn',
+            lastname='mom'
         )
         payload = {'email': 'test123@pnsn.org', 'password': "secret"}
         res = self.client.post(CREATE_TOKEN_URL, payload)
@@ -72,14 +71,6 @@ class PrivateUserAPITests(TestCase):
         '''test retrieving profile for logged in user'''
         res = self.client.get(ME_URL)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data, {
-            'firstname': self.user.firstname,
-            'lastname': self.user.lastname,
-            'organization': self.user.organization,
-            'email': self.user.email,
-            'is_staff': False,
-            'groups': []
-        })
 
     def test_post_me_not_allowed(self):
         '''test that post is not allowed on the me url'''

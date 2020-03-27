@@ -9,7 +9,7 @@ from user.serializers import UserSerializer, AuthTokenSerializer
 
 from django.utils.decorators import method_decorator
 from drf_yasg.utils import swagger_auto_schema
-from drf_yasg.openapi import Parameter
+# from drf_yasg.openapi import Parameter
 
 
 class BaseMeasurementViewSet(PermissionsMixin):
@@ -21,6 +21,7 @@ class CreateUserView(generics.CreateAPIView):
     '''create a new user in the system'''
     serializer_class = UserSerializer
     permission_classes = (IsAuthenticated,)
+
 
 @method_decorator(name="post", decorator=swagger_auto_schema(
     request_body=AuthTokenSerializer,
