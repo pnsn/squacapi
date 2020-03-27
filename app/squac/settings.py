@@ -194,4 +194,19 @@ FIXTURE_DIRS = (
 LOGIN_URL = 'rest_framework:login'
 LOGOUT_URL = 'rest_framework:logout'
 
+#FIXME 
+''' use BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+  on dev and
+  'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+  on prod
+  Django seems to use this setting by default and getting weird caching
+  issues so disabling it for now. 
+'''
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+        'TIMEOUT': 0,
+    }
+}
 
