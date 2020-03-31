@@ -45,7 +45,8 @@ class UnauthenticatedMeasurementApiTests(TestCase):
             unit='meter',
             default_minval=1,
             default_maxval=10.0,
-            user=self.user
+            user=self.user,
+            reference_url='pnsn.org'
         )
         self.net = Network.objects.create(
             code="UW",
@@ -121,7 +122,8 @@ class PrivateMeasurementAPITests(TestCase):
             code="someotherfuknthing",
             default_minval=1,
             default_maxval=10.0,
-            user=self.user
+            user=self.user,
+            reference_url='pnsn.org'
         )
         self.net = Network.objects.create(
             code="UW",
@@ -171,7 +173,8 @@ class PrivateMeasurementAPITests(TestCase):
             'unit': 'meter',
             'default_minval': 1,
             'default_maxval': 10.0,
-            'user': self.user
+            'user': self.user,
+            "reference_url": 'pnsn.org'
         }
         res = self.client.post(url, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
