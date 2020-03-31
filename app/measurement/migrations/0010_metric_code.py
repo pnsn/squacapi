@@ -7,29 +7,37 @@ from measurement.models import Metric
 class Migration(migrations.Migration):
     def set_defaults(name, count=0):
         '''set defaults. This needs to be done in three steps
+        This was initially done to ensure all existing metric codes were unique
+        Since this process call Metric.objects.all() columns that were created
+        after this migration, such as 0016 adding reference_url were throwing
+        errors. This is because when this migration is run the db column is
+        not there but it is listed in the model. 
+
+        Commenting out so test db can create/tear down without column not found
+        error. 
             1) make field nullabe
             2) update all codes = name, ensure uniqueness by appending number
             3) set code to be unique and required 
             4) profit
         '''
-        metrics = Metric.objects.all()
-        unique_metrics = []
-        def check_unique(name=name, count=0):
-            '''be lazy and just append incremented number '''
-            if name in unique_metrics:
-                name = name + str(count)
+        # metrics = Metric.objects.all()
+        # unique_metrics = []
+        # def check_unique(name=name, count=0):
+        #     '''be lazy and just append incremented number '''
+        #     if name in unique_metrics:
+        #         name = name + str(count)
                 
-                count += 1
-                check_unique(name, count)
-            else:
-                unique_metrics.append(name)
-                return name
+        #         count += 1
+        #         check_unique(name, count)
+        #     else:
+        #         unique_metrics.append(name)
+        #         return name
 
         
-        for m in metrics:
-            name = m.name
-            m.code = check_unique(name)
-            m.save()
+        # for m in metrics:
+        #     name = m.name
+        #     m.code = check_unique(name)
+        #     m.save()
         
 
     dependencies = [

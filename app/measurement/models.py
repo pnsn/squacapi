@@ -34,6 +34,7 @@ class Metric(MeasurementBase):
     url = models.CharField(max_length=255, default='', blank=True)
     default_minval = models.FloatField(blank=True)
     default_maxval = models.FloatField(blank=True)
+    reference_url = models.CharField(max_length=255)
 
     class Meta:
         indexes = [
