@@ -276,3 +276,34 @@ class PrivateMeasurementAPITests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         update_measurements = measurements.all()
         self.assertEqual(len_before_create + 2, len(update_measurements))
+
+    def test_create_multiple_measurements_with_error(self):
+        ''' test a bulk upload with bad param in one object'''
+        url = reverse('measurement:measurement-list')
+        measurements = Measurement.objects.all()
+        len_before_create = len(measurements)
+
+        payload = [
+            {
+                'metric': self.metric.id,
+                'channel': self.chan.id,
+                'value': None,
+                'starttime': datetime(
+                    2019, 1, 5, 8, 8, 7, 127325, tzinfo=pytz.UTC),
+                'endtime': datetime(
+                    2019, 1, 5, 9, 8, 7, 127325, tzinfo=pytz.UTC)
+            },
+            {
+                'metric': self.metric.id,
+                'channel': self.chan.id,
+                'value': 1.0,
+                'starttime': datetime(
+                    2019, 3, 5, 8, 8, 7, 127325, tzinfo=pytz.UTC),
+                'endtime': datetime(
+                    2019, 3, 5, 9, 8, 7, 127325, tzinfo=pytz.UTC)
+            }
+        ]
+        res = self.client.post(url, payload, format='json')
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        update_measurements = measurements.all()
+        self.assertEqual(len_before_create, len(update_measurements))
