@@ -4,7 +4,7 @@ from dashboard.models import Widget
 from nslc.models import Channel
 
 
-class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
+class MeasurementSerializer(serializers.ModelSerializer):
     metric = serializers.PrimaryKeyRelatedField(
         queryset=Metric.objects.all()
     )
@@ -21,7 +21,6 @@ class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
         read_only_fields = ('id',)
 
     def create(self, validated_data):
-        # print(validated_data)
         measurement, created = Measurement.objects.update_or_create(
             metric=validated_data.get('metric', None),
             channel=validated_data.get('channel', None),
@@ -31,7 +30,19 @@ class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
                 'endtime': validated_data.get('endtime', None),
                 'user': validated_data.get('user', None)
             })
+        # return None if this is a collection
+        if isinstance(self.context['request'].data, list):
+            return None
         return measurement
+
+    def to_representation(self, instance):
+        """Return object. On bulk uploads serializing the entire collection
+            to return is a large overhead. Check for None type returned by
+            def create()
+        """
+        if instance is None:
+            return None
+        return super().to_representation(instance)
 
     @staticmethod
     def setup_eager_loading(queryset):

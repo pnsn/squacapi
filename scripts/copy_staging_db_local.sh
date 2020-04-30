@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# copy the staging subset to local
+# copy the staging subset to local docker postgres
 # docker db container must be running
 source app/.env
 

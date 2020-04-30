@@ -1,6 +1,7 @@
 from drf_yasg.inspectors import SwaggerAutoSchema
 from collections import OrderedDict
 
+
 class ReadOnly():
     def get_fields(self):
         new_fields = OrderedDict()
@@ -25,7 +26,8 @@ class BlankMeta:
 
 class ReadWriteAutoSchema(SwaggerAutoSchema):
     """
-    Generates Read-only and write-only versions of the schema for the serializer
+    Generates Read-only and write-only versions of the schema for the
+    serializer
     Credit to Eric Bauerfeld
     https://github.com/axnsan12/drf-yasg/issues/70#issuecomment-485050813
     """
@@ -33,9 +35,10 @@ class ReadWriteAutoSchema(SwaggerAutoSchema):
         return self._convert_serializer(WriteOnly)
 
     def get_default_response_serializer(self):
-        body_override = self._get_request_body_override()
-        if body_override and body_override is not no_body:
-            return body_override
+        # nobody is not defined. commenting out
+        # body_override = self._get_request_body_override()
+        # if body_override and body_override is not no_body:
+        #     return body_override
 
         return self._convert_serializer(ReadOnly)
 
