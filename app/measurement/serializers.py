@@ -30,19 +30,7 @@ class MeasurementSerializer(serializers.ModelSerializer):
                 'endtime': validated_data.get('endtime', None),
                 'user': validated_data.get('user', None)
             })
-        # return None if this is a collection
-        if isinstance(self.context['request'].data, list):
-            return None
         return measurement
-
-    def to_representation(self, instance):
-        """Return object. On bulk uploads serializing the entire collection
-            to return is a large overhead. Check for None type returned by
-            def create()
-        """
-        if instance is None:
-            return None
-        return super().to_representation(instance)
 
     @staticmethod
     def setup_eager_loading(queryset):
