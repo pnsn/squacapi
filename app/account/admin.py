@@ -1,8 +1,10 @@
+# WARNING. The organization app migration must be ran before these classes
+# are instantiated
 from django.contrib import admin
 from organizations.models import (Organization, OrganizationUser,
                                   OrganizationOwner)
-from myapp.forms import AccountUserForm
-from myapp.models import Account, AccountUser
+from account.forms import AccountUserForm
+from account.models import Account, AccountUser
 
 
 class AccountUserAdmin(admin.ModelAdmin):

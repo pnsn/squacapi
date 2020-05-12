@@ -1,3 +1,6 @@
+# WARNING. The organization app migration must be ran before these classes
+# are instantiated
+
 from django import forms
 # from django.conf import settings
 # from django.contrib.sites.models import Site
