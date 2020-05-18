@@ -82,7 +82,7 @@ MIDDLEWARE = [
 CORS_ORIGIN_WHITELIST = [
      'http://localhost:4200',
      'https://squac.pnsn.org',
-     'https://staging-squacapi.pnsn.org'
+     'https://staging-squac.pnsn.org'
  ]
 
 REST_FRAMEWORK = {
