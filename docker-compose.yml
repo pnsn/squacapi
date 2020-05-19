@@ -25,6 +25,9 @@ services:
       - USE_DOCKER=yes
       - SQUAC_EMAIL_HOST=mailhog
       - SQUAC_EMAIL_PORT=1025
+      - CACHE_BACKEND=default
+      - CACHE_SECONDS=300
+      - CACHE_LOCATION=''
     depends_on:
       - db
   db:

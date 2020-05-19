@@ -66,7 +66,9 @@ INSTALLED_APPS = [
     'django_rest_passwordreset',
 ]
 
+# The caching middlewares must be first and last
 MIDDLEWARE = [
+    'django.middleware.cache.UpdateCacheMiddleware', #must be first
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -76,6 +78,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.cache.FetchFromCacheMiddleware', #must be last!!
+
 ]
 
 
@@ -200,14 +204,24 @@ LOGOUT_URL = 'rest_framework:logout'
   on dev and
   'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
   on prod
-  Django seems to use this setting by default and getting weird caching
-  issues so disabling it for now. 
+  using FileBased until we can config up a memcache daemon
 '''
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'unique-snowflake',
-        'TIMEOUT': 0,
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache'
+    },
+    'staging': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': os.environ.get('CACHE_LOCATION'),
+    },
+    'production': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': os.environ.get('CACHE_LOCATION'),
     }
+
 }
+
+CACHE_MIDDLEWARE_ALIAS = os.environ.get('CACHE_BACKEND')
+CACHE_MIDDLEWARE_SECONDS = int(os.environ.get('CACHE_SECONDS'))
+CACHE_MIDDLEWARE_KEY_PREFIX='squac_' + os.environ.get('CACHE_BACKEND')
 
