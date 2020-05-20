@@ -244,7 +244,7 @@ class DashboardPermissionTests(TestCase):
         # reporter
         res = self.reporter_client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-    
+
     def test_viewer_reporter_view_private_dashboard(self):
         '''reporter should be able to see own private dash
            viewer should not

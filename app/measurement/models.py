@@ -84,6 +84,13 @@ class Threshold(MeasurementBase):
     minval = models.FloatField(blank=True)
     maxval = models.FloatField(blank=True)
 
+    def __str__(self):
+        return (f"Threshold for Widge: {str(self.widget)} "
+                f"Metric: {str(self.metric)}"
+                f"Min {self.minval}"
+                f"Max {self.maxval}"
+                )
+
 
 class Archive(models.Model):
     """An archive-summary of measurements"""
