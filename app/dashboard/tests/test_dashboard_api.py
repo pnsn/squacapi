@@ -281,13 +281,19 @@ class PrivateMeasurementAPITests(TestCase):
         self.assertEqual(float(res.data['maxval']), 10.0)
         self.assertEqual(float(res.data['minval']), 9.0)
 
-    # def test_create_threshold(self):
-    #     url = reverse('measurement:threshold-list')
-    #     payload = {
-    #         'maxval': 10.0,
-    #         'minval': 9.0,
-    #         'widget': self.widget.id,
-    #         'metric': self.metric.id
-    #     }
-    #     res = self.client.post(url, payload)
-    #     self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+    def test_create_threshold(self):
+        url = reverse('measurement:threshold-list')
+        payload = {
+            'maxval': 10.0,
+            'minval': 9.0,
+            'widget': self.widget.id,
+            'metric': self.metric.id
+        }
+        res = self.client.post(url, payload)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
+    def test_get_stattype(self):
+        url = reverse('dashboard:stattype-detail',
+                      kwargs={'pk': self.stattype.id})
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
