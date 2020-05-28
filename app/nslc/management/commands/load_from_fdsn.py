@@ -194,10 +194,8 @@ class Command(BaseCommand):
             row_list = list(content)
             # skip header rows in metadata
             for row in row_list[1:]:
-                print(row)
                 # extract data from row
                 if len(row) > 1:
-                    print(row)
                     net_code, sta_code, loc, cha, lat, lon, elev, *rem = row
                     depth, azimuth, dip, sensor_descr, scale, *rem = rem
                     freq, units, rate, start, end = rem
