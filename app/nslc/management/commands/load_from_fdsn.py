@@ -19,19 +19,19 @@ load channels from fdsn webservice run in docker-compose like:
 $:docker-compose run --rm app sh -c "LOADER_EMAIL=email@pnsn.org \
                     python manage.py load_from_fdsn
                     [optional args]
-                     --path='.'
-                     --datacenter='IRISDMC,...'
-                     --net='UW...'
-                     --sta='BEER,...'
-                     --cha='HN?,ENN,...'
-                     --loc=*
-                     --minlat=31.5
-                     --maxlat=50
-                     --minlon=-128.1
-                     --maxlon=-113.9
-                     --endtime=[YYYY-mm-dd]"
+                    --path='.'
+                    --datacenter='IRISDMC,...'
+                    --net='UW...'
+                    --sta='BEER,...'
+                    --cha='HN?,ENN,...'
+                    --loc=*
+                    --minlat=31.5
+                    --maxlat=50
+                    --minlon=-128.1
+                    --maxlon=-113.9
+                    --endtime=[YYYY-mm-dd]"
 
- geocsv object from fdsn has following schema:
+ text response from fdsn has following schema:
  Network | Station | Location | Channel | Latitude | Longitude |
  Elevation | Depth | Azimuth | Dip | SensorDescription | Scale |
  ScaleFreq | ScaleUnits | SampleRate | StartTime | EndTime
@@ -180,8 +180,8 @@ class Command(BaseCommand):
             content = csv.reader(decoded_content.splitlines(), delimiter='|')
             row_list = list(content)
             # skip first two rows of metadata
-            for row in row_list[3:-2]:
-                if len(row) == 8:
+            for row in row_list[1:]:
+                if len(row) > 1:
                     sta_code = row[1].lower()
                     sta_name = row[5]
                     stations[sta_code] = sta_name
@@ -192,10 +192,12 @@ class Command(BaseCommand):
             decoded_content = download.content.decode('utf-8')
             content = csv.reader(decoded_content.splitlines(), delimiter='|')
             row_list = list(content)
-            # skip header and empty rows in metadata
-            for row in row_list[3:-2]:
+            # skip header rows in metadata
+            for row in row_list[1:]:
+                print(row)
                 # extract data from row
-                if len(row) == 17:
+                if len(row) > 1:
+                    print(row)
                     net_code, sta_code, loc, cha, lat, lon, elev, *rem = row
                     depth, azimuth, dip, sensor_descr, scale, *rem = rem
                     freq, units, rate, start, end = rem
