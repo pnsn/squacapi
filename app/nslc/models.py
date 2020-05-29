@@ -41,7 +41,7 @@ class Network(Nslc):
 class Channel(Nslc):
     code = models.CharField(max_length=3)
     station_code = models.CharField(max_length=5)
-    station_name = models.CharField(max_length=255)
+    station_name = models.CharField(max_length=255, blank=True)
     sample_rate = models.FloatField(null=True, blank=True)
     loc = models.CharField(max_length=2, default='--')
     lat = models.FloatField()
@@ -50,7 +50,8 @@ class Channel(Nslc):
     depth = models.FloatField(default=0.0)
     azimuth = models.FloatField(default=0.0)
     dip = models.FloatField(default=0.0)
-    sensor_description = models.CharField(max_length=255, default="")
+    sensor_description = models.CharField(max_length=255, default="",
+                                          blank=True)
     scale = models.FloatField(default=0.0)
     scale_freq = models.FloatField(default=1.0)
     scale_units = models.CharField(max_length=32, default='M/S')

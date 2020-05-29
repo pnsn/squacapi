@@ -30,7 +30,7 @@ class IsAdminOwnerOrPublicReadOnly(DjangoModelPermissions):
         has_permission = super().has_permission(request, view)
         if has_permission and request.method in permissions.SAFE_METHODS:
             try:
-                return obj.is_public
+                return obj.user == request.user or obj.is_public
             except AttributeError:
                 # if user has perm and obj doesn't have an is_public
                 return True

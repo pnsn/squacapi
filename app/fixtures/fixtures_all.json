@@ -843,6 +843,7 @@
 },
 {
   "model": "measurement.metric",
+  "reference_url": "https://pnsn.org",
   "pk": 2,
   "fields": {
     "created_at": "2019-08-28T23:30:31.258Z",
@@ -861,6 +862,7 @@
 },
 {
   "model": "measurement.metric",
+  "reference_url": "https://pnsn.org",
   "pk": 3,
   "fields": {
     "created_at": "2019-08-28T23:30:31.265Z",
@@ -879,6 +881,7 @@
 },
 {
   "model": "measurement.metric",
+  "reference_url": "https://pnsn.org",
   "pk": 4,
   "fields": {
     "created_at": "2019-08-28T23:30:31.270Z",
@@ -897,6 +900,7 @@
 },
 {
   "model": "measurement.metric",
+  "reference_url": "https://pnsn.org",
   "pk": 5,
   "fields": {
     "created_at": "2019-08-28T23:30:31.276Z",
@@ -915,6 +919,7 @@
 },
 {
   "model": "measurement.metric",
+  "reference_url": "https://pnsn.org",
   "pk": 6,
   "fields": {
     "created_at": "2019-08-28T23:30:31.282Z",
@@ -933,6 +938,7 @@
 },
 {
   "model": "measurement.metric",
+  "reference_url": "https://pnsn.org",
   "pk": 7,
   "fields": {
     "created_at": "2019-08-28T23:30:31.288Z",
@@ -951,6 +957,7 @@
 },
 {
   "model": "measurement.metric",
+  "reference_url": "https://pnsn.org",
   "pk": 8,
   "fields": {
     "created_at": "2019-08-28T23:30:31.294Z",
@@ -969,6 +976,7 @@
 },
 {
   "model": "measurement.metric",
+  "reference_url": "https://pnsn.org",
   "pk": 9,
   "fields": {
     "created_at": "2019-08-28T23:30:31.300Z",
@@ -987,6 +995,7 @@
 },
 {
   "model": "measurement.metric",
+  "reference_url": "https://pnsn.org",
   "pk": 10,
   "fields": {
     "created_at": "2019-08-28T23:30:31.305Z",
@@ -1005,6 +1014,7 @@
 },
 {
   "model": "measurement.metric",
+  "reference_url": "https://pnsn.org",
   "pk": 11,
   "fields": {
     "created_at": "2019-08-28T23:30:31.311Z",
@@ -1023,6 +1033,7 @@
 },
 {
   "model": "measurement.metric",
+  "reference_url": "https://pnsn.org",
   "pk": 12,
   "fields": {
     "created_at": "2019-08-28T23:30:31.318Z",
@@ -1041,6 +1052,7 @@
 },
 {
   "model": "measurement.metric",
+  "reference_url": "https://pnsn.org",
   "pk": 13,
   "fields": {
     "created_at": "2019-08-28T23:30:31.325Z",
@@ -1059,6 +1071,7 @@
 },
 {
   "model": "measurement.metric",
+  "reference_url": "https://pnsn.org",
   "pk": 14,
   "fields": {
     "created_at": "2019-08-28T23:30:31.331Z",
@@ -1077,6 +1090,7 @@
 },
 {
   "model": "measurement.metric",
+  "reference_url": "https://pnsn.org",
   "pk": 15,
   "fields": {
     "created_at": "2019-08-28T23:30:31.338Z",
@@ -1095,6 +1109,7 @@
 },
 {
   "model": "measurement.metric",
+  "reference_url": "https://pnsn.org",
   "pk": 16,
   "fields": {
     "created_at": "2019-08-28T23:30:31.344Z",
@@ -1113,6 +1128,7 @@
 },
 {
   "model": "measurement.metric",
+  "reference_url": "https://pnsn.org",
   "pk": 17,
   "fields": {
     "created_at": "2019-08-28T23:30:31.350Z",
@@ -1131,6 +1147,7 @@
 },
 {
   "model": "measurement.metric",
+  "reference_url": "https://pnsn.org",
   "pk": 18,
   "fields": {
     "created_at": "2019-08-28T23:30:31.357Z",
@@ -1149,6 +1166,7 @@
 },
 {
   "model": "measurement.metric",
+  "reference_url": "https://pnsn.org",
   "pk": 19,
   "fields": {
     "created_at": "2019-08-28T23:30:31.363Z",
@@ -1167,6 +1185,7 @@
 },
 {
   "model": "measurement.metric",
+  "reference_url": "https://pnsn.org",
   "pk": 20,
   "fields": {
     "created_at": "2019-08-28T23:30:31.370Z",
@@ -1185,6 +1204,7 @@
 },
 {
   "model": "measurement.metric",
+  "reference_url": "https://pnsn.org",
   "pk": 21,
   "fields": {
     "created_at": "2019-08-28T23:30:31.376Z",
@@ -1203,6 +1223,7 @@
 },
 {
   "model": "measurement.metric",
+  "reference_url": "https://pnsn.org",
   "pk": 22,
   "fields": {
     "created_at": "2019-08-28T23:30:31.381Z",
@@ -1221,6 +1242,7 @@
 },
 {
   "model": "measurement.metric",
+  "reference_url": "https://pnsn.org",
   "pk": 23,
   "fields": {
     "created_at": "2019-08-28T23:30:31.387Z",
@@ -1239,6 +1261,7 @@
 },
 {
   "model": "measurement.metric",
+  "reference_url": "https://pnsn.org",
   "pk": 24,
   "fields": {
     "created_at": "2019-08-28T23:30:31.394Z",
@@ -1257,6 +1280,7 @@
 },
 {
   "model": "measurement.metric",
+  "reference_url": "https://pnsn.org",
   "pk": 25,
   "fields": {
     "created_at": "2019-08-28T23:30:31.400Z",
@@ -1275,6 +1299,7 @@
 },
 {
   "model": "measurement.metric",
+  "reference_url": "https://pnsn.org",
   "pk": 26,
   "fields": {
     "created_at": "2019-08-28T23:30:31.406Z",
@@ -1293,6 +1318,7 @@
 },
 {
   "model": "measurement.metric",
+  "reference_url": "https://pnsn.org",
   "pk": 27,
   "fields": {
     "created_at": "2019-08-28T23:30:31.413Z",
@@ -1311,6 +1337,7 @@
 },
 {
   "model": "measurement.metric",
+  "reference_url": "https://pnsn.org",
   "pk": 28,
   "fields": {
     "created_at": "2019-08-28T23:30:31.419Z",
@@ -1329,6 +1356,7 @@
 },
 {
   "model": "measurement.metric",
+  "reference_url": "https://pnsn.org",
   "pk": 29,
   "fields": {
     "created_at": "2019-08-28T23:30:31.425Z",
@@ -1347,6 +1375,7 @@
 },
 {
   "model": "measurement.metric",
+  "reference_url": "https://pnsn.org",
   "pk": 30,
   "fields": {
     "created_at": "2019-08-28T23:30:31.431Z",
@@ -1365,6 +1394,7 @@
 },
 {
   "model": "measurement.metric",
+  "reference_url": "https://pnsn.org",
   "pk": 31,
   "fields": {
     "created_at": "2019-08-28T23:30:31.437Z",
@@ -1383,6 +1413,7 @@
 },
 {
   "model": "measurement.metric",
+  "reference_url": "https://pnsn.org",
   "pk": 32,
   "fields": {
     "created_at": "2019-08-28T23:30:31.443Z",
@@ -1401,6 +1432,7 @@
 },
 {
   "model": "measurement.metric",
+  "reference_url": "https://pnsn.org",
   "pk": 33,
   "fields": {
     "created_at": "2019-08-28T23:30:31.449Z",
@@ -1422,6 +1454,7 @@
   "pk": 1,
   "fields": {
     "created_at": "2019-08-28T23:30:31.262Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -1437,6 +1470,7 @@
   "pk": 2,
   "fields": {
     "created_at": "2019-08-28T23:30:31.268Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -1452,6 +1486,7 @@
   "pk": 3,
   "fields": {
     "created_at": "2019-08-28T23:30:31.273Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -1467,6 +1502,7 @@
   "pk": 4,
   "fields": {
     "created_at": "2019-08-28T23:30:31.279Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -1482,6 +1518,7 @@
   "pk": 5,
   "fields": {
     "created_at": "2019-08-28T23:30:31.285Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -1497,6 +1534,7 @@
   "pk": 6,
   "fields": {
     "created_at": "2019-08-28T23:30:31.291Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -1512,6 +1550,7 @@
   "pk": 7,
   "fields": {
     "created_at": "2019-08-28T23:30:31.297Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -1527,6 +1566,7 @@
   "pk": 8,
   "fields": {
     "created_at": "2019-08-28T23:30:31.303Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -1542,6 +1582,7 @@
   "pk": 9,
   "fields": {
     "created_at": "2019-08-28T23:30:31.309Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -1557,6 +1598,7 @@
   "pk": 10,
   "fields": {
     "created_at": "2019-08-28T23:30:31.315Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -1572,6 +1614,7 @@
   "pk": 11,
   "fields": {
     "created_at": "2019-08-28T23:30:31.322Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -1587,6 +1630,7 @@
   "pk": 12,
   "fields": {
     "created_at": "2019-08-28T23:30:31.328Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -1602,6 +1646,7 @@
   "pk": 13,
   "fields": {
     "created_at": "2019-08-28T23:30:31.335Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -1617,6 +1662,7 @@
   "pk": 14,
   "fields": {
     "created_at": "2019-08-28T23:30:31.341Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -1632,6 +1678,7 @@
   "pk": 15,
   "fields": {
     "created_at": "2019-08-28T23:30:31.348Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -1647,6 +1694,7 @@
   "pk": 16,
   "fields": {
     "created_at": "2019-08-28T23:30:31.354Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -1662,6 +1710,7 @@
   "pk": 17,
   "fields": {
     "created_at": "2019-08-28T23:30:31.361Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -1677,6 +1726,7 @@
   "pk": 18,
   "fields": {
     "created_at": "2019-08-28T23:30:31.367Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -1692,6 +1742,7 @@
   "pk": 19,
   "fields": {
     "created_at": "2019-08-28T23:30:31.373Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -1707,6 +1758,7 @@
   "pk": 20,
   "fields": {
     "created_at": "2019-08-28T23:30:31.379Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -1722,6 +1774,7 @@
   "pk": 21,
   "fields": {
     "created_at": "2019-08-28T23:30:31.385Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -1737,6 +1790,7 @@
   "pk": 22,
   "fields": {
     "created_at": "2019-08-28T23:30:31.391Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -1752,6 +1806,7 @@
   "pk": 23,
   "fields": {
     "created_at": "2019-08-28T23:30:31.397Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -1767,6 +1822,7 @@
   "pk": 24,
   "fields": {
     "created_at": "2019-08-28T23:30:31.404Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -1782,6 +1838,7 @@
   "pk": 25,
   "fields": {
     "created_at": "2019-08-28T23:30:31.410Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -1797,6 +1854,7 @@
   "pk": 26,
   "fields": {
     "created_at": "2019-08-28T23:30:31.416Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -1812,6 +1870,7 @@
   "pk": 27,
   "fields": {
     "created_at": "2019-08-28T23:30:31.422Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -1827,6 +1886,7 @@
   "pk": 28,
   "fields": {
     "created_at": "2019-08-28T23:30:31.428Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -1842,6 +1902,7 @@
   "pk": 29,
   "fields": {
     "created_at": "2019-08-28T23:30:31.434Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -1857,6 +1918,7 @@
   "pk": 30,
   "fields": {
     "created_at": "2019-08-28T23:30:31.440Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -1872,6 +1934,7 @@
   "pk": 31,
   "fields": {
     "created_at": "2019-08-28T23:30:31.446Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -1887,6 +1950,7 @@
   "pk": 32,
   "fields": {
     "created_at": "2019-08-28T23:30:31.452Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -1902,6 +1966,7 @@
   "pk": 33,
   "fields": {
     "created_at": "2019-08-28T23:30:31.456Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -1917,6 +1982,7 @@
   "pk": 34,
   "fields": {
     "created_at": "2019-08-28T23:30:31.460Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -1932,6 +1998,7 @@
   "pk": 35,
   "fields": {
     "created_at": "2019-08-28T23:30:31.463Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -1947,6 +2014,7 @@
   "pk": 36,
   "fields": {
     "created_at": "2019-08-28T23:30:31.467Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -1962,6 +2030,7 @@
   "pk": 37,
   "fields": {
     "created_at": "2019-08-28T23:30:31.471Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -1977,6 +2046,7 @@
   "pk": 38,
   "fields": {
     "created_at": "2019-08-28T23:30:31.475Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -1992,6 +2062,7 @@
   "pk": 39,
   "fields": {
     "created_at": "2019-08-28T23:30:31.480Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -2007,6 +2078,7 @@
   "pk": 40,
   "fields": {
     "created_at": "2019-08-28T23:30:31.485Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -2022,6 +2094,8 @@
   "pk": 41,
   "fields": {
     "created_at": "2019-08-28T23:30:31.489Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
+
     "user": [
       "loader@pnsn.org"
     ],
@@ -2036,7 +2110,9 @@
   "model": "measurement.measurement",
   "pk": 42,
   "fields": {
-    "created_at": "2019-08-28T23:30:31.493Z",
+    "created_at": "2019-08-28T23:30:31.493Z",    
+    "updated_at": "2019-08-28T23:30:31.262Z",
+
     "user": [
       "loader@pnsn.org"
     ],
@@ -2052,6 +2128,8 @@
   "pk": 43,
   "fields": {
     "created_at": "2019-08-28T23:30:31.498Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
+
     "user": [
       "loader@pnsn.org"
     ],
@@ -2067,6 +2145,7 @@
   "pk": 44,
   "fields": {
     "created_at": "2019-08-28T23:30:31.502Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -2082,6 +2161,7 @@
   "pk": 45,
   "fields": {
     "created_at": "2019-08-28T23:30:31.506Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -2097,6 +2177,7 @@
   "pk": 46,
   "fields": {
     "created_at": "2019-08-28T23:30:31.510Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -2112,6 +2193,7 @@
   "pk": 47,
   "fields": {
     "created_at": "2019-08-28T23:30:31.515Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -2127,6 +2209,7 @@
   "pk": 48,
   "fields": {
     "created_at": "2019-08-28T23:30:31.519Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -2142,6 +2225,7 @@
   "pk": 49,
   "fields": {
     "created_at": "2019-08-28T23:30:31.523Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -2157,6 +2241,7 @@
   "pk": 50,
   "fields": {
     "created_at": "2019-08-28T23:30:31.528Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -2172,6 +2257,7 @@
   "pk": 51,
   "fields": {
     "created_at": "2019-08-28T23:30:31.532Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -2187,6 +2273,7 @@
   "pk": 52,
   "fields": {
     "created_at": "2019-08-28T23:30:31.537Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -2202,6 +2289,7 @@
   "pk": 53,
   "fields": {
     "created_at": "2019-08-28T23:30:31.541Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -2217,6 +2305,7 @@
   "pk": 54,
   "fields": {
     "created_at": "2019-08-28T23:30:31.545Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -2232,6 +2321,7 @@
   "pk": 55,
   "fields": {
     "created_at": "2019-08-28T23:30:31.550Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -2247,6 +2337,7 @@
   "pk": 56,
   "fields": {
     "created_at": "2019-08-28T23:30:31.554Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -2262,6 +2353,7 @@
   "pk": 57,
   "fields": {
     "created_at": "2019-08-28T23:30:31.559Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -2277,6 +2369,7 @@
   "pk": 58,
   "fields": {
     "created_at": "2019-08-28T23:30:31.564Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -2292,6 +2385,7 @@
   "pk": 59,
   "fields": {
     "created_at": "2019-08-28T23:30:31.568Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -2307,6 +2401,7 @@
   "pk": 60,
   "fields": {
     "created_at": "2019-08-28T23:30:31.572Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -2322,6 +2417,7 @@
   "pk": 61,
   "fields": {
     "created_at": "2019-08-28T23:30:31.576Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -2337,6 +2433,7 @@
   "pk": 62,
   "fields": {
     "created_at": "2019-08-28T23:30:31.580Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -2352,6 +2449,7 @@
   "pk": 63,
   "fields": {
     "created_at": "2019-08-28T23:30:31.585Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],
@@ -2367,6 +2465,7 @@
   "pk": 64,
   "fields": {
     "created_at": "2019-08-28T23:30:31.589Z",
+    "updated_at": "2019-08-28T23:30:31.262Z",
     "user": [
       "loader@pnsn.org"
     ],

@@ -10,7 +10,6 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/dev/howto/deployment/checklist/
 
@@ -69,7 +68,9 @@ INSTALLED_APPS = [
     'account',
 ]
 
+# The caching middlewares must be first and last
 MIDDLEWARE = [
+    'django.middleware.cache.UpdateCacheMiddleware', #must be first
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -79,12 +80,15 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.cache.FetchFromCacheMiddleware', #must be last!!
+
 ]
 
 
 CORS_ORIGIN_WHITELIST = [
      'http://localhost:4200',
-     'https://squac.pnsn.org'
+     'https://squac.pnsn.org',
+     'https://staging-squac.pnsn.org'
  ]
 
 REST_FRAMEWORK = {
@@ -97,13 +101,23 @@ REST_FRAMEWORK = {
      )
 }
 
+SWAGGER_SETTINGS = {
+    'DEFAULT_AUTO_SCHEMA_CLASS': 'squac.doc_generator.ReadWriteAutoSchema',
+    'SECURITY_DEFINITIONS': {
+        'Token': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+        }
+    }
+}
 
 ROOT_URLCONF = 'squac.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['templates'],
+        'DIRS': [BASE_DIR + '/templates/'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -180,11 +194,36 @@ EMAIL_PORT = os.environ.get('SQUAC_EMAIL_PORT')
 
 # Fixture directories
 FIXTURE_DIRS = (
-   '/app/fixtures/',
+   BASE_DIR + '/fixtures/',
 )
 
 #point login and logout to drf routes
 LOGIN_URL = 'rest_framework:login'
 LOGOUT_URL = 'rest_framework:logout'
 
+#FIXME 
+''' use BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+  on dev and
+  'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+  on prod
+  using FileBased until we can config up a memcache daemon
+'''
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache'
+    },
+    'staging': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': os.environ.get('CACHE_LOCATION'),
+    },
+    'production': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': os.environ.get('CACHE_LOCATION'),
+    }
+
+}
+
+CACHE_MIDDLEWARE_ALIAS = os.environ.get('CACHE_BACKEND')
+CACHE_MIDDLEWARE_SECONDS = int(os.environ.get('CACHE_SECONDS'))
+CACHE_MIDDLEWARE_KEY_PREFIX='squac_' + os.environ.get('CACHE_BACKEND')
 

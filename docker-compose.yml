@@ -25,6 +25,9 @@ services:
       - USE_DOCKER=yes
       - SQUAC_EMAIL_HOST=mailhog
       - SQUAC_EMAIL_PORT=1025
+      - CACHE_BACKEND=default
+      - CACHE_SECONDS=300
+      - CACHE_LOCATION=''
     depends_on:
       - db
   db:
@@ -35,12 +38,12 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=supersecret
 
-  mailhog:
-    container_name: mailhog
-    image: mailhog/mailhog
-    expose:
-      - 1025
-      - 8025
-    ports:
-      - '1025:1025'
-      - '8025:8025'
+  # mailhog:
+  #   container_name: mailhog
+  #   image: mailhog/mailhog
+  #   expose:
+  #     - 1025
+  #     - 8025
+  #   ports:
+  #     - '1025:1025'
+  #     - '8025:8025'

@@ -74,7 +74,8 @@ class MeasurementPermissionTests(TestCase):
             code="someotherfuknthing",
             default_minval=1,
             default_maxval=10.0,
-            user=self.reporter
+            user=self.reporter,
+            reference_url='pnsn.org'
         )
         self.metric_other = Metric.objects.create(
             name='Sample metric1',
@@ -82,7 +83,8 @@ class MeasurementPermissionTests(TestCase):
             code="someotherfuknthingajig",
             default_minval=1,
             default_maxval=10.0,
-            user=self.other
+            user=self.other,
+            reference_url='pnsn.org'
         )
         self.net = Network.objects.create(
             code="UW",
@@ -188,6 +190,7 @@ class MeasurementPermissionTests(TestCase):
             'unit': 'meter',
             'default_minval': 1,
             'default_maxval': 10.0,
+            'reference_url': 'pnsn.org'
         }
         # viewer
         res = self.viewer_client.post(url, payload)

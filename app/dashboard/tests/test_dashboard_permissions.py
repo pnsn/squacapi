@@ -233,7 +233,7 @@ class DashboardPermissionTests(TestCase):
         self.assertFalse(self.viewer.has_perm('dashboard.delete_stattype'))
 
     # #### dashboard tests ####
-    def test_viewer_reporter_view_dashboard(self):
+    def test_viewer_reporter_view_public_dashboard(self):
         url = reverse(
             'dashboard:dashboard-detail',
             kwargs={'pk': self.dashboard_other.id}
@@ -241,6 +241,21 @@ class DashboardPermissionTests(TestCase):
         # viewer
         res = self.viewer_client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
+        # reporter
+        res = self.reporter_client.get(url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+    def test_viewer_reporter_view_private_dashboard(self):
+        '''reporter should be able to see own private dash
+           viewer should not
+        '''
+        url = reverse(
+            'dashboard:dashboard-detail',
+            kwargs={'pk': self.dashboard.id}
+        )
+        # viewer
+        res = self.viewer_client.get(url)
+        self.assertNotEqual(res.status_code, status.HTTP_200_OK)
         # reporter
         res = self.reporter_client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)

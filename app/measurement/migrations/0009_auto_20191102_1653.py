@@ -10,14 +10,14 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterField(
-            model_name='metric',
-            name='default_maxval',
-            field=models.FloatField(blank=True),
-        ),
-        migrations.AlterField(
-            model_name='metric',
-            name='default_minval',
-            field=models.FloatField(blank=True),
-        ),
+        # migrations.AlterField(
+        #     model_name='metric',
+        #     name='default_maxval',
+        #     field=models.FloatField(blank=True),
+        # ),
+        # migrations.AlterField(
+        #     model_name='metric',
+        #     name='default_minval',
+        #     field=models.FloatField(blank=True),
+        # ),
     ]

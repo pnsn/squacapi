@@ -17,8 +17,11 @@ import pytz
 '''Tests for all measurement models:
     *
 
-to run only these tests:
+to run only measurement tests:
     ./mg.sh "test measurement && flake8"
+to run only this file
+    ./mg.sh "test measurement.tests.test_measurement_api && flake8"
+
 '''
 
 
@@ -42,7 +45,8 @@ class UnauthenticatedMeasurementApiTests(TestCase):
             unit='meter',
             default_minval=1,
             default_maxval=10.0,
-            user=self.user
+            user=self.user,
+            reference_url='pnsn.org'
         )
         self.net = Network.objects.create(
             code="UW",
@@ -118,7 +122,8 @@ class PrivateMeasurementAPITests(TestCase):
             code="someotherfuknthing",
             default_minval=1,
             default_maxval=10.0,
-            user=self.user
+            user=self.user,
+            reference_url='pnsn.org'
         )
         self.net = Network.objects.create(
             code="UW",
@@ -168,7 +173,8 @@ class PrivateMeasurementAPITests(TestCase):
             'unit': 'meter',
             'default_minval': 1,
             'default_maxval': 10.0,
-            'user': self.user
+            'user': self.user,
+            "reference_url": 'pnsn.org'
         }
         res = self.client.post(url, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
@@ -212,6 +218,35 @@ class PrivateMeasurementAPITests(TestCase):
             else:
                 self.assertEqual(payload[key], getattr(measurement, key))
 
+    def test_update_or_create_measurement(self):
+        url = reverse('measurement:measurement-list')
+        payload = {
+            'metric': self.metric.id,
+            'channel': self.chan.id,
+            'value': 47.0,
+            'starttime': datetime(
+                2019, 4, 5, 8, 8, 7, 127325, tzinfo=pytz.UTC),
+            'endtime': datetime(2019, 4, 5, 9, 8, 7, 127325, tzinfo=pytz.UTC),
+            'user': self.user
+        }
+        res = self.client.post(url, payload)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
+        payload = {
+            'metric': self.metric.id,
+            'channel': self.chan.id,
+            'value': 49.0,
+            'starttime': datetime(
+                2019, 4, 5, 8, 8, 7, 127325, tzinfo=pytz.UTC),
+            'endtime': datetime(2019, 4, 5, 9, 8, 7, 127325, tzinfo=pytz.UTC),
+            'user': self.user
+        }
+        res_update = self.client.post(url, payload)
+        self.assertEqual(res_update.status_code, status.HTTP_201_CREATED)
+
+        self.assertEqual(res.data['id'], res_update.data['id'])
+        self.assertEqual(res_update.data['value'], 49)
+
     def test_create_multiple_measurements(self):
         url = reverse('measurement:measurement-list')
         measurements = Measurement.objects.all()
@@ -241,3 +276,34 @@ class PrivateMeasurementAPITests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         update_measurements = measurements.all()
         self.assertEqual(len_before_create + 2, len(update_measurements))
+
+    def test_create_multiple_measurements_with_error(self):
+        ''' test a bulk upload with bad param in one object'''
+        url = reverse('measurement:measurement-list')
+        measurements = Measurement.objects.all()
+        len_before_create = len(measurements)
+
+        payload = [
+            {
+                'metric': self.metric.id,
+                'channel': self.chan.id,
+                'value': None,
+                'starttime': datetime(
+                    2019, 1, 5, 8, 8, 7, 127325, tzinfo=pytz.UTC),
+                'endtime': datetime(
+                    2019, 1, 5, 9, 8, 7, 127325, tzinfo=pytz.UTC)
+            },
+            {
+                'metric': self.metric.id,
+                'channel': self.chan.id,
+                'value': 1.0,
+                'starttime': datetime(
+                    2019, 3, 5, 8, 8, 7, 127325, tzinfo=pytz.UTC),
+                'endtime': datetime(
+                    2019, 3, 5, 9, 8, 7, 127325, tzinfo=pytz.UTC)
+            }
+        ]
+        res = self.client.post(url, payload, format='json')
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        update_measurements = measurements.all()
+        self.assertEqual(len_before_create, len(update_measurements))

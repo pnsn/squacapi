@@ -1,10 +1,15 @@
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
+from django_rest_passwordreset.serializers import TokenSerializer
 
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.settings import api_settings
 from squac.mixins import PermissionsMixin
 from user.serializers import UserSerializer, AuthTokenSerializer
+
+from django.utils.decorators import method_decorator
+from drf_yasg.utils import swagger_auto_schema
+# from drf_yasg.openapi import Parameter
 
 
 class BaseMeasurementViewSet(PermissionsMixin):
@@ -18,6 +23,10 @@ class CreateUserView(generics.CreateAPIView):
     permission_classes = (IsAuthenticated,)
 
 
+@method_decorator(name="post", decorator=swagger_auto_schema(
+    request_body=AuthTokenSerializer,
+    responses={200: TokenSerializer}
+))
 class CreateTokenView(ObtainAuthToken):
     '''create a new auth token for user'''
     serializer_class = AuthTokenSerializer

@@ -4,22 +4,33 @@ from dashboard.models import Widget
 from nslc.models import Channel
 
 
-class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
+class MeasurementSerializer(serializers.ModelSerializer):
     metric = serializers.PrimaryKeyRelatedField(
         queryset=Metric.objects.all()
     )
     channel = serializers.PrimaryKeyRelatedField(
         queryset=Channel.objects.all()
     )
-    user = serializers.ReadOnlyField(source='user.username')
 
     class Meta:
         model = Measurement
         fields = (
             'id', 'metric', 'channel', 'value', 'starttime', 'endtime',
-            'created_at', 'user'
+            'created_at', 'user_id'
         )
         read_only_fields = ('id',)
+
+    def create(self, validated_data):
+        measurement, created = Measurement.objects.update_or_create(
+            metric=validated_data.get('metric', None),
+            channel=validated_data.get('channel', None),
+            starttime=validated_data.get('starttime', None),
+            defaults={
+                'value': validated_data.get('value', None),
+                'endtime': validated_data.get('endtime', None),
+                'user': validated_data.get('user', None)
+            })
+        return measurement
 
     @staticmethod
     def setup_eager_loading(queryset):
@@ -28,17 +39,16 @@ class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class MetricSerializer(serializers.HyperlinkedModelSerializer):
-    # commenting this out since we have a valid model attr called url
-    # url = serializers.HyperlinkedIdentityField(
-    #     view_name="measurement:metric-detail"
-    # )
-    user = serializers.ReadOnlyField(source='user.username')
+
+    url = serializers.HyperlinkedIdentityField(
+        view_name="measurement:metric-detail")
 
     class Meta:
         model = Metric
         fields = (
             'id', 'name', 'code', 'url', 'description', 'unit', 'created_at',
-            'updated_at', 'default_minval', 'default_maxval', 'user'
+            'updated_at', 'default_minval', 'default_maxval', 'user_id',
+            'reference_url'
         )
         read_only_fields = ('id',)
 
@@ -53,13 +63,12 @@ class ThresholdSerializer(serializers.HyperlinkedModelSerializer):
     widget = serializers.PrimaryKeyRelatedField(
         queryset=Widget.objects.all()
     )
-    user = serializers.ReadOnlyField(source='user.username')
 
     class Meta:
         model = Threshold
         fields = (
             'id', 'url', 'metric', 'widget', 'minval', 'maxval', 'created_at',
-            'updated_at', 'user'
+            'updated_at', 'user_id'
         )
         read_only_fields = ('id',)
 

@@ -35,7 +35,8 @@ class WidgetTypeViewSet(BaseDashboardViewSet):
     queryset = WidgetType.objects.all()
 
 
-class StatTypeViewSet(BaseDashboardViewSet):
+class StatTypeViewSet(PermissionsMixin, viewsets.ReadOnlyModelViewSet):
+    ''' we only want readonly through api'''
     serializer_class = serializers.StatTypeSerializer
     queryset = StatType.objects.all()
 

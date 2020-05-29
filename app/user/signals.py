@@ -19,8 +19,11 @@ def password_reset_token_created(sender, instance, reset_password_token,
     :return:
     """
     # check the view instance for remote_host
-    remote_host = instance.request.META['REMOTE_HOST']
-    if len(remote_host) < 1:
+    try:
+        remote_host = instance.request.META['REMOTE_HOST']
+        if len(remote_host) < 1:
+            remote_host = "squac.pnsn.org"
+    except KeyError:
         remote_host = "squac.pnsn.org"
 
     context = {
