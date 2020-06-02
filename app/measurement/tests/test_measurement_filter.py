@@ -4,9 +4,17 @@ from rest_framework.test import APIClient
 from rest_framework import status
 from django.urls import reverse
 from django.contrib.auth import get_user_model
+from nslc.models import Group, Channel
 
 
-'''Tests for custom measurement filters in views.py'''
+'''Tests for custom measurement filters in views.py
+
+to run only measurement tests:
+    ./mg.sh "test measurement && flake8"
+to run only this file
+    ./mg.sh "test measurement.tests.test_measurement_filter && flake8"
+
+'''
 
 
 class AuthenticatedMeasurementFilterTests(TestCase):
@@ -20,6 +28,11 @@ class AuthenticatedMeasurementFilterTests(TestCase):
             "test@pnsn.org", "secret")
         self.user.is_staff = True
         self.client.force_authenticate(self.user)
+        self.grp = Group.objects.create(
+            name='Test group', is_public=True, user=self.user)
+        for i in range(4, 7):
+            chan = Channel.objects.get(pk=i)
+            self.grp.channels.add(chan)
 
     def test_measurement_invalid_filter_input(self):
         # Not inputing metric, channel, starttime, and endtime should result
@@ -46,6 +59,23 @@ class AuthenticatedMeasurementFilterTests(TestCase):
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data), 1)
+
+    def test_measurement_filter_with_group(self):
+        '''test using group param'''
+        url = reverse('measurement:measurement-list')
+        stime, etime = '2016-02-01T03:00:00Z', '2020-02-02T05:00:00Z'
+        url += f'?metric=3&channel=4,5,6&starttime={stime}&endtime={etime}'
+        res1 = self.client.get(url)
+        self.assertEqual(res1.status_code, status.HTTP_200_OK)
+
+        # now with group id
+        url = reverse('measurement:measurement-list')
+        url += f'?metric=3&group={self.grp.id}'\
+               f'&starttime={stime}&endtime={etime}'
+        res2 = self.client.get(url)
+
+        self.assertEqual(res2.status_code, status.HTTP_200_OK)
+        self.assertEqual(res2.data, res1.data)
 
     def test_measurement_out_of_range_filter(self):
         # Test that filter does not return measurements outside date range
