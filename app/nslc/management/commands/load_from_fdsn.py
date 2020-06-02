@@ -21,7 +21,6 @@ $:docker-compose run --rm app sh -c "LOADER_EMAIL=email@pnsn.org \
                     [optional args]
                     --path='.'
                     --datacenter='IRISDMC,...'
-                    --net='UW...'
                     --sta='BEER,...'
                     --cha='HN?,ENN,...'
                     --loc=*
@@ -60,11 +59,6 @@ class Command(BaseCommand):
             '--datacenter',
             default="IRISDMC,NCEDC,SCEDC",
             help="Comma seperated list of datacenters"
-        )
-        parser.add_argument(
-            '--net',
-            default="AZ,BC,BK,CC,CE,CI,CN,IU,NC,NN,NP,NV,OO,SN,UO,US,UW",
-            help="Comma seperated list of networks"
         )
         parser.add_argument(
             '--sta',
@@ -119,16 +113,19 @@ class Command(BaseCommand):
             f"&targetservice=station"
             f"&level={level}"
             f"&net={params['net']}"
-            f"&sta={params['sta']}"
-            f"&cha={params['cha']}"
-            f"&loc={params['loc']}"
-            f"&minlat={params['minlat']}"
-            f"&maxlat={params['maxlat']}"
-            f"&minlon={params['minlon']}"
-            f"&maxlon={params['maxlon']}"
             f"&endafter={params['endafter']}"
             "&format=text"
         )
+        if (level != "network"):
+            url += (
+                f"&sta={params['sta']}"
+                f"&cha={params['cha']}"
+                f"&loc={params['loc']}"
+                f"&minlat={params['minlat']}"
+                f"&maxlat={params['maxlat']}"
+                f"&minlon={params['minlon']}"
+                f"&maxlon={params['maxlon']}"
+            )
         return url
 
     def parse_datetime(self, datetime_str):
@@ -144,6 +141,11 @@ class Command(BaseCommand):
 
     '''Django command to check network and channel tables with FDSN service'''
     def handle(self, *args, **options):
+        ALLOWED_NETWORKS = [
+            "AZ", "BC", "BK", "CC", "CE", "CI", "CN", "IU", "NC", "NN", "NP",
+            "NV", "OO", "SN", "UO", "US", "UW"
+        ]
+        options["net"] = ','.join(ALLOWED_NETWORKS)
         print('Getting data from FDSN...')
         LOADER_EMAIL = os.environ.get('LOADER_EMAIL')
         if not LOADER_EMAIL:
@@ -166,13 +168,33 @@ class Command(BaseCommand):
             )
             sys.exit(1)
 
-        # create hash for lookup
+        network_url = self.build_url(options, "network")
+        with requests.Session() as s:
+            download = s.get(network_url)
+            decoded_content = download.content.decode('utf-8')
+            content = csv.reader(decoded_content.splitlines(), delimiter='|')
+            row_list = list(content)
+            # skip header rows in metadata
+            for row in row_list[1:]:
+                # extract data from row
+                if len(row) > 1:
+                    net_code = row[0]
+                    net_name = row[1]
+
+                    # Get or create the channel using data
+                    Network.objects.get_or_create(
+                        code=net_code.lower(),
+                        defaults={
+                            'name': net_name,
+                            'user': user
+                        }
+                    )
+
         networks = {}
         for n in Network.objects.all():
             networks[n.code.lower()] = n
 
         station_url = self.build_url(options, 'station')
-        # create a station hash so we can pull out station description
         stations = {}
         with requests.Session() as s:
             download = s.get(station_url)
@@ -187,42 +209,48 @@ class Command(BaseCommand):
                     stations[sta_code] = sta_name
 
         channel_url = self.build_url(options, 'channel')
-        with requests.Session() as s:
-            download = s.get(channel_url)
-            decoded_content = download.content.decode('utf-8')
-            content = csv.reader(decoded_content.splitlines(), delimiter='|')
-            row_list = list(content)
-            # skip header rows in metadata
-            for row in row_list[1:]:
-                # extract data from row
-                if len(row) > 1:
-                    net_code, sta_code, loc, cha, lat, lon, elev, *rem = row
-                    depth, azimuth, dip, sensor_descr, scale, *rem = rem
-                    freq, units, rate, start, end = rem
-                    net = networks[net_code.lower()]
+        try:
+            with requests.Session() as s:
+                download = s.get(channel_url)
+                decoded_content = download.content.decode('utf-8')
+                content = csv.reader(
+                    decoded_content.splitlines(), delimiter='|')
+                row_list = list(content)
+                # skip header rows in metadata
+                for row in row_list[1:]:
+                    # extract data from row
+                    if len(row) > 1:
+                        net_code, sta, loc, cha, lat, lon, elev, *rem = row
+                        depth, azimuth, dip, sensor_descr, scale, *rem = rem
+                        freq, units, rate, start, end = rem
+                        net = networks[net_code.lower()]
 
-                    # Get or create the channel using data
-                    Channel.objects.get_or_create(
-                        network=net,
-                        station_code=sta_code.lower(),
-                        loc='--' if not loc else loc.lower(),
-                        code=cha.lower(),
-                        defaults={
-                            'lat': float(lat),
-                            'lon': float(lon),
-                            'elev': float(elev),
-                            'depth': float(depth),
-                            'name': stations[sta_code.lower()],
-                            'azimuth': 0.0 if not azimuth else float(azimuth),
-                            'dip': 0.0 if not dip else float(dip),
-                            'sensor_description': sensor_descr,
-                            'scale': 0.0 if not scale else float(scale),
-                            'scale_freq': 0.0 if not freq else float(freq),
-                            'scale_units': units,
-                            'sample_rate': 0.0 if not rate else float(rate),
-                            'starttime': self.parse_datetime(start),
-                            'endtime': self.parse_datetime(start),
-                            'user': user,
-                        }
-                    )
+                        # Get or create the channel using data
+                        Channel.objects.get_or_create(
+                            network=net,
+                            station_code=sta.lower(),
+                            loc='--' if not loc else loc.lower(),
+                            code=cha.lower(),
+                            defaults={
+                                'lat': float(lat),
+                                'lon': float(lon),
+                                'elev': float(elev),
+                                'depth': float(depth),
+                                'name': stations[sta_code.lower()],
+                                'azimuth': 0.0 if not azimuth else float(
+                                    azimuth),
+                                'dip': 0.0 if not dip else float(dip),
+                                'sensor_description': sensor_descr,
+                                'scale': 0.0 if not scale else float(scale),
+                                'scale_freq': 0.0 if not freq else float(freq),
+                                'scale_units': units,
+                                'sample_rate': 0.0 if not rate else float(
+                                    rate),
+                                'starttime': self.parse_datetime(start),
+                                'endtime': self.parse_datetime(end),
+                                'user': user,
+                            }
+                        )
+        except KeyError:
+            print('Key error occured')
         print('Loading finished')
