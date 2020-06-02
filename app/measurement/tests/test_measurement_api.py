@@ -16,7 +16,6 @@ import pytz
 
 '''Tests for all measurement models:
     *
-
 to run only measurement tests:
     ./mg.sh "test measurement && flake8"
 to run only this file

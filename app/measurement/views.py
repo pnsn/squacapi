@@ -7,6 +7,7 @@ from .exceptions import MissingParameterException
 from squac.permissions import IsAdminOwnerOrPublicReadOnly
 from .models import Metric, Measurement, Threshold, Archive
 from measurement import serializers
+from nslc.models import Group
 
 
 class MetricFilter(filters.FilterSet):
@@ -52,7 +53,8 @@ class MetricViewSet(BaseMeasurementViewSet):
 
 
 class MeasurementViewSet(BaseMeasurementViewSet):
-    REQUIRED_PARAMS = ("metric", "channel", "starttime", "endtime")
+    '''end point for using channel filter'''
+    REQUIRED_PARAMS = ("metric", "starttime", "endtime")
     serializer_class = serializers.MeasurementSerializer
     permission_classes = (
         IsAuthenticated, IsAdminOwnerOrPublicReadOnly)
@@ -69,15 +71,33 @@ class MeasurementViewSet(BaseMeasurementViewSet):
             kwargs['many'] = True
         return super(MeasurementViewSet, self).get_serializer(*args, **kwargs)
 
-    def _params_to_ints(self, qs):
-        # Convert a list of string IDs to a list of integers
-        return [int(str_id) for str_id in qs.split(',')]
-
     def list(self, request, *args, **kwargs):
-        if not all([required_param in request.query_params
+        _params = request.query_params
+        '''We want to be carful about large querries so require params'''
+        if not all([required_param in _params
                     for required_param in self.REQUIRED_PARAMS]):
             raise MissingParameterException
 
+        '''We need either a group or a list of channels. If group params is
+        found. Query all channels for this group and add to
+        request.query_params['channel']
+        '''
+        if "group" in _params:
+            group = Group.objects.get(pk=request.query_params['group'])
+            channels = group.channels.all()
+            list_ids = [str(c.id) for c in channels]
+            string_ids = ','.join(list_ids)
+            '''QueryParam object is immutable, so we need to change that'''
+            # remember state
+            _mutable = _params._mutable
+            # set to mutable
+            _params._mutable = True
+            _params['channel'] = string_ids
+            # set mutable flag back
+            _params._mutable = _mutable
+
+        elif 'channel' not in request.query_params:
+            raise MissingParameterException
         return super().list(self, request, *args, **kwargs)
 
 
