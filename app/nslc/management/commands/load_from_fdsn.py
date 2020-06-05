@@ -4,7 +4,7 @@ Command run without any options will give default URL
         query?datacenter=IRISDMC,NCEDC,SCEDC
         &targetservice=station
         &level=channel
-        &net=AZ,BC,BK,CC,CE,CI,CN,IU,NC,NN,NP,NV,OO,SN,UO,US,UW
+        &net=AZ,BC,BK,CC,CE,CI,CN,IU,MB,NC,NN,NP,NV,OO,PB,SN,UO,US,UW
         &sta=*
         &cha=?N?,?H?
         &loc=*
@@ -142,8 +142,8 @@ class Command(BaseCommand):
     '''Django command to check network and channel tables with FDSN service'''
     def handle(self, *args, **options):
         ALLOWED_NETWORKS = [
-            "AZ", "BC", "BK", "CC", "CE", "CI", "CN", "IU", "NC", "NN", "NP",
-            "NV", "OO", "SN", "UO", "US", "UW"
+            "AZ", "BC", "BK", "CC", "CE", "CI", "CN", "IU", "MB", "NC", "NN",
+            "NP", "NV", "OO", "PB", "SN", "UO", "US", "UW"
         ]
         options["net"] = ','.join(ALLOWED_NETWORKS)
         print('Getting data from FDSN...')
