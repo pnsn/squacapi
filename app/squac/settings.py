@@ -213,10 +213,12 @@ CACHES = {
     'staging': {
         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
         'LOCATION': os.environ.get('CACHE_LOCATION'),
+        'TIMEOUT': 0, # disable caching
     },
     'production': {
         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
         'LOCATION': os.environ.get('CACHE_LOCATION'),
+        'TIMEOUT': 0, # disable caching
     }
 
 }
