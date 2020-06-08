@@ -15,6 +15,7 @@ class AccountUserForm(forms.ModelForm):
     firstname = forms.CharField(max_length=100)
     lastname = forms.CharField(max_length=100)
     email = forms.EmailField()
+    is_admin = forms.BooleanField()
 
     class Meta:
         exclude = ('user', 'is_admin')
@@ -26,6 +27,7 @@ class AccountUserForm(forms.ModelForm):
             self.fields['firstname'].initial = self.instance.user.firstname
             self.fields['lastname'].initial = self.instance.user.lastname
             self.fields['email'].initial = self.instance.user.email
+            self.fields['is_admin'].initial = self.instance.is_admin
 
     def save(self, *args, **kwargs):
         """
@@ -42,5 +44,6 @@ class AccountUserForm(forms.ModelForm):
         self.instance.user.firstname = self.cleaned_data['firstname']
         self.instance.user.lastname = self.cleaned_data['lastname']
         self.instance.user.email = self.cleaned_data['email']
+        self.instance.is_admin = self.cleaned_data['is_admin']
         self.instance.user.save()
         return super(AccountUserForm, self).save(*args, **kwargs)

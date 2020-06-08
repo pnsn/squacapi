@@ -48,6 +48,7 @@ urlpatterns = [
     path('v1.0/nslc/', include('nslc.urls')),
     path('v1.0/measurement/', include('measurement.urls')),
     path('v1.0/dashboard/', include('dashboard.urls')),
+    path('v1.0/account/', include('account.urls')),
     # api password reset endpoints
     path('v1.0/password_reset/', include('django_rest_passwordreset.urls',
          namespace='password_reset')),
