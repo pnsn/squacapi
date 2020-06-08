@@ -1,1 +1,2 @@
 -r base.txt
+django-redis>=4.12.1,<4.13

@@ -199,31 +199,21 @@ FIXTURE_DIRS = (
 LOGIN_URL = 'rest_framework:login'
 LOGOUT_URL = 'rest_framework:logout'
 
-#FIXME 
-''' use BACKEND': 'django.core.cache.backends.dummy.DummyCache',
-  on dev and
-  'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-  on prod
-  using FileBased until we can config up a memcache daemon
-'''
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.dummy.DummyCache'
-    },
-    'staging': {
-        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': os.environ.get('CACHE_LOCATION'),
-        'TIMEOUT': 0, # disable caching
-    },
-    'production': {
-        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': os.environ.get('CACHE_LOCATION'),
-        'TIMEOUT': 0, # disable caching
+
+
+
+
+if not DEBUG:
+    CACHES = {
+        'default': { 
+            'BACKEND': 'django_redis.cache.RedisCache',
+            'LOCATION': os.environ.get('CACHE_LOCATION'),
+            'OPTIONS': {
+                'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            }
+        }
     }
 
-}
-
-CACHE_MIDDLEWARE_ALIAS = os.environ.get('CACHE_BACKEND')
-CACHE_MIDDLEWARE_SECONDS = int(os.environ.get('CACHE_SECONDS'))
-CACHE_MIDDLEWARE_KEY_PREFIX='squac_' + os.environ.get('CACHE_BACKEND')
+    CACHE_MIDDLEWARE_SECONDS = int(os.environ.get('CACHE_SECONDS'))
+    CACHE_MIDDLEWARE_KEY_PREFIX='squac_' + os.environ.get('CACHE_BACKEND')
 
