@@ -202,18 +202,30 @@ LOGOUT_URL = 'rest_framework:logout'
 
 
 
-
-if not DEBUG:
-    CACHES = {
-        'default': { 
-            'BACKEND': 'django_redis.cache.RedisCache',
-            'LOCATION': os.environ.get('CACHE_LOCATION'),
-            'OPTIONS': {
-                'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-            }
+CACHES = { 
+    'default': { 
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache'
+    }
+}
+# need to do it this way since we don't want to install redis locally
+if not DEBUG:   
+    CACHES['staging'] = { 
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': os.environ.get('CACHE_LOCATION'),
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    }
+    CACHES['production'] = { 
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': os.environ.get('CACHE_LOCATION'),
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
         }
     }
 
-    CACHE_MIDDLEWARE_SECONDS = int(os.environ.get('CACHE_SECONDS'))
-    CACHE_MIDDLEWARE_KEY_PREFIX='squac_' + os.environ.get('CACHE_BACKEND')
+
+CACHE_MIDDLEWARE_ALIAS = os.environ.get('CACHE_BACKEND')	
+CACHE_MIDDLEWARE_SECONDS = int(os.environ.get('CACHE_SECONDS'))
+CACHE_MIDDLEWARE_KEY_PREFIX='squac_' + os.environ.get('CACHE_BACKEND')
 

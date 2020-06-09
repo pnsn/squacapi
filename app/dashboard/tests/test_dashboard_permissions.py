@@ -267,7 +267,6 @@ class DashboardPermissionTests(TestCase):
         self.assertEqual(len(res.data), 1)
 
         res = self.reporter_client.get(url)
-        print(res.data)
         self.assertEqual(len(res.data), 2)
 
     def test_viewer_reporter_create_dashboard(self):

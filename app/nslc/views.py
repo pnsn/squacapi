@@ -68,16 +68,20 @@ class BaseNslcViewSet(SetUserMixin, PermissionsMixin, viewsets.ModelViewSet):
 
 class NetworkViewSet(BaseNslcViewSet):
     serializer_class = NetworkSerializer
-    q = Network.objects.all()
     filter_class = NetworkFilter
-    queryset = serializer_class.setup_eager_loading(q)
+
+    def get_queryset(self):
+        q = Network.objects.all()
+        return self.serializer_class.setup_eager_loading(q)
 
 
 class ChannelViewSet(BaseNslcViewSet):
     filter_class = ChannelFilter
-    q = Channel.objects.all()
     serializer_class = ChannelSerializer
-    queryset = serializer_class.setup_eager_loading(q)
+
+    def get_queryset(self):
+        q = Channel.objects.all()
+        return self.serializer_class.setup_eager_loading(q)
 
 
 class GroupViewSet(BaseNslcViewSet):

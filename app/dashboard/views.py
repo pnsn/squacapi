@@ -31,19 +31,22 @@ class DashboardViewSet(BaseDashboardViewSet):
 
 class WidgetTypeViewSet(BaseDashboardViewSet):
     serializer_class = serializers.WidgetTypeSerializer
-    queryset = WidgetType.objects.all()
+
+    def get_queryset(self):
+        return WidgetType.objects.all()
 
 
 class StatTypeViewSet(PermissionsMixin, viewsets.ReadOnlyModelViewSet):
     ''' we only want readonly through api'''
     serializer_class = serializers.StatTypeSerializer
-    queryset = StatType.objects.all()
+
+    def get_queryset(self):
+        return StatType.objects.all()
 
 
 class WidgetViewSet(BaseDashboardViewSet):
 
     serializer_class = serializers.WidgetSerializer
-    queryset = Widget.objects.all()
     permission_classes = (
         IsAuthenticated, IsAdminOwnerOrPublicReadOnly)
 
@@ -54,7 +57,7 @@ class WidgetViewSet(BaseDashboardViewSet):
     def get_queryset(self):
         # Retrieve widget by dashboard id
         dashboard = self.request.query_params.get('dashboard')
-        queryset = self.queryset
+        queryset = Widget.objects.all()
         if dashboard:
             dashboard_id = self._params_to_ints(dashboard)
             queryset = queryset.filter(dashboard__id__in=dashboard_id)
