@@ -15,7 +15,6 @@ class DashboardViewSet(BaseDashboardViewSet):
     serializer_class = serializers.DashboardSerializer
     permission_classes = (
         IsAuthenticated, IsAdminOwnerOrPublicReadOnly)
-    queryset = Dashboard.objects.all()
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
@@ -24,7 +23,7 @@ class DashboardViewSet(BaseDashboardViewSet):
 
     def get_queryset(self):
         if self.request.user.is_staff:
-            return self.queryset
+            return Dashboard.objects.all()
         queryset = Dashboard.objects.filter(user=self.request.user) | \
             Dashboard.objects.filter(is_public=True)
         return queryset

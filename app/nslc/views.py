@@ -82,7 +82,6 @@ class ChannelViewSet(BaseNslcViewSet):
 
 class GroupViewSet(BaseNslcViewSet):
     serializer_class = GroupSerializer
-    queryset = Group.objects.all()
     # commas act as 'ands'
     permission_classes = (
         IsAuthenticated, IsAdminOwnerOrPublicReadOnly)
@@ -94,7 +93,7 @@ class GroupViewSet(BaseNslcViewSet):
 
     def get_queryset(self):
         if self.request.user.is_staff:
-            return self.queryset
+            return Group.objects.all()
         '''view public and own resources'''
-        return self.queryset.filter(user=self.request.user) | \
-            self.queryset.filter(is_public=True)
+        return Group.objects.filter(user=self.request.user) | \
+            Group.objects.filter(is_public=True)
