@@ -216,6 +216,7 @@ if not DEBUG:
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
         }
     }
+
     CACHES['production'] = { 
         'BACKEND': 'django_redis.cache.RedisCache',
         'LOCATION': os.environ.get('CACHE_LOCATION'),
@@ -224,8 +225,8 @@ if not DEBUG:
         }
     }
 
-
-CACHE_MIDDLEWARE_ALIAS = os.environ.get('CACHE_BACKEND')	
+# FIXME this is broken cache key is not being set
+#CACHE_MIDDLEWARE_ALIAS = os.environ.get('CACHE_BACKEND')	
 CACHE_MIDDLEWARE_SECONDS = int(os.environ.get('CACHE_SECONDS'))
 CACHE_MIDDLEWARE_KEY_PREFIX='squac_' + os.environ.get('CACHE_BACKEND')
 

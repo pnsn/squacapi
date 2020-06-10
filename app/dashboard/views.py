@@ -60,7 +60,7 @@ class WidgetViewSet(BaseDashboardViewSet):
         queryset = Widget.objects.all()
         if dashboard:
             dashboard_id = self._params_to_ints(dashboard)
-            queryset = queryset.filter(dashboard__id__in=dashboard_id)
+            return queryset.filter(dashboard__id__in=dashboard_id)
         if self.request.user.is_staff:
             return queryset
         queryset = queryset.filter(user=self.request.user) | \
