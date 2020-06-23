@@ -32,8 +32,8 @@ class Metric(MeasurementBase):
     description = models.CharField(max_length=255, blank=True, default='')
     unit = models.CharField(max_length=255)
     url = models.CharField(max_length=255, default='', blank=True)
-    default_minval = models.FloatField(blank=True)
-    default_maxval = models.FloatField(blank=True)
+    default_minval = models.FloatField(blank=True, null=True)
+    default_maxval = models.FloatField(blank=True, null=True)
     reference_url = models.CharField(max_length=255)
 
     class Meta:
@@ -81,11 +81,11 @@ class Threshold(MeasurementBase):
         Metric,
         on_delete=models.CASCADE,
         related_name='threshold')
-    minval = models.FloatField(blank=True)
-    maxval = models.FloatField(blank=True)
+    minval = models.FloatField(blank=True, null=True)
+    maxval = models.FloatField(blank=True, null=True)
 
     def __str__(self):
-        return (f"Threshold for Widge: {str(self.widget)} "
+        return (f"Threshold for Widget: {str(self.widget)} "
                 f"Metric: {str(self.metric)}"
                 f"Min {self.minval}"
                 f"Max {self.maxval}"

@@ -68,21 +68,24 @@ class BaseNslcViewSet(SetUserMixin, PermissionsMixin, viewsets.ModelViewSet):
 
 class NetworkViewSet(BaseNslcViewSet):
     serializer_class = NetworkSerializer
-    q = Network.objects.all()
     filter_class = NetworkFilter
-    queryset = serializer_class.setup_eager_loading(q)
+
+    def get_queryset(self):
+        q = Network.objects.all()
+        return self.serializer_class.setup_eager_loading(q)
 
 
 class ChannelViewSet(BaseNslcViewSet):
     filter_class = ChannelFilter
-    q = Channel.objects.all()
     serializer_class = ChannelSerializer
-    queryset = serializer_class.setup_eager_loading(q)
+
+    def get_queryset(self):
+        q = Channel.objects.all()
+        return self.serializer_class.setup_eager_loading(q)
 
 
 class GroupViewSet(BaseNslcViewSet):
     serializer_class = GroupSerializer
-    queryset = Group.objects.all()
     # commas act as 'ands'
     permission_classes = (
         IsAuthenticated, IsAdminOwnerOrPublicReadOnly)
@@ -94,7 +97,7 @@ class GroupViewSet(BaseNslcViewSet):
 
     def get_queryset(self):
         if self.request.user.is_staff:
-            return self.queryset
+            return Group.objects.all()
         '''view public and own resources'''
-        return self.queryset.filter(user=self.request.user) | \
-            self.queryset.filter(is_public=True)
+        return Group.objects.filter(user=self.request.user) | \
+            Group.objects.filter(is_public=True)

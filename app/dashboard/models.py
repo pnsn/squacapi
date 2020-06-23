@@ -52,6 +52,9 @@ class StatType(DashboardBase):
 class Dashboard(DashboardBase):
     '''describes the container the holds widgets'''
     is_public = models.BooleanField(default=False)
+    window_seconds = models.IntegerField(blank=True, null=True)
+    starttime = models.DateTimeField(blank=True, null=True)
+    endtime = models.DateTimeField(blank=True, null=True)
 
 
 class Widget(DashboardBase):

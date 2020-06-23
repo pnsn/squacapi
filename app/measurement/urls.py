@@ -4,10 +4,11 @@ from rest_framework.routers import DefaultRouter
 from measurement import views
 
 router = DefaultRouter()
-router.register('metrics', views.MetricViewSet)
-router.register('measurements', views.MeasurementViewSet)
-router.register('thresholds', views.ThresholdViewSet)
-router.register('archives', views.ArchiveViewSet)
+router.register('metrics', views.MetricViewSet, basename='metric')
+router.register('measurements', views.MeasurementViewSet,
+                basename='measurement')
+router.register('thresholds', views.ThresholdViewSet, basename='threshold')
+router.register('archives', views.ArchiveViewSet, basename='archive')
 
 app_name = "measurement"
 urlpatterns = [path('', include(router.urls))]

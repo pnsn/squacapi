@@ -39,7 +39,8 @@ class ChannelSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('id', 'class_name', 'code', 'name', 'station_code',
                   'station_name', 'url', 'description',
                   'sample_rate', 'network', 'loc', 'lat',
-                  'lon', 'elev', 'created_at', 'updated_at', 'user_id')
+                  'lon', 'elev', 'created_at', 'updated_at', 'user_id',
+                  'starttime', 'endtime')
         read_only_fields = ('id',)
 
     @staticmethod

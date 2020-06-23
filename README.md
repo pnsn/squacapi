@@ -6,9 +6,5 @@
 
 Squacapi is an open source application for reporting on seismic network performance. 
 
-## Endpoints
-* [Token](./docs/user/token.md) `POST /user/token/`
-### Station information
-
-* [Nslc](./docs/nslc/network.md) `GET | PUT | POST /v1.0/nslc/networks`
+See [app_root]/swagger for full API documentation
 

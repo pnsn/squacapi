@@ -49,7 +49,9 @@ class MetricViewSet(BaseMeasurementViewSet):
     filter_class = MetricFilter
     permission_classes = (
         IsAuthenticated, IsAdminOwnerOrPublicReadOnly)
-    queryset = Metric.objects.all()
+
+    def get_queryset(self):
+        return Metric.objects.all()
 
 
 class MeasurementViewSet(BaseMeasurementViewSet):
@@ -58,9 +60,7 @@ class MeasurementViewSet(BaseMeasurementViewSet):
     serializer_class = serializers.MeasurementSerializer
     permission_classes = (
         IsAuthenticated, IsAdminOwnerOrPublicReadOnly)
-    q = Measurement.objects.all().order_by('channel', 'metric')
     filter_class = MeasurementFilter
-    queryset = serializer_class.setup_eager_loading(q)
 
     def get_serializer(self, *args, **kwargs):
         """Allow bulk update
@@ -70,6 +70,10 @@ class MeasurementViewSet(BaseMeasurementViewSet):
         if isinstance(kwargs.get('data', {}), list):
             kwargs['many'] = True
         return super(MeasurementViewSet, self).get_serializer(*args, **kwargs)
+
+    def get_queryset(self):
+        q = Measurement.objects.all().order_by('channel', 'metric')
+        return self.serializer_class.setup_eager_loading(q)
 
     def list(self, request, *args, **kwargs):
         _params = request.query_params
@@ -104,7 +108,9 @@ class MeasurementViewSet(BaseMeasurementViewSet):
 class ThresholdViewSet(BaseMeasurementViewSet):
     serializer_class = serializers.ThresholdSerializer
     filter_class = ThresholdFilter
-    queryset = Threshold.objects.all()
+
+    def get_queryset(self):
+        return Threshold.objects.all()
 
 
 class ArchiveViewSet(PermissionsMixin, viewsets.ReadOnlyModelViewSet):
@@ -117,7 +123,9 @@ class ArchiveViewSet(PermissionsMixin, viewsets.ReadOnlyModelViewSet):
     REQUIRED_PARAMS = ("metric", "channel", "starttime", "endtime")
     serializer_class = serializers.ArchiveSerializer
     filter_class = ArchiveFilter
-    queryset = Archive.objects.all()
+
+    def get_queryset(self):
+        return Archive.objects.all()
 
     def list(self, request, *args, **kwargs):
         if not all([required_param in request.query_params

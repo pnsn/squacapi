@@ -15,7 +15,6 @@ class DashboardViewSet(BaseDashboardViewSet):
     serializer_class = serializers.DashboardSerializer
     permission_classes = (
         IsAuthenticated, IsAdminOwnerOrPublicReadOnly)
-    queryset = Dashboard.objects.all()
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
@@ -24,7 +23,7 @@ class DashboardViewSet(BaseDashboardViewSet):
 
     def get_queryset(self):
         if self.request.user.is_staff:
-            return self.queryset
+            return Dashboard.objects.all()
         queryset = Dashboard.objects.filter(user=self.request.user) | \
             Dashboard.objects.filter(is_public=True)
         return queryset
@@ -32,19 +31,22 @@ class DashboardViewSet(BaseDashboardViewSet):
 
 class WidgetTypeViewSet(BaseDashboardViewSet):
     serializer_class = serializers.WidgetTypeSerializer
-    queryset = WidgetType.objects.all()
+
+    def get_queryset(self):
+        return WidgetType.objects.all()
 
 
 class StatTypeViewSet(PermissionsMixin, viewsets.ReadOnlyModelViewSet):
     ''' we only want readonly through api'''
     serializer_class = serializers.StatTypeSerializer
-    queryset = StatType.objects.all()
+
+    def get_queryset(self):
+        return StatType.objects.all()
 
 
 class WidgetViewSet(BaseDashboardViewSet):
 
     serializer_class = serializers.WidgetSerializer
-    queryset = Widget.objects.all()
     permission_classes = (
         IsAuthenticated, IsAdminOwnerOrPublicReadOnly)
 
@@ -55,10 +57,10 @@ class WidgetViewSet(BaseDashboardViewSet):
     def get_queryset(self):
         # Retrieve widget by dashboard id
         dashboard = self.request.query_params.get('dashboard')
-        queryset = self.queryset
+        queryset = Widget.objects.all()
         if dashboard:
             dashboard_id = self._params_to_ints(dashboard)
-            queryset = queryset.filter(dashboard__id__in=dashboard_id)
+            return queryset.filter(dashboard__id__in=dashboard_id)
         if self.request.user.is_staff:
             return queryset
         queryset = queryset.filter(user=self.request.user) | \
