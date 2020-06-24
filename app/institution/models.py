@@ -4,11 +4,11 @@
 from organizations.models import (Organization, OrganizationUser)
 
 
-class Account(Organization):
+class Institution(Organization):
     class Meta:
         proxy = True
 
 
-class AccountUser(OrganizationUser):
+class InstitutionUser(OrganizationUser):
     class Meta:
         proxy = True

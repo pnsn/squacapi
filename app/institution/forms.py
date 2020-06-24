@@ -5,10 +5,10 @@ from django import forms
 # from django.conf import settings
 # from django.contrib.sites.models import Site
 from organizations.backends import invitation_backend
-from account.models import AccountUser
+from institution.models import InstitutionUser
 
 
-class AccountUserForm(forms.ModelForm):
+class InstitutionUserForm(forms.ModelForm):
     """
     Form class for editing AccountUsers *and* the linked user model.
     """
@@ -19,10 +19,10 @@ class AccountUserForm(forms.ModelForm):
 
     class Meta:
         exclude = ('user', 'is_admin')
-        model = AccountUser
+        model = InstitutionUser
 
     def __init__(self, *args, **kwargs):
-        super(AccountUserForm, self).__init__(*args, **kwargs)
+        super(InstitutionUserForm, self).__init__(*args, **kwargs)
         if self.instance.pk is not None:
             self.fields['firstname'].initial = self.instance.user.firstname
             self.fields['lastname'].initial = self.instance.user.lastname
@@ -46,4 +46,4 @@ class AccountUserForm(forms.ModelForm):
         self.instance.user.email = self.cleaned_data['email']
         self.instance.is_admin = self.cleaned_data['is_admin']
         self.instance.user.save()
-        return super(AccountUserForm, self).save(*args, **kwargs)
+        return super(InstitutionUserForm, self).save(*args, **kwargs)

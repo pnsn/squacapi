@@ -3,16 +3,16 @@
 from django.contrib import admin
 from organizations.models import (Organization, OrganizationUser,
                                   OrganizationOwner)
-from account.forms import AccountUserForm
-from account.models import Account, AccountUser
+from institution.forms import InstitutionUserForm
+from institution.models import Institution, InstitutionUser
 
 
-class AccountUserAdmin(admin.ModelAdmin):
-    form = AccountUserForm
+class InstitutionUserAdmin(admin.ModelAdmin):
+    form = InstitutionUserForm
 
 
 admin.site.unregister(Organization)
 admin.site.unregister(OrganizationUser)
 admin.site.unregister(OrganizationOwner)
-admin.site.register(Account)
-admin.site.register(AccountUser, AccountUserAdmin)
+admin.site.register(Institution)
+admin.site.register(InstitutionUser, InstitutionUserAdmin)
