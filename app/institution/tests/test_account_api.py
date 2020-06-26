@@ -71,9 +71,7 @@ class InstitutionAPITests(TestCase):
 
         payload = {
             'user': {
-                'email': 'testy@pnsn.org',
-                'firstname': 'testy',
-                'lastname': 'mctesterson'
+                'email': 'testy@pnsn.org'
             },
             "organization": self.institution.id,
             'is_admin': False,
@@ -94,9 +92,7 @@ class InstitutionAPITests(TestCase):
         url = reverse('institution:institutionuser-list')
         payload = {
             'user': {
-                'email': user.email,
-                'firstname': user.firstname,
-                'lastname': user.lastname
+                'email': user.email
             },
             "organization": self.institution.id,
             'is_admin': False,
@@ -113,9 +109,7 @@ class InstitutionAPITests(TestCase):
         url = reverse('institution:institutionuser-detail', args=[self.au3.id])
         payload = {
             'user': {
-                'email': user.email,
-                'firstname': user.firstname,
-                'lastname': user.lastname
+                'email': user.email
             },
             "organization": self.institution.id,
             'is_admin': True

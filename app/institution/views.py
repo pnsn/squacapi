@@ -29,7 +29,7 @@ class InstitutionUserViewSet(viewsets.ModelViewSet):
     serializer_class = InstitutionUserSerializer
 
     '''overriding for two reasons
-        1) Need to hook in invitation
+        1) Need to hook into invitation
         2) Nested serializers suck.
             *pop user off of request.data
             *invite user
@@ -38,10 +38,19 @@ class InstitutionUserViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
         user_param = request.data.pop('user')
+        try:
+            existing_user = get_user_model().objects.get(
+                email=user_param['email'])
+            firstname = existing_user.firstname
+            lastname = existing_user.lastname
+        except get_user_model().DoesNotExist:
+            firstname = 'firstname goes here'
+            lastname = 'lastname goes here'
+
         user = invitation_backend().invite_by_email(
             user_param['email'],
-            **{'firstname': user_param['firstname'],
-                'lastname': user_param['lastname'],
+            **{'firstname': firstname,
+                'lastname': lastname,
                 'organization': request.data['organization'],
                 'is_admin': request.data['is_admin']}
         )
