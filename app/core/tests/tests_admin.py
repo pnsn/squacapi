@@ -20,8 +20,7 @@ class AdminSiteTests(TestCase):
             email='test@pnsn.org',
             password='password123',
             firstname='your',
-            lastname='mom',
-            organization='pnsn'
+            lastname='mom'
         )
 
     def test_users_listed(self):

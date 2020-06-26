@@ -8,7 +8,6 @@
     "email": "loader@pnsn.org",
     "firstname": "your",
     "lastname": "mom",
-    "organization": "pnsn",
     "is_active": true,
     "is_staff": true,
     "groups": [],

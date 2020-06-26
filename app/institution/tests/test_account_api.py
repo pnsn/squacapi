@@ -62,31 +62,71 @@ class InstitutionAPITests(TestCase):
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
-    def test_create_institution_user(self):
+    def test_create_institution_new_user(self):
         url_institution = reverse('institution:institution-detail',
                                   kwargs={'pk': self.institution.id})
         res = self.client.get(url_institution)
         self.assertEqual(len(res.data['organization_users']), 2)
         url = reverse('institution:institutionuser-list')
-        print(url)
+
         payload = {
             'user': {
-                'email': 'testy@pnsn.org'
-                # 'firstname': 'testy',
-                # 'lastname': 'mctesterson',
-                # 'password': "fsadf"
+                'email': 'testy@pnsn.org',
+                'firstname': 'testy',
+                'lastname': 'mctesterson'
             },
             "organization": self.institution.id,
             'is_admin': False,
         }
         res = self.client.post(url, payload, format='json')
-        print(res.data)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
+        # now try create again, should fail on uniqueness
+        res = self.client.post(url, payload, format='json')
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_institution_existing_user(self):
+        '''user exists as institution user of another group
+            should be able to add to another institiution
+        '''
+        user = self.au3.user
+        self.assertEqual(len(user.organizations_organization.all()), 1)
+        url = reverse('institution:institutionuser-list')
+        payload = {
+            'user': {
+                'email': user.email,
+                'firstname': user.firstname,
+                'lastname': user.lastname
+            },
+            "organization": self.institution.id,
+            'is_admin': False,
+        }
+        res = self.client.post(url, payload, format='json')
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(len(user.organizations_organization.all()), 2)
+
+    def test_update_institution_user(self):
+        '''change institution user to admin
+        '''
+        user = self.au3.user
+        self.assertFalse(self.au3.is_admin)
+        url = reverse('institution:institutionuser-detail', args=[self.au3.id])
+        payload = {
+            'user': {
+                'email': user.email,
+                'firstname': user.firstname,
+                'lastname': user.lastname
+            },
+            "organization": self.institution.id,
+            'is_admin': True
+        }
+        res = self.client.put(url, payload, format='json')
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(res.data['is_admin'])
 
     def test_get_users_for_organization(self):
         url = reverse('institution:institutionuser-list')
         url += f'?organization={self.institution2.id}'
-        print(url)
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data), 1)

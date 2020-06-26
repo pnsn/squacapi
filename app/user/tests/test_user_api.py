@@ -62,7 +62,6 @@ class PrivateUserAPITests(TestCase):
             password="secret",
             firstname='your',
             lastname='mom',
-            organization='pnsn'
         )
         self.client = APIClient()
         self.client.force_authenticate(user=self.user)
@@ -122,7 +121,6 @@ class PrivateUserAPITests(TestCase):
             'password': 'supersecret',
             'firstname': 'some',
             'lastname': 'name',
-            'organization': 'pnsn',
         }
 
         res = self.client.post(CREATE_USER_URL, payload)

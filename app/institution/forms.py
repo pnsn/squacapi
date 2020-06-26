@@ -34,13 +34,12 @@ class InstitutionUserForm(forms.ModelForm):
         This method saves changes to the linked user model.
         """
         if self.instance.pk is None:
-            # site = Site.objects.get(pk=settings.SITE_ID)
             self.instance.user = invitation_backend().invite_by_email(
                 self.cleaned_data['email'],
                 **{'firstname': self.cleaned_data['firstname'],
                     'lastname': self.cleaned_data['lastname'],
                     'organization': self.cleaned_data['organization']})
-            # 'domain': site})
+
         self.instance.user.firstname = self.cleaned_data['firstname']
         self.instance.user.lastname = self.cleaned_data['lastname']
         self.instance.user.email = self.cleaned_data['email']
