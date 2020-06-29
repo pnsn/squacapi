@@ -63,7 +63,7 @@ class OrganizationAPITests(TestCase):
 
     def test_create_org_new_user(self):
         url_org = reverse('org:organization-detail',
-                                  kwargs={'pk': self.org.id})
+                          kwargs={'pk': self.org.id})
         res = self.client.get(url_org)
         self.assertEqual(len(res.data['organization_users']), 2)
         url = reverse('org:organizationuser-list')

@@ -9,6 +9,8 @@ import pytz
 from dashboard.models import Dashboard, Widget, WidgetType, StatType
 from measurement.models import Metric
 from nslc.models import Network, Channel, Group
+from organizations.models import Organization
+
 
 '''
     to run this file only
@@ -116,19 +118,26 @@ class DashboardPermissionTests(TestCase):
             user=self.reporter
         )
         self.grp.channels.add(self.chan)
+        self.organization = Organization.objects.create(
+            name='PNSN',
+            slug='pnsn'
+        )
         self.dashboard = Dashboard.objects.create(
             name='Test dashboard',
-            user=self.reporter
+            user=self.reporter,
+            organization=self.organization
         )
         self.dashboard_other = Dashboard.objects.create(
             name='Test dashboard2',
             user=self.other,
-            is_public=True
+            is_public=True,
+            organization=self.organization
         )
         self.dashboard_other_private = Dashboard.objects.create(
             name='Test dashboard2',
             user=self.other,
-            is_public=False
+            is_public=False,
+            organization=self.organization
         )
         self.widtype = WidgetType.objects.create(
             name='Test widget type',
@@ -151,7 +160,8 @@ class DashboardPermissionTests(TestCase):
             y_position=1,
             user=self.reporter,
             channel_group=self.grp,
-            is_public=True
+            is_public=True,
+            organization=self.organization
         )
 
         self.widget_other = Widget.objects.create(
@@ -165,7 +175,8 @@ class DashboardPermissionTests(TestCase):
             y_position=1,
             user=self.other,
             channel_group=self.grp,
-            is_public=True
+            is_public=True,
+            organization=self.organization
         )
 
         self.widget_other_private = Widget.objects.create(
@@ -179,7 +190,8 @@ class DashboardPermissionTests(TestCase):
             y_position=1,
             user=self.other,
             channel_group=self.grp,
-            is_public=False
+            is_public=False,
+            organization=self.organization
         )
 
         self.widget.metrics.add(self.metric)
@@ -271,7 +283,10 @@ class DashboardPermissionTests(TestCase):
 
     def test_viewer_reporter_create_dashboard(self):
         url = reverse('dashboard:dashboard-list')
-        payload = {'name': 'Test dashboard'}
+        payload = {
+            'name': 'Test dashboard',
+            'organization': self.organization.id
+        }
         # viewer
         res = self.viewer_client.post(url, payload)
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
@@ -331,7 +346,8 @@ class DashboardPermissionTests(TestCase):
             'x_position': 1,
             'y_position': 1,
             'metrics': [self.metric.id],
-            'channel_group': self.grp.id
+            'channel_group': self.grp.id,
+            'organization': self.organization.id
         }
         # viewer
         res = self.viewer_client.post(url, payload)

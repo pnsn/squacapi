@@ -42,7 +42,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('user/', include('user.urls', namespace='legacy')),
     path('invitations/', include(invitation_backend().get_urls())),
-    path('organizations/', include('organizations.urls')),
+    # path('organizations/', include('organizations.urls')),
     path('v1.0/user/accounts/', include('django.contrib.auth.urls')),
     path('v1.0/user/', include('user.urls')),
     path('v1.0/nslc/', include('nslc.urls')),
