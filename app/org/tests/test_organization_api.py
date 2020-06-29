@@ -3,18 +3,17 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 from rest_framework import status
 from rest_framework.test import APIClient
-from institution.models import Institution, InstitutionUser
+from organizations.models import (Organization, OrganizationUser)
 
-
-'''Tests for institution models:
-    *Institution
-    *InstitutionUser
+'''Tests for org models:
+    *Org
+    *OrgUser
 
 
 to run only the app tests:
-    /mg.sh "test institution && flake8"
+    /mg.sh "test org && flake8"
 to run only this file
-    ./mg.sh "test institution.tests.test_institution_api  && flake8"
+    ./mg.sh "test org.tests.test_org_api  && flake8"
 
 '''
 
@@ -24,7 +23,7 @@ def sample_user(email='test@pnsn.org', password="secret"):
     return get_user_model().objects.create_user(email, password)
 
 
-class InstitutionAPITests(TestCase):
+class OrganizationAPITests(TestCase):
 
     def setUp(self):
         self.client = APIClient()
@@ -32,48 +31,48 @@ class InstitutionAPITests(TestCase):
         self.user.is_staff = True
         self.user.save()
         self.client.force_authenticate(self.user)
-        self.institution = Institution.objects.create(name="UW")
-        self.institution2 = Institution.objects.create(name="CVO")
+        self.org = Organization.objects.create(name="UW")
+        self.org2 = Organization.objects.create(name="CVO")
 
         u1 = sample_user("au1@pnsn.org")
         u2 = sample_user("au2@pnsn.org")
         u3 = sample_user("au3@cvo.org")
-        self.au1 = InstitutionUser.objects.create(
-            user=u1, organization=self.institution)
-        self.au2 = InstitutionUser.objects.create(
-            user=u2, organization=self.institution)
-        self.au3 = InstitutionUser.objects.create(
-            user=u3, organization=self.institution2)
-        self.institution.organization_users.add(self.au1)
-        self.institution.organization_users.add(self.au2)
-        self.institution2.organization_users.add(self.au3)
+        self.au1 = OrganizationUser.objects.create(
+            user=u1, organization=self.org)
+        self.au2 = OrganizationUser.objects.create(
+            user=u2, organization=self.org)
+        self.au3 = OrganizationUser.objects.create(
+            user=u3, organization=self.org2)
+        self.org.organization_users.add(self.au1)
+        self.org.organization_users.add(self.au2)
+        self.org2.organization_users.add(self.au3)
 
     def test_get_organization(self):
         '''test get on organization'''
-        url = reverse('institution:institution-detail',
-                      kwargs={'pk': self.institution.id})
+        url = reverse('org:organization-detail',
+                      kwargs={'pk': self.org.id})
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
     def test_get_organization_user(self):
-        '''test get institution user'''
-        url = reverse('institution:institutionuser-detail',
+        '''test get org user'''
+        url = reverse('org:organizationuser-detail',
                       kwargs={'pk': self.au1.id})
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
-    def test_create_institution_new_user(self):
-        url_institution = reverse('institution:institution-detail',
-                                  kwargs={'pk': self.institution.id})
-        res = self.client.get(url_institution)
+    def test_create_org_new_user(self):
+        url_org = reverse('org:organization-detail',
+                                  kwargs={'pk': self.org.id})
+        res = self.client.get(url_org)
         self.assertEqual(len(res.data['organization_users']), 2)
-        url = reverse('institution:institutionuser-list')
+        url = reverse('org:organizationuser-list')
 
         payload = {
             'user': {
                 'email': 'testy@pnsn.org'
             },
-            "organization": self.institution.id,
+            "organization": self.org.id,
             'is_admin': False,
         }
         res = self.client.post(url, payload, format='json')
@@ -83,35 +82,35 @@ class InstitutionAPITests(TestCase):
         res = self.client.post(url, payload, format='json')
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_create_institution_existing_user(self):
-        '''user exists as institution user of another group
+    def test_create_org_existing_user(self):
+        '''user exists as org user of another group
             should be able to add to another institiution
         '''
         user = self.au3.user
         self.assertEqual(len(user.organizations_organization.all()), 1)
-        url = reverse('institution:institutionuser-list')
+        url = reverse('org:organizationuser-list')
         payload = {
             'user': {
                 'email': user.email
             },
-            "organization": self.institution.id,
+            "organization": self.org.id,
             'is_admin': False,
         }
         res = self.client.post(url, payload, format='json')
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         self.assertEqual(len(user.organizations_organization.all()), 2)
 
-    def test_update_institution_user(self):
-        '''change institution user to admin
+    def test_update_org_user(self):
+        '''change org user to admin
         '''
         user = self.au3.user
         self.assertFalse(self.au3.is_admin)
-        url = reverse('institution:institutionuser-detail', args=[self.au3.id])
+        url = reverse('org:organizationuser-detail', args=[self.au3.id])
         payload = {
             'user': {
                 'email': user.email
             },
-            "organization": self.institution.id,
+            "organization": self.org.id,
             'is_admin': True
         }
         res = self.client.put(url, payload, format='json')
@@ -119,8 +118,8 @@ class InstitutionAPITests(TestCase):
         self.assertTrue(res.data['is_admin'])
 
     def test_get_users_for_organization(self):
-        url = reverse('institution:institutionuser-list')
-        url += f'?organization={self.institution2.id}'
+        url = reverse('org:organizationuser-list')
+        url += f'?organization={self.org2.id}'
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data), 1)

@@ -1,30 +1,31 @@
 from rest_framework import serializers
-from institution.models import Institution, InstitutionUser
+# from org.models import Org, OrgUser
+from organizations.models import (Organization, OrganizationUser)
 from django.contrib.auth import get_user_model
 
 
-class InstitutionUserSerializer(serializers.ModelSerializer):
+class OrganizationUserSerializer(serializers.ModelSerializer):
 
     user = serializers.PrimaryKeyRelatedField(
         queryset=get_user_model().objects.all()
     )
     organization = serializers.PrimaryKeyRelatedField(
-        queryset=Institution.objects.all()
+        queryset=Organization.objects.all()
     )
 
     class Meta:
-        model = InstitutionUser
+        model = OrganizationUser
         fields = (
             'id', 'is_admin', 'user', 'organization'
         )
-        read_only_fields = ('id', 'institution')
+        read_only_fields = ('id', 'org')
 
 
-class InstitutionSerializer(serializers.ModelSerializer):
-    organization_users = InstitutionUserSerializer(many=True)
+class OrganizationSerializer(serializers.ModelSerializer):
+    organization_users = OrganizationUserSerializer(many=True)
 
     class Meta:
-        model = Institution
+        model = Organization
         fields = (
             'id', 'name', 'is_active', 'organization_users', 'slug',
             'created', 'modified'

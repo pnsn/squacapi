@@ -2,31 +2,31 @@ from rest_framework import viewsets
 # from squac.permissions import IsAdminOwnerOrPublicReadOnly
 # from squac.mixins import SetUserMixin, PermissionsMixin
 from django_filters import rest_framework as filters
-
-from institution.models import Institution, InstitutionUser
-from institution.serializers import InstitutionSerializer,\
-    InstitutionUserSerializer
+from organizations.models import (Organization, OrganizationUser)
+# from org.models import Org, OrgUser
+from org.serializers import OrganizationSerializer,\
+    OrganizationUserSerializer
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 from organizations.backends import invitation_backend
 
 
-class InstitutionUserFilter(filters.FilterSet):
+class OrganizationUserFilter(filters.FilterSet):
     class Meta:
-        model = InstitutionUser
+        model = OrganizationUser
         fields = ('organization',)
 
 
-class InstitutionViewSet(viewsets.ModelViewSet):
+class OrganizationViewSet(viewsets.ModelViewSet):
     # filter_class = ChannelFilter
-    queryset = Institution.objects.all()
-    serializer_class = InstitutionSerializer
+    queryset = Organization.objects.all()
+    serializer_class = OrganizationSerializer
 
 
-class InstitutionUserViewSet(viewsets.ModelViewSet):
-    queryset = InstitutionUser.objects.all()
-    filter_class = InstitutionUserFilter
-    serializer_class = InstitutionUserSerializer
+class OrganizationUserViewSet(viewsets.ModelViewSet):
+    queryset = OrganizationUser.objects.all()
+    filter_class = OrganizationUserFilter
+    serializer_class = OrganizationUserSerializer
 
     '''overriding for two reasons
         1) Need to hook into invitation
