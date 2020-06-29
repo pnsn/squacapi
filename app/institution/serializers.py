@@ -26,6 +26,7 @@ class InstitutionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Institution
         fields = (
-            'id', 'name', 'is_active', 'organization_users'
+            'id', 'name', 'is_active', 'organization_users', 'slug',
+            'created', 'modified'
         )
         read_only_fields = ('id',)
