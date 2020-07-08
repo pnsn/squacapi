@@ -24,7 +24,10 @@ class DashboardViewSet(BaseDashboardViewSet):
     def get_queryset(self):
         if self.request.user.is_staff:
             return Dashboard.objects.all()
-        queryset = Dashboard.objects.filter(user=self.request.user) | \
+        orgs = self.request.user.organizations_organization.all()
+        org_ids = [o.id for o in orgs]
+
+        queryset = Dashboard.objects.filter(organization__in=org_ids) | \
             Dashboard.objects.filter(is_public=True)
         return queryset
 

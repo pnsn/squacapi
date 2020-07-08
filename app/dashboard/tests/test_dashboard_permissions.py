@@ -66,7 +66,8 @@ class DashboardPermissionTests(TestCase):
         pass
         self.reporter = sample_user()
         self.viewer = sample_user('viewer@pnsn.org')
-        self.other = sample_user('other@pnsn.org')
+        # self.other = sample_user('other@pnsn.org')
+        self.non_org = sample_user('non_org@non_org.org')
         self.reporter_client = APIClient()
         self.viewer_client = APIClient()
 
@@ -85,14 +86,14 @@ class DashboardPermissionTests(TestCase):
             default_maxval=10.0,
             user=self.reporter
         )
-        self.metric_other = Metric.objects.create(
-            name='Metric test',
-            code="code123",
-            unit='meter',
-            default_minval=1,
-            default_maxval=10.0,
-            user=self.other
-        )
+        # self.metric_other = Metric.objects.create(
+        #     name='Metric test',
+        #     code="code123",
+        #     unit='meter',
+        #     default_minval=1,
+        #     default_maxval=10.0,
+        #     user=self.other
+        # )
         self.net = Network.objects.create(
             code="UW",
             name="University of Washington",
@@ -118,26 +119,34 @@ class DashboardPermissionTests(TestCase):
             user=self.reporter
         )
         self.grp.channels.add(self.chan)
-        self.organization = Organization.objects.create(
+        self.pnsn_org = Organization.objects.create(
             name='PNSN',
             slug='pnsn'
         )
+        self.bsl_org = Organization.objects.create(
+            name='BSL',
+            slug='bsl'
+        )
+        self.reporter.organizations_organization.add(self.pnsn_org)
+        self.viewer.organizations_organization.add(self.pnsn_org)
+
         self.dashboard = Dashboard.objects.create(
             name='Test dashboard',
             user=self.reporter,
-            organization=self.organization
+            organization=self.pnsn_org
         )
-        self.dashboard_other = Dashboard.objects.create(
-            name='Test dashboard2',
-            user=self.other,
-            is_public=True,
-            organization=self.organization
-        )
-        self.dashboard_other_private = Dashboard.objects.create(
-            name='Test dashboard2',
-            user=self.other,
+
+        self.dashboard_non_org_private = Dashboard.objects.create(
+            name='non org private dash',
+            user=self.non_org,
             is_public=False,
-            organization=self.organization
+            organization=self.bsl_org
+        )
+        self.dashboard_non_org_public = Dashboard.objects.create(
+            name='non org public dash',
+            user=self.non_org,
+            is_public=True,
+            organization=self.bsl_org
         )
         self.widtype = WidgetType.objects.create(
             name='Test widget type',
@@ -161,40 +170,40 @@ class DashboardPermissionTests(TestCase):
             user=self.reporter,
             channel_group=self.grp,
             is_public=True,
-            organization=self.organization
+            organization=self.pnsn_org
         )
 
-        self.widget_other = Widget.objects.create(
-            name='Test widget2',
-            dashboard=self.dashboard,
-            widgettype=self.widtype,
-            stattype=self.stattype,
-            columns=6,
-            rows=3,
-            x_position=1,
-            y_position=1,
-            user=self.other,
-            channel_group=self.grp,
-            is_public=True,
-            organization=self.organization
-        )
+        # self.widget_other = Widget.objects.create(
+        #     name='Test widget2',
+        #     dashboard=self.dashboard,
+        #     widgettype=self.widtype,
+        #     stattype=self.stattype,
+        #     columns=6,
+        #     rows=3,
+        #     x_position=1,
+        #     y_position=1,
+        #     user=self.other,
+        #     channel_group=self.grp,
+        #     is_public=True,
+        #     organization=self.pnsn_org
+        # )
 
-        self.widget_other_private = Widget.objects.create(
-            name='Test widget3',
-            dashboard=self.dashboard,
-            widgettype=self.widtype,
-            stattype=self.stattype,
-            columns=6,
-            rows=3,
-            x_position=1,
-            y_position=1,
-            user=self.other,
-            channel_group=self.grp,
-            is_public=False,
-            organization=self.organization
-        )
+        # self.widget_other_private = Widget.objects.create(
+        #     name='Test widget3',
+        #     dashboard=self.dashboard,
+        #     widgettype=self.widtype,
+        #     stattype=self.stattype,
+        #     columns=6,
+        #     rows=3,
+        #     x_position=1,
+        #     y_position=1,
+        #     user=self.other,
+        #     channel_group=self.grp,
+        #     is_public=False,
+        #     organization=self.pnsn_org
+        # )
 
-        self.widget.metrics.add(self.metric)
+        # self.widget.metrics.add(self.metric)
 
     def test_reporter_has_perms(self):
         '''reporters can:
@@ -245,10 +254,11 @@ class DashboardPermissionTests(TestCase):
         self.assertFalse(self.viewer.has_perm('dashboard.delete_stattype'))
 
     # #### dashboard tests ####
-    def test_viewer_reporter_view_public_dashboard(self):
+    def test_viewer_reporter_view_non_org_public_dashboard(self):
+        '''viewer should see public non org dashes'''
         url = reverse(
             'dashboard:dashboard-detail',
-            kwargs={'pk': self.dashboard_other.id}
+            kwargs={'pk': self.dashboard_non_org_public.id}
         )
         # viewer
         res = self.viewer_client.get(url)
@@ -257,20 +267,18 @@ class DashboardPermissionTests(TestCase):
         res = self.reporter_client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
-    def test_viewer_reporter_view_private_dashboard(self):
-        '''reporter should be able to see own private dash
-           viewer should not
-        '''
+    def test_viewer_reporter_view_non_org_private_dashboard(self):
+        '''viewer should not see non org private dashes '''
         url = reverse(
             'dashboard:dashboard-detail',
-            kwargs={'pk': self.dashboard.id}
+            kwargs={'pk': self.dashboard_non_org_private.id}
         )
         # viewer
         res = self.viewer_client.get(url)
-        self.assertNotEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
         # reporter
         res = self.reporter_client.get(url)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_viewer_reporter_view_dashboard_list(self):
         url = reverse('dashboard:dashboard-list')
@@ -285,7 +293,7 @@ class DashboardPermissionTests(TestCase):
         url = reverse('dashboard:dashboard-list')
         payload = {
             'name': 'Test dashboard',
-            'organization': self.organization.id
+            'organization': self.pnsn_org.id
         }
         # viewer
         res = self.viewer_client.post(url, payload)
@@ -347,7 +355,7 @@ class DashboardPermissionTests(TestCase):
             'y_position': 1,
             'metrics': [self.metric.id],
             'channel_group': self.grp.id,
-            'organization': self.organization.id
+            'organization': self.pnsn_org.id
         }
         # viewer
         res = self.viewer_client.post(url, payload)
