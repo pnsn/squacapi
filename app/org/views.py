@@ -14,11 +14,10 @@ from organizations.backends import invitation_backend
 class OrganizationUserFilter(filters.FilterSet):
     class Meta:
         model = OrganizationUser
-        fields = ('organization',)
+        fields = ('organization', 'user')
 
 
 class OrganizationViewSet(viewsets.ModelViewSet):
-    # filter_class = ChannelFilter
     queryset = Organization.objects.all()
     serializer_class = OrganizationSerializer
 
