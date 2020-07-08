@@ -96,8 +96,14 @@ class GroupViewSet(BaseNslcViewSet):
         return self.serializer_class
 
     def get_queryset(self):
+        queryset = Group.objects.all()
         if self.request.user.is_staff:
-            return Group.objects.all()
+            return queryset
         '''view public and own resources'''
-        return Group.objects.filter(user=self.request.user) | \
-            Group.objects.filter(share_all=True)
+        orgs = self.request.user.organizations_organization.all()
+        org_ids = [o.id for o in orgs]
+        queryset = \
+            queryset.filter(user=self.request.user) |\
+            queryset.filter(share_all=True) |\
+            queryset.filter(organization__in=org_ids, shared_org=True)
+        return queryset

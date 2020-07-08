@@ -22,13 +22,16 @@ class DashboardViewSet(BaseDashboardViewSet):
         return self.serializer_class
 
     def get_queryset(self):
+        queryset = Dashboard.objects.all()
         if self.request.user.is_staff:
-            return Dashboard.objects.all()
+            return queryset
         orgs = self.request.user.organizations_organization.all()
         org_ids = [o.id for o in orgs]
-
-        queryset = Dashboard.objects.filter(organization__in=org_ids) | \
-            Dashboard.objects.filter(share_all=True)
+        # get users dash, shared_all dashes and users org shared dashes
+        queryset = \
+            queryset.filter(user=self.request.user) |\
+            queryset.filter(share_all=True) |\
+            queryset.filter(organization__in=org_ids, shared_org=True)
         return queryset
 
 
@@ -58,16 +61,19 @@ class WidgetViewSet(BaseDashboardViewSet):
         return [int(str_id) for str_id in qs.split(',')]
 
     def get_queryset(self):
-        # Retrieve widget by dashboard id
         dashboard = self.request.query_params.get('dashboard')
         queryset = Widget.objects.all()
         if dashboard:
             dashboard_id = self._params_to_ints(dashboard)
-            return queryset.filter(dashboard__id__in=dashboard_id)
+            queryset = queryset.filter(dashboard__id__in=dashboard_id)
         if self.request.user.is_staff:
             return queryset
-        queryset = queryset.filter(user=self.request.user) | \
-            queryset.filter(share_all=True)
+        orgs = self.request.user.organizations_organization.all()
+        org_ids = [o.id for o in orgs]
+        queryset = \
+            queryset.filter(user=self.request.user) | \
+            queryset.filter(share_all=True) |\
+            queryset.filter(organization__in=org_ids, shared_org=True)
         return queryset
 
     def get_serializer_class(self):

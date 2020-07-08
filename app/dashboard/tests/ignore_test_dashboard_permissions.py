@@ -1,5 +1,5 @@
 from django.test import TestCase
-from django.contrib.auth import get_user_model
+from organizations.models import Organization
 from django.contrib.auth.models import Group as UserGroup, Permission
 from django.urls import reverse
 from rest_framework.test import APIClient
