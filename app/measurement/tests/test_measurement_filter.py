@@ -5,6 +5,7 @@ from rest_framework import status
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from nslc.models import Group, Channel
+from organizations.models import Organization
 
 
 '''Tests for custom measurement filters in views.py
@@ -28,8 +29,16 @@ class AuthenticatedMeasurementFilterTests(TestCase):
             "test@pnsn.org", "secret")
         self.user.is_staff = True
         self.client.force_authenticate(self.user)
+        self.organization = Organization.objects.create(
+            name='PNSN',
+            slug='pnsn'
+        )
         self.grp = Group.objects.create(
-            name='Test group', is_public=True, user=self.user)
+            name='Test group',
+            share_all=True,
+            organization=self.organization,
+            user=self.user
+        )
         for i in range(4, 7):
             chan = Channel.objects.get(pk=i)
             self.grp.channels.add(chan)

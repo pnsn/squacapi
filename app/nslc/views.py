@@ -100,4 +100,4 @@ class GroupViewSet(BaseNslcViewSet):
             return Group.objects.all()
         '''view public and own resources'''
         return Group.objects.filter(user=self.request.user) | \
-            Group.objects.filter(is_public=True)
+            Group.objects.filter(share_all=True)

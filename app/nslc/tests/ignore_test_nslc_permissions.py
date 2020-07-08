@@ -8,6 +8,7 @@ from rest_framework.test import APIClient
 from datetime import datetime
 import pytz
 from nslc.models import Network, Channel, Group
+from organizations.models import Organization
 
 
 '''
@@ -83,14 +84,42 @@ class NslcPermissionTests(TestCase):
             lat=45, lon=-122, elev=100.0, user=self.reporter,
             starttime=datetime(1970, 1, 1, tzinfo=pytz.UTC),
             endtime=datetime(2599, 12, 31, tzinfo=pytz.UTC))
+        self.organization = Organization.objects.create(
+            name='PNSN',
+            slug='pnsn'
+        )
+
         self.grp_public = Group.objects.create(
-            name='group public', is_public=True, user=self.reporter)
+            name='group public',
+            share_all=True,
+            share_org=True,
+            user=self.reporter,
+            organization=self.organization
+        )
         self.grp_private = Group.objects.create(
-            name='group private', is_public=False, user=self.reporter)
+            name='group private',
+            share_all=False,
+            share_org=False,
+            user=self.reporter,
+            organization=self.organization
+
+        )
         self.grp_other_public = Group.objects.create(
-            name='other public', is_public=True, user=self.other)
+            name='other public',
+            share_all=True,
+            share_org=True,
+            user=self.other,
+            organization=self.organization
+
+        )
         self.grp_other_private = Group.objects.create(
-            name='other private', is_public=False, user=self.other)
+            name='other private',
+            share_all=False,
+            share_org=False,
+            user=self.other,
+            organization=self.organization
+
+        )
 
     def test_reporter_has_perms(self):
         '''reporters can:
@@ -157,7 +186,9 @@ class NslcPermissionTests(TestCase):
         payload = {
             'name': 'Test group',
             'description': 'A test',
-            'is_public': True,
+            'share_all': True,
+            'share_org': True,
+            'organation': self.organization,
             'channels': [self.chan.id]
         }
         # viewer

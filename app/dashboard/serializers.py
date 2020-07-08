@@ -48,7 +48,7 @@ class DashboardSerializer(serializers.HyperlinkedModelSerializer):
         model = Dashboard
         fields = (
             'id', 'name', 'description', 'created_at', 'updated_at',
-            'user_id', 'is_public', 'window_seconds', 'starttime',
+            'user_id', 'share_all', 'share_org', 'window_seconds', 'starttime',
             'endtime', 'organization'
         )
         read_only_fields = ('id',)
@@ -78,7 +78,7 @@ class DashboardDetailSerializer(DashboardSerializer):
         model = Dashboard
         fields = (
             'id', 'description', 'name', 'widgets', 'created_at',
-            'updated_at', 'user_id', 'is_public', 'organization'
+            'updated_at', 'user_id', 'share_all', 'share_org', 'organization'
         )
         read_only_fields = ('id',)
 

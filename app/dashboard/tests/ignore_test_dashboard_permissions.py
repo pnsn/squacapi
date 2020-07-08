@@ -113,12 +113,7 @@ class DashboardPermissionTests(TestCase):
             starttime=datetime(1970, 1, 1, tzinfo=pytz.UTC),
             endtime=datetime(2599, 12, 31, tzinfo=pytz.UTC)
         )
-        self.grp = Group.objects.create(
-            name='Test group',
-            is_public=True,
-            user=self.reporter
-        )
-        self.grp.channels.add(self.chan)
+
         self.pnsn_org = Organization.objects.create(
             name='PNSN',
             slug='pnsn'
@@ -127,6 +122,15 @@ class DashboardPermissionTests(TestCase):
             name='BSL',
             slug='bsl'
         )
+        self.grp = Group.objects.create(
+            name='Test group',
+            share_all=True,
+            share_org=True,
+            user=self.reporter,
+            organization=self.pnsn_org
+        )
+        self.grp.channels.add(self.chan)
+
         self.reporter.organizations_organization.add(self.pnsn_org)
         self.viewer.organizations_organization.add(self.pnsn_org)
 
@@ -139,13 +143,15 @@ class DashboardPermissionTests(TestCase):
         self.dashboard_non_org_private = Dashboard.objects.create(
             name='non org private dash',
             user=self.non_org,
-            is_public=False,
+            share_all=False,
+            share_org=False,
             organization=self.bsl_org
         )
         self.dashboard_non_org_public = Dashboard.objects.create(
             name='non org public dash',
             user=self.non_org,
-            is_public=True,
+            share_all=True,
+            share_org=True,
             organization=self.bsl_org
         )
         self.widtype = WidgetType.objects.create(
@@ -169,7 +175,8 @@ class DashboardPermissionTests(TestCase):
             y_position=1,
             user=self.reporter,
             channel_group=self.grp,
-            is_public=True,
+            share_all=True,
+            share_org=True,
             organization=self.pnsn_org
         )
 
@@ -184,7 +191,8 @@ class DashboardPermissionTests(TestCase):
         #     y_position=1,
         #     user=self.other,
         #     channel_group=self.grp,
-        #     is_public=True,
+        #     share_all=True,
+        #     share_org=True,
         #     organization=self.pnsn_org
         # )
 
@@ -199,7 +207,8 @@ class DashboardPermissionTests(TestCase):
         #     y_position=1,
         #     user=self.other,
         #     channel_group=self.grp,
-        #     is_public=False,
+        #     share_all=False,
+        #     share_org=False,
         #     organization=self.pnsn_org
         # )
 

@@ -98,7 +98,7 @@ class Widget(DashboardBase):
     x_position = models.IntegerField()
     y_position = models.IntegerField()
     share_all = models.BooleanField(default=False)
-    share_public = models.BooleanField(default=False)
+    share_org = models.BooleanField(default=False)
     organization = models.ForeignKey(
         Organization,
         on_delete=models.CASCADE,

@@ -28,7 +28,7 @@ class DashboardViewSet(BaseDashboardViewSet):
         org_ids = [o.id for o in orgs]
 
         queryset = Dashboard.objects.filter(organization__in=org_ids) | \
-            Dashboard.objects.filter(is_public=True)
+            Dashboard.objects.filter(share_all=True)
         return queryset
 
 
@@ -67,7 +67,7 @@ class WidgetViewSet(BaseDashboardViewSet):
         if self.request.user.is_staff:
             return queryset
         queryset = queryset.filter(user=self.request.user) | \
-            queryset.filter(is_public=True)
+            queryset.filter(share_all=True)
         return queryset
 
     def get_serializer_class(self):

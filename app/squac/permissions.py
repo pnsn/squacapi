@@ -21,7 +21,7 @@ class IsAdminOwnerOrPublicReadOnly(DjangoModelPermissions):
 
             * if user is_staff they are god
             * check perms
-            * if has_perm and safe method check for is_public
+            * if has_perm and safe method check for share_all
             * update, partial_update and destroy check for owner
             * create not called by this method since object doesn't exist
         '''
@@ -30,9 +30,9 @@ class IsAdminOwnerOrPublicReadOnly(DjangoModelPermissions):
         has_permission = super().has_permission(request, view)
         if has_permission and request.method in permissions.SAFE_METHODS:
             try:
-                return obj.user == request.user or obj.is_public
+                return obj.user == request.user or obj.share_all
             except AttributeError:
-                # if user has perm and obj doesn't have an is_public
+                # if user has perm and obj doesn't have an share_all
                 return True
 
 
@@ -59,7 +59,7 @@ class IsAdminInOrganizationOrPublicReadOnly(DjangoModelPermissions):
 
             * if user is_staff they are god
             * check perms
-            * if has_perm and safe method check for is_public
+            * if has_perm and safe method check for share_all
             * update, partial_update and destroy check for owner
             * create not called by this method since object doesn't exist
         '''
@@ -68,9 +68,9 @@ class IsAdminInOrganizationOrPublicReadOnly(DjangoModelPermissions):
         has_permission = super().has_permission(request, view)
         if has_permission and request.method in permissions.SAFE_METHODS:
             try:
-                return obj.user == request.user or obj.is_public
+                return obj.user == request.user or obj.share_all
             except AttributeError:
-                # if user has perm and obj doesn't have an is_public
+                # if user has perm and obj doesn't have an share_all
                 return True
 
         if has_permission and view.action in ['update', 'partial_update',

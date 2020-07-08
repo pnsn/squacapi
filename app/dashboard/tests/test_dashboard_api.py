@@ -61,14 +61,16 @@ class UnathenticatedMeasurementApiTests(TestCase):
             starttime=datetime(1970, 1, 1, tzinfo=pytz.UTC),
             endtime=datetime(2599, 12, 31, tzinfo=pytz.UTC)
         )
-        self.grp = Group.objects.create(
-            name='Test group',
-            is_public=True,
-            user=self.user
-        )
         self.organization = Organization.objects.create(
             name='PNSN',
             slug='pnsn'
+        )
+        self.grp = Group.objects.create(
+            name='Test group',
+            share_all=True,
+            share_org=True,
+            user=self.user,
+            organization=self.organization
         )
 
         self.grp.channels.add(self.chan)
@@ -162,14 +164,16 @@ class PrivateMeasurementAPITests(TestCase):
             starttime=datetime(1970, 1, 1, tzinfo=pytz.UTC),
             endtime=datetime(2599, 12, 31, tzinfo=pytz.UTC)
         )
-        self.grp = Group.objects.create(
-            name='Sample group',
-            is_public=True,
-            user=self.user
-        )
         self.organization = Organization.objects.create(
             name='PNSN',
             slug='pnsn'
+        )
+        self.grp = Group.objects.create(
+            name='Sample group',
+            share_all=True,
+            share_org=True,
+            user=self.user,
+            organization=self.organization
         )
         self.dashboard = Dashboard.objects.create(
             name='Test dashboard',
