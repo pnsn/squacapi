@@ -31,7 +31,7 @@ class DashboardViewSet(BaseDashboardViewSet):
         queryset = \
             queryset.filter(user=self.request.user) |\
             queryset.filter(share_all=True) |\
-            queryset.filter(organization__in=org_ids, shared_org=True)
+            queryset.filter(organization__in=org_ids, share_org=True)
 
         return queryset
 
@@ -74,7 +74,7 @@ class WidgetViewSet(BaseDashboardViewSet):
         queryset = \
             queryset.filter(user=self.request.user) | \
             queryset.filter(share_all=True) |\
-            queryset.filter(organization__in=org_ids, shared_org=True)
+            queryset.filter(organization__in=org_ids, share_org=True)
         return queryset
 
     def get_serializer_class(self):
