@@ -4,7 +4,7 @@ from django_filters import rest_framework as filters
 from squac.filters import CharInFilter, NumberInFilter
 from squac.mixins import SetUserMixin, PermissionsMixin
 from .exceptions import MissingParameterException
-from squac.permissions import IsAdminOwnerOrPublicReadOnly
+from squac.permissions import IsAdminOwnerOrShared
 from .models import Metric, Measurement, Threshold, Archive
 from measurement import serializers
 from nslc.models import Group
@@ -48,7 +48,7 @@ class MetricViewSet(BaseMeasurementViewSet):
     serializer_class = serializers.MetricSerializer
     filter_class = MetricFilter
     permission_classes = (
-        IsAuthenticated, IsAdminOwnerOrPublicReadOnly)
+        IsAuthenticated, IsAdminOwnerOrShared)
 
     def get_queryset(self):
         return Metric.objects.all()
@@ -59,7 +59,7 @@ class MeasurementViewSet(BaseMeasurementViewSet):
     REQUIRED_PARAMS = ("metric", "starttime", "endtime")
     serializer_class = serializers.MeasurementSerializer
     permission_classes = (
-        IsAuthenticated, IsAdminOwnerOrPublicReadOnly)
+        IsAuthenticated, IsAdminOwnerOrShared)
     filter_class = MeasurementFilter
 
     def get_serializer(self, *args, **kwargs):

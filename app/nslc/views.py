@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.permissions import IsAuthenticated
 from django_filters import rest_framework as filters
-from squac.permissions import IsAdminOwnerOrPublicReadOnly
+from squac.permissions import IsAdminOwnerOrShared
 from squac.filters import CharInFilter
 from squac.mixins import SetUserMixin, PermissionsMixin
 from .models import Network, Channel, Group
@@ -88,7 +88,7 @@ class GroupViewSet(BaseNslcViewSet):
     serializer_class = GroupSerializer
     # commas act as 'ands'
     permission_classes = (
-        IsAuthenticated, IsAdminOwnerOrPublicReadOnly)
+        IsAuthenticated, IsAdminOwnerOrShared)
 
     def get_serializer_class(self):
         if self.action == 'retrieve':

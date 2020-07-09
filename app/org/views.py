@@ -1,5 +1,5 @@
 from rest_framework import viewsets
-# from squac.permissions import IsAdminOwnerOrPublicReadOnly
+# from squac.permissions import IsAdminOwnerOrShared
 # from squac.mixins import SetUserMixin, PermissionsMixin
 from django_filters import rest_framework as filters
 from organizations.models import (Organization, OrganizationUser)

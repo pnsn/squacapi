@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from squac.mixins import SetUserMixin, PermissionsMixin
-from squac.permissions import IsAdminOwnerOrPublicReadOnly
+from squac.permissions import IsAdminOwnerOrShared
 from .models import Dashboard, WidgetType, Widget, StatType
 from dashboard import serializers
 
@@ -14,7 +14,7 @@ class BaseDashboardViewSet(SetUserMixin, PermissionsMixin,
 class DashboardViewSet(BaseDashboardViewSet):
     serializer_class = serializers.DashboardSerializer
     permission_classes = (
-        IsAuthenticated, IsAdminOwnerOrPublicReadOnly)
+        IsAuthenticated, IsAdminOwnerOrShared)
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
@@ -55,7 +55,7 @@ class WidgetViewSet(BaseDashboardViewSet):
 
     serializer_class = serializers.WidgetSerializer
     permission_classes = (
-        IsAuthenticated, IsAdminOwnerOrPublicReadOnly)
+        IsAuthenticated, IsAdminOwnerOrShared)
 
     def _params_to_ints(self, qs):
         # Convert a list of string IDs to a list of integers
