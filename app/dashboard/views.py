@@ -67,14 +67,6 @@ class WidgetViewSet(BaseDashboardViewSet):
         if dashboard:
             dashboard_id = self._params_to_ints(dashboard)
             queryset = queryset.filter(dashboard__id__in=dashboard_id)
-        if self.request.user.is_staff:
-            return queryset
-        orgs = self.request.user.organizations_organization.all()
-        org_ids = [o.id for o in orgs]
-        queryset = \
-            queryset.filter(user=self.request.user) | \
-            queryset.filter(share_all=True) |\
-            queryset.filter(organization__in=org_ids, share_org=True)
         return queryset
 
     def get_serializer_class(self):

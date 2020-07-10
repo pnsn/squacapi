@@ -100,7 +100,6 @@ class UnathenticatedMeasurementApiTests(TestCase):
             y_position=1,
             user=self.user,
             channel_group=self.grp,
-            organization=self.organization
         )
         self.widget.metrics.add(self.metric)
 
@@ -201,8 +200,6 @@ class PrivateMeasurementAPITests(TestCase):
             y_position=1,
             user=self.user,
             channel_group=self.grp,
-            organization=self.organization
-
         )
 
         self.threshold = Threshold.objects.create(
@@ -270,8 +267,7 @@ class PrivateMeasurementAPITests(TestCase):
             'x_position': 1,
             'y_position': 1,
             'metrics': [self.metric.id],
-            'channel_group': self.grp.id,
-            'organization': self.organization.id
+            'channel_group': self.grp.id
         }
         res = self.client.post(url, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)

@@ -185,7 +185,6 @@ class NslcPermissionTests(TestCase):
             'nslc:group-detail',
             kwargs={'pk': self.my_org_chan_grp_share_org.id}
         )
-        print(url)
         # viewer
         res = self.me_viewer_client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)

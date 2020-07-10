@@ -24,17 +24,13 @@ class WidgetSerializer(serializers.HyperlinkedModelSerializer):
     channel_group = serializers.PrimaryKeyRelatedField(
         queryset=Group.objects.all()
     )
-    organization = serializers.PrimaryKeyRelatedField(
-        queryset=Organization.objects.all()
-    )
 
     class Meta:
         model = Widget
         fields = (
             'id', 'name', 'dashboard', 'widgettype', 'description', 'metrics',
             'created_at', 'updated_at', 'stattype', 'columns', 'rows',
-            'x_position', 'y_position', 'channel_group', 'user_id',
-            'organization'
+            'x_position', 'y_position', 'channel_group', 'user_id'
         )
         read_only_fields = ('id',)
 
@@ -102,9 +98,6 @@ class WidgetDetailSerializer(serializers.HyperlinkedModelSerializer):
     channel_group = serializers.PrimaryKeyRelatedField(
         queryset=Group.objects.all()
     )
-    organization = serializers.PrimaryKeyRelatedField(
-        queryset=Organization.objects.all()
-    )
 
     class Meta:
         model = Widget
@@ -112,6 +105,6 @@ class WidgetDetailSerializer(serializers.HyperlinkedModelSerializer):
             'id', 'name', 'dashboard', 'description', 'widgettype', 'metrics',
             'created_at', 'updated_at', 'thresholds', 'columns', 'rows',
             'x_position', 'y_position', 'stattype', 'channel_group',
-            'user_id', 'organization'
+            'user_id'
         )
         read_only_fields = ('id',)

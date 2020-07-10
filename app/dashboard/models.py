@@ -97,10 +97,3 @@ class Widget(DashboardBase):
     rows = models.IntegerField()
     x_position = models.IntegerField()
     y_position = models.IntegerField()
-    share_all = models.BooleanField(default=False)
-    share_org = models.BooleanField(default=False)
-    organization = models.ForeignKey(
-        Organization,
-        on_delete=models.CASCADE,
-        related_name='widgets'
-    )
