@@ -14,7 +14,8 @@ class UserSimpleSerializer(serializers.ModelSerializer):
     '''for nesting in organization_user serializer'''
     class Meta:
         model = get_user_model()
-        fields = ('email', 'firstname', 'lastname', 'id')
+        fields = ('email', 'firstname', 'lastname', 'id', 'is_active',
+                  'last_login')
 
 
 class UserSerializer(serializers.ModelSerializer):
