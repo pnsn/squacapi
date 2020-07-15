@@ -41,21 +41,22 @@ class ActivateUserByTokenView(generics.UpdateAPIView):
     serializer_class = UserSerializer
 
     def update(self, request, *args, **kwargs):
-        instance = get_user_model().objects.get(email=request.data['email'])
+        user_data = request.data.pop('user')
+        instance = get_user_model().objects.get(email=user_data['email'])
         token = request.data['token']
         try:
             user = get_user_model().objects.get(
-                email=request.data['email'],
+                email=user_data['email'],
                 is_active=False
             )
         except get_user_model().DoesNotExist:
             return Response("Your URL may have expired", status=404)
         if not RegistrationTokenGenerator().check_token(user, token):
             return Response("Your token is invalid or expired", status=404)
-        request.data['is_active'] = True
+        user_data['is_active'] = True
         serializer = self.serializer_class(
             instance=instance,
-            data=request.data)
+            data=user_data)
         if serializer.is_valid(raise_exception=True):
-            serializer.update(instance, request.data)
+            serializer.update(instance, user_data)
             return Response(serializer.data)

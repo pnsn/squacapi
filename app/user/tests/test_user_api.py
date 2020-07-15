@@ -70,10 +70,12 @@ class ActivateUser(TestCase):
     def test_activate_user_invalid_token(self):
         url = reverse('user:activate_user')
         payload = {
-            'email': self.invited_user.email,
-            'password': 'superdupersecret',
-            'firstname': 'your',
-            'lastname': 'mom',
+            'user': {
+                'email': self.invited_user.email,
+                'password': 'superdupersecret',
+                'firstname': 'your',
+                'lastname': 'mom',
+            },
             'token': 'invalid token'
         }
         res = self.client.patch(url, payload, format='json')
@@ -85,10 +87,12 @@ class ActivateUser(TestCase):
         url = reverse('user:activate_user')
 
         payload = {
-            "email": self.invited_user.email,
-            "password": 'superdupersecret',
-            "firstname": 'your',
-            "lastname": 'mom',
+            'user': {
+                "email": self.invited_user.email,
+                "password": 'superdupersecret',
+                "firstname": 'your',
+                "lastname": 'mom'
+            },
             "token": token
         }
         self.assertFalse(self.invited_user.is_active)
