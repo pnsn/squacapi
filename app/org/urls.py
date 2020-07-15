@@ -7,6 +7,5 @@ router = DefaultRouter()
 router.register('users', views.OrganizationUserViewSet)
 router.register('organizations', views.OrganizationViewSet)
 
-
 app_name = "org"
 urlpatterns = [path('', include(router.urls))]

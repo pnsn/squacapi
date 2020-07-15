@@ -5,7 +5,7 @@ from django_filters import rest_framework as filters
 from organizations.models import (Organization, OrganizationUser)
 # from org.models import Org, OrgUser
 from org.serializers import OrganizationSerializer,\
-    OrganizationUserSerializer
+    OrganizationUserSerializer, OrganizationUserDetailSerializer
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 from organizations.backends import invitation_backend
@@ -34,6 +34,7 @@ class OrganizationUserViewSet(viewsets.ModelViewSet):
             *invite user
             *update request.data with user_id
     '''
+
     def create(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
         user_param = request.data.pop('user')
@@ -43,8 +44,8 @@ class OrganizationUserViewSet(viewsets.ModelViewSet):
             firstname = existing_user.firstname
             lastname = existing_user.lastname
         except get_user_model().DoesNotExist:
-            firstname = 'firstname goes here'
-            lastname = 'lastname goes here'
+            firstname = 'firstname'
+            lastname = 'lastname'
 
         user = invitation_backend().invite_by_email(
             user_param['email'],
@@ -69,3 +70,8 @@ class OrganizationUserViewSet(viewsets.ModelViewSet):
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data, status=201)
+
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return OrganizationUserDetailSerializer
+        return self.serializer_class

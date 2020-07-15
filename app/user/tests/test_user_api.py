@@ -4,6 +4,7 @@ from django.urls import reverse
 
 from rest_framework.test import APIClient
 from rest_framework import status
+from organizations.backends.tokens import RegistrationTokenGenerator
 
 ''' Tests for user api run with. run all tests with
 
@@ -51,6 +52,51 @@ class AuthenticateApiUser(TestCase):
         payload = {'email': 'test123@pnsn.org', 'password': "secret"}
         res = self.client.post(CREATE_TOKEN_URL, payload)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+
+class ActivateUser(TestCase):
+    ''' user activation by invitation token'''
+
+    def setUp(self):
+        self.client = APIClient()
+        self.invited_user = create_user(
+            email='inactive@pnsn.org',
+            password="secret",
+            firstname='blank',
+            lastname='blank',
+            is_active=False
+        )
+
+    def test_activate_user_invalid_token(self):
+        url = reverse('user:activate_user')
+        payload = {
+            'email': self.invited_user.email,
+            'password': 'superdupersecret',
+            'firstname': 'your',
+            'lastname': 'mom',
+            'token': 'invalid token'
+        }
+        res = self.client.patch(url, payload, format='json')
+        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_activate_user_valid_token(self):
+        token = RegistrationTokenGenerator().make_token(self.invited_user)
+
+        url = reverse('user:activate_user')
+
+        payload = {
+            "email": self.invited_user.email,
+            "password": 'superdupersecret',
+            "firstname": 'your',
+            "lastname": 'mom',
+            "token": token
+        }
+        self.assertFalse(self.invited_user.is_active)
+        res = self.client.patch(url, payload, format='json')
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        updated_user = get_user_model().objects.get(
+            email=self.invited_user.email)
+        self.assertTrue(updated_user.is_active)
 
 
 class PrivateUserAPITests(TestCase):
