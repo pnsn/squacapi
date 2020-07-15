@@ -2,13 +2,12 @@ from rest_framework import serializers
 # from org.models import Org, OrgUser
 from organizations.models import (Organization, OrganizationUser)
 from django.contrib.auth import get_user_model
+from  user.serializers import UserSimpleSerializer
 
 
 class OrganizationUserSerializer(serializers.ModelSerializer):
 
-    user = serializers.PrimaryKeyRelatedField(
-        queryset=get_user_model().objects.all()
-    )
+    user = UserSimpleSerializer()
     organization = serializers.PrimaryKeyRelatedField(
         queryset=Organization.objects.all()
     )

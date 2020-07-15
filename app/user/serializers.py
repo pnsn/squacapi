@@ -10,6 +10,13 @@ class GroupSerializer(serializers.ModelSerializer):
         fields = ('name',)
 
 
+class UserSimpleSerializer(serializers.ModelSerializer):
+    '''for nesting in organization_user serializer'''
+    class Meta:
+        model = get_user_model()
+        fields = ('email', 'firstname', 'lastname', 'id')
+
+
 class UserSerializer(serializers.ModelSerializer):
     '''serialzer for the user object'''
     groups = GroupSerializer(many=True, read_only=True)
