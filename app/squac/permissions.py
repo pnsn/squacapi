@@ -26,12 +26,10 @@ class IsAdminOwnerOrShared(DjangoModelPermissions):
             * update, partial_update and destroy check for owner
             * create not called by this method since object doesn't exist
         '''
-        if request.user.is_staff:
+        if request.user.is_staff or obj.user == request.user:
             return True
         has_permission = super().has_permission(request, view)
         if has_permission and request.method in permissions.SAFE_METHODS:
-            if obj.user == request.user:
-                return True
             try:
                 org_id = obj.organization_id
                 org = Organization.objects.get(pk=org_id)
