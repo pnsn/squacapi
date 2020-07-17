@@ -2,11 +2,10 @@ from rest_framework import viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-from rest_framework.permissions import IsAuthenticated
 from django_filters import rest_framework as filters
-from squac.permissions import IsAdminOwnerOrShared
 from squac.filters import CharInFilter
-from squac.mixins import SetUserMixin, PermissionsMixin
+from squac.mixins import SetUserMixin, DefaultPermissionsMixin, \
+    SharedPermissionsMixin
 from .models import Network, Channel, Group
 from nslc.serializers import NetworkSerializer, ChannelSerializer, \
     GroupSerializer, GroupDetailSerializer
@@ -62,7 +61,8 @@ def api_root(request, format=None):
 """
 
 
-class BaseNslcViewSet(SetUserMixin, PermissionsMixin, viewsets.ModelViewSet):
+class BaseNslcViewSet(SetUserMixin, DefaultPermissionsMixin,
+                      viewsets.ModelViewSet):
     pass
 
 
@@ -84,11 +84,8 @@ class ChannelViewSet(BaseNslcViewSet):
         return self.serializer_class.setup_eager_loading(q)
 
 
-class GroupViewSet(BaseNslcViewSet):
+class GroupViewSet(SharedPermissionsMixin, BaseNslcViewSet):
     serializer_class = GroupSerializer
-    # commas act as 'ands'
-    permission_classes = (
-        IsAuthenticated, IsAdminOwnerOrShared)
 
     def get_serializer_class(self):
         if self.action == 'retrieve':

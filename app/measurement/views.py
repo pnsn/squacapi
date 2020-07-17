@@ -1,10 +1,8 @@
 from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticated
 from django_filters import rest_framework as filters
 from squac.filters import CharInFilter, NumberInFilter
-from squac.mixins import SetUserMixin, PermissionsMixin
+from squac.mixins import SetUserMixin, DefaultPermissionsMixin
 from .exceptions import MissingParameterException
-from squac.permissions import IsAdminOwnerOrShared
 from .models import Metric, Measurement, Threshold, Archive
 from measurement import serializers
 from nslc.models import Group
@@ -39,7 +37,7 @@ class ArchiveFilter(filters.FilterSet):
         fields = ('metric', 'channel', 'archive_type')
 
 
-class BaseMeasurementViewSet(SetUserMixin, PermissionsMixin,
+class BaseMeasurementViewSet(SetUserMixin, DefaultPermissionsMixin,
                              viewsets.ModelViewSet):
     pass
 
@@ -47,8 +45,6 @@ class BaseMeasurementViewSet(SetUserMixin, PermissionsMixin,
 class MetricViewSet(BaseMeasurementViewSet):
     serializer_class = serializers.MetricSerializer
     filter_class = MetricFilter
-    permission_classes = (
-        IsAuthenticated, IsAdminOwnerOrShared)
 
     def get_queryset(self):
         return Metric.objects.all()
@@ -58,8 +54,6 @@ class MeasurementViewSet(BaseMeasurementViewSet):
     '''end point for using channel filter'''
     REQUIRED_PARAMS = ("metric", "starttime", "endtime")
     serializer_class = serializers.MeasurementSerializer
-    permission_classes = (
-        IsAuthenticated, IsAdminOwnerOrShared)
     filter_class = MeasurementFilter
 
     def get_serializer(self, *args, **kwargs):
@@ -113,7 +107,7 @@ class ThresholdViewSet(BaseMeasurementViewSet):
         return Threshold.objects.all()
 
 
-class ArchiveViewSet(PermissionsMixin, viewsets.ReadOnlyModelViewSet):
+class ArchiveViewSet(DefaultPermissionsMixin, viewsets.ReadOnlyModelViewSet):
     """Viewset that provides access to Archive data
 
         since there is not a user set on archive, all permissions will be

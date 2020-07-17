@@ -1,20 +1,18 @@
 from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticated
-from squac.mixins import SetUserMixin, PermissionsMixin
-from squac.permissions import IsAdminOwnerOrShared
-from .models import Dashboard, WidgetType, Widget, StatType
+# from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from squac.mixins import SetUserMixin, DefaultPermissionsMixin, \
+    SharedPermissionsMixin
+from dashboard.models import Dashboard, WidgetType, Widget, StatType
 from dashboard import serializers
 
 
-class BaseDashboardViewSet(SetUserMixin, PermissionsMixin,
+class BaseDashboardViewSet(SetUserMixin, DefaultPermissionsMixin,
                            viewsets.ModelViewSet):
     pass
 
 
-class DashboardViewSet(BaseDashboardViewSet):
+class DashboardViewSet(SharedPermissionsMixin, BaseDashboardViewSet):
     serializer_class = serializers.DashboardSerializer
-    permission_classes = (
-        IsAuthenticated, IsAdminOwnerOrShared)
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
@@ -43,7 +41,7 @@ class WidgetTypeViewSet(BaseDashboardViewSet):
         return WidgetType.objects.all()
 
 
-class StatTypeViewSet(PermissionsMixin, viewsets.ReadOnlyModelViewSet):
+class StatTypeViewSet(DefaultPermissionsMixin, viewsets.ReadOnlyModelViewSet):
     ''' we only want readonly through api'''
     serializer_class = serializers.StatTypeSerializer
 
@@ -54,8 +52,6 @@ class StatTypeViewSet(PermissionsMixin, viewsets.ReadOnlyModelViewSet):
 class WidgetViewSet(BaseDashboardViewSet):
 
     serializer_class = serializers.WidgetSerializer
-    permission_classes = (
-        IsAuthenticated, IsAdminOwnerOrShared)
 
     def _params_to_ints(self, qs):
         # Convert a list of string IDs to a list of integers

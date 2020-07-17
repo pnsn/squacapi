@@ -1,9 +1,7 @@
 from rest_framework import viewsets
-# from squac.permissions import IsAdminOwnerOrShared
-# from squac.mixins import SetUserMixin, PermissionsMixin
+from squac.mixins import SetUserMixin, OrganizationPermissionsMixin
 from django_filters import rest_framework as filters
 from organizations.models import (Organization, OrganizationUser)
-# from org.models import Org, OrgUser
 from org.serializers import OrganizationSerializer,\
     OrganizationUserSerializer, OrganizationUserDetailSerializer
 from rest_framework.response import Response
@@ -17,13 +15,19 @@ class OrganizationUserFilter(filters.FilterSet):
         fields = ('organization', 'user')
 
 
-class OrganizationViewSet(viewsets.ModelViewSet):
-    queryset = Organization.objects.all()
+class OrganizationBase(SetUserMixin, OrganizationPermissionsMixin,
+                       viewsets.ModelViewSet):
+    pass
+
+
+class OrganizationViewSet(OrganizationBase):
     serializer_class = OrganizationSerializer
 
+    def get_queryset(self):
+        return Organization.objects.all()
 
-class OrganizationUserViewSet(viewsets.ModelViewSet):
-    queryset = OrganizationUser.objects.all()
+
+class OrganizationUserViewSet(OrganizationBase):
     filter_class = OrganizationUserFilter
     serializer_class = OrganizationUserSerializer
 
@@ -34,6 +38,8 @@ class OrganizationUserViewSet(viewsets.ModelViewSet):
             *invite user
             *update request.data with user_id
     '''
+    def get_queryset(self):
+        return OrganizationUser.objects.all()
 
     def create(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
