@@ -44,7 +44,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         Organization,
         on_delete=models.CASCADE,
         related_name='users',
-        blank=True
+        blank=True,
+        null=True
     )
 
     objects = UserManager()

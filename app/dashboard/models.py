@@ -60,7 +60,9 @@ class Dashboard(DashboardBase):
     organization = models.ForeignKey(
         Organization,
         on_delete=models.CASCADE,
-        related_name='dashboards'
+        related_name='dashboards',
+        blank=True,
+        null=True
     )
 
     class Meta:

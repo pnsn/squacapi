@@ -20,7 +20,7 @@ class UserSimpleSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
         fields = ('email', 'firstname', 'lastname', 'id', 'is_active',
-                  'last_login', 'organization')
+                  'last_login', 'organization', 'is_org_admin')
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -33,7 +33,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
         fields = ('email', 'password', 'firstname', 'lastname', 'is_staff',
-                  'groups', 'id', 'organization')
+                  'groups', 'id', 'organization', 'is_org_admin')
         read_only_fields = ('is_staff', 'id')
         extra_kwargs = {'password': {'write_only': True, 'min_length': 5}}
 
