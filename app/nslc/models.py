@@ -2,7 +2,7 @@ from django.db import models
 from django.conf import settings
 from datetime import datetime
 import pytz
-from organizations.models import Organization
+from organization.models import Organization
 
 
 class Nslc(models.Model):

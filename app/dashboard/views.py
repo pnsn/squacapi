@@ -23,13 +23,12 @@ class DashboardViewSet(SharedPermissionsMixin, BaseDashboardViewSet):
         queryset = Dashboard.objects.all()
         if self.request.user.is_staff:
             return queryset
-        orgs = self.request.user.organizations_organization.all()
-        org_ids = [o.id for o in orgs]
+        org = self.request.user.organization
         # get users dash, shared_all dashes and users org shared dashes
         queryset = \
             queryset.filter(user=self.request.user) |\
             queryset.filter(share_all=True) |\
-            queryset.filter(organization__in=org_ids, share_org=True)
+            queryset.filter(organization=org.id, share_org=True)
 
         return queryset
 

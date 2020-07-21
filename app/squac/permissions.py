@@ -1,6 +1,6 @@
 from rest_framework import permissions
 from rest_framework.permissions import DjangoModelPermissions
-from organizations.models import Organization
+from organization.models import Organization
 
 '''
 Model permissions are set in the admin section on groups. A user is then added
@@ -69,7 +69,7 @@ class IsAdminOrOrganizationAdmin():
         ''' Create not called by this method since object doesn't exist
             Perm order:
             if user is admin or org admin all methods
-            if user is member, read methods 
+            if user is member, read methods
         '''
         try:
             admin = obj.is_admin(request.user)

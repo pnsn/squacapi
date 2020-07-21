@@ -1,12 +1,12 @@
 from django.test import TestCase
 from django.urls import reverse
-from django.contrib.auth import get_user_model
 from rest_framework import status
 from rest_framework.test import APIClient
 from datetime import datetime
 import pytz
 from nslc.models import Network, Channel, Group
-from organizations.models import Organization
+from organization.models import Organization
+from squac.test_mixins import sample_user
 
 
 '''Tests for all nscl models:
@@ -22,11 +22,6 @@ to run only this file
     ./mg.sh "test nslc.tests.test_nslc_api  && flake8"
 
 '''
-
-
-def sample_user(email='test@pnsn.org', password="secret"):
-    '''create a sample user for testing'''
-    return get_user_model().objects.create_user(email, password)
 
 
 class UnAuthenticatedNslcApiTests(TestCase):
@@ -46,8 +41,7 @@ class UnAuthenticatedNslcApiTests(TestCase):
             starttime=datetime(1970, 1, 1, tzinfo=pytz.UTC),
             endtime=datetime(2599, 12, 31, tzinfo=pytz.UTC))
         self.organization = Organization.objects.create(
-            name='PNSN',
-            slug='pnsn'
+            name='PNSN'
         )
         self.grp = Group.objects.create(
             name='Test group',
@@ -103,8 +97,7 @@ class PrivateNslcAPITests(TestCase):
             starttime=datetime(1970, 1, 1, tzinfo=pytz.UTC),
             endtime=datetime(2599, 12, 31, tzinfo=pytz.UTC))
         self.organization = Organization.objects.create(
-            name='PNSN',
-            slug='pnsn'
+            name='PNSN'
         )
         self.grp = Group.objects.create(
             name='Test group',

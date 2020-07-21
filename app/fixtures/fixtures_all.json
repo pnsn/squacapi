@@ -6,6 +6,7 @@
     "last_login": null,
     "is_superuser": true,
     "email": "loader@pnsn.org",
+    "organization": 1,
     "firstname": "your",
     "lastname": "mom",
     "is_active": true,
@@ -15,11 +16,12 @@
   }
 },
 {
-  "model": "organizations.organization",
+  "model": "organization.organization",
   "pk": 1,
   "fields":{
       "name": "PNSN",
-      "slug": "pnsn"
+      "created_at": "2019-08-28T23:27:28.623Z",
+      "updated_at": "2019-08-28T23:27:28.623Z"
   }
 },
 {

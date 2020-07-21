@@ -1,5 +1,5 @@
 from django.test import TestCase
-from organizations.models import Organization
+from organization.models import Organization
 from django.contrib.auth.models import Group as UserGroup, Permission
 from django.urls import reverse
 from rest_framework.test import APIClient
@@ -9,18 +9,13 @@ import pytz
 from dashboard.models import Dashboard, Widget, WidgetType, StatType
 from measurement.models import Metric
 from nslc.models import Network, Channel, Group
-from django.contrib.auth import get_user_model
+from squac.test_mixins import sample_user
 
 '''
     to run this file only
     ./mg.sh "test dashboard.tests.test_dashboard_permissions && flake8"
 
 '''
-
-
-def sample_user(email='test@pnsn.org', password="secret"):
-    '''create a sample user for testing'''
-    return get_user_model().objects.create_user(email, password)
 
 
 '''permissons follow form
@@ -113,12 +108,10 @@ class DashboardPermissionTests(TestCase):
         )
 
         self.my_org = Organization.objects.create(
-            name='mu org',
-            slug='my_org'
+            name='mu org'
         )
         self.not_my_org = Organization.objects.create(
-            name='not my org',
-            slug='not_my_org'
+            name='not my org'
         )
         # we're not tesing chan group so mark share all
         self.grp = Group.objects.create(
@@ -130,8 +123,8 @@ class DashboardPermissionTests(TestCase):
         )
         self.grp.channels.add(self.chan)
 
-        self.reporter.organizations_organization.add(self.my_org)
-        self.viewer.organizations_organization.add(self.my_org)
+        self.reporter.organization = self.my_org
+        self.viewer.organization = self.my_org
 
         self.my_org_dashboard_share_org = Dashboard.objects.create(
             name='Test dashboard',

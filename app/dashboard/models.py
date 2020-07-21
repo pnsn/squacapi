@@ -2,7 +2,7 @@ from django.db import models
 from django.conf import settings
 
 from nslc.models import Group
-from organizations.models import Organization
+from organization.models import Organization
 
 
 class DashboardBase(models.Model):

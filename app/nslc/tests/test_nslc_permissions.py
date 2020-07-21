@@ -1,6 +1,5 @@
 from django.test import TestCase
 from django.urls import reverse
-from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group as UserGroup, Permission
 from django.contrib.contenttypes.models import ContentType
 from rest_framework import status
@@ -8,7 +7,8 @@ from rest_framework.test import APIClient
 from datetime import datetime
 import pytz
 from nslc.models import Network, Channel, Group
-from organizations.models import Organization
+from organization.models import Organization
+from squac.test_mixins import sample_user
 
 
 '''
@@ -16,11 +16,6 @@ from organizations.models import Organization
     ./mg.sh "test nslc.tests.test_nslc_permissions && flake8"
 
 '''
-
-
-def sample_user(email='test@pnsn.org', password="secret"):
-    '''create a sample user for testing'''
-    return get_user_model().objects.create_user(email, password)
 
 
 '''permissons follow form
@@ -86,17 +81,15 @@ class NslcPermissionTests(TestCase):
             endtime=datetime(2599, 12, 31, tzinfo=pytz.UTC))
         # create two orgs min and not mine
         self.my_org = Organization.objects.create(
-            name='Mine',
-            slug='mine'
+            name='Mine'
         )
 
         self.not_my_org = Organization.objects.create(
-            name='Not Mine',
-            slug='not_mine'
+            name='Not Mine'
         )
         # add users to orgs
-        self.me_reporter.organizations_organization.add(self.my_org)
-        self.me_viewer.organizations_organization.add(self.my_org)
+        self.me_reporter.organization = self.my_org
+        self.me_viewer.organization = self.my_org
 
         # create several chan groups
         self.my_org_chan_grp_share_org = Group.objects.create(

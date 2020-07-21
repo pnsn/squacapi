@@ -1,29 +1,24 @@
 from django.test import TestCase
-from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.utils import timezone
 
 from measurement.models import Metric, Threshold
 from nslc.models import Network, Channel, Group
 from dashboard.models import Dashboard, Widget, WidgetType, StatType
-from organizations.models import Organization
+from organization.models import Organization
 
 
 from rest_framework.test import APIClient
 from rest_framework import status
 from datetime import datetime
 import pytz
+from squac.test_mixins import sample_user
 
 
 '''Tests for all measurement models:
 to run only these tests:
  ./mg.sh "test dashboard && flake8"
 '''
-
-
-def sample_user(email='test@pnsn.org', password="secret"):
-    '''create a sample user for testing'''
-    return get_user_model().objects.create_user(email, password)
 
 
 class UnathenticatedMeasurementApiTests(TestCase):
@@ -62,8 +57,7 @@ class UnathenticatedMeasurementApiTests(TestCase):
             endtime=datetime(2599, 12, 31, tzinfo=pytz.UTC)
         )
         self.organization = Organization.objects.create(
-            name='PNSN',
-            slug='pnsn'
+            name='PNSN'
         )
         self.grp = Group.objects.create(
             name='Test group',
@@ -164,8 +158,7 @@ class PrivateMeasurementAPITests(TestCase):
             endtime=datetime(2599, 12, 31, tzinfo=pytz.UTC)
         )
         self.organization = Organization.objects.create(
-            name='PNSN',
-            slug='pnsn'
+            name='PNSN'
         )
         self.grp = Group.objects.create(
             name='Sample group',

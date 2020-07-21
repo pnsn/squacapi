@@ -3,7 +3,7 @@ from .models import Widget, WidgetType, Dashboard, StatType
 from nslc.models import Group
 from measurement.models import Metric
 from measurement.serializers import ThresholdSerializer, MetricSerializer
-from organizations.models import Organization
+from organization.models import Organization
 
 
 class WidgetSerializer(serializers.HyperlinkedModelSerializer):

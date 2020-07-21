@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Network, Channel, Group
-from organizations.models import Organization
+from organization.models import Organization
 
 
 # to dump data from db into fixtures

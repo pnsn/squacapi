@@ -5,7 +5,7 @@ from rest_framework import status
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 
-
+from organization.models import Organization
 from dashboard.models import Dashboard
 
 '''Tests for custom dashboard filter in views.py
@@ -20,8 +20,11 @@ class PublicDashboardFilterTests(TestCase):
 
     def setUp(self):
         self.client = APIClient()
+        self.organization = Organization.objects.create(name='Org')
         self.user = get_user_model().objects.create_user(
-            'test@pnsn.org', "secret")
+            'test@pnsn.org',
+            "secret",
+            self.organization)
         self.user.is_staff = True
         self.client.force_authenticate(self.user)
 

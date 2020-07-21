@@ -97,10 +97,9 @@ class GroupViewSet(SharedPermissionsMixin, BaseNslcViewSet):
         if self.request.user.is_staff:
             return queryset
         '''view public and own resources'''
-        orgs = self.request.user.organizations_organization.all()
-        org_ids = [o.id for o in orgs]
+        org_id = self.request.user.organization.id
         queryset = \
             queryset.filter(user=self.request.user) |\
             queryset.filter(share_all=True) |\
-            queryset.filter(organization__in=org_ids, share_org=True)
+            queryset.filter(organization=org_id, share_org=True)
         return queryset

@@ -2,13 +2,13 @@ from django_rest_passwordreset.serializers import TokenSerializer
 from django.utils.decorators import method_decorator
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
+# from rest_framework.response import Response
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.settings import api_settings
 from user.serializers import UserSerializer, AuthTokenSerializer
-from django.contrib.auth import get_user_model
+# from django.contrib.auth import get_user_model
 from drf_yasg.utils import swagger_auto_schema
-from organizations.backends.tokens import RegistrationTokenGenerator
+# from organizations.backends.tokens import RegistrationTokenGenerator
 
 
 class CreateUserView(generics.CreateAPIView):
@@ -35,28 +35,29 @@ class ManageUserView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         return self.request.user
 
+# FIXME new invitation model goes here
 
-class ActivateUserByTokenView(generics.UpdateAPIView):
-    ''' Update invited user'''
-    serializer_class = UserSerializer
+# class ActivateUserByTokenView(generics.UpdateAPIView):
+#     ''' Update invited user'''
+#     serializer_class = UserSerializer
 
-    def update(self, request, *args, **kwargs):
-        user_data = request.data.pop('user')
-        instance = get_user_model().objects.get(email=user_data['email'])
-        token = request.data['token']
-        try:
-            user = get_user_model().objects.get(
-                email=user_data['email'],
-                is_active=False
-            )
-        except get_user_model().DoesNotExist:
-            return Response("Your URL may have expired", status=404)
-        if not RegistrationTokenGenerator().check_token(user, token):
-            return Response("Your token is invalid or expired", status=404)
-        user_data['is_active'] = True
-        serializer = self.serializer_class(
-            instance=instance,
-            data=user_data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.update(instance, user_data)
-            return Response(serializer.data)
+#     def update(self, request, *args, **kwargs):
+#         user_data = request.data.pop('user')
+#         instance = get_user_model().objects.get(email=user_data['email'])
+#         # test.data['token']
+#         try:
+#             user = get_user_model().objects.get(
+#                 email=user_data['email'],
+#                 is_active=False
+#             )
+#         except get_user_model().DoesNotExist:
+#             return Response("Your URL may have expired", status=404)
+#         # if not RegistrationTokenGenerator().check_token(user, token):
+#         #     return Response("Your token is invalid or expired", status=404)
+#         user_data['is_active'] = True
+#         serializer = self.serializer_class(
+#             instance=instance,
+#             data=user_data)
+#         if serializer.is_valid(raise_exception=True):
+#             serializer.update(instance, user_data)
+#             return Response(serializer.data)

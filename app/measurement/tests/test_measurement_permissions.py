@@ -1,22 +1,18 @@
 from django.test import TestCase
-from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group, Permission
 from rest_framework.test import APIClient
 from datetime import datetime
 import pytz
 from measurement.models import Metric, Measurement
 from nslc.models import Network, Channel
+from squac.test_mixins import sample_user
+
 
 '''
     to run this file only
     ./mg.sh "test measurement.tests.test_measurement_permissions && flake8"
 
 '''
-
-
-def sample_user(email='test@pnsn.org', password="secret"):
-    '''create a sample user for testing'''
-    return get_user_model().objects.create_user(email, password)
 
 
 '''permissons follow form
