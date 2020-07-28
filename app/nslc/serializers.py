@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from .models import Network, Channel, Group
+from organization.models import Organization
+
 
 # to dump data from db into fixtures
 # ./mg.sh "dumpdata nslc" > app/nslc/fixtures/nslc_tests.json
@@ -17,12 +19,15 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
         many=True,
         queryset=Channel.objects.all()
     )
+    organization = serializers.PrimaryKeyRelatedField(
+        queryset=Organization.objects.all()
+    )
 
     class Meta:
         model = Group
         fields = (
-            'name', 'id', 'url', 'description', 'channels', 'is_public',
-            'created_at', 'updated_at', 'user_id'
+            'name', 'id', 'url', 'description', 'channels', 'share_all',
+            'share_org', 'created_at', 'updated_at', 'user_id', 'organization'
         )
         read_only_fields = ('id',)
         ref_name = "NslcGroup"
@@ -56,8 +61,8 @@ class GroupDetailSerializer(GroupSerializer):
     class Meta:
         model = Group
         fields = (
-            'name', 'id', 'url', 'description', 'channels', 'is_public',
-            'created_at', 'updated_at', 'user_id'
+            'name', 'id', 'url', 'description', 'channels', 'share_all',
+            'share_org', 'created_at', 'updated_at', 'user_id', 'organization'
         )
         read_only_fields = ('id',)
 

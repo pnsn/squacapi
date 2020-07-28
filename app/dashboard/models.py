@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 
 from nslc.models import Group
+from organization.models import Organization
 
 
 class DashboardBase(models.Model):
@@ -51,10 +52,22 @@ class StatType(DashboardBase):
 
 class Dashboard(DashboardBase):
     '''describes the container the holds widgets'''
-    is_public = models.BooleanField(default=False)
+    share_all = models.BooleanField(default=False)
+    share_org = models.BooleanField(default=False)
     window_seconds = models.IntegerField(blank=True, null=True)
     starttime = models.DateTimeField(blank=True, null=True)
     endtime = models.DateTimeField(blank=True, null=True)
+    organization = models.ForeignKey(
+        Organization,
+        on_delete=models.CASCADE,
+        related_name='dashboards'
+    )
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['share_all']),
+            models.Index(fields=['share_org'])
+        ]
 
 
 class Widget(DashboardBase):
@@ -84,4 +97,3 @@ class Widget(DashboardBase):
     rows = models.IntegerField()
     x_position = models.IntegerField()
     y_position = models.IntegerField()
-    is_public = models.BooleanField(default=False)

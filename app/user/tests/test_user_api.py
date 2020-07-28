@@ -4,6 +4,9 @@ from django.urls import reverse
 
 from rest_framework.test import APIClient
 from rest_framework import status
+from squac.test_mixins import sample_user
+from organization.models import Organization
+# from organization.backends.tokens import RegistrationTokenGenerator
 
 ''' Tests for user api run with. run all tests with
 
@@ -15,10 +18,6 @@ or use mg.sh script:
 CREATE_USER_URL = reverse('user:create')
 CREATE_TOKEN_URL = reverse('user:token')
 ME_URL = reverse('user:me')
-
-
-def create_user(**params):
-    return get_user_model().objects.create_user(**params)
 
 
 class PublicUserApiTests(TestCase):
@@ -39,12 +38,14 @@ class AuthenticateApiUser(TestCase):
 
     def setUp(self):
         self.client = APIClient()
+        self.organization = Organization.objects.create(name='PNSN')
 
     def test_create_token_success(self):
         '''test token success'''
-        create_user(
+        sample_user(
             email='test123@pnsn.org',
             password="secret",
+            organization=self.organization,
             firstname='your',
             lastname='mom'
         )
@@ -52,17 +53,72 @@ class AuthenticateApiUser(TestCase):
         res = self.client.post(CREATE_TOKEN_URL, payload)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
+# FIXME these need to be redone in another package
+
+# class ActivateUser(TestCase):
+#     ''' user activation by invitation token'''
+
+#     def setUp(self):
+#         self.client = APIClient()
+#         self.organization = Organization.objects.create(name='PNSN')
+#         self.invited_user = sample_user(
+#             email='inactive@pnsn.org',
+#             password="secret",
+#             organization=self.organization,
+#             firstname='blank',
+#             lastname='blank',
+#             is_active=False
+#         )
+
+#     def test_activate_user_invalid_token(self):
+#         url = reverse('user:activate_user')
+#         payload = {
+#             'user': {
+#                 'email': self.invited_user.email,
+#                 'password': 'superdupersecret',
+#                 'organization': self.organization.id,
+#                 'firstname': 'your',
+#                 'lastname': 'mom',
+#             },
+#             'token': 'invalid token'
+#         }
+#         res = self.client.patch(url, payload, format='json')
+#         self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+
+    # def test_activate_user_valid_token(self):
+    #     token = RegistrationTokenGenerator().make_token(self.invited_user)
+
+    #     url = reverse('user:activate_user')
+
+    #     payload = {
+    #         'user': {
+    #             "email": self.invited_user.email,
+    #             "password": 'superdupersecret',
+    #             'organization': self.organization.id,
+    #             "firstname": 'your',
+    #             "lastname": 'mom'
+    #         },
+    #         "token": token
+    #     }
+    #     self.assertFalse(self.invited_user.is_active)
+    #     res = self.client.patch(url, payload, format='json')
+    #     self.assertEqual(res.status_code, status.HTTP_200_OK)
+    #     updated_user = get_user_model().objects.get(
+    #         email=self.invited_user.email)
+    #     self.assertTrue(updated_user.is_active)
+
 
 class PrivateUserAPITests(TestCase):
     '''test api request that require auth'''
 
     def setUp(self):
-        self.user = create_user(
+        self.organization = Organization.objects.create(name='PNSN')
+        self.user = sample_user(
             email='test@pnsn.org',
             password="secret",
+            organization=self.organization,
             firstname='your',
             lastname='mom',
-            organization='pnsn'
         )
         self.client = APIClient()
         self.client.force_authenticate(user=self.user)
@@ -80,7 +136,11 @@ class PrivateUserAPITests(TestCase):
 
     def test_update_user_profile(self):
         '''test updating the user profile for authenticated user'''
-        payload = {'firstname': 'cool_name', 'password': "secret"}
+        payload = {
+            'firstname': 'cool_name',
+            'password': "secret",
+            'organization': self.organization.id
+        }
 
         res = self.client.patch(ME_URL, payload)
 
@@ -91,7 +151,11 @@ class PrivateUserAPITests(TestCase):
 
     def test_create_token_no_user(self):
         '''test token is not created if user doesn't exist'''
-        payload = {'email': 'test1@pnsn.org', 'password': "nouser"}
+        payload = {
+            'email': 'test1@pnsn.org',
+            'password': "nouser",
+            'organization': self.organization.id
+        }
         res = self.client.post(CREATE_TOKEN_URL, payload)
 
         self.assertNotIn('token', res.data)
@@ -99,8 +163,13 @@ class PrivateUserAPITests(TestCase):
 
     def test_create_token_invalid_credentials(self):
         '''test that token is not created if invalid creds are given'''
-        create_user(email="test2@pnsn.org", password='secretpass')
-        payload = {'email': 'test2@pnsn.org', 'password': "wrongpass"}
+        sample_user(email="test2@pnsn.org", password='secretpass',
+                    organization=self.organization)
+        payload = {
+            'email': 'test2@pnsn.org',
+            'password': "wrongpass",
+            'organization': self.organization.id,
+        }
         res = self.client.post(CREATE_TOKEN_URL, payload)
 
         self.assertNotIn('token', res.data)
@@ -108,7 +177,10 @@ class PrivateUserAPITests(TestCase):
 
     def test_create_token_missing_field(self):
         '''test that email and password are required'''
-        payload = {'email': "", "password": ""}
+        payload = {
+            'email': "",
+            "password": "",
+            'organization': self.organization.id}
         res = self.client.post(CREATE_TOKEN_URL, payload)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -120,15 +192,14 @@ class PrivateUserAPITests(TestCase):
         payload = {
             'email': 'test3@test.com',
             'password': 'supersecret',
+            'organization': self.organization.id,
             'firstname': 'some',
             'lastname': 'name',
-            'organization': 'pnsn',
         }
 
         res = self.client.post(CREATE_USER_URL, payload)
 
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-        # user = get_user_model().objects.get(**res.data)
         user = get_user_model().objects.get(
             email=payload['email'])
         self.assertTrue(user.check_password(payload['password']))
@@ -138,9 +209,10 @@ class PrivateUserAPITests(TestCase):
         '''test creating user that exists fails'''
         payload = {
             'email': "test@test.com",
-            'password': 'supersecret'
+            'password': 'supersecret',
+            'organization': self.organization.id
         }
-        create_user(**payload)
+        # sample_user(**payload)
 
         res = self.client.post(CREATE_USER_URL, payload)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
@@ -148,7 +220,11 @@ class PrivateUserAPITests(TestCase):
     def test_password_too_short(self):
         '''the password must be more than 5 chars'''
 
-        payload = {'email': "test.test.com", 'password': 'js'}
+        payload = {
+            'email': "test.test.com",
+            'password': 'js',
+            'organization': self.organization.id
+        }
 
         res = self.client.post(CREATE_USER_URL, payload)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)

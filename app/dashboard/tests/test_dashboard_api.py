@@ -1,27 +1,24 @@
 from django.test import TestCase
-from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.utils import timezone
 
 from measurement.models import Metric, Threshold
 from nslc.models import Network, Channel, Group
 from dashboard.models import Dashboard, Widget, WidgetType, StatType
+from organization.models import Organization
+
 
 from rest_framework.test import APIClient
 from rest_framework import status
 from datetime import datetime
 import pytz
+from squac.test_mixins import sample_user
 
 
 '''Tests for all measurement models:
 to run only these tests:
  ./mg.sh "test dashboard && flake8"
 '''
-
-
-def sample_user(email='test@pnsn.org', password="secret"):
-    '''create a sample user for testing'''
-    return get_user_model().objects.create_user(email, password)
 
 
 class UnathenticatedMeasurementApiTests(TestCase):
@@ -59,15 +56,22 @@ class UnathenticatedMeasurementApiTests(TestCase):
             starttime=datetime(1970, 1, 1, tzinfo=pytz.UTC),
             endtime=datetime(2599, 12, 31, tzinfo=pytz.UTC)
         )
+        self.organization = Organization.objects.create(
+            name='PNSN'
+        )
         self.grp = Group.objects.create(
             name='Test group',
-            is_public=True,
-            user=self.user
+            share_all=True,
+            share_org=True,
+            user=self.user,
+            organization=self.organization
         )
+
         self.grp.channels.add(self.chan)
         self.dashboard = Dashboard.objects.create(
             name='Test dashboard',
-            user=self.user
+            user=self.user,
+            organization=self.organization
         )
         self.widtype = WidgetType.objects.create(
             name='Test widget type',
@@ -89,7 +93,7 @@ class UnathenticatedMeasurementApiTests(TestCase):
             x_position=1,
             y_position=1,
             user=self.user,
-            channel_group=self.grp
+            channel_group=self.grp,
         )
         self.widget.metrics.add(self.metric)
 
@@ -153,14 +157,20 @@ class PrivateMeasurementAPITests(TestCase):
             starttime=datetime(1970, 1, 1, tzinfo=pytz.UTC),
             endtime=datetime(2599, 12, 31, tzinfo=pytz.UTC)
         )
+        self.organization = Organization.objects.create(
+            name='PNSN'
+        )
         self.grp = Group.objects.create(
             name='Sample group',
-            is_public=True,
-            user=self.user
+            share_all=True,
+            share_org=True,
+            user=self.user,
+            organization=self.organization
         )
         self.dashboard = Dashboard.objects.create(
             name='Test dashboard',
-            user=self.user
+            user=self.user,
+            organization=self.organization
         )
         self.widtype = WidgetType.objects.create(
             name='Test widget type',
@@ -183,7 +193,6 @@ class PrivateMeasurementAPITests(TestCase):
             y_position=1,
             user=self.user,
             channel_group=self.grp,
-
         )
 
         self.threshold = Threshold.objects.create(
@@ -203,17 +212,15 @@ class PrivateMeasurementAPITests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data['name'], 'Test dashboard')
         self.assertEqual(str(self.dashboard), 'Test dashboard')
-        for widget in res.data['widgets']:
-            self.assertEqual(widget, self.widget.id)
 
     def test_create_dashboard(self):
         url = reverse('dashboard:dashboard-list')
-        payload = {'name': 'Test dashboard'}
+        payload = {
+            'name': 'Test dashboard',
+            'organization': self.organization.id
+        }
         res = self.client.post(url, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-        dashboard = Dashboard.objects.get(id=res.data['id'])
-        for key in payload.keys():
-            self.assertEqual(payload[key], getattr(dashboard, key))
 
     def test_get_widget_type(self):
         url = reverse(
@@ -270,6 +277,9 @@ class PrivateMeasurementAPITests(TestCase):
                 self.assertIn(self.metric, metrics)
             elif key == 'channel_group':
                 self.assertEqual(payload[key], widget.channel_group.id)
+            elif key == 'organization':
+                self.assertEqual(payload[key],
+                                 widget.dashboard.organization.id)
             else:
                 self.assertEqual(payload[key], getattr(widget, key))
 

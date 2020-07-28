@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'drf_yasg',
     'django_rest_passwordreset',
+    'organization',
 ]
 
 # The caching middlewares must be first and last

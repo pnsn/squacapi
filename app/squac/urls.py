@@ -40,15 +40,17 @@ urlpatterns = [
     path('', views.home_v1, name='Squacapi V1.0'),
     path('admin/', admin.site.urls),
     path('user/', include('user.urls', namespace='legacy')),
+    # path('invitations/', include(invitation_backend().get_urls())),
+    path('v1.0/user/accounts/', include('django.contrib.auth.urls')),
     path('v1.0/user/', include('user.urls')),
-    path('v1.0/', views.home_v1, name='Squacapi V1.0'),
     path('v1.0/nslc/', include('nslc.urls')),
     path('v1.0/measurement/', include('measurement.urls')),
     path('v1.0/dashboard/', include('dashboard.urls')),
+    path('v1.0/organization/', include('organization.urls')),
     # api password reset endpoints
     path('v1.0/password_reset/', include('django_rest_passwordreset.urls',
          namespace='password_reset')),
-
+    path('v1.0/', views.home_v1, name='Squacapi V1.0'),
     # default path for thel login /logout
     path('api-auth/', include('rest_framework.urls',
          namespace='rest_framework')),
@@ -59,7 +61,6 @@ urlpatterns = [
             schema_view.without_ui(cache_timeout=0),
             name='schema-json'),
     # browser routes for password resets
-    path('accounts/', include('django.contrib.auth.urls')),
 ]
 
 if settings.DEBUG:

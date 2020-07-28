@@ -1,11 +1,12 @@
 from django.test import TestCase
 from django.urls import reverse
-from django.contrib.auth import get_user_model
 from rest_framework import status
 from rest_framework.test import APIClient
 from datetime import datetime
 import pytz
 from nslc.models import Network, Channel, Group
+from organization.models import Organization
+from squac.test_mixins import sample_user
 
 
 '''Tests for all nscl models:
@@ -21,11 +22,6 @@ to run only this file
     ./mg.sh "test nslc.tests.test_nslc_api  && flake8"
 
 '''
-
-
-def sample_user(email='test@pnsn.org', password="secret"):
-    '''create a sample user for testing'''
-    return get_user_model().objects.create_user(email, password)
 
 
 class UnAuthenticatedNslcApiTests(TestCase):
@@ -44,8 +40,15 @@ class UnAuthenticatedNslcApiTests(TestCase):
             elev=100.0, network=self.net, user=self.user,
             starttime=datetime(1970, 1, 1, tzinfo=pytz.UTC),
             endtime=datetime(2599, 12, 31, tzinfo=pytz.UTC))
+        self.organization = Organization.objects.create(
+            name='PNSN'
+        )
         self.grp = Group.objects.create(
-            name='Test group', is_public=True, user=self.user)
+            name='Test group',
+            share_all=True,
+            share_org=True,
+            organization=self.organization,
+            user=self.user)
         self.grp.channels.add(self.chan)
 
     def test_network_unathorized(self):
@@ -93,8 +96,16 @@ class PrivateNslcAPITests(TestCase):
             lat=45, lon=-122, elev=100.0, user=self.user,
             starttime=datetime(1970, 1, 1, tzinfo=pytz.UTC),
             endtime=datetime(2599, 12, 31, tzinfo=pytz.UTC))
+        self.organization = Organization.objects.create(
+            name='PNSN'
+        )
         self.grp = Group.objects.create(
-            name='Test group', is_public=True, user=self.user)
+            name='Test group',
+            share_all=True,
+            share_org=True,
+            user=self.user,
+            organization=self.organization
+        )
 
     def test_get_network(self):
         '''test if str is corrected'''
@@ -164,27 +175,19 @@ class PrivateNslcAPITests(TestCase):
         payload = {
             'name': 'Test group',
             'description': 'A test',
-            'is_public': True,
+            'share_all': True,
+            'share_org': True,
+            'organization': self.organization.id,
             'channels': [self.chan.id]
         }
         res = self.client.post(url, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-        group = Group.objects.get(id=res.data['id'])
-        for key in payload.keys():
-            if key == 'channels':
-                for c in payload[key]:
-                    channel = Channel.objects.get(id=c)
-                    self.assertIn(channel, group.channels.all())
-            else:
-                self.assertEqual(payload[key], getattr(group, key))
-
-    def test_partial_update_group(self):
         # self.assertTrue(self.user.has_perm('nslc.change_group'))
         group = Group.objects.get(name='UW-All')
         payload = {
             'name': 'UW-All-partial-update',
             'channels': [self.chan.id],
-            'is_public': True
+            'share_all': True
         }
         self.assertTrue(self.user.is_staff)
         url = reverse('nslc:group-detail', args=[group.id])
@@ -213,7 +216,8 @@ class PrivateNslcAPITests(TestCase):
 
         payload = {
             'name': 'UW-All-full-update',
-            'channels': chan_id_list
+            'channels': chan_id_list,
+            'organization': self.organization.id
         }
         url = reverse('nslc:group-detail', args=[group.id])
         self.client.put(url, payload)

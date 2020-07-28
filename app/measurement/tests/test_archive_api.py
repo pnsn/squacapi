@@ -1,5 +1,4 @@
 from django.test import TestCase
-from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.utils import timezone
 
@@ -12,17 +11,14 @@ from rest_framework import status
 from datetime import datetime
 import pytz
 
+from squac.test_mixins import sample_user
+
 '''Tests for all measurement models:
     *
 
 to run only these tests:
     ./mg.sh "test measurement && flake8"
 '''
-
-
-def sample_user(email='test@pnsn.org', password="secret"):
-    '''create a sample user for testing'''
-    return get_user_model().objects.create_user(email, password)
 
 
 class UnauthenticatedArchiveApiTests(TestCase):

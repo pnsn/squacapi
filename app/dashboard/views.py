@@ -1,20 +1,18 @@
 from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticated
-from squac.mixins import SetUserMixin, PermissionsMixin
-from squac.permissions import IsAdminOwnerOrPublicReadOnly
-from .models import Dashboard, WidgetType, Widget, StatType
+# from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from squac.mixins import SetUserMixin, DefaultPermissionsMixin, \
+    SharedPermissionsMixin
+from dashboard.models import Dashboard, WidgetType, Widget, StatType
 from dashboard import serializers
 
 
-class BaseDashboardViewSet(SetUserMixin, PermissionsMixin,
+class BaseDashboardViewSet(SetUserMixin, DefaultPermissionsMixin,
                            viewsets.ModelViewSet):
     pass
 
 
-class DashboardViewSet(BaseDashboardViewSet):
+class DashboardViewSet(SharedPermissionsMixin, BaseDashboardViewSet):
     serializer_class = serializers.DashboardSerializer
-    permission_classes = (
-        IsAuthenticated, IsAdminOwnerOrPublicReadOnly)
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
@@ -22,10 +20,16 @@ class DashboardViewSet(BaseDashboardViewSet):
         return self.serializer_class
 
     def get_queryset(self):
+        queryset = Dashboard.objects.all()
         if self.request.user.is_staff:
-            return Dashboard.objects.all()
-        queryset = Dashboard.objects.filter(user=self.request.user) | \
-            Dashboard.objects.filter(is_public=True)
+            return queryset
+        org = self.request.user.organization
+        # get users dash, shared_all dashes and users org shared dashes
+        queryset = \
+            queryset.filter(user=self.request.user) |\
+            queryset.filter(share_all=True) |\
+            queryset.filter(organization=org.id, share_org=True)
+
         return queryset
 
 
@@ -36,7 +40,7 @@ class WidgetTypeViewSet(BaseDashboardViewSet):
         return WidgetType.objects.all()
 
 
-class StatTypeViewSet(PermissionsMixin, viewsets.ReadOnlyModelViewSet):
+class StatTypeViewSet(DefaultPermissionsMixin, viewsets.ReadOnlyModelViewSet):
     ''' we only want readonly through api'''
     serializer_class = serializers.StatTypeSerializer
 
@@ -47,24 +51,17 @@ class StatTypeViewSet(PermissionsMixin, viewsets.ReadOnlyModelViewSet):
 class WidgetViewSet(BaseDashboardViewSet):
 
     serializer_class = serializers.WidgetSerializer
-    permission_classes = (
-        IsAuthenticated, IsAdminOwnerOrPublicReadOnly)
 
     def _params_to_ints(self, qs):
         # Convert a list of string IDs to a list of integers
         return [int(str_id) for str_id in qs.split(',')]
 
     def get_queryset(self):
-        # Retrieve widget by dashboard id
         dashboard = self.request.query_params.get('dashboard')
         queryset = Widget.objects.all()
         if dashboard:
             dashboard_id = self._params_to_ints(dashboard)
-            return queryset.filter(dashboard__id__in=dashboard_id)
-        if self.request.user.is_staff:
-            return queryset
-        queryset = queryset.filter(user=self.request.user) | \
-            queryset.filter(is_public=True)
+            queryset = queryset.filter(dashboard__id__in=dashboard_id)
         return queryset
 
     def get_serializer_class(self):

@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model, authenticate
 from django.contrib.auth.models import Group
 
 from rest_framework import serializers
+from organization.models import Organization
 
 
 class GroupSerializer(serializers.ModelSerializer):
@@ -10,14 +11,29 @@ class GroupSerializer(serializers.ModelSerializer):
         fields = ('name',)
 
 
+class UserSimpleSerializer(serializers.ModelSerializer):
+    '''for nesting in organization_user serializer'''
+    organization = serializers.PrimaryKeyRelatedField(
+        queryset=Organization.objects.all()
+    )
+
+    class Meta:
+        model = get_user_model()
+        fields = ('email', 'firstname', 'lastname', 'id', 'is_active',
+                  'last_login', 'organization', 'is_org_admin')
+
+
 class UserSerializer(serializers.ModelSerializer):
     '''serialzer for the user object'''
     groups = GroupSerializer(many=True, read_only=True)
+    organization = serializers.PrimaryKeyRelatedField(
+        queryset=Organization.objects.all()
+    )
 
     class Meta:
         model = get_user_model()
         fields = ('email', 'password', 'firstname', 'lastname', 'is_staff',
-                  'organization', 'groups', 'id')
+                  'groups', 'id', 'organization', 'is_org_admin')
         read_only_fields = ('is_staff', 'id')
         extra_kwargs = {'password': {'write_only': True, 'min_length': 5}}
 

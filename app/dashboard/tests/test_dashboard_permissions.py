@@ -1,6 +1,5 @@
 from django.test import TestCase
-from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Group as UserGroup, Permission
+from organization.models import Organization
 from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework import status
@@ -9,38 +8,13 @@ import pytz
 from dashboard.models import Dashboard, Widget, WidgetType, StatType
 from measurement.models import Metric
 from nslc.models import Network, Channel, Group
+from squac.test_mixins import sample_user, create_group
 
 '''
     to run this file only
     ./mg.sh "test dashboard.tests.test_dashboard_permissions && flake8"
 
 '''
-
-
-def sample_user(email='test@pnsn.org', password="secret"):
-    '''create a sample user for testing'''
-    return get_user_model().objects.create_user(email, password)
-
-
-'''permissons follow form
-
-    view_model
-    add_model
-    change_model
-    delete_model
-
-    Widget types and stattypes use modelpermissions only so no need to test
-    beyond has_perm
-'''
-
-
-def create_group(name, permissions):
-    '''takes name of group and list of permissions'''
-    group = UserGroup.objects.create(name=name)
-    for p in permissions:
-        perm = Permission.objects.get(codename=p)
-        group.permissions.add(perm)
-    return group
 
 
 REPORTER_PERMISSIONS = [
@@ -62,9 +36,9 @@ class DashboardPermissionTests(TestCase):
     def setUp(self):
         '''create sample authenticated user'''
         pass
-        self.reporter = sample_user()
         self.viewer = sample_user('viewer@pnsn.org')
-        self.other = sample_user('other@pnsn.org')
+        self.reporter = sample_user('reporter@pnsn.org')
+        self.not_me = sample_user('not_me@pnsn.org')
         self.reporter_client = APIClient()
         self.viewer_client = APIClient()
 
@@ -89,7 +63,7 @@ class DashboardPermissionTests(TestCase):
             unit='meter',
             default_minval=1,
             default_maxval=10.0,
-            user=self.other
+            user=self.not_me
         )
         self.net = Network.objects.create(
             code="UW",
@@ -110,26 +84,65 @@ class DashboardPermissionTests(TestCase):
             starttime=datetime(1970, 1, 1, tzinfo=pytz.UTC),
             endtime=datetime(2599, 12, 31, tzinfo=pytz.UTC)
         )
+
+        self.my_org = Organization.objects.create(
+            name='mu org'
+        )
+        self.not_my_org = Organization.objects.create(
+            name='not my org'
+        )
+        # we're not tesing chan group so mark share all
         self.grp = Group.objects.create(
             name='Test group',
-            is_public=True,
-            user=self.reporter
+            share_all=True,
+            share_org=True,
+            user=self.reporter,
+            organization=self.my_org
         )
         self.grp.channels.add(self.chan)
-        self.dashboard = Dashboard.objects.create(
+
+        self.reporter.organization = self.my_org
+        self.viewer.organization = self.my_org
+
+        self.my_org_dashboard_share_org = Dashboard.objects.create(
             name='Test dashboard',
-            user=self.reporter
+            share_all=False,
+            share_org=True,
+            user=self.reporter,
+            organization=self.my_org
         )
-        self.dashboard_other = Dashboard.objects.create(
-            name='Test dashboard2',
-            user=self.other,
-            is_public=True
+
+        self.my_org_dashboard_share_none = Dashboard.objects.create(
+            name='Test dashboard',
+            share_all=False,
+            share_org=False,
+            user=self.reporter,
+            organization=self.my_org
         )
-        self.dashboard_other_private = Dashboard.objects.create(
-            name='Test dashboard2',
-            user=self.other,
-            is_public=False
+
+        self.not_my_org_dashboard_share_all = Dashboard.objects.create(
+            name='Test dashboard',
+            share_all=True,
+            share_org=True,
+            user=self.not_me,
+            organization=self.not_my_org
         )
+
+        self.not_my_org_dashboard_share_org = Dashboard.objects.create(
+            name='Test dashboard',
+            share_all=False,
+            share_org=True,
+            user=self.not_me,
+            organization=self.not_my_org
+        )
+        self.not_my_org_dashboard_share_none = Dashboard.objects.create(
+            name='Test dashboard',
+            share_all=False,
+            share_org=False,
+            user=self.not_me,
+            organization=self.not_my_org
+        )
+
         self.widtype = WidgetType.objects.create(
             name='Test widget type',
             type='Some type',
@@ -142,7 +155,7 @@ class DashboardPermissionTests(TestCase):
         )
         self.widget = Widget.objects.create(
             name='Test widget',
-            dashboard=self.dashboard,
+            dashboard=self.my_org_dashboard_share_org,
             widgettype=self.widtype,
             stattype=self.stattype,
             columns=6,
@@ -151,38 +164,7 @@ class DashboardPermissionTests(TestCase):
             y_position=1,
             user=self.reporter,
             channel_group=self.grp,
-            is_public=True
         )
-
-        self.widget_other = Widget.objects.create(
-            name='Test widget2',
-            dashboard=self.dashboard,
-            widgettype=self.widtype,
-            stattype=self.stattype,
-            columns=6,
-            rows=3,
-            x_position=1,
-            y_position=1,
-            user=self.other,
-            channel_group=self.grp,
-            is_public=True
-        )
-
-        self.widget_other_private = Widget.objects.create(
-            name='Test widget3',
-            dashboard=self.dashboard,
-            widgettype=self.widtype,
-            stattype=self.stattype,
-            columns=6,
-            rows=3,
-            x_position=1,
-            y_position=1,
-            user=self.other,
-            channel_group=self.grp,
-            is_public=False
-        )
-
-        self.widget.metrics.add(self.metric)
 
     def test_reporter_has_perms(self):
         '''reporters can:
@@ -232,128 +214,56 @@ class DashboardPermissionTests(TestCase):
         self.assertFalse(self.viewer.has_perm('dashboard.change_stattype'))
         self.assertFalse(self.viewer.has_perm('dashboard.delete_stattype'))
 
-    # #### dashboard tests ####
-    def test_viewer_reporter_view_public_dashboard(self):
+    def test_viewer_can_view_my_org_share_org(self):
+        ''' a viewer can view own org's share_org resource'''
         url = reverse(
             'dashboard:dashboard-detail',
-            kwargs={'pk': self.dashboard_other.id}
+            kwargs={'pk': self.my_org_dashboard_share_org.id}
         )
         # viewer
         res = self.viewer_client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        # reporter
-        res = self.reporter_client.get(url)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
 
-    def test_viewer_reporter_view_private_dashboard(self):
-        '''reporter should be able to see own private dash
-           viewer should not
-        '''
+    def test_viewer_cannot_view_my_org_share_none(self):
+        self.my_org_dashboard_share_none.id
+        ''' a viewer can view own org's share_org resource'''
         url = reverse(
             'dashboard:dashboard-detail',
-            kwargs={'pk': self.dashboard.id}
+            kwargs={'pk': self.my_org_dashboard_share_none.id}
         )
         # viewer
         res = self.viewer_client.get(url)
-        self.assertNotEqual(res.status_code, status.HTTP_200_OK)
-        # reporter
-        res = self.reporter_client.get(url)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_viewer_reporter_view_dashboard_list(self):
-        url = reverse('dashboard:dashboard-list')
-        # viewer
-        res = self.viewer_client.get(url)
-        self.assertEqual(len(res.data), 1)
-
-        res = self.reporter_client.get(url)
-        self.assertEqual(len(res.data), 2)
-
-    def test_viewer_reporter_create_dashboard(self):
-        url = reverse('dashboard:dashboard-list')
-        payload = {'name': 'Test dashboard'}
-        # viewer
-        res = self.viewer_client.post(url, payload)
-        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
-        # reporter
-        res = self.reporter_client.post(url, payload)
-        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-
-    def test_viewer_reporter_delete_dashboard(self):
+    def test_viewer_can_view_not_my_org_share_all(self):
+        self.not_my_org_dashboard_share_all.id
+        ''' a viewer can view own org's share_org resource'''
         url = reverse(
             'dashboard:dashboard-detail',
-            kwargs={'pk': self.dashboard.id}
+            kwargs={'pk': self.not_my_org_dashboard_share_all.id}
         )
-        res = self.viewer_client.delete(url)
-        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
-        res = self.reporter_client.delete(url)
-        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
+        # viewer
+        res = self.viewer_client.get(url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
 
-    def test_reporter_cannot_delete_other_dashboard(self):
+    def test_viewer_cannot_view_not_my_org_share_org(self):
+        self.not_my_org_dashboard_share_all.id
+        ''' a viewer can view own org's share_org resource'''
         url = reverse(
             'dashboard:dashboard-detail',
-            kwargs={'pk': self.dashboard_other.id}
-        )
-        res = self.reporter_client.delete(url)
-        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
-
-    # #### widget tests ####
-    def test_viewer_reporter_view_widget(self):
-        url = reverse(
-            'dashboard:widget-detail',
-            kwargs={'pk': self.widget.id}
+            kwargs={'pk': self.not_my_org_dashboard_share_org.id}
         )
         # viewer
         res = self.viewer_client.get(url)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        # reporter
-        res = self.reporter_client.get(url)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_viewer_reporter_view_widget_list(self):
-        url = reverse('dashboard:widget-list')
+    def test_viewer_cannot_view_not_my_org_share_none(self):
+        self.not_my_org_dashboard_share_all.id
+        ''' a viewer can view own org's share_org resource'''
+        url = reverse(
+            'dashboard:dashboard-detail',
+            kwargs={'pk': self.not_my_org_dashboard_share_none.id}
+        )
         # viewer
         res = self.viewer_client.get(url)
-        self.assertEqual(len(res.data), 2)
-
-        res = self.reporter_client.get(url)
-        self.assertEqual(len(res.data), 2)
-
-    def test_viewer_reporter_create_widget(self):
-        url = reverse('dashboard:widget-list')
-        payload = {
-            'name': 'Test widget',
-            'dashboard': self.dashboard.id,
-            'widgettype': self.widtype.id,
-            'stattype': self.stattype.id,
-            'columns': 6,
-            'rows': 3,
-            'x_position': 1,
-            'y_position': 1,
-            'metrics': [self.metric.id],
-            'channel_group': self.grp.id
-        }
-        # viewer
-        res = self.viewer_client.post(url, payload)
-        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
-        # reporter
-        res = self.reporter_client.post(url, payload)
-        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-
-    def test_viewer_reporter_delete_widget(self):
-        url = reverse(
-            'dashboard:widget-detail',
-            kwargs={'pk': self.widget.id}
-        )
-        res = self.viewer_client.delete(url)
-        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
-        res = self.reporter_client.delete(url)
-        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
-
-    def test_reporter_cannot_delete_other_widget(self):
-        url = reverse(
-            'dashboard:widget-detail',
-            kwargs={'pk': self.widget_other.id}
-        )
-        res = self.reporter_client.delete(url)
-        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)

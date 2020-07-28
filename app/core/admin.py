@@ -14,7 +14,6 @@ class UserAdmin(BaseUserAdmin):
         ('Personal Info', {'fields': (
             'firstname',
             'lastname',
-            'organization',
         )}),
         (
             'Permissions',

@@ -6,13 +6,22 @@
     "last_login": null,
     "is_superuser": true,
     "email": "loader@pnsn.org",
+    "organization": 1,
     "firstname": "your",
     "lastname": "mom",
-    "organization": "pnsn",
     "is_active": true,
     "is_staff": true,
     "groups": [],
     "user_permissions": []
+  }
+},
+{
+  "model": "organization.organization",
+  "pk": 1,
+  "fields":{
+      "name": "PNSN",
+      "created_at": "2019-08-28T23:27:28.623Z",
+      "updated_at": "2019-08-28T23:27:28.623Z"
   }
 },
 {
@@ -568,10 +577,13 @@
     ],
     "name": "US-All",
     "description": "All US channels",
-    "is_public": false,
+    "share_all": false,
+    "share_org": false,
     "created_at": "2019-08-28T23:27:28.691Z",
     "updated_at": "2019-08-28T23:27:28.691Z",
-    "channels": []
+    "channels": [],
+    "organization": 1
+
   }
 },
 {
@@ -583,10 +595,13 @@
     ],
     "name": "LB-All",
     "description": "All LB channels",
-    "is_public": false,
+    "share_all": false,
+    "share_org": false,
     "created_at": "2019-08-28T23:27:28.694Z",
     "updated_at": "2019-08-28T23:27:28.694Z",
-    "channels": []
+    "channels": [],
+    "organization": 1
+
   }
 },
 {
@@ -598,9 +613,11 @@
     ],
     "name": "UW-All",
     "description": "All UW channels",
-    "is_public": true,
+    "share_all": true,
+    "share_org": true,
     "created_at": "2019-08-28T23:27:28.696Z",
     "updated_at": "2019-08-28T23:27:28.696Z",
+    "organization": 1,
     "channels": [
       4,
       5,
@@ -619,9 +636,11 @@
     ],
     "name": "NV-All",
     "description": "All NV channels",
-    "is_public": false,
+    "share_all": false,
+    "share_org": false,
     "created_at": "2019-08-28T23:27:28.715Z",
     "updated_at": "2019-08-28T23:27:28.715Z",
+    "organization": 1,
     "channels": []
   }
 },
@@ -634,9 +653,11 @@
     ],
     "name": "IU-All",
     "description": "All IU channels",
-    "is_public": false,
+    "share_all": false,
+    "share_org": false,
     "created_at": "2019-08-28T23:27:28.717Z",
     "updated_at": "2019-08-28T23:27:28.717Z",
+    "organization": 1,
     "channels": []
   }
 },
@@ -649,9 +670,11 @@
     ],
     "name": "NC-All",
     "description": "All NC channels",
-    "is_public": false,
+    "share_all": false,
+    "share_org": false,
     "created_at": "2019-08-28T23:27:28.720Z",
     "updated_at": "2019-08-28T23:27:28.720Z",
+    "organization": 1,
     "channels": []
   }
 },
@@ -664,9 +687,11 @@
     ],
     "name": "OO-All",
     "description": "All OO channels",
-    "is_public": false,
+    "share_all": false,
+    "share_org": false,
     "created_at": "2019-08-28T23:27:28.722Z",
     "updated_at": "2019-08-28T23:27:28.722Z",
+    "organization": 1,
     "channels": []
   }
 },
@@ -679,9 +704,11 @@
     ],
     "name": "NN-All",
     "description": "All NN channels",
-    "is_public": false,
+    "share_all": false,
+    "share_org": false,
     "created_at": "2019-08-28T23:27:28.725Z",
     "updated_at": "2019-08-28T23:27:28.725Z",
+    "organization": 1,
     "channels": []
   }
 },
@@ -694,9 +721,11 @@
     ],
     "name": "CI-All",
     "description": "All CI channels",
-    "is_public": false,
+    "share_all": false,
+    "share_org": false,
     "created_at": "2019-08-28T23:27:28.727Z",
     "updated_at": "2019-08-28T23:27:28.727Z",
+    "organization": 1,
     "channels": []
   }
 },
@@ -709,9 +738,11 @@
     ],
     "name": "MB-All",
     "description": "All MB channels",
-    "is_public": false,
+    "share_all": false,
+    "share_org": false,
     "created_at": "2019-08-28T23:27:28.729Z",
     "updated_at": "2019-08-28T23:27:28.729Z",
+    "organization": 1,
     "channels": []
   }
 },
@@ -724,9 +755,11 @@
     ],
     "name": "CN-All",
     "description": "All CN channels",
-    "is_public": false,
+    "share_all": false,
+    "share_org": false,
     "created_at": "2019-08-28T23:27:28.732Z",
     "updated_at": "2019-08-28T23:27:28.732Z",
+    "organization": 1,
     "channels": []
   }
 },
@@ -739,9 +772,11 @@
     ],
     "name": "BK-All",
     "description": "All BK channels",
-    "is_public": false,
+    "share_all": false,
+    "share_org": false,
     "created_at": "2019-08-28T23:27:28.734Z",
     "updated_at": "2019-08-28T23:27:28.734Z",
+    "organization": 1,
     "channels": []
   }
 },
@@ -754,9 +789,11 @@
     ],
     "name": "NP-All",
     "description": "All NP channels",
-    "is_public": false,
+    "share_all": false,
+    "share_org": false,
     "created_at": "2019-08-28T23:27:28.736Z",
     "updated_at": "2019-08-28T23:27:28.736Z",
+    "organization": 1,
     "channels": []
   }
 },
@@ -769,9 +806,11 @@
     ],
     "name": "TA-All",
     "description": "All TA channels",
-    "is_public": false,
+    "share_all": false,
+    "share_org": false,
     "created_at": "2019-08-28T23:27:28.738Z",
     "updated_at": "2019-08-28T23:27:28.738Z",
+    "organization": 1,
     "channels": []
   }
 },
@@ -784,9 +823,11 @@
     ],
     "name": "CC-All",
     "description": "All CC channels",
-    "is_public": false,
+    "share_all": false,
+
     "created_at": "2019-08-28T23:27:28.741Z",
     "updated_at": "2019-08-28T23:27:28.741Z",
+    "organization": 1,
     "channels": []
   }
 },
@@ -799,9 +840,10 @@
     ],
     "name": "PB-All",
     "description": "All PB channels",
-    "is_public": false,
+    "share_all": false,
     "created_at": "2019-08-28T23:27:28.744Z",
     "updated_at": "2019-08-28T23:27:28.744Z",
+    "organization": 1,
     "channels": []
   }
 },
@@ -814,9 +856,10 @@
     ],
     "name": "UO-All",
     "description": "All UO channels",
-    "is_public": false,
+    "share_all": false,
     "created_at": "2019-08-28T23:27:28.747Z",
     "updated_at": "2019-08-28T23:27:28.747Z",
+    "organization": 1,
     "channels": [
       9,
       10,
@@ -835,9 +878,10 @@
     ],
     "name": "HW-All",
     "description": "All HW channels",
-    "is_public": false,
+    "share_all": false,
     "created_at": "2019-08-28T23:27:28.765Z",
     "updated_at": "2019-08-28T23:27:28.765Z",
+    "organization": 1,
     "channels": []
   }
 },
@@ -2684,7 +2728,8 @@
     "description": "",
     "created_at": "2019-08-28T23:30:52.148Z",
     "updated_at": "2019-08-28T23:30:52.148Z",
-    "is_public": true,
+    "share_all": true,
+    "organization": 1,
     "user": [
       "loader@pnsn.org"
     ]
@@ -2698,7 +2743,8 @@
     "description": "",
     "created_at": "2019-08-28T23:30:52.150Z",
     "updated_at": "2019-08-28T23:30:52.150Z",
-    "is_public": true,
+    "share_all": true,
+    "organization": 1,
 
     "user": [
       "loader@pnsn.org"
@@ -2713,7 +2759,8 @@
     "description": "",
     "created_at": "2019-08-28T23:30:52.152Z",
     "updated_at": "2019-08-28T23:30:52.152Z",
-    "is_public": true,
+    "share_all": true,
+    "organization": 1,
     "user": [
       "loader@pnsn.org"
     ]
@@ -2727,7 +2774,8 @@
     "description": "",
     "created_at": "2019-08-28T23:30:52.153Z",
     "updated_at": "2019-08-28T23:30:52.153Z",
-    "is_public": true,
+    "share_all": true,
+    "organization": 1,
     "user": [
       "loader@pnsn.org"
     ]
@@ -2741,7 +2789,8 @@
     "description": "",
     "created_at": "2019-08-28T23:30:52.154Z",
     "updated_at": "2019-08-28T23:30:52.154Z",
-    "is_public": true,
+    "share_all": true,
+    "organization": 1,
     "user": [
       "loader@pnsn.org"
     ]
@@ -2755,7 +2804,8 @@
     "description": "",
     "created_at": "2019-08-28T23:30:52.155Z",
     "updated_at": "2019-08-28T23:30:52.155Z",
-    "is_public": true,
+    "share_all": true,
+    "organization": 1,
     "user": [
       "loader@pnsn.org"
     ]
@@ -2769,7 +2819,6 @@
     "description": "",
     "created_at": "2019-08-28T23:30:52.173Z",
     "updated_at": "2019-08-28T23:30:52.173Z",
-    "is_public": true,
     "user": [
       "loader@pnsn.org"
     ],
@@ -2825,7 +2874,6 @@
     "description": "",
     "created_at": "2019-08-28T23:30:52.175Z",
     "updated_at": "2019-08-28T23:30:52.175Z",
-    "is_public": true,
     "user": [
       "loader@pnsn.org"
     ],
@@ -2850,7 +2898,6 @@
     "description": "",
     "created_at": "2019-08-28T23:30:52.274Z",
     "updated_at": "2019-08-28T23:30:52.274Z",
-    "is_public": true,
     "user": [
       "loader@pnsn.org"
     ],
@@ -2906,7 +2953,6 @@
     "description": "",
     "created_at": "2019-08-28T23:30:52.275Z",
     "updated_at": "2019-08-28T23:30:52.276Z",
-    "is_public": true,
     "user": [
       "loader@pnsn.org"
     ],
@@ -2931,7 +2977,6 @@
     "description": "",
     "created_at": "2019-08-28T23:30:52.375Z",
     "updated_at": "2019-08-28T23:30:52.375Z",
-    "is_public": true,
     "user": [
       "loader@pnsn.org"
     ],
@@ -2987,7 +3032,6 @@
     "description": "",
     "created_at": "2019-08-28T23:30:52.376Z",
     "updated_at": "2019-08-28T23:30:52.376Z",
-    "is_public": true,
     "user": [
       "loader@pnsn.org"
     ],
@@ -3012,7 +3056,6 @@
     "description": "",
     "created_at": "2019-08-28T23:30:52.476Z",
     "updated_at": "2019-08-28T23:30:52.476Z",
-    "is_public": true,
     "user": [
       "loader@pnsn.org"
     ],
@@ -3068,7 +3111,6 @@
     "description": "",
     "created_at": "2019-08-28T23:30:52.478Z",
     "updated_at": "2019-08-28T23:30:52.478Z",
-    "is_public": true,
     "user": [
       "loader@pnsn.org"
     ],
@@ -3093,7 +3135,6 @@
     "description": "",
     "created_at": "2019-08-28T23:30:52.573Z",
     "updated_at": "2019-08-28T23:30:52.573Z",
-    "is_public": true,
     "user": [
       "loader@pnsn.org"
     ],
@@ -3149,7 +3190,6 @@
     "description": "",
     "created_at": "2019-08-28T23:30:52.574Z",
     "updated_at": "2019-08-28T23:30:52.574Z",
-    "is_public": true,
     "user": [
       "loader@pnsn.org"
     ],
@@ -3174,7 +3214,6 @@
     "description": "",
     "created_at": "2019-08-28T23:30:52.674Z",
     "updated_at": "2019-08-28T23:30:52.674Z",
-    "is_public": true,
     "user": [
       "loader@pnsn.org"
     ],
@@ -3230,7 +3269,6 @@
     "description": "",
     "created_at": "2019-08-28T23:30:52.675Z",
     "updated_at": "2019-08-28T23:30:52.675Z",
-    "is_public": true,
     "user": [
       "loader@pnsn.org"
     ],

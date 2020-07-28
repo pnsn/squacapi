@@ -1,24 +1,17 @@
 from django.test import TestCase
-from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Group, Permission
-from django.urls import reverse
 from rest_framework.test import APIClient
-from rest_framework import status
 from datetime import datetime
 import pytz
 from measurement.models import Metric, Measurement
 from nslc.models import Network, Channel
+from squac.test_mixins import sample_user, create_group
+
 
 '''
     to run this file only
     ./mg.sh "test measurement.tests.test_measurement_permissions && flake8"
 
 '''
-
-
-def sample_user(email='test@pnsn.org', password="secret"):
-    '''create a sample user for testing'''
-    return get_user_model().objects.create_user(email, password)
 
 
 '''permissons follow form
@@ -28,16 +21,6 @@ def sample_user(email='test@pnsn.org', password="secret"):
     change_model
     delete_model
 '''
-
-
-def create_group(name, permissions):
-    '''takes name of group and list of permissions'''
-    group = Group.objects.create(name=name)
-    for p in permissions:
-        perm = Permission.objects.get(codename=p)
-        group.permissions.add(perm)
-    return group
-
 
 REPORTER_PERMISSIONS = ['view_metric', 'add_metric', 'change_metric',
                         'delete_metric',
@@ -167,102 +150,3 @@ class MeasurementPermissionTests(TestCase):
         self.assertFalse(self.viewer.has_perm('measurement.add_archive'))
         self.assertFalse(self.viewer.has_perm('measurement.change_archive'))
         self.assertFalse(self.viewer.has_perm('measurement.delete_archive'))
-
-    # #### metric tests ####
-    def test_viewer_reporter_view_metric(self):
-        url = reverse(
-            'measurement:metric-detail',
-            kwargs={'pk': self.metric.id}
-        )
-        # viewer
-        res = self.viewer_client.get(url)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        # reporter
-        res = self.reporter_client.get(url)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-
-    def test_viewer_reporter_create_metric(self):
-        url = reverse('measurement:metric-list')
-        payload = {
-            'name': 'Metric test',
-            'code': 'coolname',
-            'description': 'Test description',
-            'unit': 'meter',
-            'default_minval': 1,
-            'default_maxval': 10.0,
-            'reference_url': 'pnsn.org'
-        }
-        # viewer
-        res = self.viewer_client.post(url, payload)
-        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
-        # reporter
-        res = self.reporter_client.post(url, payload)
-        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-
-    def test_viewer_reporter_delete_metric(self):
-        url = reverse(
-            'measurement:metric-detail',
-            kwargs={'pk': self.metric.id}
-        )
-        res = self.viewer_client.delete(url)
-        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
-        res = self.reporter_client.delete(url)
-        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
-
-    def test_reporter_cannot_delete_other_metric(self):
-        url = reverse(
-            'measurement:metric-detail',
-            kwargs={'pk': self.metric_other.id}
-        )
-        res = self.reporter_client.delete(url)
-        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
-
-    # ## measurement tests ###
-    def test_viewer_reporter_view_measurement(self):
-        url = reverse(
-            'measurement:measurement-detail',
-            kwargs={'pk': self.measurement.id}
-        )
-        # viewer
-        res = self.viewer_client.get(url)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        # reporter
-        res = self.viewer_client.get(url)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-
-    def test_viewer_reporter_create_measurement(self):
-        url = reverse('measurement:measurement-list')
-        payload = {
-            'metric': self.metric.id,
-            'channel': self.chan.id,
-            'value': 47.0,
-            'starttime': datetime(
-                2019, 4, 5, 8, 8, 7, 127325, tzinfo=pytz.UTC),
-            'endtime': datetime(2019, 4, 5, 9, 8, 7, 127325, tzinfo=pytz.UTC),
-            'user': self.viewer
-        }
-        # viewer
-        res = self.viewer_client.post(url, payload)
-        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
-        # reporter
-        payload['user'] = self.reporter
-        res = self.reporter_client.post(url, payload)
-        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-
-    def test_viewer_reporter_delete_measurement(self):
-        url = reverse(
-            'measurement:measurement-detail',
-            kwargs={'pk': self.measurement.id}
-        )
-        res = self.viewer_client.delete(url)
-        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
-        res = self.reporter_client.delete(url)
-        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
-
-    def test_reporter_cannot_delete_other_measurement(self):
-        url = reverse(
-            'measurement:measurement-detail',
-            kwargs={'pk': self.measurement_other.id}
-        )
-        res = self.reporter_client.delete(url)
-        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)

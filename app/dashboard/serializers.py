@@ -3,6 +3,7 @@ from .models import Widget, WidgetType, Dashboard, StatType
 from nslc.models import Group
 from measurement.models import Metric
 from measurement.serializers import ThresholdSerializer, MetricSerializer
+from organization.models import Organization
 
 
 class WidgetSerializer(serializers.HyperlinkedModelSerializer):
@@ -35,13 +36,16 @@ class WidgetSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class DashboardSerializer(serializers.HyperlinkedModelSerializer):
+    organization = serializers.PrimaryKeyRelatedField(
+        queryset=Organization.objects.all()
+    )
 
     class Meta:
         model = Dashboard
         fields = (
             'id', 'name', 'description', 'created_at', 'updated_at',
-            'user_id', 'is_public', 'window_seconds', 'starttime',
-            'endtime'
+            'user_id', 'share_all', 'share_org', 'window_seconds', 'starttime',
+            'endtime', 'organization'
         )
         read_only_fields = ('id',)
 
@@ -62,12 +66,15 @@ class DashboardDetailSerializer(DashboardSerializer):
         many=True,
         queryset=Widget.objects.all()
     )
+    organization = serializers.PrimaryKeyRelatedField(
+        queryset=Organization.objects.all()
+    )
 
     class Meta:
         model = Dashboard
         fields = (
             'id', 'description', 'name', 'widgets', 'created_at',
-            'updated_at', 'user_id', 'is_public'
+            'updated_at', 'user_id', 'share_all', 'share_org', 'organization'
         )
         read_only_fields = ('id',)
 
@@ -97,6 +104,7 @@ class WidgetDetailSerializer(serializers.HyperlinkedModelSerializer):
         fields = (
             'id', 'name', 'dashboard', 'description', 'widgettype', 'metrics',
             'created_at', 'updated_at', 'thresholds', 'columns', 'rows',
-            'x_position', 'y_position', 'stattype', 'channel_group', 'user_id'
+            'x_position', 'y_position', 'stattype', 'channel_group',
+            'user_id'
         )
         read_only_fields = ('id',)

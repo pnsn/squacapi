@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 from datetime import datetime
 import pytz
+from organization.models import Organization
 
 
 class Nslc(models.Model):
@@ -71,7 +72,7 @@ class Channel(Nslc):
             models.Index(fields=['lat']),
             models.Index(fields=['lon']),
             models.Index(fields=['-starttime']),
-            models.Index(fields=['-endtime'])
+            models.Index(fields=['-endtime']),
         ]
 
     def __str__(self):
@@ -89,13 +90,20 @@ class Group(models.Model):
     channels = models.ManyToManyField('Channel')
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=255, blank=True, default='')
-    is_public = models.BooleanField(default=False)
+    share_all = models.BooleanField(default=False)
+    share_org = models.BooleanField(default=False)
+    organization = models.ForeignKey(
+        Organization,
+        on_delete=models.CASCADE,
+        related_name='channel_groups'
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         indexes = [
-            models.Index(fields=['is_public'])
+            models.Index(fields=['share_all']),
+            models.Index(fields=['share_org'])
         ]
 
     def __str__(self):

@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.test import Client
+from organization.models import Organization
 
 
 class AdminSiteTests(TestCase):
@@ -10,9 +11,11 @@ class AdminSiteTests(TestCase):
         admin_email = 'admin@pnsn.org'
         admin_pass = 'password123'
         self.client = Client()
+        self.organization = Organization.objects.create(name="PNSN")
         self.admin_user = get_user_model().objects.create_superuser(
             email=admin_email,
-            password=admin_pass
+            password=admin_pass,
+            organization=self.organization
         )
 
         self.client.force_login(self.admin_user)
@@ -21,7 +24,7 @@ class AdminSiteTests(TestCase):
             password='password123',
             firstname='your',
             lastname='mom',
-            organization='pnsn'
+            organization=self.organization
         )
 
     def test_users_listed(self):

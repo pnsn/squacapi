@@ -15,11 +15,7 @@ from hypothesis.extra.django import TestCase, from_model
 
 from measurement.models import Metric, Measurement, Archive
 from nslc.models import Network, Channel
-
-
-def sample_user(email='test@pnsn.org', password="secret"):
-    '''create a sample user for testing'''
-    return get_user_model().objects.create_user(email, password)
+from squac.test_mixins import sample_user
 
 
 class TestArchiveCreation(TestCase):
