@@ -95,9 +95,7 @@ class Group(models.Model):
     organization = models.ForeignKey(
         Organization,
         on_delete=models.CASCADE,
-        related_name='channel_groups',
-        blank=True,
-        null=True
+        related_name='channel_groups'
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

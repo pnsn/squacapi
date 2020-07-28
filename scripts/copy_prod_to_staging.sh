@@ -2,9 +2,9 @@
 # dump all production data except full measurementes from prod to staging
 path=/usr/pgsql-10/bin
 #how many of interval
-num=1
+num=6
 #interval
-interval=day
+interval=hours
 $path/dropdb squacapi_staging
 $path/createdb squacapi_staging
 
