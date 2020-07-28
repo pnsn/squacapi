@@ -1,6 +1,6 @@
 from rest_framework.permissions import IsAuthenticated, \
     DjangoModelPermissions, IsAdminUser
-from squac.permissions import IsAdminOwnerOrShared, IsAdminOrOrganizationAdmin
+from squac.permissions import IsAdminOwnerOrShared, IsOrgAdminOrMember
 
 '''common mixins'''
 
@@ -44,4 +44,4 @@ class OrganizationPermissionsMixin:
             ',' commas act as 'and' '|' pipes act as 'or'
          '''
     permission_classes = (
-        IsAuthenticated, IsAdminOrOrganizationAdmin,)
+        IsAuthenticated, IsOrgAdminOrMember,)

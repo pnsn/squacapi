@@ -8,13 +8,15 @@ from django.contrib.auth import get_user_model
 from user.serializers import UserSerializer, UserSimpleSerializer
 import secrets
 
+
 class OrganizationUserFilter(filters.FilterSet):
     class Meta:
         model = get_user_model()
         fields = ('organization', )
 
 
-class OrganizationBase(SetUserMixin, viewsets.ModelViewSet):
+class OrganizationBase(SetUserMixin, OrganizationPermissionsMixin,
+                       viewsets.ModelViewSet):
     pass
 
 
@@ -22,52 +24,58 @@ class OrganizationViewSet(OrganizationBase):
     serializer_class = OrganizationSerializer
 
     def get_queryset(self):
-        return Organization.objects.all()
+        queryset = Organization.objects.all()
+        if self.request.user.is_staff:
+            return queryset
+        user_org = self.request.user.organization
+        queryset = queryset.filter(pk=user_org.id)
+        return queryset
 
 
 class OrganizationUserViewSet(OrganizationBase):
     filter_class = OrganizationUserFilter
     serializer_class = UserSerializer
 
-    '''overriding for two reasons
-        1) Need to hook into invitation
-        2) Nested serializers suck.
-            *pop user off of request.data
-            *invite user
-            *update request.data with user_id
-    '''
     def get_queryset(self):
-        return get_user_model().objects.all()
+        queryset = get_user_model().objects.all()
+        if self.request.user.is_staff:
+            return queryset
+        user_org = self.request.user.organization
+        queryset = queryset.filter(organization=user_org)
+        return queryset
 
     def create(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
         _data = request.data
 
-        # user_param = request.data.pop('user')
         try:
             email = _data['email']
             get_user_model().objects.get(email=email)
             message = f"A user with {email} exists "
             return Response(message, status=400)
-            # firstname = existing_user.firstname
-            # lastname = existing_user.lastname
         except get_user_model().DoesNotExist:
             pass
-        
-        '''QueryParam object is immutable, so we need to change that'''
-        # remember state
-        # _mutable = _data._mutable
-        # set to mutable
-        # _data._mutable = True
+        '''data object is immutable, so we need to change that'''
+        _mutable = False
+        try:
+            '''if object is passed in as json it is dict
+               otherwise is is QueryDict, which is immutable
+            '''
+            _mutable = _data._mutable
+            # set to mutable
+            _data._mutable = True
+
+        except AttributeError:
+            pass
         _data['firstname'] = 'firstname'
         _data['lastname'] = 'lastname'
+        # set temp password
         _data['password'] = secrets.token_hex(16)
-
-        # set mutable flag back
-        # _data = _mutable
-
-
-        #invite  new user here
+        try:
+            _data._mutable = _mutable
+        except AttributeError:
+            pass
+        # invite  new user here
         # user = invitation_backend().invite_by_email(
         #     user_param['email'],
         #     **{'firstname': firstname,

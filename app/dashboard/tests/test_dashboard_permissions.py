@@ -1,6 +1,5 @@
 from django.test import TestCase
 from organization.models import Organization
-from django.contrib.auth.models import Group as UserGroup, Permission
 from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework import status
@@ -9,34 +8,13 @@ import pytz
 from dashboard.models import Dashboard, Widget, WidgetType, StatType
 from measurement.models import Metric
 from nslc.models import Network, Channel, Group
-from squac.test_mixins import sample_user
+from squac.test_mixins import sample_user, create_group
 
 '''
     to run this file only
     ./mg.sh "test dashboard.tests.test_dashboard_permissions && flake8"
 
 '''
-
-
-'''permissons follow form
-
-    view_model
-    add_model
-    change_model
-    delete_model
-
-    Widget types and stattypes use modelpermissions only so no need to test
-    beyond has_perm
-'''
-
-
-def create_group(name, permissions):
-    '''takes name of group and list of permissions'''
-    group = UserGroup.objects.create(name=name)
-    for p in permissions:
-        perm = Permission.objects.get(codename=p)
-        group.permissions.add(perm)
-    return group
 
 
 REPORTER_PERMISSIONS = [

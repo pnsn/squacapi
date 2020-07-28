@@ -1,11 +1,10 @@
 from django.test import TestCase
-from django.contrib.auth.models import Group, Permission
 from rest_framework.test import APIClient
 from datetime import datetime
 import pytz
 from measurement.models import Metric, Measurement
 from nslc.models import Network, Channel
-from squac.test_mixins import sample_user
+from squac.test_mixins import sample_user, create_group
 
 
 '''
@@ -22,16 +21,6 @@ from squac.test_mixins import sample_user
     change_model
     delete_model
 '''
-
-
-def create_group(name, permissions):
-    '''takes name of group and list of permissions'''
-    group = Group.objects.create(name=name)
-    for p in permissions:
-        perm = Permission.objects.get(codename=p)
-        group.permissions.add(perm)
-    return group
-
 
 REPORTER_PERMISSIONS = ['view_metric', 'add_metric', 'change_metric',
                         'delete_metric',

@@ -13,7 +13,7 @@ from squac.test_mixins import sample_user
 to run only the app tests:
     /mg.sh "test org && flake8"
 to run only this file
-    ./mg.sh "test org.tests.test_org_api  && flake8"
+    ./mg.sh "test organization.tests.test_organization_api  && flake8"
 
 '''
 
@@ -77,6 +77,7 @@ class OrganizationAPITests(TestCase):
         user = self.org1user
         self.assertFalse(user.is_org_admin)
         url = reverse('organization:organizationuser-detail', args=[user.id])
+
         payload = {
             'email': user.email,
             "organization": self.org1.id,
@@ -84,5 +85,4 @@ class OrganizationAPITests(TestCase):
         }
         res = self.client.patch(url, payload, format='json')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        print(res.data)
         self.assertTrue(res.data['is_org_admin'])
