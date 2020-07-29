@@ -39,6 +39,6 @@ class GroupViewSet(viewsets.ModelViewSet):
     """Manage the authenticated user"""
     serializer_class = UserGroupSerializer
     permission_classes = (IsAuthenticated,)
-    
+
     def get_queryset(self):
         return Group.objects.all()
