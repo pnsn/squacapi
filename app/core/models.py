@@ -71,6 +71,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         '''organization admins can edit org users'''
         if self.is_org_admin:
             self.groups.add(org_admin)
+        else:
+            org_admin.user_set.remove(self)
 
         viewer = Group.objects.get(name='viewer')
         reporter = Group.objects.get(name='reporter')
