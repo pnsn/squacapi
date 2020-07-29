@@ -44,12 +44,15 @@ class OrganizationAPITests(TestCase):
 
     def setUp(self):
         self.org_admin_group = create_group(
-            'organization Admin',
+            'org_admin',
             self.ORGANIZATION_ADMIN_PERMISSIONS
         )
-        self.viewer_group = create_group(
+        self.group_viewer = create_group(
             'viewer', self.VIEWER_PERMISSIONS
         )
+
+        self.group_reporter = create_group('reporter', [])
+        self.group_contributor = create_group('contributor', [])
 
         self.org1 = Organization.objects.create(name="UW")
         self.org2 = Organization.objects.create(name="CVO")
@@ -63,10 +66,10 @@ class OrganizationAPITests(TestCase):
         self.org1_admin = sample_user("admin@org1.org", 'secret', self.org1,
                                       is_org_admin=True)
         # add obj model permissions
-        self.org1_member.groups.add(self.viewer_group)
-        self.org2_member.groups.add(self.viewer_group)
+        self.org1_member.groups.add(self.group_viewer)
+        self.org2_member.groups.add(self.group_viewer)
         self.org1_admin.groups.add(self.org_admin_group)
-        self.org1_admin.groups.add(self.viewer_group)
+        self.org1_admin.groups.add(self.group_viewer)
 
         # authenticate
         self.org1_member_client.force_authenticate(self.org1_member)

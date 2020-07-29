@@ -16,6 +16,32 @@
   }
 },
 {
+  "model": "auth.group",
+    "fields": {
+      "name": "viewer"
+    }
+  },
+{
+  "model": "auth.group",
+    "fields": {
+      "name": "reporter"
+    }
+  },
+{
+  "model": "auth.group",
+    "fields": {
+      "name": "contributor"
+    }
+  },
+
+{
+  "model": "auth.group",
+    "fields": {
+      "name": "org_admin"
+    }
+  },
+
+{
   "model": "organization.organization",
   "pk": 1,
   "fields":{
