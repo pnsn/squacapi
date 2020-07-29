@@ -32,7 +32,7 @@ schema_view = get_schema_view(
         license=openapi.License(name="BSD License"),
     ),
     public=True,
-    permission_classes=(permissions.AllowAny,),
+    permission_classes=(permissions.IsAuthenticated,),
 )
 
 
@@ -40,7 +40,6 @@ urlpatterns = [
     path('', views.home_v1, name='Squacapi V1.0'),
     path('admin/', admin.site.urls),
     path('user/', include('user.urls', namespace='legacy')),
-    # path('invitations/', include(invitation_backend().get_urls())),
     path('v1.0/user/accounts/', include('django.contrib.auth.urls')),
     path('v1.0/user/', include('user.urls')),
     path('v1.0/nslc/', include('nslc.urls')),
@@ -50,6 +49,7 @@ urlpatterns = [
     # api password reset endpoints
     path('v1.0/password_reset/', include('django_rest_passwordreset.urls',
          namespace='password_reset')),
+    # invitation url
     path('v1.0/', views.home_v1, name='Squacapi V1.0'),
     # default path for thel login /logout
     path('api-auth/', include('rest_framework.urls',

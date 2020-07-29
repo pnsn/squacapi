@@ -10,9 +10,10 @@ from organization.models import Organization
 
 ''' Tests for user api run with. run all tests with
 
-docker-compose run app sh -c "python manage.py test && flake8"
-or use mg.sh script:
+use mg.sh script:
     ./mg.sh "test && flake8"
+    or to test this file
+    ./mg.sh "test user.tests.test_user_api  && flake8"
 '''
 
 CREATE_USER_URL = reverse('user:create')
@@ -54,60 +55,6 @@ class AuthenticateApiUser(TestCase):
         payload = {'email': 'test123@pnsn.org', 'password': "secret"}
         res = self.client.post(CREATE_TOKEN_URL, payload)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-
-# FIXME these need to be redone in another package
-
-# class ActivateUser(TestCase):
-#     ''' user activation by invitation token'''
-
-#     def setUp(self):
-#         self.client = APIClient()
-#         self.organization = Organization.objects.create(name='PNSN')
-#         self.invited_user = sample_user(
-#             email='inactive@pnsn.org',
-#             password="secret",
-#             organization=self.organization,
-#             firstname='blank',
-#             lastname='blank',
-#             is_active=False
-#         )
-
-#     def test_activate_user_invalid_token(self):
-#         url = reverse('user:activate_user')
-#         payload = {
-#             'user': {
-#                 'email': self.invited_user.email,
-#                 'password': 'superdupersecret',
-#                 'organization': self.organization.id,
-#                 'firstname': 'your',
-#                 'lastname': 'mom',
-#             },
-#             'token': 'invalid token'
-#         }
-#         res = self.client.patch(url, payload, format='json')
-#         self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
-
-    # def test_activate_user_valid_token(self):
-    #     token = RegistrationTokenGenerator().make_token(self.invited_user)
-
-    #     url = reverse('user:activate_user')
-
-    #     payload = {
-    #         'user': {
-    #             "email": self.invited_user.email,
-    #             "password": 'superdupersecret',
-    #             'organization': self.organization.id,
-    #             "firstname": 'your',
-    #             "lastname": 'mom'
-    #         },
-    #         "token": token
-    #     }
-    #     self.assertFalse(self.invited_user.is_active)
-    #     res = self.client.patch(url, payload, format='json')
-    #     self.assertEqual(res.status_code, status.HTTP_200_OK)
-    #     updated_user = get_user_model().objects.get(
-    #         email=self.invited_user.email)
-    #     self.assertTrue(updated_user.is_active)
 
 
 class PrivateUserAPITests(TestCase):
@@ -235,3 +182,9 @@ class PrivateUserAPITests(TestCase):
             email=payload['email']
         ).exists()
         self.assertFalse(user_exists)
+
+    def test_retrieve_groups(self):
+        '''test retrieve perm groups'''
+        url = reverse('user:group-list')
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
