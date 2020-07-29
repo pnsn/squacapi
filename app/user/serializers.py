@@ -61,7 +61,7 @@ class UserSerializer(UserBaseSerializer):
 
 
 class UserOrganizationSerializer(UserBaseSerializer):
-    groups = GroupSerializer(many=True, read_only=True)
+    # groups = GroupSerializer(many=True, read_only=True)
     organization = serializers.PrimaryKeyRelatedField(
         queryset=Organization.objects.all()
     )
