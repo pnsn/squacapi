@@ -23,12 +23,8 @@ class UserSimpleSerializer(serializers.ModelSerializer):
                   'last_login', 'organization', 'is_org_admin')
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserBaseSerializer(serializers.ModelSerializer):
     '''serialzer for the user object'''
-    groups = GroupSerializer(many=True, read_only=True)
-    organization = serializers.PrimaryKeyRelatedField(
-        queryset=Organization.objects.all()
-    )
 
     class Meta:
         model = get_user_model()
@@ -38,18 +34,47 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {'password': {'write_only': True, 'min_length': 5}}
 
     def create(self, validated_data):
-        '''Create a new user with an encrypted password and return it'''
-        return get_user_model().objects.create_user(**validated_data)
+        '''Create a new user with an encrypted password set groups'''
+        groups = validated_data.pop('groups', [])
+        user = get_user_model().objects.create_user(**validated_data)
+        user.set_permission_groups(groups)
+        return user
 
     def update(self, instance, validate_data):
-        '''update user, set password and return'''
+        '''update user, set group and password and return'''
         # the None arg is the default, and for a passwd this is no good
         password = validate_data.pop('password', None)
+        groups = validate_data.pop('groups', [])
         user = super().update(instance, validate_data)
+        user.set_permission_groups(groups)
         if password:
             user.set_password(password)
             user.save()
         return user
+
+
+class UserSerializer(UserBaseSerializer):
+    groups = GroupSerializer(many=True, read_only=True)
+    organization = serializers.PrimaryKeyRelatedField(
+        queryset=Organization.objects.all()
+    )
+
+
+class UserOrganizationSerializer(UserBaseSerializer):
+    organization = serializers.PrimaryKeyRelatedField(
+        queryset=Organization.objects.all()
+    )
+
+
+class UserMeSerializer(UserBaseSerializer):
+
+    class Meta:
+        model = get_user_model()
+        fields = ('email', 'password', 'firstname', 'lastname', 'is_staff',
+                  'id', 'organization', 'is_org_admin', 'groups')
+        read_only_fields = ('is_staff', 'id', 'is_org_admin', 'groups',
+                            'organization', 'email')
+        extra_kwargs = {'password': {'write_only': True, 'min_length': 5}}
 
 
 class AuthTokenSerializer(serializers.Serializer):

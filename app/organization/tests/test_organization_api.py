@@ -3,7 +3,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 from organization.models import Organization
-from squac.test_mixins import sample_user
+from squac.test_mixins import sample_user, create_group
 
 
 '''Tests for org models:
@@ -11,7 +11,7 @@ from squac.test_mixins import sample_user
 
 
 to run only the app tests:
-    /mg.sh "test org && flake8"
+    /mg.sh "test organizations && flake8"
 to run only this file
     ./mg.sh "test organization.tests.test_organization_api  && flake8"
 
@@ -22,6 +22,11 @@ class OrganizationAPITests(TestCase):
 
     def setUp(self):
         self.client = APIClient()
+        self.group_viewer = create_group('viewer', [])
+        self.group_reporter = create_group('reporter', [])
+        self.group_contributor = create_group('contributor', [])
+        self.group_org_admin = create_group("org_admin", [])
+
         self.org1 = Organization.objects.create(name="UW")
         self.org2 = Organization.objects.create(name="CVO")
         self.staff = sample_user(
@@ -50,16 +55,18 @@ class OrganizationAPITests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
     def test_create_org_user_new_user(self):
-        '''create org_user for existing user'''
+        '''create org_user for new user'''
         url_org = reverse('organization:organization-detail',
                           kwargs={'pk': self.org1.id})
         res = self.client.get(url_org)
         self.assertEqual(len(res.data['users']), 2)
         url = reverse('organization:organizationuser-list')
-
         payload = {
             'email': 'testy@pnsn.org',
-            "organization": self.org1.id
+            "organization": self.org1.id,
+            "groups": [
+                self.group_contributor.id
+            ]
         }
         res = self.client.post(url, payload, format='json')
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)

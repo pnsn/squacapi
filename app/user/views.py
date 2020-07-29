@@ -2,13 +2,11 @@ from django_rest_passwordreset.serializers import TokenSerializer
 from django.utils.decorators import method_decorator
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
-# from rest_framework.response import Response
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.settings import api_settings
-from user.serializers import UserSerializer, AuthTokenSerializer
-# from django.contrib.auth import get_user_model
+from user.serializers import UserSerializer, UserMeSerializer, \
+    AuthTokenSerializer
 from drf_yasg.utils import swagger_auto_schema
-# from organizations.backends.tokens import RegistrationTokenGenerator
 
 
 class CreateUserView(generics.CreateAPIView):
@@ -29,7 +27,7 @@ class CreateTokenView(ObtainAuthToken):
 
 class ManageUserView(generics.RetrieveUpdateAPIView):
     """Manage the authenticated user"""
-    serializer_class = UserSerializer
+    serializer_class = UserMeSerializer
     permission_classes = (IsAuthenticated,)
 
     def get_object(self):

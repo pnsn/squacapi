@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, \
-    PermissionsMixin
+    PermissionsMixin, Group
+
 from organization.models import Organization
 
 
@@ -54,3 +55,33 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def get_full_name(self):
         return self.firstname + " " + self.lastname
+
+    def belongs_to_group(self, group_name):
+        '''check if user belongs to group by passing in group name (string)'''
+        return self.groups.filter(name=group_name).exists()
+
+    def set_permission_groups(self, group_list):
+        '''group_list is list of Group objects (permissions)
+        simplify groups, which are hierachical
+        contributer <  reporter < viewer
+        viewer is default
+        adding user to group that user already belongs to doesn't duplicate
+        '''
+        org_admin = Group.objects.get(name='org_admin')
+        '''organization admins can edit org users'''
+        if self.is_org_admin:
+            self.groups.add(org_admin)
+
+        viewer = Group.objects.get(name='viewer')
+        reporter = Group.objects.get(name='reporter')
+        contributor = Group.objects.get(name='contributor')
+        self.groups.add(viewer)
+        if contributor in group_list:
+            self.groups.add(reporter)
+            self.groups.add(contributor)
+        elif reporter in group_list:
+            self.groups.add(reporter)
+            contributor.user_set.remove(self)
+        else:  # viewer (least priv)
+            reporter.user_set.remove(self)
+            contributor.user_set.remove(self)
