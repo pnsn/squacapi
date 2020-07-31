@@ -32,36 +32,35 @@ schema_view = get_schema_view(
         license=openapi.License(name="BSD License"),
     ),
     public=True,
-    permission_classes=(permissions.AllowAny,),
+    permission_classes=(permissions.IsAuthenticated,),
 )
 
 
 urlpatterns = [
     path('', views.home_v1, name='Squacapi V1.0'),
     path('admin/', admin.site.urls),
+    path('user/', include('user.urls', namespace='legacy')),
+    path('v1.0/user/accounts/', include('django.contrib.auth.urls')),
+    path('v1.0/user/', include('user.urls')),
+    path('v1.0/nslc/', include('nslc.urls')),
+    path('v1.0/measurement/', include('measurement.urls')),
+    path('v1.0/dashboard/', include('dashboard.urls')),
+    path('v1.0/organization/', include('organization.urls')),
+    # api password reset endpoints
+    path('v1.0/password_reset/', include('django_rest_passwordreset.urls',
+         namespace='password_reset')),
+    # invitation url
+    path('v1.0/', views.home_v1, name='Squacapi V1.0'),
     # default path for thel login /logout
     path('api-auth/', include('rest_framework.urls',
          namespace='rest_framework')),
-    path('user/', include('user.urls', namespace='legacy')),
     path('swagger/',
          schema_view.with_ui('swagger', cache_timeout=0),
          name='schema-swagger-ui'),
     re_path(r'^swagger(?P<format>\.json|\.yaml)$',
             schema_view.without_ui(cache_timeout=0),
             name='schema-json'),
-    # v1.0/
-
-    path('v1.0/dashboard/', include('dashboard.urls')),
-    path('v1.0/invite/', include('invite.urls')),
-    path('v1.0/measurement/', include('measurement.urls')),
-    path('v1.0/nslc/', include('nslc.urls')),
-    path('v1.0/organization/', include('organization.urls')),
-    path('v1.0/password_reset/', include('django_rest_passwordreset.urls',
-         namespace='password_reset')),
-    path('v1.0/user/accounts/', include('django.contrib.auth.urls')),
-    path('v1.0/user/', include('user.urls')),
-    path('v1.0/', views.home_v1, name='Squacapi V1.0'),
-
+    # browser routes for password resets
 ]
 
 if settings.DEBUG:
