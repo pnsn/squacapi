@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'drf_yasg',
     'django_rest_passwordreset',
     'organization',
+    'invite',
 ]
 
 # The caching middlewares must be first and last
@@ -231,3 +232,5 @@ if not DEBUG:
 CACHE_MIDDLEWARE_SECONDS = int(os.environ.get('CACHE_SECONDS'))
 CACHE_MIDDLEWARE_KEY_PREFIX='squac_' + os.environ.get('CACHE_BACKEND')
 
+# number of hours to expire invite token
+INVITE_TOKEN_EXPIRY_TIME = 48

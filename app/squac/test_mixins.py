@@ -9,6 +9,9 @@ def sample_user(email='test@pnsn.org', password="secret", organization=None,
                 **kwargs):
     '''create a sample user for testing'''
     org = secrets.token_hex(4)
+    # for testing override is_active default
+    if 'is_active' not in kwargs:
+        kwargs['is_active'] = True
     if not organization:
         organization = Organization.objects.create(name=org)
 

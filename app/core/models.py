@@ -23,13 +23,13 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, password, organization):
+    def create_superuser(self, email, password, organization, is_active=True):
         """Creates and saves new superuser"""
         user = self.create_user(email, password, organization)
         user.is_staff = True
         user.is_superuser = True
+        user.is_active = is_active
         user.save(using=self._db)
-
         return user
 
 
@@ -38,7 +38,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=255, unique=True)
     firstname = models.CharField(max_length=255)
     lastname = models.CharField(max_length=255)
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     is_org_admin = models.BooleanField(default=False)
     organization = models.ForeignKey(
