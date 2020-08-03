@@ -29,7 +29,8 @@ class UserBaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
         fields = ('email', 'password', 'firstname', 'lastname', 'is_staff',
-                  'groups', 'id', 'organization', 'is_org_admin')
+                  'groups', 'id', 'organization', 'is_org_admin',
+                  'is_active')
         read_only_fields = ('is_staff', 'id')
         extra_kwargs = {'password': {'write_only': True, 'min_length': 5}}
 
@@ -60,11 +61,10 @@ class UserSerializer(UserBaseSerializer):
     )
 
 
-class UserOrganizationSerializer(UserBaseSerializer):
-    # groups = GroupSerializer(many=True, read_only=True)
-    organization = serializers.PrimaryKeyRelatedField(
-        queryset=Organization.objects.all()
-    )
+# class UserOrganizationSerializer(UserBaseSerializer):
+#     organization = serializers.PrimaryKeyRelatedField(
+#         queryset=Organization.objects.all()
+#     )
 
 
 class UserMeSerializer(UserBaseSerializer):
