@@ -21,7 +21,7 @@ class InviteToken(models.Model):
         org_desc = self.user.organization.description
         send_mail("You've been invited to SQUAC",
                   f"You have been invited to the {org_desc} organization in"
-                  f"SQUAC. Please visit: \n"
+                  f" SQUAC. Please visit: \n"
                   f"https://squac.pnsn.org/signup?token={token} \n"
                   f"to complete your registration.",
                   'pnsn_web@uw.edu',

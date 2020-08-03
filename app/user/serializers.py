@@ -38,7 +38,8 @@ class UserBaseSerializer(serializers.ModelSerializer):
         '''Create a new user with an encrypted password set groups'''
         groups = validated_data.pop('groups', [])
         user = get_user_model().objects.create_user(**validated_data)
-        user.set_permission_groups(groups)
+        if(len(groups) > 0):
+            user.set_permission_groups(groups)
         return user
 
     def update(self, instance, validate_data):
@@ -47,7 +48,8 @@ class UserBaseSerializer(serializers.ModelSerializer):
         password = validate_data.pop('password', None)
         groups = validate_data.pop('groups', [])
         user = super().update(instance, validate_data)
-        user.set_permission_groups(groups)
+        if(len(groups) > 0):
+            user.set_permission_groups(groups)
         if password:
             user.set_password(password)
             user.save()
