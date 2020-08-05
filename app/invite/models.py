@@ -24,7 +24,7 @@ class InviteToken(models.Model):
                   f" SQUAC. Please visit: \n"
                   f"https://squac.pnsn.org/signup?token={token} \n"
                   f"to complete your registration.",
-                  'pnsn_web@uw.edu',
+                  settings.EMAIL_NO_REPLY,
                   [self.user.email, ],
                   fail_silently=False,
                   )

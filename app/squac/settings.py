@@ -51,21 +51,23 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_extensions',
+    'django_rest_passwordreset',
     'django_filters',
     'rest_framework',
     'rest_framework.authtoken',
+    'gmailapi_backend',
+    'corsheaders',
+    'debug_toolbar',
+    'drf_yasg',
     'core',
     'user',
     'nslc',
     'measurement',
     'dashboard',
-    'import',
-    'corsheaders',
-    'debug_toolbar',
-    'drf_yasg',
-    'django_rest_passwordreset',
+    # wtf? 'import',
     'organization',
     'invite',
+    
 ]
 
 # The caching middlewares must be first and last
@@ -188,9 +190,16 @@ STATIC_ROOT = os.environ.get('SQUACAPI_STATIC_ROOT')
 AUTH_USER_MODEL = 'core.User'
 
 LOGIN_REDIRECT_URL = "/"
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND')
 EMAIL_HOST = os.environ.get('SQUAC_EMAIL_HOST')
 EMAIL_PORT = os.environ.get('SQUAC_EMAIL_PORT')
+
+EMAIL_NO_REPLY=os.environ.get('EMAIL_NO_REPLY')
+
+GMAIL_API_CLIENT_ID = os.environ.get('GMAIL_API_CLIENT_ID')
+GMAIL_API_CLIENT_SECRET = os.environ.get('GMAIL_API_CLIENT_SECRET')
+GMAIL_API_REFRESH_TOKEN = os.environ.get('GMAIL_API_REFRESH_TOKEN')
+
 
 # Fixture directories
 FIXTURE_DIRS = (
@@ -234,3 +243,4 @@ CACHE_MIDDLEWARE_KEY_PREFIX='squac_' + os.environ.get('CACHE_BACKEND')
 
 # number of hours to expire invite token
 INVITE_TOKEN_EXPIRY_TIME = 48
+NO_REPLY_EMAIL="pnsn-no-reply@monitor.ess.washington.edu"

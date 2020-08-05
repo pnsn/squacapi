@@ -28,6 +28,9 @@ services:
       - CACHE_BACKEND=default
       - CACHE_SECONDS=300
       - CACHE_LOCATION=''
+      - EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend'
+      - EMAIL_NO_REPLY=no-reply@noreply.edu
+
     depends_on:
       - db
   db:
@@ -37,6 +40,8 @@ services:
       - POSTGRES_DB=squac_dev
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=supersecret
+      
+
 
   mailhog:
     container_name: mailhog
