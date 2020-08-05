@@ -151,7 +151,8 @@ class OrganizationAPITests(TestCase):
         url = reverse('organization:organizationuser-list')
         payload = {
             'email': 'testy@pnsn.org',
-            "organization": self.org1.id
+            "organization": self.org1.id,
+            'groups': [self.group_reporter.id]
         }
         res = self.org1_admin_client.post(url, payload, format='json')
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)

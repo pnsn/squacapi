@@ -56,17 +56,22 @@ class UserBaseSerializer(serializers.ModelSerializer):
         return user
 
 
-class UserSerializer(UserBaseSerializer):
-    groups = GroupSerializer(many=True, read_only=True)
+class UserWriteSerializer(UserBaseSerializer):
+    groups = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=Group.objects.all()
+    )
+
     organization = serializers.PrimaryKeyRelatedField(
         queryset=Organization.objects.all()
     )
 
 
-# class UserOrganizationSerializer(UserBaseSerializer):
-#     organization = serializers.PrimaryKeyRelatedField(
-#         queryset=Organization.objects.all()
-#     )
+class UserReadSerializer(UserBaseSerializer):
+    groups = GroupSerializer(many=True, read_only=True)
+    organization = serializers.PrimaryKeyRelatedField(
+        queryset=Organization.objects.all()
+    )
 
 
 class UserMeSerializer(UserBaseSerializer):
