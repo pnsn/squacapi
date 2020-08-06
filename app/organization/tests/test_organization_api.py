@@ -89,6 +89,8 @@ class OrganizationAPITests(TestCase):
             'email': user.email,
             "organization": self.org1.id,
             'is_org_admin': True,
+            'firstname': "Seymore",
+            'lastname': 'things',
             'groups': [
                 self.group_contributor.id
             ]
@@ -96,6 +98,7 @@ class OrganizationAPITests(TestCase):
         res = self.client.patch(url, payload, format='json')
         # should now have 4 groups since contrib needs viewer and reporter
         # and we made admin
+        self.assertEqual(res.data['firstname'], 'Seymore')
         self.assertEqual(len(res.data['groups']), 4)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertTrue(res.data['is_org_admin'])
