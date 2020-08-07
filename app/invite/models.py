@@ -33,16 +33,3 @@ class InviteToken(models.Model):
     def save(self, *args, **kwargs):
         super(InviteToken, self).save(*args, **kwargs)
         self.send_invite()
-
-# @receiver(post_save, sender=InvitationToken)
-# def create_invitation_token(sender, instance=None, created=False, **kwargs):
-#     if created: # only on create
-#         encoded = base64.urlsafe_b64encode(
-#             str(instance.id).encode()).decode()
-#         print(sender, instance, encoded, instance.user)
-#         invitation_token_created.send(
-#             sender=sender,
-#             instance=instance,
-#             invitation_token=encoded,
-#             user=instance.user,
-#         )

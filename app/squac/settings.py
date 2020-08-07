@@ -246,7 +246,7 @@ INVITE_TOKEN_EXPIRY_TIME = 48
 NO_REPLY_EMAIL="pnsn-no-reply@monitor.ess.washington.edu"
 
 ADMINS = (
-  ('Jon Con', 'joncon@uw.edu'),
+  ('JC', 'joncon@uw.edu'),
 )
 
 MANAGERS = ADMINS

@@ -26,7 +26,8 @@ class InviteTokenApiTests(TestCase):
 
     def test_invite_success(self):
         url = reverse('invite:user-invite')
-        invited_user = sample_user('invited@pnsn.org')
+        invited_user = sample_user('invited@pnsn.org', 'secret', self.org,
+                                   is_active=False)
         payload = {'user': invited_user.id}
         res = self.client.post(url, payload, format='json')
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
@@ -60,9 +61,18 @@ class InviteTokenApiTests(TestCase):
         invite_token = InviteToken.objects.create(user=invited_user)
         token = base64.urlsafe_b64encode(
             str(invite_token.id).encode()).decode()
-        payload = {'token': token, 'password': 'supersecret'}
+        payload = {
+            'token': token,
+            'password': 'supersecret',
+            'firstname': 'Bat',
+            'lastname': 'Man'
+        }
         res = self.client.post(url, payload, format='json')
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        invited_user.refresh_from_db()
+        self.assertEqual(invited_user.firstname, 'Bat')
+        self.assertEqual(invited_user.lastname, 'Man')
+        self.assertTrue(invited_user.is_active)
 
     def test_register_user_bad_token(self):
         '''bad token should fail'''
@@ -84,5 +94,35 @@ class InviteTokenApiTests(TestCase):
         token = base64.urlsafe_b64encode(
             str(invite_token.id).encode()).decode()
         payload = {'token': token, 'password': 'supersecret'}
+        res = self.client.post(url, payload, format='json')
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_registration_validation(self):
+        '''invited user should not be able to register with
+            with missing passwd, first or lastname'''
+        url = reverse('invite:user-register')
+        invited_user = sample_user('register@pnsn.org')
+        invite_token = InviteToken.objects.create(user=invited_user)
+        token = base64.urlsafe_b64encode(
+            str(invite_token.id).encode()).decode()
+        payload = {
+            'token': token,
+            'password': 'supersecret',
+            'firstname': 'Bat'
+        }
+        res = self.client.post(url, payload, format='json')
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        payload = {
+            'token': token,
+            'password': 'supersecret',
+            'lastname': 'Man'
+        }
+        res = self.client.post(url, payload, format='json')
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        payload = {
+            'token': token,
+            'firstname': 'Bat',
+            'lastname': 'Man'
+        }
         res = self.client.post(url, payload, format='json')
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)

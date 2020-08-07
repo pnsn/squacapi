@@ -75,14 +75,7 @@ class OrganizationUserViewSet(OrganizationBase):
             _data._mutable = _mutable
         except AttributeError:
             pass
-        # invite  new user here
-        # user = invitation_backend().invite_by_email(
-        #     user_param['email'],
-        #     **{'firstname': firstname,
-        #         'lastname': lastname,
-        #         'organization': request.data['organization'],
-        #         'is_admin': request.data['is_admin']}
-        # )
+
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
