@@ -75,7 +75,7 @@ class ThresholdSerializer(serializers.HyperlinkedModelSerializer):
 
 class AlarmsSerializer(serializers.HyperlinkedModelSerializer):
     url = serializers.HyperlinkedIdentityField(
-        view_name="alarms:threshold-detail")
+        view_name="measurement:alarms-detail")
 
     channel_group = serializers.PrimaryKeyRelatedField(
         queryset=Group.objects.all()
