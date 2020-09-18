@@ -1,7 +1,7 @@
 from django.db import models
 from django.conf import settings
 from dashboard.models import Widget
-from nslc.models import Channel
+from nslc.models import Channel, Group
 
 
 class MeasurementBase(models.Model):
@@ -89,6 +89,22 @@ class Threshold(MeasurementBase):
                 f"Metric: {str(self.metric)}"
                 f"Min {self.minval}"
                 f"Max {self.maxval}"
+                )
+
+
+class Alarms(MeasurementBase):
+    '''Describes alarms on metrics and channel_groups'''
+    channel_group = models.ForeignKey(
+        Group,
+        on_delete=models.CASCADE,
+        related_name='alarms'
+    )
+    interval_type = models.CharField(max_length=255)
+    interval_count = models.PositiveIntegerField()
+
+    def __str__(self):
+        return (f"Alarm for {str(self.channel_group)} over "
+                f"{self.interval_count} {self.interval_type}"
                 )
 
 
