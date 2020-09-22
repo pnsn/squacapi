@@ -80,9 +80,10 @@ class Threshold(MeasurementBase):
     metric = models.ForeignKey(
         Metric,
         on_delete=models.CASCADE,
-        related_name='threshold')
+        related_name='thresholds')
     minval = models.FloatField(blank=True, null=True)
     maxval = models.FloatField(blank=True, null=True)
+    band_inclusive = models.BooleanField(default=True)
 
     def __str__(self):
         return (f"Threshold for Widget: {str(self.widget)} "

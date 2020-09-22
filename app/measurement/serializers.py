@@ -67,8 +67,8 @@ class ThresholdSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Threshold
         fields = (
-            'id', 'url', 'metric', 'widget', 'minval', 'maxval', 'created_at',
-            'updated_at', 'user_id'
+            'id', 'url', 'metric', 'widget', 'minval', 'maxval',
+            'band_inclusive', 'created_at', 'updated_at', 'user_id'
         )
         read_only_fields = ('id',)
 
