@@ -2,13 +2,15 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
-from measurement.models import Metric, Alarms, AlarmMetric
+from measurement.models import Metric, Alarms, AlarmMetric, Alert
 from nslc.models import Group
 from organization.models import Organization
 
 from rest_framework.test import APIClient
 from rest_framework import status
 
+from datetime import datetime
+import pytz
 from squac.test_mixins import sample_user
 
 
@@ -68,6 +70,13 @@ class PrivateAlarmsAPITests(TestCase):
             weight=1,
             user=self.user
         )
+        self.alert = Alert.objects.create(
+            alarm=self.alarm,
+            timestamp=datetime(1970, 1, 1, tzinfo=pytz.UTC),
+            message='Alarm on channel group something something!',
+            in_alarm=True,
+            user=self.user
+        )
 
     def test_get_alarm(self):
         url = reverse(
@@ -125,3 +134,30 @@ class PrivateAlarmsAPITests(TestCase):
                 self.assertEqual(payload[key], alarm_metric.metric.id)
             else:
                 self.assertEqual(payload[key], getattr(alarm_metric, key))
+
+    def test_get_alert(self):
+        url = reverse(
+            'measurement:alert-detail',
+            kwargs={'pk': self.alert.id}
+        )
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data['alarm'], self.alarm.id)
+
+    def test_create_alert(self):
+        url = reverse('measurement:alert-list')
+        payload = {
+            'alarm': self.alarm.id,
+            'timestamp': datetime(1999, 12, 31, tzinfo=pytz.UTC),
+            'message': "What happened? I don't know",
+            'in_alarm': False,
+            'user': self.user
+        }
+        res = self.client.post(url, payload)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        alert = Alert.objects.get(id=res.data['id'])
+        for key in payload.keys():
+            if key == 'alarm':
+                self.assertEqual(payload[key], alert.alarm.id)
+            else:
+                self.assertEqual(payload[key], getattr(alert, key))
