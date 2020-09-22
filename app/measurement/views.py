@@ -3,7 +3,8 @@ from django_filters import rest_framework as filters
 from squac.filters import CharInFilter, NumberInFilter
 from squac.mixins import SetUserMixin, DefaultPermissionsMixin
 from .exceptions import MissingParameterException
-from .models import Metric, Measurement, Threshold, Alarms, Archive
+from .models import (Metric, Measurement, Threshold, Alarms, AlarmMetric, 
+                     Archive)
 from measurement import serializers
 from nslc.models import Group
 
@@ -31,6 +32,12 @@ class AlarmsFilter(filters.FilterSet):
     class Meta:
         model = Alarms
         fields = ('channel_group',)
+
+
+class AlarmMetricFilter(filters.FilterSet):
+    class Meta:
+        model = AlarmMetric
+        fields = ('alarm', 'metric')
 
 
 class ArchiveFilter(filters.FilterSet):
@@ -119,6 +126,14 @@ class AlarmsViewSet(BaseMeasurementViewSet):
 
     def get_queryset(self):
         return Alarms.objects.all()
+
+
+class AlarmMetricViewSet(BaseMeasurementViewSet):
+    serializer_class = serializers.AlarmMetricSerializer
+    filter_class = AlarmMetricFilter
+
+    def get_queryset(self):
+        return AlarmMetric.objects.all()
 
 
 class ArchiveViewSet(DefaultPermissionsMixin, viewsets.ReadOnlyModelViewSet):

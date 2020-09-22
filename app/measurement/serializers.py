@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import Metric, Measurement, Threshold, Alarms, Archive
+from .models import (Metric, Measurement, Threshold, Alarms, AlarmMetric, 
+                     Archive)
 from dashboard.models import Widget
 from nslc.models import Channel, Group
 
@@ -86,6 +87,26 @@ class AlarmsSerializer(serializers.HyperlinkedModelSerializer):
         fields = (
             'id', 'url', 'channel_group', 'interval_type', 'interval_count',
             'created_at', 'updated_at', 'user_id'
+        )
+        read_only_fields = ('id',)
+
+
+class AlarmMetricSerializer(serializers.HyperlinkedModelSerializer):
+    url = serializers.HyperlinkedIdentityField(
+        view_name="measurement:alarm-metric-detail")
+
+    alarm = serializers.PrimaryKeyRelatedField(
+        queryset=Alarms.objects.all())
+
+    metric = serializers.PrimaryKeyRelatedField(
+        queryset=Metric.objects.all())
+
+    class Meta:
+        model = AlarmMetric
+        fields = (
+            'id', 'url', 'alarm', 'metric', 'minval', 'maxval', 
+            'band_inclusive', 'stat', 'weight', 'created_at', 'updated_at',
+            'user_id'
         )
         read_only_fields = ('id',)
 

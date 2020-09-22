@@ -109,6 +109,34 @@ class Alarms(MeasurementBase):
                 )
 
 
+class AlarmMetric(MeasurementBase):
+    '''Describe an individual alarm_metric with an alarm'''
+    alarm = models.ForeignKey(
+        Alarms,
+        on_delete=models.CASCADE,
+        related_name='alarm_metrics'
+    )
+    metric = models.ForeignKey(
+        Metric,
+        on_delete=models.CASCADE,
+        related_name='alarm_metrics'
+    )
+    minval = models.FloatField(blank=True, null=True)
+    maxval = models.FloatField(blank=True, null=True)
+    band_inclusive = models.BooleanField(default=True)
+    stat = models.CharField(max_length=255)
+    weight = models.FloatField(blank=True, null=True)
+                
+    def __str__(self):
+        return (f"Alarm: {str(self.alarm)}, "
+                f"Metric: {str(self.metric)}, "
+                f"Min: {self.minval}, "
+                f"Max: {self.maxval}, "
+                f"Stat: {self.stat}, "
+                f"Weight: {self.weight}"
+                )
+
+
 class Archive(models.Model):
     """An archive-summary of measurements"""
 
