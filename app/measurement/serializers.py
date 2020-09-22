@@ -84,7 +84,7 @@ class AlarmsSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Alarms
         fields = (
-            'id', 'url', 'channel_group', 'interval_type', 'interval_count', 
+            'id', 'url', 'channel_group', 'interval_type', 'interval_count',
             'created_at', 'updated_at', 'user_id'
         )
         read_only_fields = ('id',)
