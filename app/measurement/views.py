@@ -3,7 +3,7 @@ from django_filters import rest_framework as filters
 from squac.filters import CharInFilter, NumberInFilter
 from squac.mixins import SetUserMixin, DefaultPermissionsMixin
 from .exceptions import MissingParameterException
-from .models import (Metric, Measurement, Threshold, Alarms, AlarmMetric, 
+from .models import (Metric, Measurement, Threshold, Alarms, AlarmMetric,
                      Archive)
 from measurement import serializers
 from nslc.models import Group

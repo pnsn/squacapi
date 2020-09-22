@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import (Metric, Measurement, Threshold, Alarms, AlarmMetric, 
+from .models import (Metric, Measurement, Threshold, Alarms, AlarmMetric,
                      Archive)
 from dashboard.models import Widget
 from nslc.models import Channel, Group
@@ -104,7 +104,7 @@ class AlarmMetricSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = AlarmMetric
         fields = (
-            'id', 'url', 'alarm', 'metric', 'minval', 'maxval', 
+            'id', 'url', 'alarm', 'metric', 'minval', 'maxval',
             'band_inclusive', 'stat', 'weight', 'created_at', 'updated_at',
             'user_id'
         )

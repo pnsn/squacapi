@@ -126,7 +126,7 @@ class AlarmMetric(MeasurementBase):
     band_inclusive = models.BooleanField(default=True)
     stat = models.CharField(max_length=255)
     weight = models.FloatField(blank=True, null=True)
-                
+
     def __str__(self):
         return (f"Alarm: {str(self.alarm)}, "
                 f"Metric: {str(self.metric)}, "
