@@ -11,6 +11,7 @@ router.register('thresholds', views.ThresholdViewSet, basename='threshold')
 router.register('alarms', views.AlarmsViewSet, basename='alarms')
 router.register('alarm-metric', views.AlarmMetricViewSet,
                 basename='alarm-metric')
+router.register('alerts', views.AlertViewSet, basename='alert')
 router.register('archives', views.ArchiveViewSet, basename='archive')
 
 app_name = "measurement"

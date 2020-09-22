@@ -137,6 +137,30 @@ class AlarmMetric(MeasurementBase):
                 )
 
 
+class Alert(MeasurementBase):
+    '''Describe and alert for an alarm'''
+    alarm = models.ForeignKey(
+        Alarms,
+        on_delete=models.CASCADE,
+        related_name='alerts'
+    )
+    timestamp = models.DateTimeField()
+    message = models.CharField(max_length=255)
+    in_alarm = models.BooleanField(default=True)
+
+    class Meta:
+        indexes = [
+            # index in desc order (newest first)
+            models.Index(fields=['-timestamp']),
+        ]
+
+    def __str__(self):
+        return (f"Alarm: {str(self.alarm)}, "
+                f"Message: {self.message}, "
+                f"Time: {self.timestamp}"
+                )
+
+
 class Archive(models.Model):
     """An archive-summary of measurements"""
 

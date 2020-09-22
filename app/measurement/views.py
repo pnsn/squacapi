@@ -4,7 +4,7 @@ from squac.filters import CharInFilter, NumberInFilter
 from squac.mixins import SetUserMixin, DefaultPermissionsMixin
 from .exceptions import MissingParameterException
 from .models import (Metric, Measurement, Threshold, Alarms, AlarmMetric,
-                     Archive)
+                     Alert, Archive)
 from measurement import serializers
 from nslc.models import Group
 
@@ -38,6 +38,12 @@ class AlarmMetricFilter(filters.FilterSet):
     class Meta:
         model = AlarmMetric
         fields = ('alarm', 'metric')
+
+
+class AlertFilter(filters.FilterSet):
+    class Meta:
+        model = Alert
+        fields = ('alarm', 'in_alarm')
 
 
 class ArchiveFilter(filters.FilterSet):
@@ -134,6 +140,14 @@ class AlarmMetricViewSet(BaseMeasurementViewSet):
 
     def get_queryset(self):
         return AlarmMetric.objects.all()
+
+
+class AlertViewSet(BaseMeasurementViewSet):
+    serializer_class = serializers.AlertSerializer
+    filter_class = AlertFilter
+
+    def get_queryset(self):
+        return Alert.objects.all()
 
 
 class ArchiveViewSet(DefaultPermissionsMixin, viewsets.ReadOnlyModelViewSet):
