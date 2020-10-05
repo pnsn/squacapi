@@ -56,7 +56,7 @@ class RegisterView(generics.CreateAPIView):
         now = datetime.utcnow().replace(tzinfo=pytz.utc)
         valid_token_time = now - timedelta(hours=expire_after)
         if invite_token.created_at < valid_token_time:
-            raise serializers.ValidationError({'detail': 'token is expired'})
+            raise serializers.ValidationError({'detail': 'Token is expired'})
 
         try:
             _user = invite_token.user
@@ -79,5 +79,5 @@ class RegisterView(generics.CreateAPIView):
         except ValidationError as e:
             raise serializers.ValidationError({'detail': e.messages})
 
-        return Response({'detail': 'Password sucessfully created.'},
+        return Response({'detail': 'Password successfully created.'},
                         status=status.HTTP_201_CREATED)

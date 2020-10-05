@@ -9,11 +9,19 @@ services:
       context: .
     ports:
       - "8000:8000"
+<<<<<<< HEAD
+=======
+      # - "1025:1025"
+>>>>>>> f14b96d1967e620aa30436083949a50cae7f3104
 
     volumes:
       - ./app:/app
     command: >
+<<<<<<< HEAD
       sh -c "source /app/.env && python manage.py wait_for_db && python &&
+=======
+      sh -c "python manage.py wait_for_db && python &&
+>>>>>>> f14b96d1967e620aa30436083949a50cae7f3104
             python manage.py migrate &&
             python manage.py runserver 0.0.0.0:8000"
     environment:
@@ -43,12 +51,12 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=supersecret
 
-  mailhog:
-    container_name: mailhog
-    image: mailhog/mailhog
-    expose:
-      - 1025
-      - 8025
-    ports:
-      - '1025:1025'
-      - '8025:8025'
+  # mailhog:
+  #   container_name: mailhog
+  #   image: mailhog/mailhog
+  #   expose:
+  #     - 1025
+  #     - 8025
+  #   ports:
+  #     - '1025:1025'
+  #     - '8025:8025'
