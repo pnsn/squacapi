@@ -128,17 +128,6 @@ class Command(BaseCommand):
             )
         return url
 
-    def parse_datetime(self, datetime_str):
-        ''' parse datetime from string of form
-            # 2599-12-31T23:59:59
-            return datetime
-        '''
-        year, month, day_time = datetime_str.split("-")
-        day, time = day_time.split("T")
-        hour, minute, sec = time.split(":")
-        return datetime(int(year), int(month), int(day), int(hour),
-                        int(minute), int(sec[:2]), tzinfo=pytz.UTC)
-
     '''Django command to check network and channel tables with FDSN service'''
     def handle(self, *args, **options):
         ALLOWED_NETWORKS = [
@@ -224,7 +213,17 @@ class Command(BaseCommand):
                         depth, azimuth, dip, sensor_descr, scale, *rem = rem
                         freq, units, rate, start, end = rem
                         net = networks[net_code.lower()]
-
+                        start_datetime = pytz.utc.localize(
+                            datetime.strptime(start, '%Y-%m-%dT%H:%M:%S')
+                        )
+                        if end:
+                            end_datetime = pytz.utc.localize(
+                                datetime.strptime(end, '%Y-%m-%dT%H:%M:%S')
+                            )
+                        else:
+                            # If end time is null set to 2599 dummy date
+                            end_datetime = datetime(
+                                year=2599, month=12, day=31, tzinfo=pytz.UTC)
                         # Get or create the channel using data
                         Channel.objects.get_or_create(
                             network=net,
@@ -246,8 +245,8 @@ class Command(BaseCommand):
                                 'scale_units': units,
                                 'sample_rate': 0.0 if not rate else float(
                                     rate),
-                                'starttime': self.parse_datetime(start),
-                                'endtime': self.parse_datetime(end),
+                                'starttime': start_datetime,
+                                'endtime': end_datetime,
                                 'user': user,
                             }
                         )
