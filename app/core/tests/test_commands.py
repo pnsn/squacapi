@@ -1,8 +1,11 @@
 from unittest.mock import patch
-
+from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from django.db.utils import OperationalError
 from django.test import TestCase
+from io import StringIO
+
+from organization.models import Organization
 
 
 class CommandTests(TestCase):
@@ -21,3 +24,14 @@ class CommandTests(TestCase):
             gi.side_effect = [OperationalError] * 5 + [True]
             call_command('wait_for_db')
             self.assertEqual(gi.call_count, 6)
+
+    def test_createsuperuser(self):
+        '''Test creating a new super user from command'''
+        default_org = Organization.objects.create(name='PNSN')
+        out = StringIO()
+        call_command('createsuperuser', email='test@email.com', stdout=out,
+                     interactive=False)
+        self.assertEqual(out.getvalue(), 'Superuser created successfully.\n')
+        new_superuser = get_user_model().objects.get(email='test@email.com')
+        self.assertIsNotNone(new_superuser)
+        self.assertEqual(new_superuser.organization, default_org)
