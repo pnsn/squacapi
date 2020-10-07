@@ -7,16 +7,14 @@ from organization.models import Organization
 
 class UserManager(BaseUserManager):
 
-    def create_user(self, email, password=None, org_id=1,
+    def create_user(self, email, password=None, organization=None,
                     **extra_fields):
         '''Creates and saves a new user'''
         if not email:
             raise ValueError("users must have an email address")
         # lowercase all emails!
-        if not org_id:
+        if not organization:
             raise ValueError('users must have an organization')
-        else:
-            organization = Organization.objects.get(id=org_id)
         user = self.model(
             email=self.normalize_email(email),
             organization=organization,
@@ -25,9 +23,12 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, password, org_id=1, is_active=True):
+    def create_superuser(self, email, password, organization=None,
+                         is_active=True):
         """Creates and saves new superuser"""
-        user = self.create_user(email, password, org_id)
+        if not organization:
+            organization = Organization.objects.first()
+        user = self.create_user(email, password, organization)
         user.is_staff = True
         user.is_superuser = True
         user.is_active = is_active
