@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import (Metric, Measurement, Threshold, Alarms, AlarmMetric,
+from .models import (Metric, Measurement, Threshold, Alarm, AlarmThreshold,
                      Alert, Archive)
 from dashboard.models import Widget
 from nslc.models import Channel, Group
@@ -74,39 +74,40 @@ class ThresholdSerializer(serializers.HyperlinkedModelSerializer):
         read_only_fields = ('id',)
 
 
-class AlarmsSerializer(serializers.HyperlinkedModelSerializer):
+class AlarmSerializer(serializers.HyperlinkedModelSerializer):
     url = serializers.HyperlinkedIdentityField(
-        view_name="measurement:alarms-detail")
+        view_name="measurement:alarm-detail")
 
     channel_group = serializers.PrimaryKeyRelatedField(
         queryset=Group.objects.all()
     )
 
+    metric = serializers.PrimaryKeyRelatedField(
+        queryset=Metric.objects.all()
+    )
+
     class Meta:
-        model = Alarms
+        model = Alarm
         fields = (
-            'id', 'url', 'channel_group', 'interval_type', 'interval_count',
-            'created_at', 'updated_at', 'user_id'
+            'id', 'url', 'channel_group', 'metric', 'interval_type',
+            'interval_count', 'num_channels', 'stat', 'created_at',
+            'updated_at', 'user_id'
         )
         read_only_fields = ('id',)
 
 
-class AlarmMetricSerializer(serializers.HyperlinkedModelSerializer):
+class AlarmThresholdSerializer(serializers.HyperlinkedModelSerializer):
     url = serializers.HyperlinkedIdentityField(
-        view_name="measurement:alarm-metric-detail")
+        view_name="measurement:alarm-threshold-detail")
 
     alarm = serializers.PrimaryKeyRelatedField(
-        queryset=Alarms.objects.all())
-
-    metric = serializers.PrimaryKeyRelatedField(
-        queryset=Metric.objects.all())
+        queryset=Alarm.objects.all())
 
     class Meta:
-        model = AlarmMetric
+        model = AlarmThreshold
         fields = (
-            'id', 'url', 'alarm', 'metric', 'minval', 'maxval',
-            'band_inclusive', 'stat', 'weight', 'created_at', 'updated_at',
-            'user_id'
+            'id', 'url', 'alarm', 'minval', 'maxval', 'band_inclusive',
+            'level', 'created_at', 'updated_at', 'user_id'
         )
         read_only_fields = ('id',)
 
@@ -116,7 +117,7 @@ class AlertSerializer(serializers.HyperlinkedModelSerializer):
         view_name="measurement:alert-detail")
 
     alarm = serializers.PrimaryKeyRelatedField(
-        queryset=Alarms.objects.all())
+        queryset=Alarm.objects.all())
 
     class Meta:
         model = Alert

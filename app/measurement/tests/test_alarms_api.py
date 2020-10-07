@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
-from measurement.models import Metric, Alarms, AlarmMetric, Alert
+from measurement.models import Metric, Alarm, AlarmThreshold, Alert
 from nslc.models import Group
 from organization.models import Organization
 
@@ -23,7 +23,7 @@ to run only this file
 '''
 
 
-class PrivateAlarmsAPITests(TestCase):
+class PrivateAlarmAPITests(TestCase):
     '''For authenticated tests in alarms API
 
         Authenticate and make user admin so we are only testing
@@ -46,12 +46,6 @@ class PrivateAlarmsAPITests(TestCase):
             user=self.user,
             organization=self.organization
         )
-        self.alarm = Alarms.objects.create(
-            channel_group=self.grp,
-            interval_type='hour',
-            interval_count=2,
-            user=self.user
-        )
         self.metric = Metric.objects.create(
             name='Sample metric',
             unit='furlong',
@@ -61,13 +55,20 @@ class PrivateAlarmsAPITests(TestCase):
             user=self.user,
             reference_url='pnsn.org'
         )
-        self.alarm_metric = AlarmMetric.objects.create(
-            alarm=self.alarm,
+        self.alarm = Alarm.objects.create(
+            channel_group=self.grp,
             metric=self.metric,
+            interval_type='hour',
+            interval_count=2,
+            num_channels=5,
+            stat='sum',
+            user=self.user
+        )
+        self.alarm_threshold = AlarmThreshold.objects.create(
+            alarm=self.alarm,
             minval=2,
             maxval=5,
-            stat='sum',
-            weight=1,
+            level=1,
             user=self.user
         )
         self.alert = Alert.objects.create(
@@ -80,7 +81,7 @@ class PrivateAlarmsAPITests(TestCase):
 
     def test_get_alarm(self):
         url = reverse(
-            'measurement:alarms-detail',
+            'measurement:alarm-detail',
             kwargs={'pk': self.alarm.id}
         )
         res = self.client.get(url)
@@ -88,52 +89,53 @@ class PrivateAlarmsAPITests(TestCase):
         self.assertEqual(res.data['interval_type'], 'hour')
 
     def test_create_alarm(self):
-        url = reverse('measurement:alarms-list')
+        url = reverse('measurement:alarm-list')
         payload = {
             'channel_group': self.grp.id,
+            'metric': self.metric.id,
             'interval_type': 'minute',
             'interval_count': 5,
+            'num_channels': 3,
+            'stat': 'avg',
             'user': self.user
         }
         res = self.client.post(url, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-        alarm = Alarms.objects.get(id=res.data['id'])
+        alarm = Alarm.objects.get(id=res.data['id'])
         for key in payload.keys():
             if key == 'channel_group':
                 self.assertEqual(payload[key], alarm.channel_group.id)
+            elif key == 'metric':
+                self.assertEqual(payload[key], alarm.metric.id)
             else:
                 self.assertEqual(payload[key], getattr(alarm, key))
 
-    def test_get_alarm_metric(self):
+    def test_get_alarm_threshold(self):
         url = reverse(
-            'measurement:alarm-metric-detail',
-            kwargs={'pk': self.alarm_metric.id}
+            'measurement:alarm-threshold-detail',
+            kwargs={'pk': self.alarm_threshold.id}
         )
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data['alarm'], self.alarm.id)
 
-    def test_create_alarm_metric(self):
-        url = reverse('measurement:alarm-metric-list')
+    def test_create_alarm_threshold(self):
+        url = reverse('measurement:alarm-threshold-list')
         payload = {
             'alarm': self.alarm.id,
-            'metric': self.metric.id,
             'minval': 15,
             'maxval': 20,
-            'stat': 'avg',
-            'weight': 1. / 2,
+            'level': 2,
             'user': self.user
         }
         res = self.client.post(url, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-        alarm_metric = AlarmMetric.objects.get(id=res.data['id'])
+        alarm_threshold = AlarmThreshold.objects.get(id=res.data['id'])
         for key in payload.keys():
             if key == 'alarm':
-                self.assertEqual(payload[key], alarm_metric.alarm.id)
-            elif key == 'metric':
-                self.assertEqual(payload[key], alarm_metric.metric.id)
+                self.assertEqual(payload[key], alarm_threshold.alarm.id)
             else:
-                self.assertEqual(payload[key], getattr(alarm_metric, key))
+                self.assertEqual(payload[key], getattr(alarm_threshold, key))
 
     def test_get_alert(self):
         url = reverse(

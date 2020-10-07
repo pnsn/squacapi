@@ -3,7 +3,7 @@ from django_filters import rest_framework as filters
 from squac.filters import CharInFilter, NumberInFilter
 from squac.mixins import SetUserMixin, DefaultPermissionsMixin
 from .exceptions import MissingParameterException
-from .models import (Metric, Measurement, Threshold, Alarms, AlarmMetric,
+from .models import (Metric, Measurement, Threshold, Alarm, AlarmThreshold,
                      Alert, Archive)
 from measurement import serializers
 from nslc.models import Group
@@ -28,16 +28,16 @@ class MeasurementFilter(filters.FilterSet):
     channel = NumberInFilter(field_name='channel')
 
 
-class AlarmsFilter(filters.FilterSet):
+class AlarmFilter(filters.FilterSet):
     class Meta:
-        model = Alarms
-        fields = ('channel_group',)
+        model = Alarm
+        fields = ('channel_group', 'metric')
 
 
-class AlarmMetricFilter(filters.FilterSet):
+class AlarmThresholdFilter(filters.FilterSet):
     class Meta:
-        model = AlarmMetric
-        fields = ('alarm', 'metric')
+        model = AlarmThreshold
+        fields = ('alarm',)
 
 
 class AlertFilter(filters.FilterSet):
@@ -126,20 +126,20 @@ class ThresholdViewSet(BaseMeasurementViewSet):
         return Threshold.objects.all()
 
 
-class AlarmsViewSet(BaseMeasurementViewSet):
-    serializer_class = serializers.AlarmsSerializer
-    filter_class = AlarmsFilter
+class AlarmViewSet(BaseMeasurementViewSet):
+    serializer_class = serializers.AlarmSerializer
+    filter_class = AlarmFilter
 
     def get_queryset(self):
-        return Alarms.objects.all()
+        return Alarm.objects.all()
 
 
-class AlarmMetricViewSet(BaseMeasurementViewSet):
-    serializer_class = serializers.AlarmMetricSerializer
-    filter_class = AlarmMetricFilter
+class AlarmThresholdViewSet(BaseMeasurementViewSet):
+    serializer_class = serializers.AlarmThresholdSerializer
+    filter_class = AlarmThresholdFilter
 
     def get_queryset(self):
-        return AlarmMetric.objects.all()
+        return AlarmThreshold.objects.all()
 
 
 class AlertViewSet(BaseMeasurementViewSet):

@@ -93,54 +93,58 @@ class Threshold(MeasurementBase):
                 )
 
 
-class Alarms(MeasurementBase):
+class Alarm(MeasurementBase):
     '''Describes alarms on metrics and channel_groups'''
     channel_group = models.ForeignKey(
         Group,
         on_delete=models.CASCADE,
         related_name='alarms'
     )
-    interval_type = models.CharField(max_length=255)
-    interval_count = models.PositiveIntegerField()
-
-    def __str__(self):
-        return (f"Alarm for {str(self.channel_group)} over "
-                f"{self.interval_count} {self.interval_type}"
-                )
-
-
-class AlarmMetric(MeasurementBase):
-    '''Describe an individual alarm_metric with an alarm'''
-    alarm = models.ForeignKey(
-        Alarms,
-        on_delete=models.CASCADE,
-        related_name='alarm_metrics'
-    )
     metric = models.ForeignKey(
         Metric,
         on_delete=models.CASCADE,
-        related_name='alarm_metrics'
+        related_name='alarms'
     )
+    interval_type = models.CharField(max_length=15)
+    interval_count = models.IntegerField()
+    num_channels = models.IntegerField()
+    stat = models.CharField(max_length=15)
+
+    def __str__(self):
+        return (f"Alarm for {str(self.channel_group)}, "
+                f"{str(self.metric)}, "
+                f"{self.stat}"
+                )
+
+
+class AlarmThreshold(MeasurementBase):
+    '''Describe an individual alarm_threshold for an alarm'''
+    alarm = models.ForeignKey(
+        Alarm,
+        on_delete=models.CASCADE,
+        related_name='alarm_thresholds'
+    )
+    # notification = models.ForeignKey(
+    #     Notification,
+    #     on_delete=models.CASCADE,
+    #     related_name='alarm_thresholds'
+    # )
     minval = models.FloatField(blank=True, null=True)
     maxval = models.FloatField(blank=True, null=True)
     band_inclusive = models.BooleanField(default=True)
-    stat = models.CharField(max_length=255)
-    weight = models.FloatField(default=1)
+    level = models.IntegerField(default=1)
 
     def __str__(self):
-        return (f"Alarm: {str(self.alarm)}, "
-                f"Metric: {str(self.metric)}, "
-                f"Min: {self.minval}, "
+        return (f"Min: {self.minval}, "
                 f"Max: {self.maxval}, "
-                f"Stat: {self.stat}, "
-                f"Weight: {self.weight}"
+                f"level: {self.weight}"
                 )
 
 
 class Alert(MeasurementBase):
     '''Describe and alert for an alarm'''
     alarm = models.ForeignKey(
-        Alarms,
+        Alarm,
         on_delete=models.CASCADE,
         related_name='alerts'
     )
