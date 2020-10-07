@@ -14,7 +14,7 @@ class UserManager(BaseUserManager):
             raise ValueError("users must have an email address")
         # lowercase all emails!
         if not organization:
-            raise ValueError('users must have an organization')
+            organization = Organization.objects.get(name='PNSN')
         user = self.model(
             email=self.normalize_email(email),
             organization=organization,
@@ -26,8 +26,6 @@ class UserManager(BaseUserManager):
     def create_superuser(self, email, password, organization=None,
                          is_active=True):
         """Creates and saves new superuser"""
-        if not organization:
-            organization = Organization.objects.first()
         user = self.create_user(email, password, organization)
         user.is_staff = True
         user.is_superuser = True
