@@ -10,18 +10,14 @@ from django.core.mail import send_mail
 
 class Command(BaseCommand):
     '''
-    CREATE [MAX_PARTITIONS] sequential from current date.
+    CREATE [MAX_PARTITIONS] sequential from current date. Finds lastest
+    partition, increments by one day then creates
 
     '''
     MAX_PARTITIONS = 15
 
     def add_arguments(self, parser):
-        # parser.add_argument(
-        #     '--startdate',
-        #     default=((datetime.now() + timedelta(days=LEAD_DAYS)).strftime(
-        #         "%Y-%m-%d"),
-        #     help="date for first partition, default today"
-        # )
+
         parser.add_argument(
             '--num_partitions',
             default=self.MAX_PARTITIONS,
@@ -89,7 +85,7 @@ class Command(BaseCommand):
                         partition_start_date.strftime("%Y-%m-%d"),
                         partition_end_date.strftime("%Y-%m-%d")
                     ])
-                    
+
                     # gant permissions
                     sql_grant = '''GRANT ALL PRIVILEGES
                         ON TABLE measurement_measurement_%s_%s_%s
