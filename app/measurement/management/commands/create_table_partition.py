@@ -5,6 +5,7 @@ from django.db.utils import ProgrammingError
 from psycopg2.extensions import AsIs
 from datetime import datetime, timedelta
 from django.conf import settings
+from django.core.mail import send_mail
 
 
 class Command(BaseCommand):
@@ -35,8 +36,9 @@ class Command(BaseCommand):
             FROM information_schema.tables
             WHERE table_schema = 'public'
             AND table_name like 'measurement_measurement_%'
-            ORDER BY table_name
-            LIMIT 1;'''
+            ORDER BY table_name DESC
+            LIMIT 1;
+            '''
         with connection.cursor() as cursor:
             cursor.execute(sql)
             table = cursor.fetchone()
@@ -60,22 +62,22 @@ class Command(BaseCommand):
 
         latest_partition = self.select_latest_partition()
         if latest_partition is None:
-            latest_partition_date = datetime.now()
-            print("nope")
+            # case where no partitions exist
+            latest_partition_date = datetime.now() - timedelta(days=1)
         else:
             latest_partition_date = self.parse_partition_date(latest_partition)
         partition_start_date = latest_partition_date
-        print(latest_partition)
         # how many partitions beyond last_partition do we create????
         num_partitions = self.MAX_PARTITIONS - \
             (latest_partition_date - datetime.now()).days
-
+        errors = []
         with connection.cursor() as cursor:
             sql = '''CREATE TABLE measurement_measurement_%s_%s_%s
                 PARTITION OF measurement_measurement
                 FOR VALUES FROM (%s) TO (%s);'''
 
             for i in range(num_partitions):
+                partition_start_date += timedelta(days=1)
                 partition_end_date = partition_start_date + timedelta(days=1)
                 try:
                     # NOTE: AsIS required for formating table names
@@ -87,11 +89,8 @@ class Command(BaseCommand):
                         partition_start_date.strftime("%Y-%m-%d"),
                         partition_end_date.strftime("%Y-%m-%d")
                     ])
-                except ProgrammingError as e:
-                    print(e)
-                finally:
-                    # run grant in case where partition is created but not 
-                    # ganted
+                    
+                    # gant permissions
                     sql_grant = '''GRANT ALL PRIVILEGES
                         ON TABLE measurement_measurement_%s_%s_%s
                         TO %s; '''
@@ -101,4 +100,13 @@ class Command(BaseCommand):
                         AsIs(partition_start_date.strftime("%m")),
                         AsIs(partition_start_date.strftime("%d")),
                         AsIs(settings.DATABASES['default']['USER'])])
-                    partition_start_date += timedelta(days=1)
+                except ProgrammingError as e:
+                    errors.append(str(e))
+
+        if len(errors) > 0:
+            error_string = " ".join(errors)
+            send_mail("Error in measurement table partitioning",
+                      error_string,
+                      settings.EMAIL_NO_REPLY,
+                      [settings.EMAIL_ADMIN, ],
+                      fail_silently=False)

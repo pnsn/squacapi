@@ -196,6 +196,9 @@ EMAIL_HOST = os.environ.get('SQUAC_EMAIL_HOST')
 EMAIL_PORT = os.environ.get('SQUAC_EMAIL_PORT')
 EMAIL_NO_REPLY=os.environ.get('EMAIL_NO_REPLY')
 
+EMAIL_NO_REPLY = os.environ.get('EMAIL_NO_REPLY')
+EMAIL_ADMIN = os.environ.get('EMAIL_ADMIN')
+
 GMAIL_API_CLIENT_ID = os.environ.get('GMAIL_API_CLIENT_ID')
 GMAIL_API_CLIENT_SECRET = os.environ.get('GMAIL_API_CLIENT_SECRET')
 GMAIL_API_REFRESH_TOKEN = os.environ.get('GMAIL_API_REFRESH_TOKEN')
@@ -243,7 +246,7 @@ CACHE_MIDDLEWARE_KEY_PREFIX='squac_' + os.environ.get('CACHE_BACKEND')
 
 # number of hours to expire invite token
 INVITE_TOKEN_EXPIRY_TIME = 48
-NO_REPLY_EMAIL="pnsn-no-reply@monitor.ess.washington.edu"
+
 
 ADMINS = (
   ('JC', 'joncon@uw.edu'),
