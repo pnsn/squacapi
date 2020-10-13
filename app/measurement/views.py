@@ -43,7 +43,7 @@ class AlarmThresholdFilter(filters.FilterSet):
 class AlertFilter(filters.FilterSet):
     class Meta:
         model = Alert
-        fields = ('alarm', 'in_alarm')
+        fields = ('alarm_threshold', 'in_alarm')
 
 
 class ArchiveFilter(filters.FilterSet):
@@ -126,7 +126,7 @@ class ThresholdViewSet(BaseMeasurementViewSet):
         return Threshold.objects.all()
 
 
-class AlarmViewSet(BaseMeasurementViewSet):
+class AlarmViewSet(SetUserMixin, viewsets.ModelViewSet):
     serializer_class = serializers.AlarmSerializer
     filter_class = AlarmFilter
 
@@ -134,7 +134,7 @@ class AlarmViewSet(BaseMeasurementViewSet):
         return Alarm.objects.all()
 
 
-class AlarmThresholdViewSet(BaseMeasurementViewSet):
+class AlarmThresholdViewSet(SetUserMixin, viewsets.ModelViewSet):
     serializer_class = serializers.AlarmThresholdSerializer
     filter_class = AlarmThresholdFilter
 
@@ -142,7 +142,7 @@ class AlarmThresholdViewSet(BaseMeasurementViewSet):
         return AlarmThreshold.objects.all()
 
 
-class AlertViewSet(BaseMeasurementViewSet):
+class AlertViewSet(SetUserMixin, viewsets.ModelViewSet):
     serializer_class = serializers.AlertSerializer
     filter_class = AlertFilter
 

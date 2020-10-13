@@ -95,6 +95,33 @@ class Threshold(MeasurementBase):
 
 class Alarm(MeasurementBase):
     '''Describes alarms on metrics and channel_groups'''
+
+    # Define choices for interval_type. Use TextChoices if in Django >3.0
+    MINUTE = 'minute'
+    HOUR = 'hour'
+    DAY = 'day'
+
+    INTERVAL_TYPE_CHOICES = [
+        (MINUTE, "Minute"),
+        (HOUR, "Hour"),
+        (DAY, "Day")
+    ]
+
+    # Define choices for stat. Use TextChoices if in Django >3.0
+    SUM = 'sum'
+    MEAN = 'mean'
+    MEDIAN = 'median'
+    MINIMUM = 'minimum'
+    MAXIMUM = 'maximum'
+
+    STAT_CHOICES = [
+        (SUM, "Sum"),
+        (MEAN, "Mean"),
+        (MEDIAN, "Median"),
+        (MINIMUM, "Minimum"),
+        (MAXIMUM, "Maximum")
+    ]
+
     channel_group = models.ForeignKey(
         Group,
         on_delete=models.CASCADE,
@@ -105,14 +132,22 @@ class Alarm(MeasurementBase):
         on_delete=models.CASCADE,
         related_name='alarms'
     )
-    interval_type = models.CharField(max_length=15)
+    interval_type = models.CharField(max_length=8,
+                                     choices=INTERVAL_TYPE_CHOICES,
+                                     default=HOUR
+                                     )
     interval_count = models.IntegerField()
     num_channels = models.IntegerField()
-    stat = models.CharField(max_length=15)
+    stat = models.CharField(max_length=8,
+                            choices=STAT_CHOICES,
+                            default=SUM
+                            )
 
     def __str__(self):
-        return (f"Alarm for {str(self.channel_group)}, "
+        return (f"{str(self.channel_group)}, "
                 f"{str(self.metric)}, "
+                f"{self.interval_count} {self.interval_type}, "
+                f"{self.num_channels} chan, "
                 f"{self.stat}"
                 )
 
@@ -135,16 +170,17 @@ class AlarmThreshold(MeasurementBase):
     level = models.IntegerField(default=1)
 
     def __str__(self):
-        return (f"Min: {self.minval}, "
+        return (f"Alarm: {str(self.alarm)}, "
+                f"Min: {self.minval}, "
                 f"Max: {self.maxval}, "
-                f"level: {self.weight}"
+                f"Level: {self.level}"
                 )
 
 
 class Alert(MeasurementBase):
-    '''Describe and alert for an alarm'''
-    alarm = models.ForeignKey(
-        Alarm,
+    '''Describe an alert for an alarm_threshold'''
+    alarm_threshold = models.ForeignKey(
+        AlarmThreshold,
         on_delete=models.CASCADE,
         related_name='alerts'
     )
@@ -159,9 +195,8 @@ class Alert(MeasurementBase):
         ]
 
     def __str__(self):
-        return (f"Alarm: {str(self.alarm)}, "
-                f"Message: {self.message}, "
-                f"Time: {self.timestamp}"
+        return (f"Time: {self.timestamp}, "
+                f"Alarm: {str(self.alarm_threshold)}"
                 )
 
 

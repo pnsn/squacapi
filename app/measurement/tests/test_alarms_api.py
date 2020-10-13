@@ -58,10 +58,10 @@ class PrivateAlarmAPITests(TestCase):
         self.alarm = Alarm.objects.create(
             channel_group=self.grp,
             metric=self.metric,
-            interval_type='hour',
+            interval_type=Alarm.DAY,
             interval_count=2,
             num_channels=5,
-            stat='sum',
+            stat=Alarm.MEAN,
             user=self.user
         )
         self.alarm_threshold = AlarmThreshold.objects.create(
@@ -72,7 +72,7 @@ class PrivateAlarmAPITests(TestCase):
             user=self.user
         )
         self.alert = Alert.objects.create(
-            alarm=self.alarm,
+            alarm_threshold=self.alarm_threshold,
             timestamp=datetime(1970, 1, 1, tzinfo=pytz.UTC),
             message='Alarm on channel group something something!',
             in_alarm=True,
@@ -86,17 +86,17 @@ class PrivateAlarmAPITests(TestCase):
         )
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data['interval_type'], 'hour')
+        self.assertEqual(res.data['interval_type'], Alarm.DAY)
 
     def test_create_alarm(self):
         url = reverse('measurement:alarm-list')
         payload = {
             'channel_group': self.grp.id,
             'metric': self.metric.id,
-            'interval_type': 'minute',
+            'interval_type': Alarm.MINUTE,
             'interval_count': 5,
             'num_channels': 3,
-            'stat': 'avg',
+            'stat': Alarm.SUM,
             'user': self.user
         }
         res = self.client.post(url, payload)
@@ -144,12 +144,12 @@ class PrivateAlarmAPITests(TestCase):
         )
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data['alarm'], self.alarm.id)
+        self.assertEqual(res.data['alarm_threshold'], self.alarm_threshold.id)
 
     def test_create_alert(self):
         url = reverse('measurement:alert-list')
         payload = {
-            'alarm': self.alarm.id,
+            'alarm_threshold': self.alarm_threshold.id,
             'timestamp': datetime(1999, 12, 31, tzinfo=pytz.UTC),
             'message': "What happened? I don't know",
             'in_alarm': False,
@@ -159,7 +159,7 @@ class PrivateAlarmAPITests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         alert = Alert.objects.get(id=res.data['id'])
         for key in payload.keys():
-            if key == 'alarm':
-                self.assertEqual(payload[key], alert.alarm.id)
+            if key == 'alarm_threshold':
+                self.assertEqual(payload[key], alert.alarm_threshold.id)
             else:
                 self.assertEqual(payload[key], getattr(alert, key))
