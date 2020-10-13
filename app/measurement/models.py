@@ -62,8 +62,6 @@ class Measurement(MeasurementBase):
         indexes = [
             # index in desc order (newest first)
             models.Index(fields=['-starttime']),
-            models.Index(fields=['-endtime']),
-            models.Index(fields=['value'])
 
         ]
 
