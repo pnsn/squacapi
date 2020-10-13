@@ -6,3 +6,4 @@ app/.env
 docs/build
 **/.hypothesis/**
 .codegen/*
+sql
