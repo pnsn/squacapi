@@ -101,6 +101,13 @@ class Command(BaseCommand):
 
         if len(errors) > 0:
             error_string = " ".join(errors)
+            '''set log level to warn to avoid logger noise regarding
+                 file_cache is unavailable when using oauth2client >= 4.0.0
+            '''
+            import logging
+            logging.getLogger(
+                'googleapicliet.discovery_cache').setLevel(logging.ERROR)
+
             send_mail("Error in measurement table partitioning",
                       error_string,
                       settings.EMAIL_NO_REPLY,
