@@ -3,6 +3,7 @@ from django.contrib.auth.models import Group
 
 from rest_framework import serializers
 from organization.models import Organization
+from core.models import Notification
 
 
 class GroupSerializer(serializers.ModelSerializer):
@@ -117,3 +118,16 @@ class AuthTokenSerializer(serializers.Serializer):
 
         attrs['user'] = user
         return attrs
+
+
+class NotificationSerializer(serializers.HyperlinkedModelSerializer):
+    url = serializers.HyperlinkedIdentityField(
+        view_name="user:notification-detail")
+
+    class Meta:
+        model = Notification
+        fields = (
+            'id', 'url', 'notification', 'notification_type', 'created_at',
+            'updated_at', 'user_id'
+        )
+        read_only_fields = ('id',)

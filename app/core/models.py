@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, \
     PermissionsMixin, Group
 
@@ -88,3 +89,18 @@ class User(AbstractBaseUser, PermissionsMixin):
         else:  # viewer (least priv)
             reporter.user_set.remove(self)
             contributor.user_set.remove(self)
+
+
+class Notification(models.Model):
+    '''User notification model for alerting'''
+    notification = models.CharField(max_length=255)
+    notification_type = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+    )
+
+    def __str__(self):
+        return f'{self.notification_type}: {self.notification}'
