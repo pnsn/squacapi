@@ -21,8 +21,8 @@ from nslc.models import Network
 
 LOADER_EMAIL = os.environ.get('LOADER_EMAIL')
 if not LOADER_EMAIL:
-    print(f"You must provide a valid email by setting the LOADER_EMAIL"
-          f" environmental variable."
+    print("You must provide a valid email by setting the LOADER_EMAIL \
+          environmental variable."
           )
     sys.exit(1)
 
