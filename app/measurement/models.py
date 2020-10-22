@@ -92,21 +92,12 @@ class Threshold(MeasurementBase):
 
 class Archive(models.Model):
     """An archive-summary of measurements"""
+    class ArchiveType(models.TextChoices):
+        DAY = 'day', 'Day'
+        WEEK = 'week', 'Week'
+        MONTH = 'month', 'Month'
 
-    # TODO: collapse into TextChoices innerclass after Django 3 upgrade
-    DAY = 'day'
-    WEEK = 'week'
-    MONTH = 'month'
-    YEAR = 'year'
-
-    ARCHIVE_TYPE_CHOICES = [
-        (DAY, "Day"),
-        (WEEK, "Week"),
-        (MONTH, "Month"),
-        (YEAR, "Year")
-    ]
-
-    archive_type = models.CharField(max_length=8, choices=ARCHIVE_TYPE_CHOICES)
+    archive_type = models.CharField(max_length=8, choices=ArchiveType.choices)
     channel = models.ForeignKey(Channel, on_delete=models.CASCADE)
     metric = models.ForeignKey(Metric, on_delete=models.CASCADE)
     min = models.FloatField()
