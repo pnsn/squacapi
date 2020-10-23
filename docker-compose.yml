@@ -9,7 +9,6 @@ services:
       context: .
     ports:
       - "8000:8000"
-      # - "1025:1025"
 
     volumes:
       - ./app:/app
@@ -38,7 +37,7 @@ services:
       - db
   db:
     container_name: squacapi_db
-    image: postgres:10-alpine
+    image: postgres:12.4-alpine
     environment:
       - POSTGRES_DB=squac_dev
       - POSTGRES_USER=postgres

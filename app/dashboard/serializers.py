@@ -74,7 +74,8 @@ class DashboardDetailSerializer(DashboardSerializer):
         model = Dashboard
         fields = (
             'id', 'description', 'name', 'widgets', 'created_at',
-            'updated_at', 'user_id', 'share_all', 'share_org', 'organization'
+            'updated_at', 'user_id', 'share_all', 'share_org', 'starttime',
+            'endtime', 'organization', 'window_seconds'
         )
         read_only_fields = ('id',)
 
