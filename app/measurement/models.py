@@ -2,6 +2,10 @@ from django.db import models
 from django.conf import settings
 from dashboard.models import Widget
 from nslc.models import Channel, Group
+from django.db.models import Avg, Max, Min, Sum
+
+from datetime import date, datetime, timedelta
+import pytz
 
 
 class MeasurementBase(models.Model):
@@ -142,6 +146,35 @@ class Alarm(MeasurementBase):
                             choices=STAT_CHOICES,
                             default=SUM
                             )
+
+    def agg_measurements(self, T1=None, T2=None):
+        if not T1 or not T2:
+            if self.interval_type == self.MINUTE:
+                seconds = 60
+            elif self.interval_type == self.HOUR:
+                seconds = 60 * 60
+            elif self.interval_type == self.DAY:
+                seconds = 60 * 60 * 24
+            else:
+                print('Invalid interval type!')
+                return
+            T2 = datetime.now(tz=pytz.UTC)
+            T1 = T2 - timedelta(seconds=seconds)
+
+        group = self.channel_group
+        metric = self.metric
+
+        # Get a QuerySet containing only measurements for the correct time
+        # period and metric for this alarm
+        q = metric.measurements.filter(starttime__range=(T1, T2),
+                                       channel__in=group.channels.all()) 
+        # Now calculate the aggregate values for each channel
+        q = q.values('channel').annotate(Sum('value'),
+                                         Avg('value'),
+                                         Max('value'),
+                                         Min('value'))
+
+        return q
 
     def __str__(self):
         return (f"{str(self.channel_group)}, "
