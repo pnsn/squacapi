@@ -23,6 +23,14 @@ ALLOWED_HOSTS = ['squac.pnsn.org', 'squacapi.pnsn.org',
                  'localhost', 'staging-squacapi.pnsn.org',
                  'staging-squacapi.pnsn.org']
 
+# add ALB ips for health checks
+try:
+    EC2_IP = requests.get('http://169.254.169.254/latest/meta-data/local-ipv4').text
+    ALLOWED_HOSTS.append(EC2_IP)
+except requests.exceptions.RequestException:
+    pass
+
+
 # For debug toolbar
 INTERNAL_IPS = [
     'localhost',
