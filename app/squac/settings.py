@@ -19,10 +19,11 @@ SECRET_KEY = os.environ.get('SQUAC_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('SQUAC_DEBUG_MODE') == 'True',
+try:
+    ALLOWED_HOSTS = os.environ.get('ALLOWED_HOST_LIST').split(',')
+except AttributeError:
+    ALLOWED_HOSTS = ['localhost','127.0.0.1']
 
-
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOST_LIST').split(',')
-print(ALLOWED_HOSTS)
 # add EC2 ip to allow heath checks
 try:
     EC2_IP = requests.get(os.environ.get('META_DATA_IP_URL')).text
