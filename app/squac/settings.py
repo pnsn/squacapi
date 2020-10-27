@@ -26,7 +26,7 @@ ALLOWED_HOSTS = ['squac.pnsn.org', 'squacapi.pnsn.org',
 
 # add ALB ips for health checks
 try:
-    EC2_IP = requests.get(os.environ.get('ALB_URL')).text
+    EC2_IP = requests.get(os.environ.get('META_DATA_IP_URL')).text
     ALLOWED_HOSTS.append(EC2_IP)
 except RequestException or MissingSchema:
     pass
