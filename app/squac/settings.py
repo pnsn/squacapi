@@ -4,7 +4,8 @@ env variables config
     * prod app/.env
 
 """
-
+import requests
+from requests.exceptions import RequestException, MissingSchema
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -25,9 +26,9 @@ ALLOWED_HOSTS = ['squac.pnsn.org', 'squacapi.pnsn.org',
 
 # add ALB ips for health checks
 try:
-    EC2_IP = requests.get('http://169.254.169.254/latest/meta-data/local-ipv4').text
+    EC2_IP = requests.get(os.environ.get('ALB_URL')).text
     ALLOWED_HOSTS.append(EC2_IP)
-except requests.exceptions.RequestException:
+except RequestException or MissingSchema:
     pass
 
 
