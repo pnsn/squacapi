@@ -31,7 +31,8 @@ services:
       - CACHE_LOCATION=''
       - EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
       - EMAIL_NO_REPLY=pnsn-no-reply@uw.edu
-      - DJANGO_LOG_LEVEL=DEBUG      
+      - DJANGO_LOG_LEVEL=DEBUG
+      - ALLOWED_HOST_LIST=localhost,127.0.0.1
 
     depends_on:
       - db
