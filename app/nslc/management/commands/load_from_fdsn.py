@@ -179,10 +179,6 @@ class Command(BaseCommand):
                         }
                     )
 
-        networks = {}
-        for n in Network.objects.all():
-            networks[n.code.lower()] = n
-
         station_url = self.build_url(options, 'station')
         stations = {}
         with requests.Session() as s:
@@ -190,7 +186,7 @@ class Command(BaseCommand):
             decoded_content = download.content.decode('utf-8')
             content = csv.reader(decoded_content.splitlines(), delimiter='|')
             row_list = list(content)
-            # skip first two rows of metadata
+            # skip header rows of metadata
             for row in row_list[1:]:
                 if len(row) > 1:
                     sta_code = row[1].lower()
@@ -198,35 +194,35 @@ class Command(BaseCommand):
                     stations[sta_code] = sta_name
 
         channel_url = self.build_url(options, 'channel')
-        try:
-            with requests.Session() as s:
-                download = s.get(channel_url)
-                decoded_content = download.content.decode('utf-8')
-                content = csv.reader(
-                    decoded_content.splitlines(), delimiter='|')
-                row_list = list(content)
-                # skip header rows in metadata
-                for row in row_list[1:]:
-                    # extract data from row
-                    if len(row) > 1:
-                        net_code, sta, loc, cha, lat, lon, elev, *rem = row
-                        depth, azimuth, dip, sensor_descr, scale, *rem = rem
-                        freq, units, rate, start, end = rem
-                        net = networks[net_code.lower()]
-                        start_datetime = pytz.utc.localize(
-                            datetime.strptime(start, '%Y-%m-%dT%H:%M:%S')
+        with requests.Session() as s:
+            download = s.get(channel_url)
+            decoded_content = download.content.decode('utf-8')
+            content = csv.reader(
+                decoded_content.splitlines(), delimiter='|')
+            row_list = list(content)
+            # skip header rows in metadata
+            for row in row_list[1:]:
+                # extract data from row
+                if len(row) > 1:
+                    net, sta, loc, cha, lat, lon, elev, *rem = row
+                    depth, azimuth, dip, sensor_descr, scale, *rem = rem
+                    freq, units, rate, start, end = rem
+                    start_datetime = pytz.utc.localize(
+                        datetime.strptime(start, '%Y-%m-%dT%H:%M:%S')
+                    )
+                    if end:
+                        end_datetime = pytz.utc.localize(
+                            datetime.strptime(end, '%Y-%m-%dT%H:%M:%S')
                         )
-                        if end:
-                            end_datetime = pytz.utc.localize(
-                                datetime.strptime(end, '%Y-%m-%dT%H:%M:%S')
-                            )
-                        else:
-                            # If end time is null set to 2599 dummy date
-                            end_datetime = datetime(
-                                year=2599, month=12, day=31, tzinfo=pytz.UTC)
+                    else:
+                        # If end time is null set to 2599 dummy date
+                        end_datetime = datetime(
+                            year=2599, month=12, day=31, tzinfo=pytz.UTC)
+                    print(f'{net}: {sta} {cha}')
+                    try:
                         # Get or create the channel using data
                         Channel.objects.get_or_create(
-                            network=net,
+                            network=Network.objects.get(code=net.lower()),
                             station_code=sta.lower(),
                             loc='--' if not loc else loc.lower(),
                             code=cha.lower(),
@@ -235,7 +231,7 @@ class Command(BaseCommand):
                                 'lon': float(lon),
                                 'elev': float(elev),
                                 'depth': float(depth),
-                                'name': stations[sta_code.lower()],
+                                'name': stations[sta.lower()],
                                 'azimuth': 0.0 if not azimuth else float(
                                     azimuth),
                                 'dip': 0.0 if not dip else float(dip),
@@ -250,6 +246,6 @@ class Command(BaseCommand):
                                 'user': user,
                             }
                         )
-        except KeyError:
-            print('Key error occured')
+                    except KeyError as e:
+                        print(f'Key error occured: {e}')
         print('Loading finished')
