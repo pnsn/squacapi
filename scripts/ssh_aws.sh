@@ -1,1 +1,1 @@
-	ssh -i $PEM_FILE ec2-user@$SQUAC_APP_IP
+ssh -i $PEM_FILE ec2-user@$SQUAC_APP_IP
