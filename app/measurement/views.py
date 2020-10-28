@@ -22,7 +22,11 @@ class ThresholdFilter(filters.FilterSet):
 class MeasurementFilter(filters.FilterSet):
     """filters measurment by metric, channel, starttime, and endtime"""
     starttime = filters.CharFilter(field_name='starttime', lookup_expr='gte')
-    endtime = filters.CharFilter(field_name='endtime', lookup_expr='lte')
+
+    ''' Note although param is called endtime, it uses starttime, which is
+        the the only field with an index
+    '''
+    endtime = filters.CharFilter(field_name='starttime', lookup_expr='lte')
     metric = NumberInFilter(field_name='metric')
     channel = NumberInFilter(field_name='channel')
 
