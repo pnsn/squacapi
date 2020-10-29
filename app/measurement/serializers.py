@@ -32,10 +32,10 @@ class MeasurementSerializer(serializers.ModelSerializer):
             })
         return measurement
 
-    @staticmethod
-    def setup_eager_loading(queryset):
-        queryset = queryset.select_related('channel')
-        return queryset
+    # @staticmethod
+    # def setup_eager_loading(queryset):
+    #     queryset = queryset.select_related('channel')
+    #     return queryset
 
 
 class MetricSerializer(serializers.HyperlinkedModelSerializer):

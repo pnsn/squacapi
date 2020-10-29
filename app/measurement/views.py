@@ -71,8 +71,7 @@ class MeasurementViewSet(BaseMeasurementViewSet):
         return super(MeasurementViewSet, self).get_serializer(*args, **kwargs)
 
     def get_queryset(self):
-        q = Measurement.objects.all().order_by('channel', 'metric')
-        return self.serializer_class.setup_eager_loading(q)
+        return Measurement.objects.all().order_by('channel', 'metric')
 
     def list(self, request, *args, **kwargs):
         '''We want to be carful about large querries so require params'''
