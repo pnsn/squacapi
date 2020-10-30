@@ -46,12 +46,16 @@ class PrivateNotificationAPITests(TestCase):
 
     def setUp(self):
         self.client = APIClient()
-        self.user = sample_user(email="test@pnsn.org", password="secret")
-        self.user.is_staff = True
-        self.user.save()
-        self.client.force_authenticate(self.user)
+        self.admin = sample_user(email="test@pnsn.org", password="secret")
+        self.admin.is_staff = True
+        self.admin.save()
+        self.other = sample_user(email="other@pnsn.org", password="secret")
+        self.client.force_authenticate(self.admin)
         self.notification = Notification.objects.create(
-            user=self.user
+            user=self.admin
+        )
+        self.other_notification = Notification.objects.create(
+            user=self.other
         )
 
     def test_get_notification(self):
@@ -70,4 +74,19 @@ class PrivateNotificationAPITests(TestCase):
         self.assertEqual(
             payload['notification_type'],
             notification.notification_type
+        )
+
+    def test_admin_can_view_all_notifications(self):
+        url = reverse('user:notification-list')
+        res = self.client.get(url)
+        self.assertEqual(len(res.data), 2)
+
+    def test_notifications_limited_to_owner(self):
+        self.client.force_authenticate(self.other)
+        url = reverse('user:notification-list')
+        res = self.client.get(url)
+        self.assertEqual(len(res.data), 1)
+        self.assertEqual(
+            res.data[0]['user_id'],
+            self.other.id
         )
