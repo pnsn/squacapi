@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
-from django.db.models import Avg, Max, Min, Sum
+# from django.db.models import Avg, Count, Max, Min, Sum
 
 from measurement.models import (Alarm, AlarmThreshold, Alert, Measurement,
                                 Metric)
@@ -11,7 +11,7 @@ from organization.models import Organization
 from rest_framework.test import APIClient
 from rest_framework import status
 
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta
 import pytz
 from squac.test_mixins import sample_user
 
@@ -229,114 +229,166 @@ class PrivateAlarmAPITests(TestCase):
             else:
                 self.assertEqual(payload[key], getattr(alert, key))
 
-    def test_retrieve_channels(self):
-        url = reverse(
-            'measurement:alarm-detail',
-            kwargs={'pk': self.alarm.id}
-        )
-        res = self.client.get(url)
-        grp_id = res.data['channel_group']
-        print('grp_id = {}'.format(grp_id))
-        group = Group.objects.get(pk=grp_id)
-        group.refresh_from_db()
-        print(group.channels.all())
+    def test_agg_measurements(self):
+        alarm = Alarm.objects.get(pk=1)
+        endtime = datetime(2018, 2, 1, 4, 30, 0, 0, tzinfo=pytz.UTC)
 
-        date1 = datetime(2019, 5, 5, 8, 8, 7, tzinfo=pytz.UTC)
-        date2 = datetime(2019, 5, 6, 8, 8, 7, tzinfo=pytz.UTC)
+        q = alarm.agg_measurements(endtime=endtime)
 
-        res1 = Measurement.objects.filter(starttime__date=date(2019, 5, 5))
-        print('len(res1) = {}'.format(len(res1)))
+        # check number of channels returned
+        self.assertEqual(len(q), 3)
 
-        res2 = Measurement.objects.filter(starttime__range=(date1, date2))
-        print('len(res2) = {}'.format(len(res2)))
+        # check number of measurements per channel
+        self.assertEqual(q.get(channel=1)['count'], 3)
+        self.assertEqual(q.get(channel=1)['sum'], 6)
+        self.assertEqual(q.get(channel=2)['count'], 2)
+        self.assertEqual(q.get(channel=2)['sum'], 11)
+        self.assertEqual(q.get(channel=3)['count'], 1)
+        self.assertEqual(q.get(channel=3)['sum'], 8)
 
-        res3 = Measurement.objects.filter(starttime__range=(date1, date2),
-                                          channel__in=group.channels.all()) \
-                                   .values('channel') \
-                                   .annotate(Sum('value'))
-        print('len(res3) = {}'.format(len(res3)))
-        print(res3)
-        print('alarm.channel_group = {}'.format(self.alarm.channel_group))
-        print('alarm.channel_group.id = {}'
-              .format(self.alarm.channel_group.id))
-
-        group = Group.objects.get(pk=self.alarm.channel_group.id)
-        res4 = Measurement.objects.filter(starttime__range=(date1, date2),
-                                          channel__in=group.channels.all()) \
-                                   .values('channel') \
-                                   .annotate(Sum('value'))
-        print('len(res4) = {}'.format(len(res4)))
-        print(res4)
-
-        res5 = Measurement.objects.filter(starttime__range=(date1, date2),
-                                          channel__in=group.channels.all()) \
-                                   .values('channel')
-        print('len(res5) = {}'.format(len(res5)))
-        print(res5)
-
-        group = Group.objects.get(pk=self.alarm.channel_group.id)
-        res6 = Measurement.objects.filter(starttime__range=(date1, date2),
-                                          channel__in=group.channels.all(),
-                                          metric=self.alarm.metric) \
-                                   .values('channel') \
-                                   .annotate(Sum('value'), Avg('value'),
-                                             Max('value'), Min('value'))
-        print('len(res6) = {}'.format(len(res6)))
-        print(res6)
-        print(type(group))
-        print(group)
-
-    def test_get_agg(self):
-        # val_query_set = self.alarm.get_agg_values()
-        channels = Group.objects.get(pk=self.alarm.channel_group.id) \
-                                .channels.all()
-        print('in get_agg')
-        print(channels)
-
-        # get channel ids from query set
-        chan_ids = [10, 11]
-        # for query in val_query_set:
-        #     chan_ids.append(query['channel'])
-
-        print(chan_ids)
-
-        for channel in channels:
-            print(channel)
-            print(channel.id)
-            print(type(channel.id))
-            # Is channel in the returned query set?
-            # self.assertTrue(channel.id in chan_ids)
-
-            # Does the aggregate value match what it should?
-
-    def test_check_json(self):
-        measurements = Measurement.objects.all()
-        metrics = Metric.objects.all()
-        channels = Channel.objects.all()
-        groups = Group.objects.all()
-        alarms = Alarm.objects.all()
-
-        print('In checker')
-        print('n measurements = {}'.format(len(measurements)))
-        print('n metrics = {}'.format(len(metrics)))
-        print('n channels = {}'.format(len(channels)))
-        print('n groups = {}'.format(len(groups)))
-        print('n alarms = {}'.format(len(alarms)))
-
-        group = groups[0]
-        metric = metrics[0]
-        res = Measurement.objects.filter(channel__in=group.channels.all(),
-                                         metric=metric) \
-                                   .values('channel') \
-                                   .annotate(Sum('value'), Avg('value'),
-                                             Max('value'), Min('value'))
-        print('len(res) = {}'.format(len(res)))
-        print(res)
-
-        alarm = alarms[0]
-        T1 = datetime(2018, 2, 1, 3, 0, 0, 0, tzinfo=pytz.UTC)
-        T2 = datetime(2018, 2, 1, 4, 0, 0, 0, tzinfo=pytz.UTC)
-        
-        q = alarm.agg_measurements(T1=T1, T2=T2)
         print(q)
         print('Done with checker')
+
+    def test_agg_measurements_missing_channel(self):
+        alarm = Alarm.objects.get(pk=2)
+        endtime = datetime(2018, 2, 1, 4, 30, 0, 0, tzinfo=pytz.UTC)
+
+        q = alarm.agg_measurements(endtime=endtime)
+
+        # check number of channels returned
+        self.assertEqual(len(q), 2)
+
+        # check number of measurements per channel
+        self.assertEqual(q.get(channel=1)['count'], 2)
+        self.assertEqual(q.get(channel=1)['sum'], 25)
+        self.assertEqual(q.get(channel=2)['count'], 1)
+        self.assertEqual(q.get(channel=2)['sum'], 14)
+
+    def test_agg_measurements_out_of_time_period(self):
+        alarm = Alarm.objects.get(pk=2)
+        endtime = datetime(2018, 2, 1, 1, 30, 0, 0, tzinfo=pytz.UTC)
+
+        q = alarm.agg_measurements(endtime=endtime)
+
+        # check number of channels returned
+        self.assertEqual(len(q), 0)
+
+    def test_agg_measurements_empty_channel_group(self):
+        alarm = Alarm.objects.get(pk=3)
+        endtime = datetime(2018, 2, 1, 4, 30, 0, 0, tzinfo=pytz.UTC)
+
+        q = alarm.agg_measurements(endtime=endtime)
+
+        # check number of channels returned
+        self.assertEqual(len(q), 0)
+
+    def test_is_breaching_only_minval(self):
+        alarm = Alarm.objects.get(pk=1)
+        endtime = datetime(2018, 2, 1, 4, 30, 0, 0, tzinfo=pytz.UTC)
+
+        q = alarm.agg_measurements(endtime=endtime)
+        alarm_threshold = AlarmThreshold.objects.get(pk=1)
+
+        self.assertTrue(alarm_threshold.is_breaching(q.get(channel=1)))
+        self.assertTrue(alarm_threshold.is_breaching(q.get(channel=2)))
+        self.assertFalse(alarm_threshold.is_breaching(q.get(channel=3)))
+
+        res = alarm_threshold.get_breaching_channels(q)
+        self.assertCountEqual(res, [1, 2])
+        self.assertTrue(alarm_threshold.in_alarm_state(q))
+
+    def test_is_breaching_only_maxval(self):
+        alarm = Alarm.objects.get(pk=1)
+        endtime = datetime(2018, 2, 1, 4, 30, 0, 0, tzinfo=pytz.UTC)
+
+        q = alarm.agg_measurements(endtime=endtime)
+        alarm_threshold = AlarmThreshold.objects.get(pk=2)
+
+        self.assertTrue(alarm_threshold.is_breaching(q.get(channel=1)))
+        self.assertTrue(alarm_threshold.is_breaching(q.get(channel=2)))
+        self.assertTrue(alarm_threshold.is_breaching(q.get(channel=3)))
+
+        res = alarm_threshold.get_breaching_channels(q)
+        self.assertCountEqual(res, [1, 2, 3])
+        self.assertTrue(alarm_threshold.in_alarm_state(q))
+
+    def test_is_breaching_band(self):
+        alarm = Alarm.objects.get(pk=1)
+        endtime = datetime(2018, 2, 1, 4, 30, 0, 0, tzinfo=pytz.UTC)
+
+        q = alarm.agg_measurements(endtime=endtime)
+
+        # Check first alarm_threshold, band_inclusive = False
+        alarm_threshold = AlarmThreshold.objects.get(pk=3)
+        self.assertFalse(alarm_threshold.is_breaching(q.get(channel=1)))
+        self.assertFalse(alarm_threshold.is_breaching(q.get(channel=2)))
+        self.assertTrue(alarm_threshold.is_breaching(q.get(channel=3)))
+
+        res = alarm_threshold.get_breaching_channels(q)
+        self.assertCountEqual(res, [3])
+        self.assertFalse(alarm_threshold.in_alarm_state(q))
+
+        # Check second alarm_threshold, band_inclusive = True
+        alarm_threshold = AlarmThreshold.objects.get(pk=4)
+        self.assertTrue(alarm_threshold.is_breaching(q.get(channel=1)))
+        self.assertTrue(alarm_threshold.is_breaching(q.get(channel=2)))
+        self.assertFalse(alarm_threshold.is_breaching(q.get(channel=3)))
+
+        res = alarm_threshold.get_breaching_channels(q)
+        self.assertCountEqual(res, [1, 2])
+        self.assertTrue(alarm_threshold.in_alarm_state(q))
+
+    def test_evaluate_alarm_breach_with_alert(self):
+        alarm = Alarm.objects.get(pk=1)
+        endtime = datetime(2018, 2, 1, 4, 30, 0, 0, tzinfo=pytz.UTC)
+
+        all_alerts = Alert.objects.all()
+        self.assertEqual(len(all_alerts), 4)
+
+        alarm.evaluate_alarm(endtime=endtime)
+
+        # alarm_threshold 1 is breached
+        # had previous alert with in_alarm = False,
+        # check that a new one is created
+        alarm_threshold = AlarmThreshold.objects.get(pk=1)
+        alerts = alarm_threshold.alerts.all()
+        self.assertEqual(len(alerts), 2)
+        # get most recent alert
+        alert = alerts.latest('timestamp')
+        self.assertTrue(alert.in_alarm)
+
+        # alarm_threshold 2 is breached
+        # already had an active alert, check that in_alarm is still True
+        alarm_threshold = AlarmThreshold.objects.get(pk=2)
+        alerts = alarm_threshold.alerts.all()
+        self.assertEqual(len(alerts), 1)
+        # get most recent alert
+        alert = alerts.latest('timestamp')
+        self.assertTrue(alert.in_alarm)
+
+        # alarm_threshold 3 is not breached
+        # already had an active alert, check that in_alarm is turned to False
+        alarm_threshold = AlarmThreshold.objects.get(pk=3)
+        alerts = alarm_threshold.alerts.all()
+        self.assertEqual(len(alerts), 1)
+        # get most recent alert
+        alert = alerts.latest('timestamp')
+        self.assertFalse(alert.in_alarm)
+
+        # alarm_threshold 4 is breached
+        # did not have an alert, check that new one is created
+        alarm_threshold = AlarmThreshold.objects.get(pk=4)
+        alerts = alarm_threshold.alerts.all()
+        self.assertEqual(len(alerts), 1)
+        # get most recent alert
+        alert = alerts.latest('timestamp')
+        self.assertTrue(alert.in_alarm)
+
+        # alarm_threshold 5 is not breached
+        # did not have an alert, check that there is no new one
+        alarm_threshold = AlarmThreshold.objects.get(pk=5)
+        alerts = alarm_threshold.alerts.all()
+        self.assertEqual(len(alerts), 0)
+
+        all_alerts = Alert.objects.all()
+        self.assertEqual(len(all_alerts), 6)

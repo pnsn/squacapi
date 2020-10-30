@@ -348,8 +348,8 @@
     "metric": 1,
     "channel": 1,
     "value": 4,
-    "starttime": "2018-02-01T04:30:00Z",
-    "endtime": "2018-02-01T04:30:00Z"
+    "starttime": "2018-02-01T05:30:00Z",
+    "endtime": "2018-02-01T05:30:00Z"
   }
 },
 {
@@ -396,8 +396,8 @@
     "metric": 1,
     "channel": 2,
     "value": 7,
-    "starttime": "2018-02-01T05:00:00Z",
-    "endtime": "2018-02-01T05:00:00Z"
+    "starttime": "2018-02-01T06:00:00Z",
+    "endtime": "2018-02-01T06:00:00Z"
   }
 },
 {
@@ -428,8 +428,8 @@
     "metric": 1,
     "channel": 3,
     "value": 9,
-    "starttime": "2018-02-01T05:00:00Z",
-    "endtime": "2018-02-01T05:00:00Z"
+    "starttime": "2018-02-01T06:00:00Z",
+    "endtime": "2018-02-01T06:00:00Z"
   }
 },
 {
@@ -556,9 +556,168 @@
         "channel_group": 1, 
         "metric": 1, 
         "interval_type": "hour", 
-        "interval_count": 1, 
+        "interval_count": 2, 
         "num_channels": 2, 
         "stat": "avg"
+    }
+},
+{
+    "model": "measurement.alarm",
+    "pk": 2,
+    "fields": {
+        "created_at": "2019-08-28T23:30:31.262Z", 
+        "updated_at": "2019-08-28T23:30:31.262Z", 
+        "user": [
+            "loader@pnsn.org"
+        ], 
+        "channel_group": 1, 
+        "metric": 2, 
+        "interval_type": "hour", 
+        "interval_count": 2, 
+        "num_channels": 2, 
+        "stat": "avg"
+    }
+},
+{
+    "model": "measurement.alarm",
+    "pk": 3,
+    "fields": {
+        "created_at": "2019-08-28T23:30:31.262Z", 
+        "updated_at": "2019-08-28T23:30:31.262Z", 
+        "user": [
+            "loader@pnsn.org"
+        ], 
+        "channel_group": 3, 
+        "metric": 2, 
+        "interval_type": "hour", 
+        "interval_count": 2, 
+        "num_channels": 2, 
+        "stat": "avg"
+    }
+},
+{
+    "model": "measurement.alarmthreshold",
+    "pk": 1,
+    "fields": {
+        "created_at": "2019-08-28T23:30:31.262Z", 
+        "updated_at": "2019-08-28T23:30:31.262Z", 
+        "user": [
+            "loader@pnsn.org"
+        ], 
+        "alarm": 1, 
+        "minval": 6, 
+        "maxval": null, 
+        "band_inclusive": false, 
+        "level": 2
+    }
+},
+{
+    "model": "measurement.alarmthreshold",
+    "pk": 2,
+    "fields": {
+        "created_at": "2019-08-28T23:30:31.262Z", 
+        "updated_at": "2019-08-28T23:30:31.262Z", 
+        "user": [
+            "loader@pnsn.org"
+        ], 
+        "alarm": 1, 
+        "minval": null, 
+        "maxval": 1, 
+        "band_inclusive": false, 
+        "level": 2
+    }
+},
+{
+    "model": "measurement.alarmthreshold",
+    "pk": 3,
+    "fields": {
+        "created_at": "2019-08-28T23:30:31.262Z", 
+        "updated_at": "2019-08-28T23:30:31.262Z", 
+        "user": [
+            "loader@pnsn.org"
+        ], 
+        "alarm": 1, 
+        "minval": 1, 
+        "maxval": 6, 
+        "band_inclusive": false, 
+        "level": 2
+    }
+},
+{
+    "model": "measurement.alarmthreshold",
+    "pk": 4,
+    "fields": {
+        "created_at": "2019-08-28T23:30:31.262Z", 
+        "updated_at": "2019-08-28T23:30:31.262Z", 
+        "user": [
+            "loader@pnsn.org"
+        ], 
+        "alarm": 1, 
+        "minval": 1, 
+        "maxval": 6, 
+        "band_inclusive": true, 
+        "level": 2
+    }
+},
+{
+    "model": "measurement.alarmthreshold",
+    "pk": 5,
+    "fields": {
+        "created_at": "2019-08-28T23:30:31.262Z", 
+        "updated_at": "2019-08-28T23:30:31.262Z", 
+        "user": [
+            "loader@pnsn.org"
+        ], 
+        "alarm": 1, 
+        "minval": 4, 
+        "maxval": 6, 
+        "band_inclusive": true, 
+        "level": 2
+    }
+},
+{
+    "model": "measurement.alert",
+    "pk": 1,
+    "fields": {
+        "created_at": "2019-08-28T23:30:31.262Z", 
+        "updated_at": "2019-08-28T23:30:31.262Z", 
+        "user": [
+            "loader@pnsn.org"
+        ], 
+        "alarm_threshold": 1, 
+        "timestamp": "2018-02-01T04:30:00Z", 
+        "message": "Wow, an alert!", 
+        "in_alarm": false
+    }
+},
+{
+    "model": "measurement.alert",
+    "pk": 2,
+    "fields": {
+        "created_at": "2019-08-28T23:30:31.262Z", 
+        "updated_at": "2019-08-28T23:30:31.262Z", 
+        "user": [
+            "loader@pnsn.org"
+        ], 
+        "alarm_threshold": 2, 
+        "timestamp": "2018-02-01T04:30:00Z", 
+        "message": "Wow, an alert again!", 
+        "in_alarm": true
+    }
+},
+{
+    "model": "measurement.alert",
+    "pk": 3,
+    "fields": {
+        "created_at": "2019-08-28T23:30:31.262Z", 
+        "updated_at": "2019-08-28T23:30:31.262Z", 
+        "user": [
+            "loader@pnsn.org"
+        ], 
+        "alarm_threshold": 3, 
+        "timestamp": "2018-02-01T04:30:00Z", 
+        "message": "Wow, an alert! It keeps happening!", 
+        "in_alarm": true
     }
 }
 ]

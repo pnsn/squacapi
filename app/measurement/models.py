@@ -2,9 +2,9 @@ from django.db import models
 from django.conf import settings
 from dashboard.models import Widget
 from nslc.models import Channel, Group
-from django.db.models import Avg, Max, Min, Sum
+from django.db.models import Avg, Count, Max, Min, Sum
 
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta
 import pytz
 
 
@@ -110,16 +110,17 @@ class Alarm(MeasurementBase):
     ]
 
     # Define choices for stat. Use TextChoices if in Django >3.0
+    # These need to match the field names used in agg_measurements
+    COUNT = 'count'
     SUM = 'sum'
-    MEAN = 'mean'
-    MEDIAN = 'median'
-    MINIMUM = 'minimum'
-    MAXIMUM = 'maximum'
+    AVERAGE = 'avg'
+    MINIMUM = 'min'
+    MAXIMUM = 'max'
 
     STAT_CHOICES = [
+        (COUNT, "Count"),
         (SUM, "Sum"),
-        (MEAN, "Mean"),
-        (MEDIAN, "Median"),
+        (AVERAGE, "Average"),
         (MINIMUM, "Minimum"),
         (MAXIMUM, "Maximum")
     ]
@@ -145,34 +146,79 @@ class Alarm(MeasurementBase):
                             default=SUM
                             )
 
-    def agg_measurements(self, T1=None, T2=None):
-        if not T1 or not T2:
-            if self.interval_type == self.MINUTE:
-                seconds = 60
-            elif self.interval_type == self.HOUR:
-                seconds = 60 * 60
-            elif self.interval_type == self.DAY:
-                seconds = 60 * 60 * 24
-            else:
-                print('Invalid interval type!')
-                return
-            T2 = datetime.now(tz=pytz.UTC)
-            T1 = T2 - timedelta(seconds=seconds)
+    def calc_interval_seconds(self):
+        seconds = self.interval_count
+        if self.interval_type == self.MINUTE:
+            seconds *= 60
+        elif self.interval_type == self.HOUR:
+            seconds *= 60 * 60
+        elif self.interval_type == self.DAY:
+            seconds *= 60 * 60 * 24
+        else:
+            print('Invalid interval type!')
+            return 0
+
+        return seconds
+
+    def agg_measurements(self, endtime=None):
+        if not endtime:
+            endtime = datetime.now(tz=pytz.UTC)
+
+        seconds = self.calc_interval_seconds()
+        starttime = endtime - timedelta(seconds=seconds)
 
         group = self.channel_group
         metric = self.metric
 
         # Get a QuerySet containing only measurements for the correct time
         # period and metric for this alarm
-        q = metric.measurements.filter(starttime__range=(T1, T2),
-                                       channel__in=group.channels.all()) 
+        q = metric.measurements.filter(starttime__range=(starttime, endtime),
+                                       channel__in=group.channels.all())
+
+        # Add extra filter for value__gt and/or value__lt?
+
         # Now calculate the aggregate values for each channel
-        q = q.values('channel').annotate(Sum('value'),
-                                         Avg('value'),
-                                         Max('value'),
-                                         Min('value'))
+        q = q.values('channel').annotate(count=Count('value'),
+                                         sum=Sum('value'),
+                                         avg=Avg('value'),
+                                         max=Max('value'),
+                                         min=Min('value'))
 
         return q
+
+    def evaluate_alarm(self, endtime=None):
+        # Get aggregate values for each channel. Returns a QuerySet
+        channel_values = self.agg_measurements(endtime)
+
+        # Get AlarmThresholds for this alarm. Returns a QuerySet
+        alarm_thresholds = self.alarm_thresholds.all()
+
+        # Evaluate whether each AlarmThreshold is breaching
+        for alarm_threshold in alarm_thresholds:
+            alerts = alarm_threshold.alerts.all()
+            alert = None
+            if alerts:
+                alert = alerts.latest('timestamp')
+
+            if alarm_threshold.in_alarm_state(channel_values):
+                # In alarm state, does alert exist yet?
+                # By exist I mean the most recent one has in_alarm = True
+                # If not, create
+                if not alert or not alert.in_alarm:
+                    msg = 'This is an alert for ' + str(alarm_threshold.id)
+
+                    new_alert = Alert(alarm_threshold=alarm_threshold,
+                                      timestamp=datetime.now(tz=pytz.UTC),
+                                      message=msg,
+                                      in_alarm=True,
+                                      user=self.user)
+                    new_alert.save()
+            else:
+                # Not in alarm state, is there an alert to cancel?
+                # If so, turn off
+                if alert and alert.in_alarm:
+                    alert.in_alarm = False
+                    alert.save()
 
     def __str__(self):
         return (f"{str(self.channel_group)}, "
@@ -199,6 +245,38 @@ class AlarmThreshold(MeasurementBase):
     maxval = models.FloatField(blank=True, null=True)
     band_inclusive = models.BooleanField(default=True)
     level = models.IntegerField(default=1)
+
+    # channel_value is dict
+    def is_breaching(self, channel_value):
+        val = channel_value[self.alarm.stat]
+        # check three cases: only minval, only maxval, both min and max
+        if not self.minval and not self.maxval:
+            print('minval or maxval should be defined!')
+            return False
+        elif self.minval and not self.maxval:
+            return val < self.minval
+        elif not self.minval and self.maxval:
+            return val > self.maxval
+        else:
+            inside_band = (val > self.minval and val < self.maxval)
+            return inside_band == self.band_inclusive
+
+        # Shouldn't ever get here, but return False anyway
+        return False
+
+    # channel_values is QuerySet
+    def get_breaching_channels(self, channel_values):
+        breaching_channels = []
+        for channel_value in channel_values:
+            if self.is_breaching(channel_value):
+                breaching_channels.append(channel_value['channel'])
+
+        return breaching_channels
+
+    # channel_values is QuerySet
+    def in_alarm_state(self, channel_values):
+        breaching_channels = self.get_breaching_channels(channel_values)
+        return len(breaching_channels) >= self.alarm.num_channels
 
     def __str__(self):
         return (f"Alarm: {str(self.alarm)}, "
@@ -227,7 +305,7 @@ class Alert(MeasurementBase):
 
     def __str__(self):
         return (f"Time: {self.timestamp}, "
-                f"Alarm: {str(self.alarm_threshold)}"
+                f"{str(self.alarm_threshold)}"
                 )
 
 
