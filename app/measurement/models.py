@@ -160,9 +160,9 @@ class Alarm(MeasurementBase):
 
         return seconds
 
-    def agg_measurements(self, endtime=None):
-        if not endtime:
-            endtime = datetime.now(tz=pytz.UTC)
+    def agg_measurements(self, endtime=datetime.now(tz=pytz.UTC)):
+        # if not endtime:
+        #     endtime = datetime.now(tz=pytz.UTC)
 
         seconds = self.calc_interval_seconds()
         starttime = endtime - timedelta(seconds=seconds)
@@ -186,7 +186,7 @@ class Alarm(MeasurementBase):
 
         return q
 
-    def evaluate_alarm(self, endtime=None):
+    def evaluate_alarm(self, endtime=datetime.now(tz=pytz.UTC)):
         # Get aggregate values for each channel. Returns a QuerySet
         channel_values = self.agg_measurements(endtime)
 
@@ -195,30 +195,13 @@ class Alarm(MeasurementBase):
 
         # Evaluate whether each AlarmThreshold is breaching
         for alarm_threshold in alarm_thresholds:
-            alerts = alarm_threshold.alerts.all()
-            alert = None
-            if alerts:
-                alert = alerts.latest('timestamp')
+            in_alarm = alarm_threshold.in_alarm_state(channel_values)
+            alarm_threshold.evaluate_alert(in_alarm)
 
-            if alarm_threshold.in_alarm_state(channel_values):
-                # In alarm state, does alert exist yet?
-                # By exist I mean the most recent one has in_alarm = True
-                # If not, create
-                if not alert or not alert.in_alarm:
-                    msg = 'This is an alert for ' + str(alarm_threshold.id)
-
-                    new_alert = Alert(alarm_threshold=alarm_threshold,
-                                      timestamp=datetime.now(tz=pytz.UTC),
-                                      message=msg,
-                                      in_alarm=True,
-                                      user=self.user)
-                    new_alert.save()
-            else:
-                # Not in alarm state, is there an alert to cancel?
-                # If so, turn off
-                if alert and alert.in_alarm:
-                    alert.in_alarm = False
-                    alert.save()
+    # def handle_alarms():
+    #     alarms = Alarm.objects.all()
+    #     for alarm in alarms:
+    #         alarm.evaluate_alarm()
 
     def __str__(self):
         return (f"{str(self.channel_group)}, "
@@ -277,6 +260,41 @@ class AlarmThreshold(MeasurementBase):
     def in_alarm_state(self, channel_values):
         breaching_channels = self.get_breaching_channels(channel_values)
         return len(breaching_channels) >= self.alarm.num_channels
+
+    def get_latest_alert(self):
+        alerts = self.alerts.all()
+        alert = None
+        if alerts:
+            alert = alerts.latest('timestamp')
+
+        return alert
+
+    def evaluate_alert(self, in_alarm):
+        alert = self.get_latest_alert()
+
+        if in_alarm:
+            # In alarm state, does alert exist yet?
+            # Exist means the most recent one has in_alarm = True
+            # If not, create
+            if not alert or not alert.in_alarm:
+                msg = 'This is an alert for ' + str(self.id)
+
+                new_alert = Alert(alarm_threshold=self,
+                                  timestamp=datetime.now(tz=pytz.UTC),
+                                  message=msg,
+                                  in_alarm=True,
+                                  user=self.user)
+                new_alert.save()
+                return new_alert
+        else:
+            # Not in alarm state, is there an alert to cancel?
+            # If so, turn off
+            if alert and alert.in_alarm:
+                alert.in_alarm = False
+                alert.save()
+                return alert
+
+        return alert
 
     def __str__(self):
         return (f"Alarm: {str(self.alarm)}, "

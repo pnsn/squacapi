@@ -11,7 +11,7 @@ from organization.models import Organization
 from rest_framework.test import APIClient
 from rest_framework import status
 
-from datetime import datetime, timedelta
+from datetime import datetime
 import pytz
 from squac.test_mixins import sample_user
 
@@ -50,6 +50,17 @@ class PrivateAlarmAPITests(TestCase):
             endtime=datetime(2599, 12, 31, tzinfo=pytz.UTC)
         )
 
+    def getTestAlarm(self, interval_type=Alarm.MINUTE, interval_count=2):
+        return Alarm.objects.create(
+            channel_group=self.grp,
+            metric=self.metric,
+            interval_type=interval_type,
+            interval_count=interval_count,
+            num_channels=5,
+            stat=Alarm.SUM,
+            user=self.user
+        )
+
     def getTestMeasurement(self, metric, channel, val, delta):
         basetime = datetime(2019, 5, 5, 8, 8, 7, 0, tzinfo=pytz.UTC)
         return Measurement.objects.create(
@@ -74,7 +85,7 @@ class PrivateAlarmAPITests(TestCase):
             code="UW", name="University of Washington", user=self.user)
         self.chan1 = self.getTestChannel('CH1')
         self.chan2 = self.getTestChannel('CH2')
-        self.chan3 = self.getTestChannel('CH3')
+        # self.chan3 = self.getTestChannel('CH3')
         self.grp = Group.objects.create(
             name='Test group',
             share_all=True,
@@ -92,34 +103,6 @@ class PrivateAlarmAPITests(TestCase):
             user=self.user,
             reference_url='pnsn.org'
         )
-        self.metric2 = Metric.objects.create(
-            name='Sample metric 2',
-            unit='hectare',
-            code="something",
-            default_minval=15,
-            default_maxval=20.0,
-            user=self.user,
-            reference_url='pnsn.org'
-        )
-        # Simulate measurements for different channels
-        self.m11 = self.getTestMeasurement(self.metric, self.chan1, 1,
-                                           timedelta(days=0))
-        self.m12 = self.getTestMeasurement(self.metric, self.chan1, 2,
-                                           timedelta(days=0.5))
-        self.m13 = self.getTestMeasurement(self.metric, self.chan1, 3,
-                                           timedelta(days=0.9))
-        self.m14 = self.getTestMeasurement(self.metric, self.chan1, 4,
-                                           timedelta(days=1.1))
-        self.m15 = self.getTestMeasurement(self.metric2, self.chan1, 50,
-                                           timedelta(days=0.5))
-        self.m21 = self.getTestMeasurement(self.metric, self.chan2, 5,
-                                           timedelta(days=0))
-        self.m22 = self.getTestMeasurement(self.metric, self.chan2, 6,
-                                           timedelta(days=0.5))
-        self.m31 = self.getTestMeasurement(self.metric, self.chan3, 7,
-                                           timedelta(days=0))
-        self.m32 = self.getTestMeasurement(self.metric, self.chan3, 8,
-                                           timedelta(days=0.5))
         self.alarm = Alarm.objects.create(
             channel_group=self.grp,
             metric=self.metric,
@@ -229,6 +212,21 @@ class PrivateAlarmAPITests(TestCase):
             else:
                 self.assertEqual(payload[key], getattr(alert, key))
 
+    def test_calc_interval_seconds_2_minutes(self):
+        alarm = self.getTestAlarm(interval_type=Alarm.MINUTE,
+                                  interval_count=2)
+        self.assertEqual(120, alarm.calc_interval_seconds())
+
+    def test_calc_interval_seconds_3_hours(self):
+        alarm = self.getTestAlarm(interval_type=Alarm.HOUR,
+                                  interval_count=3)
+        self.assertEqual(10800, alarm.calc_interval_seconds())
+
+    def test_calc_interval_seconds_2_days(self):
+        alarm = self.getTestAlarm(interval_type=Alarm.DAY,
+                                  interval_count=2)
+        self.assertEqual(172800, alarm.calc_interval_seconds())
+
     def test_agg_measurements(self):
         alarm = Alarm.objects.get(pk=1)
         endtime = datetime(2018, 2, 1, 4, 30, 0, 0, tzinfo=pytz.UTC)
@@ -282,68 +280,122 @@ class PrivateAlarmAPITests(TestCase):
         # check number of channels returned
         self.assertEqual(len(q), 0)
 
-    def test_is_breaching_only_minval(self):
-        alarm = Alarm.objects.get(pk=1)
+    def check_is_breaching(self, alarm_id, alarm_threshold_id, expected):
+        alarm = Alarm.objects.get(pk=alarm_id)
         endtime = datetime(2018, 2, 1, 4, 30, 0, 0, tzinfo=pytz.UTC)
 
         q = alarm.agg_measurements(endtime=endtime)
+        alarm_threshold = AlarmThreshold.objects.get(pk=alarm_threshold_id)
+
+        chan_id = 1
+        for result in expected:
+            if result:
+                self.assertTrue(alarm_threshold
+                                .is_breaching(q.get(channel=chan_id)))
+            else:
+                self.assertFalse(alarm_threshold
+                                 .is_breaching(q.get(channel=chan_id)))
+            chan_id += 1
+
+    def test_is_breaching(self):
+        self.check_is_breaching(1, 1, [True, True, False])
+        self.check_is_breaching(1, 2, [True, True, True])
+        self.check_is_breaching(1, 3, [False, False, True])
+        self.check_is_breaching(1, 4, [True, True, False])
+
+    def check_get_breaching_channels(self, alarm_id, alarm_threshold_id,
+                                     expected):
+        alarm = Alarm.objects.get(pk=alarm_id)
+        endtime = datetime(2018, 2, 1, 4, 30, 0, 0, tzinfo=pytz.UTC)
+
+        q = alarm.agg_measurements(endtime=endtime)
+        alarm_threshold = AlarmThreshold.objects.get(pk=alarm_threshold_id)
+
+        res = alarm_threshold.get_breaching_channels(q)
+        self.assertCountEqual(res, expected)
+
+    def test_get_breaching_channels(self):
+        self.check_get_breaching_channels(1, 1, [1, 2])
+        self.check_get_breaching_channels(1, 2, [1, 2, 3])
+        self.check_get_breaching_channels(1, 3, [3])
+        self.check_get_breaching_channels(1, 4, [1, 2])
+
+    def check_in_alarm_state(self, alarm_id, alarm_threshold_id, expected):
+        alarm = Alarm.objects.get(pk=alarm_id)
+        endtime = datetime(2018, 2, 1, 4, 30, 0, 0, tzinfo=pytz.UTC)
+
+        q = alarm.agg_measurements(endtime=endtime)
+        alarm_threshold = AlarmThreshold.objects.get(pk=alarm_threshold_id)
+        if expected:
+            self.assertTrue(alarm_threshold.in_alarm_state(q))
+        else:
+            self.assertFalse(alarm_threshold.in_alarm_state(q))
+
+    def test_in_alarm_state(self):
+        self.check_in_alarm_state(1, 1, True)
+        self.check_in_alarm_state(1, 2, True)
+        self.check_in_alarm_state(1, 3, False)
+        self.check_in_alarm_state(1, 4, True)
+
+    def test_get_latest_alert(self):
+        alarm_threshold = AlarmThreshold.objects.get(pk=3)
+
+        alert = alarm_threshold.get_latest_alert()
+        self.assertEqual(4, alert.id)
+
+    def test_get_latest_alert_none_exist(self):
+        alarm_threshold = AlarmThreshold.objects.get(pk=4)
+
+        alert = alarm_threshold.get_latest_alert()
+        self.assertIsNone(alert)
+
+    def test_evaluate_alert_false_alert_no_alarm(self):
         alarm_threshold = AlarmThreshold.objects.get(pk=1)
 
-        self.assertTrue(alarm_threshold.is_breaching(q.get(channel=1)))
-        self.assertTrue(alarm_threshold.is_breaching(q.get(channel=2)))
-        self.assertFalse(alarm_threshold.is_breaching(q.get(channel=3)))
+        alert = alarm_threshold.evaluate_alert(False)
+        self.assertEqual(1, alert.id)
+        self.assertFalse(alert.in_alarm)
 
-        res = alarm_threshold.get_breaching_channels(q)
-        self.assertCountEqual(res, [1, 2])
-        self.assertTrue(alarm_threshold.in_alarm_state(q))
+    def test_evaluate_alert_false_alert_in_alarm(self):
+        alarm_threshold = AlarmThreshold.objects.get(pk=1)
 
-    def test_is_breaching_only_maxval(self):
-        alarm = Alarm.objects.get(pk=1)
-        endtime = datetime(2018, 2, 1, 4, 30, 0, 0, tzinfo=pytz.UTC)
+        alert = alarm_threshold.evaluate_alert(True)
+        self.assertNotEqual(1, alert.id)
+        self.assertTrue(alert.in_alarm)
 
-        q = alarm.agg_measurements(endtime=endtime)
+    def test_evaluate_alert_true_alert_no_alarm(self):
         alarm_threshold = AlarmThreshold.objects.get(pk=2)
 
-        self.assertTrue(alarm_threshold.is_breaching(q.get(channel=1)))
-        self.assertTrue(alarm_threshold.is_breaching(q.get(channel=2)))
-        self.assertTrue(alarm_threshold.is_breaching(q.get(channel=3)))
+        alert = alarm_threshold.evaluate_alert(False)
+        self.assertEqual(2, alert.id)
+        self.assertFalse(alert.in_alarm)
 
-        res = alarm_threshold.get_breaching_channels(q)
-        self.assertCountEqual(res, [1, 2, 3])
-        self.assertTrue(alarm_threshold.in_alarm_state(q))
+    def test_evaluate_alert_true_alert_in_alarm(self):
+        alarm_threshold = AlarmThreshold.objects.get(pk=2)
 
-    def test_is_breaching_band(self):
-        alarm = Alarm.objects.get(pk=1)
-        endtime = datetime(2018, 2, 1, 4, 30, 0, 0, tzinfo=pytz.UTC)
+        alert = alarm_threshold.evaluate_alert(True)
+        self.assertEqual(2, alert.id)
+        self.assertTrue(alert.in_alarm)
 
-        q = alarm.agg_measurements(endtime=endtime)
-
-        # Check first alarm_threshold, band_inclusive = False
-        alarm_threshold = AlarmThreshold.objects.get(pk=3)
-        self.assertFalse(alarm_threshold.is_breaching(q.get(channel=1)))
-        self.assertFalse(alarm_threshold.is_breaching(q.get(channel=2)))
-        self.assertTrue(alarm_threshold.is_breaching(q.get(channel=3)))
-
-        res = alarm_threshold.get_breaching_channels(q)
-        self.assertCountEqual(res, [3])
-        self.assertFalse(alarm_threshold.in_alarm_state(q))
-
-        # Check second alarm_threshold, band_inclusive = True
+    def test_evaluate_alert_no_alert_no_alarm(self):
         alarm_threshold = AlarmThreshold.objects.get(pk=4)
-        self.assertTrue(alarm_threshold.is_breaching(q.get(channel=1)))
-        self.assertTrue(alarm_threshold.is_breaching(q.get(channel=2)))
-        self.assertFalse(alarm_threshold.is_breaching(q.get(channel=3)))
 
-        res = alarm_threshold.get_breaching_channels(q)
-        self.assertCountEqual(res, [1, 2])
-        self.assertTrue(alarm_threshold.in_alarm_state(q))
+        alert = alarm_threshold.evaluate_alert(False)
+        self.assertIsNone(alert)
 
-    def test_evaluate_alarm_breach_with_alert(self):
+    def test_evaluate_alert_no_alert_in_alarm(self):
+        alarm_threshold = AlarmThreshold.objects.get(pk=4)
+
+        alert = alarm_threshold.evaluate_alert(True)
+        self.assertTrue(alert.in_alarm)
+
+    # This is more like an integration test at the moment
+    def test_evaluate_alarm(self):
         alarm = Alarm.objects.get(pk=1)
         endtime = datetime(2018, 2, 1, 4, 30, 0, 0, tzinfo=pytz.UTC)
 
         all_alerts = Alert.objects.all()
-        self.assertEqual(len(all_alerts), 4)
+        self.assertEqual(len(all_alerts), 6)
 
         alarm.evaluate_alarm(endtime=endtime)
 
@@ -370,7 +422,7 @@ class PrivateAlarmAPITests(TestCase):
         # already had an active alert, check that in_alarm is turned to False
         alarm_threshold = AlarmThreshold.objects.get(pk=3)
         alerts = alarm_threshold.alerts.all()
-        self.assertEqual(len(alerts), 1)
+        self.assertEqual(len(alerts), 3)
         # get most recent alert
         alert = alerts.latest('timestamp')
         self.assertFalse(alert.in_alarm)
@@ -391,4 +443,4 @@ class PrivateAlarmAPITests(TestCase):
         self.assertEqual(len(alerts), 0)
 
         all_alerts = Alert.objects.all()
-        self.assertEqual(len(all_alerts), 6)
+        self.assertEqual(len(all_alerts), 8)
