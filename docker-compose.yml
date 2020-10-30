@@ -23,7 +23,7 @@ services:
       - SQUAC_DB_PASS=supersecret
       - SQUAC_SECRET_KEY=thisisnottherealkey
       - SQUAC_DEBUG_MODE=True
-      - USE_DOCKER=yes
+      - USE_DOCKER=no
       - SQUAC_EMAIL_HOST=mailhog
       - SQUAC_EMAIL_PORT=1025
       - CACHE_BACKEND=default

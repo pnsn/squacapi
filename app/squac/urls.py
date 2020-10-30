@@ -61,10 +61,12 @@ urlpatterns = [
     re_path(r'^swagger(?P<format>\.json|\.yaml)$',
             schema_view.without_ui(cache_timeout=0),
             name='schema-json'),
+    path('silk/', include('silk.urls', namespace='silk')),
     # browser routes for password resets
 ]
 
 if settings.DEBUG:
+    print(settings.DEBUG)
     import debug_toolbar
     urlpatterns = [
         path('__debug__/', include(debug_toolbar.urls)),

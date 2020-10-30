@@ -19,7 +19,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.environ.get('SQUAC_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('SQUAC_DEBUG_MODE') == 'True',
+DEBUG = os.environ.get('SQUAC_DEBUG_MODE') == 'True'
 try:
     ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS_LIST').split(',')
 except AttributeError:
@@ -77,6 +77,7 @@ INSTALLED_APPS = [
     'organization',
     'invite',
     'django_crontab',
+    'silk',
     
 ]
 
@@ -92,7 +93,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django_cprofile_middleware.middleware.ProfilerMiddleware',
+    'silk.middleware.SilkyMiddleware',
     'django.middleware.cache.FetchFromCacheMiddleware', #must be last!!
 
 ]
@@ -317,3 +318,8 @@ LOGGING = {
         }
     }
 }
+
+#Profiling
+SILKY_PYTHON_PROFILER = True
+SILKY_PYTHON_PROFILER_BINARY = True
+SILKY_PYTHON_PROFILER_RESULT_PATH = os.environ.get("SILK_PROFILE_PATH")

@@ -5,6 +5,7 @@ from squac.mixins import SetUserMixin, DefaultPermissionsMixin
 from .exceptions import MissingParameterException
 from .models import Metric, Measurement, Threshold, Archive
 from measurement import serializers
+from silk.profiling.profiler import silk_profile
 
 
 class MetricFilter(filters.FilterSet):
@@ -72,7 +73,7 @@ class MeasurementViewSet(BaseMeasurementViewSet):
 
     def get_queryset(self):
         return Measurement.objects.all().order_by('channel', 'metric')
-
+    @silk_profile(name='GET Measurements')
     def list(self, request, *args, **kwargs):
         '''We want to be carful about large querries so require params'''
         if not all([required_param in request.query_params
