@@ -127,7 +127,7 @@ class NotificationSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Notification
         fields = (
-            'id', 'url', 'notification', 'notification_type', 'created_at',
+            'id', 'url', 'notification_type', 'created_at',
             'updated_at', 'user_id'
         )
         read_only_fields = ('id',)

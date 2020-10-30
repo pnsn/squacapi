@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, \
     PermissionsMixin, Group
+from django.utils.translation import gettext_lazy as _
 
 from organization.models import Organization
 
@@ -93,8 +94,17 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 class Notification(models.Model):
     '''User notification model for alerting'''
-    notification = models.CharField(max_length=255)
-    notification_type = models.CharField(max_length=255)
+
+    class NotificationType(models.TextChoices):
+        EMAIL = 'email', _('Email')
+        SMS = 'sms', _('SMS')
+        SLACK = 'slack', _('Slack')
+
+    notification_type = models.CharField(
+        max_length=255,
+        choices=NotificationType.choices,
+        default=NotificationType.EMAIL
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(
@@ -103,4 +113,4 @@ class Notification(models.Model):
     )
 
     def __str__(self):
-        return f'{self.notification_type}: {self.notification}'
+        return f'{self.user} {self.notification_type} notification'

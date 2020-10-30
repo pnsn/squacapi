@@ -25,9 +25,7 @@ class UnAuthenticatedNotificationApiTests(TestCase):
         # unauthenticate user
         self.client.force_authenticate(user=None)
         self.notification = Notification.objects.create(
-            user=self.user,
-            notification='test1',
-            notification_type='type1'
+            user=self.user
         )
 
     def test_notification_unathorized(self):
@@ -38,7 +36,7 @@ class UnAuthenticatedNotificationApiTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
         url = reverse('user:notification-list')
-        payload = {'notification': 'test', 'notification_type': 'test'}
+        payload = {}
         res = self.client.post(url, payload)
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
@@ -53,9 +51,7 @@ class PrivateNotificationAPITests(TestCase):
         self.user.save()
         self.client.force_authenticate(self.user)
         self.notification = Notification.objects.create(
-            user=self.user,
-            notification='test1',
-            notification_type='type1'
+            user=self.user
         )
 
     def test_get_notification(self):
@@ -64,14 +60,14 @@ class PrivateNotificationAPITests(TestCase):
             'user:notification-detail', kwargs={'pk': self.notification.id})
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data['notification'], "test1")
-        self.assertEqual(str(self.notification), "type1: test1")
 
     def test_create_notification(self):
         url = reverse('user:notification-list')
-        payload = {'notification': "test2", "notification_type": "type2"}
+        payload = {'notification_type': Notification.NotificationType.SMS}
         res = self.client.post(url, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         notification = Notification.objects.get(id=res.data['id'])
-        for key in payload.keys():
-            self.assertEqual(payload[key], getattr(notification, key))
+        self.assertEqual(
+            payload['notification_type'],
+            notification.notification_type
+        )
