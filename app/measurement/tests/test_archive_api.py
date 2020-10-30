@@ -58,7 +58,7 @@ class UnauthenticatedArchiveApiTests(TestCase):
             endtime=datetime(2599, 12, 31, tzinfo=pytz.UTC)
         )
         self.archive = Archive.objects.create(
-            archive_type=Archive.DAY,
+            archive_type=Archive.ArchiveType.DAY,
             channel=chan,
             metric=metric,
             min=0, max=0, mean=0, median=0, stdev=0, num_samps=1,
@@ -121,7 +121,7 @@ class ArchiveApiTests(TestCase):
             endtime=datetime(2599, 12, 31, tzinfo=pytz.UTC)
         )
         self.archive = Archive.objects.create(
-            archive_type=Archive.DAY,
+            archive_type=Archive.ArchiveType.DAY,
             channel=self.chan,
             metric=self.metric,
             min=0, max=0, mean=0, median=0, stdev=0, num_samps=1,

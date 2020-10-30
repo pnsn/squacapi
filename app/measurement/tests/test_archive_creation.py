@@ -17,6 +17,9 @@ from measurement.models import Metric, Measurement, Archive
 from nslc.models import Network, Channel
 from squac.test_mixins import sample_user
 
+# to run only this file
+#   ./mg.sh "test measurement.tests.test_archive_creation && flake8"
+
 
 class TestArchiveCreation(TestCase):
     """ Tests archive creation functionality """
@@ -136,7 +139,7 @@ class TestArchiveCreation(TestCase):
         archive = Archive.objects.get(endtime=max_end, starttime=min_start)
 
         # Assert created archive has correct statistics
-        self.assertEqual(Archive.DAY, archive.archive_type)
+        self.assertEqual(Archive.ArchiveType.DAY, archive.archive_type)
         self.assertAlmostEqual(min(measurement_data), archive.min)
         self.assertAlmostEqual(max(measurement_data), archive.max)
         self.assertAlmostEqual(

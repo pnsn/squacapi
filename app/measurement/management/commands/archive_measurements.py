@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand
 from django.db.models import (Avg, StdDev, Min, Max, Count, Value, CharField,
                               F, FloatField)
 from django.db.models.functions import (ExtractDay, ExtractWeek, ExtractMonth,
-                                        ExtractYear, Coalesce)
+                                        Coalesce)
 from measurement.models import Measurement, Archive
 from measurement.aggregates.percentile import Percentile
 from datetime import datetime
@@ -15,18 +15,16 @@ class Command(BaseCommand):
     help = 'Archives Measurements older than the specified age'
 
     TIME_EXTRACTOR = {
-        Archive.DAY: ExtractDay,
-        Archive.WEEK: ExtractWeek,
-        Archive.MONTH: ExtractMonth,
-        Archive.YEAR: ExtractYear,
+        Archive.ArchiveType.DAY: ExtractDay,
+        Archive.ArchiveType.WEEK: ExtractWeek,
+        Archive.ArchiveType.MONTH: ExtractMonth,
     }
     """" Django datetime extractors for dealing with portions of datetimes """
 
     DURATIONS = {
-        Archive.DAY: lambda count: relativedelta(day=count),
-        Archive.WEEK: lambda count: relativedelta(week=count),
-        Archive.MONTH: lambda count: relativedelta(month=count),
-        Archive.YEAR: lambda count: relativedelta(year=count),
+        Archive.ArchiveType.DAY: lambda count: relativedelta(day=count),
+        Archive.ArchiveType.WEEK: lambda count: relativedelta(week=count),
+        Archive.ArchiveType.MONTH: lambda count: relativedelta(month=count),
     }
     """ functions for generating timesteps of sizes """
 
