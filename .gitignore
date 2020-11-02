@@ -7,3 +7,4 @@ docs/build
 **/.hypothesis/**
 .codegen/*
 silk_profiles/*
+*.prof
