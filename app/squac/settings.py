@@ -4,8 +4,10 @@ env variables config
     * prod app/.env
 
 """
-
+import requests
+from requests.exceptions import RequestException, MissingSchema
 import os
+from squac.cronjobs import CRONJOBS
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -18,10 +20,18 @@ SECRET_KEY = os.environ.get('SQUAC_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('SQUAC_DEBUG_MODE') == 'True',
+try:
+    ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS_LIST').split(',')
+except AttributeError:
+    ALLOWED_HOSTS = ['localhost','127.0.0.1']
 
-ALLOWED_HOSTS = ['squac.pnsn.org', 'squacapi.pnsn.org', 
-                 'localhost', 'staging-squacapi.pnsn.org',
-                 'staging-squacapi.pnsn.org']
+# add EC2 ip to allow heath checks
+try:
+    EC2_IP = requests.get(os.environ.get('META_DATA_IP_URL')).text
+    ALLOWED_HOSTS.append(EC2_IP)
+except RequestException or MissingSchema:
+    pass
+
 
 # For debug toolbar
 INTERNAL_IPS = [
@@ -64,9 +74,9 @@ INSTALLED_APPS = [
     'nslc',
     'measurement',
     'dashboard',
-    # wtf? 'import',
     'organization',
     'invite',
+    'django_crontab',
     
 ]
 
@@ -82,6 +92,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_cprofile_middleware.middleware.ProfilerMiddleware',
     'django.middleware.cache.FetchFromCacheMiddleware', #must be last!!
 
 ]

@@ -6,7 +6,6 @@ from .exceptions import MissingParameterException
 from .models import (Metric, Measurement, Threshold, Alarm, AlarmThreshold,
                      Alert, Archive)
 from measurement import serializers
-from nslc.models import Group
 
 
 class MetricFilter(filters.FilterSet):
@@ -21,11 +20,17 @@ class ThresholdFilter(filters.FilterSet):
 
 
 class MeasurementFilter(filters.FilterSet):
-    """filters measurment by metric, channel, starttime, and endtime"""
+    """filters measurment by metric, channel, starttime,
+        and endtime (starttime)"""
     starttime = filters.CharFilter(field_name='starttime', lookup_expr='gte')
-    endtime = filters.CharFilter(field_name='endtime', lookup_expr='lte')
+
+    ''' Note although param is called endtime, it uses starttime, which is
+        the the only field with an index
+    '''
+    endtime = filters.CharFilter(field_name='starttime', lookup_expr='lte')
     metric = NumberInFilter(field_name='metric')
     channel = NumberInFilter(field_name='channel')
+    group = NumberInFilter(field_name='channel__group')
 
 
 class AlarmFilter(filters.FilterSet):
@@ -85,35 +90,12 @@ class MeasurementViewSet(BaseMeasurementViewSet):
         return super(MeasurementViewSet, self).get_serializer(*args, **kwargs)
 
     def get_queryset(self):
-        q = Measurement.objects.all().order_by('channel', 'metric')
-        return self.serializer_class.setup_eager_loading(q)
+        return Measurement.objects.all().order_by('channel', 'metric')
 
     def list(self, request, *args, **kwargs):
-        _params = request.query_params
         '''We want to be carful about large querries so require params'''
-        if not all([required_param in _params
+        if not all([required_param in request.query_params
                     for required_param in self.REQUIRED_PARAMS]):
-            raise MissingParameterException
-
-        '''We need either a group or a list of channels. If group params is
-        found. Query all channels for this group and add to
-        request.query_params['channel']
-        '''
-        if "group" in _params:
-            group = Group.objects.get(pk=request.query_params['group'])
-            channels = group.channels.all()
-            list_ids = [str(c.id) for c in channels]
-            string_ids = ','.join(list_ids)
-            '''QueryParam object is immutable, so we need to change that'''
-            # remember state
-            _mutable = _params._mutable
-            # set to mutable
-            _params._mutable = True
-            _params['channel'] = string_ids
-            # set mutable flag back
-            _params._mutable = _mutable
-
-        elif 'channel' not in request.query_params:
             raise MissingParameterException
         return super().list(self, request, *args, **kwargs)
 
