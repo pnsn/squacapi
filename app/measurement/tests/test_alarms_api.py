@@ -50,14 +50,15 @@ class PrivateAlarmAPITests(TestCase):
             endtime=datetime(2599, 12, 31, tzinfo=pytz.UTC)
         )
 
-    def getTestAlarm(self, interval_type=Alarm.MINUTE, interval_count=2):
+    def getTestAlarm(self, interval_type=Alarm.IntervalType.MINUTE, 
+                     interval_count=2):
         return Alarm.objects.create(
             channel_group=self.grp,
             metric=self.metric,
             interval_type=interval_type,
             interval_count=interval_count,
             num_channels=5,
-            stat=Alarm.SUM,
+            stat=Alarm.Stat.SUM,
             user=self.user
         )
 
@@ -106,10 +107,10 @@ class PrivateAlarmAPITests(TestCase):
         self.alarm = Alarm.objects.create(
             channel_group=self.grp,
             metric=self.metric,
-            interval_type=Alarm.DAY,
+            interval_type=Alarm.IntervalType.DAY,
             interval_count=1,
             num_channels=5,
-            stat=Alarm.SUM,
+            stat=Alarm.Stat.SUM,
             user=self.user
         )
         self.alarm_threshold = AlarmThreshold.objects.create(
@@ -134,17 +135,17 @@ class PrivateAlarmAPITests(TestCase):
         )
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data['interval_type'], Alarm.DAY)
+        self.assertEqual(res.data['interval_type'], Alarm.IntervalType.DAY)
 
     def test_create_alarm(self):
         url = reverse('measurement:alarm-list')
         payload = {
             'channel_group': self.grp.id,
             'metric': self.metric.id,
-            'interval_type': Alarm.MINUTE,
+            'interval_type': Alarm.IntervalType.MINUTE,
             'interval_count': 5,
             'num_channels': 3,
-            'stat': Alarm.SUM,
+            'stat': Alarm.Stat.SUM,
             'user': self.user
         }
         res = self.client.post(url, payload)
@@ -213,17 +214,17 @@ class PrivateAlarmAPITests(TestCase):
                 self.assertEqual(payload[key], getattr(alert, key))
 
     def test_calc_interval_seconds_2_minutes(self):
-        alarm = self.getTestAlarm(interval_type=Alarm.MINUTE,
+        alarm = self.getTestAlarm(interval_type=Alarm.IntervalType.MINUTE,
                                   interval_count=2)
         self.assertEqual(120, alarm.calc_interval_seconds())
 
     def test_calc_interval_seconds_3_hours(self):
-        alarm = self.getTestAlarm(interval_type=Alarm.HOUR,
+        alarm = self.getTestAlarm(interval_type=Alarm.IntervalType.HOUR,
                                   interval_count=3)
         self.assertEqual(10800, alarm.calc_interval_seconds())
 
     def test_calc_interval_seconds_2_days(self):
-        alarm = self.getTestAlarm(interval_type=Alarm.DAY,
+        alarm = self.getTestAlarm(interval_type=Alarm.IntervalType.DAY,
                                   interval_count=2)
         self.assertEqual(172800, alarm.calc_interval_seconds())
 
@@ -236,16 +237,13 @@ class PrivateAlarmAPITests(TestCase):
         # check number of channels returned
         self.assertEqual(len(q), 3)
 
-        # check number of measurements per channel
+        # check measurements for each channel
         self.assertEqual(q.get(channel=1)['count'], 3)
         self.assertEqual(q.get(channel=1)['sum'], 6)
         self.assertEqual(q.get(channel=2)['count'], 2)
         self.assertEqual(q.get(channel=2)['sum'], 11)
         self.assertEqual(q.get(channel=3)['count'], 1)
         self.assertEqual(q.get(channel=3)['sum'], 8)
-
-        print(q)
-        print('Done with checker')
 
     def test_agg_measurements_missing_channel(self):
         alarm = Alarm.objects.get(pk=2)
@@ -389,8 +387,8 @@ class PrivateAlarmAPITests(TestCase):
         alert = alarm_threshold.evaluate_alert(True)
         self.assertTrue(alert.in_alarm)
 
-    # This is more like an integration test at the moment
     def test_evaluate_alarm(self):
+        '''This is more like an integration test at the moment'''
         alarm = Alarm.objects.get(pk=1)
         endtime = datetime(2018, 2, 1, 4, 30, 0, 0, tzinfo=pytz.UTC)
 

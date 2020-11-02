@@ -99,31 +99,43 @@ class Alarm(MeasurementBase):
     '''Describes alarms on metrics and channel_groups'''
 
     # Define choices for interval_type. Use TextChoices if in Django >3.0
-    MINUTE = 'minute'
-    HOUR = 'hour'
-    DAY = 'day'
+    class IntervalType(models.TextChoices):
+        MINUTE = 'minute', 'Minute'
+        HOUR = 'hour', 'Hour'
+        DAY = 'day', 'Day'
 
-    INTERVAL_TYPE_CHOICES = [
-        (MINUTE, "Minute"),
-        (HOUR, "Hour"),
-        (DAY, "Day")
-    ]
+    # MINUTE = 'minute'
+    # HOUR = 'hour'
+    # DAY = 'day'
+
+    # INTERVAL_TYPE_CHOICES = [
+    #     (MINUTE, "Minute"),
+    #     (HOUR, "Hour"),
+    #     (DAY, "Day")
+    # ]
 
     # Define choices for stat. Use TextChoices if in Django >3.0
     # These need to match the field names used in agg_measurements
-    COUNT = 'count'
-    SUM = 'sum'
-    AVERAGE = 'avg'
-    MINIMUM = 'min'
-    MAXIMUM = 'max'
+    class Stat(models.TextChoices):
+        COUNT = 'count', 'Count'
+        SUM = 'sum', 'Sum'
+        AVERAGE = 'avg', 'Avg'
+        MINIMUM = 'min', 'Min'
+        MAXIMUM = 'max', 'Max'
+        
+    # COUNT = 'count'
+    # SUM = 'sum'
+    # AVERAGE = 'avg'
+    # MINIMUM = 'min'
+    # MAXIMUM = 'max'
 
-    STAT_CHOICES = [
-        (COUNT, "Count"),
-        (SUM, "Sum"),
-        (AVERAGE, "Average"),
-        (MINIMUM, "Minimum"),
-        (MAXIMUM, "Maximum")
-    ]
+    # STAT_CHOICES = [
+    #     (COUNT, "Count"),
+    #     (SUM, "Sum"),
+    #     (AVERAGE, "Average"),
+    #     (MINIMUM, "Minimum"),
+    #     (MAXIMUM, "Maximum")
+    # ]
 
     channel_group = models.ForeignKey(
         Group,
@@ -136,17 +148,26 @@ class Alarm(MeasurementBase):
         related_name='alarms'
     )
     interval_type = models.CharField(max_length=8,
-                                     choices=INTERVAL_TYPE_CHOICES,
-                                     default=HOUR
+                                     choices=IntervalType.choices,
+                                     default=IntervalType.HOUR
                                      )
+    # interval_type = models.CharField(max_length=8,
+    #                                  choices=INTERVAL_TYPE_CHOICES,
+    #                                  default=HOUR
+    #                                  )
     interval_count = models.IntegerField()
     num_channels = models.IntegerField()
     stat = models.CharField(max_length=8,
-                            choices=STAT_CHOICES,
-                            default=SUM
+                            choices=Stat.choices,
+                            default=Stat.SUM
                             )
+    # stat = models.CharField(max_length=8,
+    #                         choices=STAT_CHOICES,
+    #                         default=SUM
+    #                         )
 
     def calc_interval_seconds(self):
+        '''Return the number of seconds in the alarm interval'''
         seconds = self.interval_count
         if self.interval_type == self.MINUTE:
             seconds *= 60
@@ -161,9 +182,9 @@ class Alarm(MeasurementBase):
         return seconds
 
     def agg_measurements(self, endtime=datetime.now(tz=pytz.UTC)):
-        # if not endtime:
-        #     endtime = datetime.now(tz=pytz.UTC)
-
+        '''
+        Gather all measurements for the alarm and calculate aggregate values
+        '''
         seconds = self.calc_interval_seconds()
         starttime = endtime - timedelta(seconds=seconds)
 
@@ -187,6 +208,10 @@ class Alarm(MeasurementBase):
         return q
 
     def evaluate_alarm(self, endtime=datetime.now(tz=pytz.UTC)):
+        '''
+        Higher-level function that determines alarm state and calls other
+        functions to create alerts if necessary
+        '''
         # Get aggregate values for each channel. Returns a QuerySet
         channel_values = self.agg_measurements(endtime)
 
@@ -198,10 +223,13 @@ class Alarm(MeasurementBase):
             in_alarm = alarm_threshold.in_alarm_state(channel_values)
             alarm_threshold.evaluate_alert(in_alarm)
 
-    # def handle_alarms():
-    #     alarms = Alarm.objects.all()
-    #     for alarm in alarms:
-    #         alarm.evaluate_alarm()
+    def handle_alarms():
+        '''
+        Loop through all alarms and evaluate if they should be turned on/off
+        '''
+        alarms = Alarm.objects.all()
+        for alarm in alarms:
+            alarm.evaluate_alarm()
 
     def __str__(self):
         return (f"{str(self.channel_group)}, "
@@ -231,6 +259,10 @@ class AlarmThreshold(MeasurementBase):
 
     # channel_value is dict
     def is_breaching(self, channel_value):
+        '''
+        Determine if an individual aggregate channel value is breaching for
+        this AlarmThreshold
+        '''
         val = channel_value[self.alarm.stat]
         # check three cases: only minval, only maxval, both min and max
         if not self.minval and not self.maxval:
@@ -249,6 +281,7 @@ class AlarmThreshold(MeasurementBase):
 
     # channel_values is QuerySet
     def get_breaching_channels(self, channel_values):
+        '''Return all channels that are breaching this AlarmThreshold'''
         breaching_channels = []
         for channel_value in channel_values:
             if self.is_breaching(channel_value):
@@ -258,10 +291,15 @@ class AlarmThreshold(MeasurementBase):
 
     # channel_values is QuerySet
     def in_alarm_state(self, channel_values):
+        '''
+        Determine if AlarmThreshold is breaching for input aggregate channel
+        values
+        '''
         breaching_channels = self.get_breaching_channels(channel_values)
         return len(breaching_channels) >= self.alarm.num_channels
 
     def get_latest_alert(self):
+        '''Return the most recent alert for this AlarmThreshold'''
         alerts = self.alerts.all()
         alert = None
         if alerts:
@@ -270,6 +308,10 @@ class AlarmThreshold(MeasurementBase):
         return alert
 
     def evaluate_alert(self, in_alarm):
+        '''
+        Determine what to do with alerts given that this AlarmThreshold is in
+        or out of spec
+        '''
         alert = self.get_latest_alert()
 
         if in_alarm:
