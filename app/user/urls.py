@@ -6,6 +6,8 @@ app_name = 'user'
 
 router = DefaultRouter()
 router.register('groups', views.GroupViewSet, basename='group')
+router.register(
+    'notifications', views.NotificationViewSet, basename='notification')
 
 urlpatterns = [
     path('create/', views.CreateUserView.as_view(), name='create'),
