@@ -114,3 +114,17 @@ class IsOrgAdminOrMember(DjangoModelPermissions):
         if request.user.is_staff or org_admin:
             return True
         return request.method in permissions.SAFE_METHODS and org_member
+
+
+class IsAdminOrOwner(DjangoModelPermissions):
+    '''extends DjanoModelPermissions and adds object level perms'''
+
+    def has_permission(self, request, view):
+        if request.user.is_staff:
+            return True
+        return super().has_permission(request, view)
+
+    def has_object_permission(self, request, view, obj):
+        if request.user.is_staff or obj.user == request.user:
+            return True
+        return False

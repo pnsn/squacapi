@@ -5,9 +5,13 @@ from rest_framework import generics, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.settings import api_settings
+
 from user.serializers import UserWriteSerializer, UserMeSerializer, \
-    AuthTokenSerializer, UserGroupSerializer
+    AuthTokenSerializer, UserGroupSerializer, NotificationSerializer
 from drf_yasg.utils import swagger_auto_schema
+from core.models import Notification
+from squac.mixins import SetUserMixin
+from squac.permissions import IsAdminOrOwner
 
 
 class CreateUserView(generics.CreateAPIView):
@@ -42,3 +46,15 @@ class GroupViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Group.objects.all()
+
+
+class NotificationViewSet(SetUserMixin, viewsets.ModelViewSet):
+    '''Manage user notifications'''
+
+    serializer_class = NotificationSerializer
+    permission_classes = (IsAuthenticated, IsAdminOrOwner,)
+
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return Notification.objects.all()
+        return Notification.objects.filter(user=self.request.user)
