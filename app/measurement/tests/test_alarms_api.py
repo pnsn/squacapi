@@ -50,7 +50,7 @@ class PrivateAlarmAPITests(TestCase):
             endtime=datetime(2599, 12, 31, tzinfo=pytz.UTC)
         )
 
-    def getTestAlarm(self, interval_type=Alarm.IntervalType.MINUTE, 
+    def getTestAlarm(self, interval_type=Alarm.IntervalType.MINUTE,
                      interval_count=2):
         return Alarm.objects.create(
             channel_group=self.grp,

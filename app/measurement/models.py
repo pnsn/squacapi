@@ -98,23 +98,13 @@ class Threshold(MeasurementBase):
 class Alarm(MeasurementBase):
     '''Describes alarms on metrics and channel_groups'''
 
-    # Define choices for interval_type. Use TextChoices if in Django >3.0
+    # Define choices for interval_type
     class IntervalType(models.TextChoices):
         MINUTE = 'minute', 'Minute'
         HOUR = 'hour', 'Hour'
         DAY = 'day', 'Day'
 
-    # MINUTE = 'minute'
-    # HOUR = 'hour'
-    # DAY = 'day'
-
-    # INTERVAL_TYPE_CHOICES = [
-    #     (MINUTE, "Minute"),
-    #     (HOUR, "Hour"),
-    #     (DAY, "Day")
-    # ]
-
-    # Define choices for stat. Use TextChoices if in Django >3.0
+    # Define choices for stat
     # These need to match the field names used in agg_measurements
     class Stat(models.TextChoices):
         COUNT = 'count', 'Count'
@@ -122,20 +112,6 @@ class Alarm(MeasurementBase):
         AVERAGE = 'avg', 'Avg'
         MINIMUM = 'min', 'Min'
         MAXIMUM = 'max', 'Max'
-        
-    # COUNT = 'count'
-    # SUM = 'sum'
-    # AVERAGE = 'avg'
-    # MINIMUM = 'min'
-    # MAXIMUM = 'max'
-
-    # STAT_CHOICES = [
-    #     (COUNT, "Count"),
-    #     (SUM, "Sum"),
-    #     (AVERAGE, "Average"),
-    #     (MINIMUM, "Minimum"),
-    #     (MAXIMUM, "Maximum")
-    # ]
 
     channel_group = models.ForeignKey(
         Group,
@@ -169,11 +145,11 @@ class Alarm(MeasurementBase):
     def calc_interval_seconds(self):
         '''Return the number of seconds in the alarm interval'''
         seconds = self.interval_count
-        if self.interval_type == self.MINUTE:
+        if self.interval_type == self.IntervalType.MINUTE:
             seconds *= 60
-        elif self.interval_type == self.HOUR:
+        elif self.interval_type == self.IntervalType.HOUR:
             seconds *= 60 * 60
-        elif self.interval_type == self.DAY:
+        elif self.interval_type == self.IntervalType.DAY:
             seconds *= 60 * 60 * 24
         else:
             print('Invalid interval type!')
