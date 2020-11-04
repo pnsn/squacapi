@@ -1,8 +1,11 @@
 from django.db import models
+from django.db.models import Avg, Count, Max, Min, Sum
 from django.conf import settings
+from django.utils.translation import gettext_lazy as _
+
+# from core.models import Notification
 from dashboard.models import Widget
 from nslc.models import Channel, Group
-from django.db.models import Avg, Count, Max, Min, Sum
 
 from datetime import datetime, timedelta
 import pytz
@@ -100,18 +103,18 @@ class Alarm(MeasurementBase):
 
     # Define choices for interval_type
     class IntervalType(models.TextChoices):
-        MINUTE = 'minute', 'Minute'
-        HOUR = 'hour', 'Hour'
-        DAY = 'day', 'Day'
+        MINUTE = 'minute', _('Minute')
+        HOUR = 'hour', _('Hour')
+        DAY = 'day', _('Day')
 
     # Define choices for stat
     # These need to match the field names used in agg_measurements
     class Stat(models.TextChoices):
-        COUNT = 'count', 'Count'
-        SUM = 'sum', 'Sum'
-        AVERAGE = 'avg', 'Avg'
-        MINIMUM = 'min', 'Min'
-        MAXIMUM = 'max', 'Max'
+        COUNT = 'count', _('Count')
+        SUM = 'sum', _('Sum')
+        AVERAGE = 'avg', _('Avg')
+        MINIMUM = 'min', _('Min')
+        MAXIMUM = 'max', _('Max')
 
     channel_group = models.ForeignKey(
         Group,
@@ -127,20 +130,12 @@ class Alarm(MeasurementBase):
                                      choices=IntervalType.choices,
                                      default=IntervalType.HOUR
                                      )
-    # interval_type = models.CharField(max_length=8,
-    #                                  choices=INTERVAL_TYPE_CHOICES,
-    #                                  default=HOUR
-    #                                  )
     interval_count = models.IntegerField()
     num_channels = models.IntegerField()
     stat = models.CharField(max_length=8,
                             choices=Stat.choices,
                             default=Stat.SUM
                             )
-    # stat = models.CharField(max_length=8,
-    #                         choices=STAT_CHOICES,
-    #                         default=SUM
-    #                         )
 
     def calc_interval_seconds(self):
         '''Return the number of seconds in the alarm interval'''
@@ -226,7 +221,8 @@ class AlarmThreshold(MeasurementBase):
     # notification = models.ForeignKey(
     #     Notification,
     #     on_delete=models.CASCADE,
-    #     related_name='alarm_thresholds'
+    #     related_name='alarm_thresholds',
+    #     null=True
     # )
     minval = models.FloatField(blank=True, null=True)
     maxval = models.FloatField(blank=True, null=True)
