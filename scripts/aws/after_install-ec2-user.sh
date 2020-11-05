@@ -9,7 +9,7 @@ aws s3 cp s3://squacapi-config/bash/$DEPLOYMENT_GROUP_NAME.env  $dest/app/.env
 
 
 VIRTUALENVWRAPPER_PYTHON=/var/.virtualenvs/$DEPLOYMENT_GROUP_NAME/bin/python
-source `which virtualenvwrapper.sh`
+source /usr/local/bin/virtualenvwrapper.sh
 workon $DEPLOYMENT_GROUP_NAME
 source $dest/app/.env
 pip3 install  -r $dest/requirements/production.txt
