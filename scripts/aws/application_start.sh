@@ -4,9 +4,17 @@ set -e
 set -o pipefail
 
 
-ln -s /var/www/pnsn_web/releases/$DEPLOYMENT_ID /var/www/pnsn_web/current
-ln -s /var/www/pnsn_web/shared/config/s3.yml /var/www/pnsn_web/releases/$DEPLOYMENT_ID/config/s3.yml
-/bin/touch /var/www/pnsn_web/current/tmp/restart.txt
+dest=/var/www/releases/$DEPLOYMENT_GROUP_NAME/$DEPLOYMENT_ID
+symlink=/var/www/$DEPLOYMENT_GROUP_NAME
+# save previous pointer then repoint symlink
+export PREVIOUS_BUILD=`ls $symlink`
+rm $symlink && ln -s $dest $symlink
 
-#update crons
-cd /var/www/pnsn_web/current && /usr/local/bin/bundle exec whenever --update-crontab --set "environment=production" -i "production"
+#try restarting if it doesn't work 
+#restart gunicorn
+if [ $DEPLOYMENT_GROUP_NAME == 'squacapi' ]; then
+    service gunicorn-production restart || rm $symlink && ln -s $PREVIOUS_BUILD $symlink
+else
+    service gunicorn-staging restart || rm $symlink && ln -s $PREVIOUS_BUILD $symlink
+fi
+
