@@ -6,8 +6,8 @@ mv /var/www/releases/tmp $dest
 aws s3 cp s3://squacapi-config/bash/$DEPLOYMENT_GROUP_NAME.env  $dest/app/.env
 
 # virtual env vars
-WORKON_HOME=/var/.virtualenvs
-VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
+export WORKON_HOME=/var/.virtualenvs
+export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
 echo 'here'
 source `which virtualenvwrapper.sh`
 echo 'wtf'
