@@ -11,16 +11,16 @@ VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
 echo 'here'
 source /usr/local/bin/virtualenvwrapper.sh
 echo 'wtf'
+source $dest/app/.env
 echo $DEPLOYMENT_GROUP_NAME
 workon $DEPLOYMENT_GROUP_NAME 2>&1
 echo 'now here'
-source $dest/app/.env
 echo "I can't believe I have to debug this way"
-pip3 install  -r $dest/requirements/production.txt
-python $dest/app/manage.py migrate
-python $dest/app/manage.py collectstatic --noinput
+pip3 install  -r $dest/requirements/production.txt 2>&1
+python $dest/app/manage.py migrate 2>&1
+python $dest/app/manage.py collectstatic --noinput 2>&1
 echo "this is crap"
-deactivate
+deactivate 2>&1
 
 
 
