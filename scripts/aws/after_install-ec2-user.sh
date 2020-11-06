@@ -8,13 +8,16 @@ aws s3 cp s3://squacapi-config/bash/$DEPLOYMENT_GROUP_NAME.env  $dest/app/.env
 # virtual env vars
 WORKON_HOME=/var/.virtualenvs
 VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
-
+echo here
 source /usr/local/bin/virtualenvwrapper.sh
 workon $DEPLOYMENT_GROUP_NAME
+echo 'now here'
 source $dest/app/.env
+echo "I can't believe I have to debug this way"
 pip3 install  -r $dest/requirements/production.txt
 python $dest/app/manage.py migrate
 python $dest/app/manage.py collectstatic --noinput
+echo "this is crap"
 deactivate
 
 
