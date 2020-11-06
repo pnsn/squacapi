@@ -11,7 +11,7 @@ to dump single model
 
 Example:
 To recreate permissions for testing:
-./mg.sh "dumpdata auth --indent=2 > fixtures/fixtures_auth.json"
+./mg.sh "dumpdata auth --indent=2 > fixtures/auth.json"
 
 and django_content_type:
 
