@@ -20,7 +20,7 @@ hooks:
       timeout: 600
       runas: ec2-user
   ApplicationStart:
-    - location: script/aws/application_start.sh     
+    - location: scripts/aws/application_start.sh     
       timeout: 300
       runas: root    
   ValidateService:
