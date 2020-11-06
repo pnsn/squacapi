@@ -8,8 +8,9 @@ aws s3 cp s3://squacapi-config/bash/$DEPLOYMENT_GROUP_NAME.env  $dest/app/.env
 # virtual env vars
 WORKON_HOME=/var/.virtualenvs
 VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
-echo here
+echo 'here'
 source /usr/local/bin/virtualenvwrapper.sh
+echo 'wtf'
 workon $DEPLOYMENT_GROUP_NAME
 echo 'now here'
 source $dest/app/.env
