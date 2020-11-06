@@ -11,7 +11,8 @@ VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
 echo 'here'
 source /usr/local/bin/virtualenvwrapper.sh
 echo 'wtf'
-workon $DEPLOYMENT_GROUP_NAME
+echo $DEPLOYMENT_GROUP_NAME
+workon $DEPLOYMENT_GROUP_NAME 2>&1
 echo 'now here'
 source $dest/app/.env
 echo "I can't believe I have to debug this way"
