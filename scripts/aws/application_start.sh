@@ -10,6 +10,8 @@ symlink=/var/www/$DEPLOYMENT_GROUP_NAME
 export PREVIOUS_BUILD=`ls $symlink`
 rm $symlink && ln -s $dest $symlink
 
+chmod 775 $dest
+
 #try restarting if it doesn't work 
 #restart gunicorn
 if [ $DEPLOYMENT_GROUP_NAME == 'squacapi' ]; then
