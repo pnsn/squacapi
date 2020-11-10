@@ -8,24 +8,24 @@ before_script:
 script:
 - docker-compose run app sh -c "python manage.py test && flake8"
 deploy:
-  provider: codedeploy
-  secret_access_key:
-    secure: r+6ZxTwaKktiIreQNQopGkOeknr79cDeq/qQiIzksxGh2alAv+xlmAZuCtG1+BZX1q/2CC87rRQEsl6kkgZJX+oWtsOvvFYhP9czVB4gY59e1jOzTDs2FOzQPVp9975c4woeEG8Ej1f3RXLgPq0JMl5WDPHorIImHA2DEwDPUrq7KunQY3QsFzOKWAv3vgffBeN2hjpVOS1q1TfOX9gE/gWGE6rFueedmuQBAX5RmR4losLXce4QWUKXvJ2KJSxe+xmlEOsEF4QH98zTszs01dOfZvOV1pEdsiMr+e5gSdgTiOi52l+uYWZxnOxtGUKJFVTQNCuAsYdI7vwNCUenJMB7YaeX+709LEAtUtZNNiY84pDQjCNRj8m1toIGr3wuYvkZBsYN349WDbqHR9uN27UupTg0n/zSC/LAQBgwu0AgjteyM9HixwOtnX7R2xJ222qvJPkybihnrP2CzGN9w8o77x+cniRjgjTWo8vg2hierog9fPZ8PbVqBscUjrcou68bJyvkNkfHpXvYj/3yeydwKa5QNRuNdMyrtiCQwwVnEOErYfr+VZhi8JwJJsoM6f5ivwhNEAItUO6c2bs79dq9ibAUCrpuw3CQje9SPAInxIQQnVMeE9KogqVVyaemNaKWhzOYUOZvNoTXdfAkugC5imcp2HQYwszw9nhdQpE=
-  access_key_id: AKIA5FILBQUI7OWXUXFD
-  revision_type: github
-  application_name: SquacAPI
-  deployment_group: staging-squacapi
-  region: us-west-2
-  on:
-    branch: staging
+  - provider: codedeploy
+    secret_access_key:
+      secure: r+6ZxTwaKktiIreQNQopGkOeknr79cDeq/qQiIzksxGh2alAv+xlmAZuCtG1+BZX1q/2CC87rRQEsl6kkgZJX+oWtsOvvFYhP9czVB4gY59e1jOzTDs2FOzQPVp9975c4woeEG8Ej1f3RXLgPq0JMl5WDPHorIImHA2DEwDPUrq7KunQY3QsFzOKWAv3vgffBeN2hjpVOS1q1TfOX9gE/gWGE6rFueedmuQBAX5RmR4losLXce4QWUKXvJ2KJSxe+xmlEOsEF4QH98zTszs01dOfZvOV1pEdsiMr+e5gSdgTiOi52l+uYWZxnOxtGUKJFVTQNCuAsYdI7vwNCUenJMB7YaeX+709LEAtUtZNNiY84pDQjCNRj8m1toIGr3wuYvkZBsYN349WDbqHR9uN27UupTg0n/zSC/LAQBgwu0AgjteyM9HixwOtnX7R2xJ222qvJPkybihnrP2CzGN9w8o77x+cniRjgjTWo8vg2hierog9fPZ8PbVqBscUjrcou68bJyvkNkfHpXvYj/3yeydwKa5QNRuNdMyrtiCQwwVnEOErYfr+VZhi8JwJJsoM6f5ivwhNEAItUO6c2bs79dq9ibAUCrpuw3CQje9SPAInxIQQnVMeE9KogqVVyaemNaKWhzOYUOZvNoTXdfAkugC5imcp2HQYwszw9nhdQpE=
+    access_key_id: AKIA5FILBQUI7OWXUXFD
+    revision_type: github
+    application_name: SquacAPI
+    deployment_group: staging-squacapi
+    region: us-west-2
+    on:
+      branch: staging
   
-  provider: codedeploy
-  secret_access_key:
-    secure: r+6ZxTwaKktiIreQNQopGkOeknr79cDeq/qQiIzksxGh2alAv+xlmAZuCtG1+BZX1q/2CC87rRQEsl6kkgZJX+oWtsOvvFYhP9czVB4gY59e1jOzTDs2FOzQPVp9975c4woeEG8Ej1f3RXLgPq0JMl5WDPHorIImHA2DEwDPUrq7KunQY3QsFzOKWAv3vgffBeN2hjpVOS1q1TfOX9gE/gWGE6rFueedmuQBAX5RmR4losLXce4QWUKXvJ2KJSxe+xmlEOsEF4QH98zTszs01dOfZvOV1pEdsiMr+e5gSdgTiOi52l+uYWZxnOxtGUKJFVTQNCuAsYdI7vwNCUenJMB7YaeX+709LEAtUtZNNiY84pDQjCNRj8m1toIGr3wuYvkZBsYN349WDbqHR9uN27UupTg0n/zSC/LAQBgwu0AgjteyM9HixwOtnX7R2xJ222qvJPkybihnrP2CzGN9w8o77x+cniRjgjTWo8vg2hierog9fPZ8PbVqBscUjrcou68bJyvkNkfHpXvYj/3yeydwKa5QNRuNdMyrtiCQwwVnEOErYfr+VZhi8JwJJsoM6f5ivwhNEAItUO6c2bs79dq9ibAUCrpuw3CQje9SPAInxIQQnVMeE9KogqVVyaemNaKWhzOYUOZvNoTXdfAkugC5imcp2HQYwszw9nhdQpE=
-  access_key_id: AKIA5FILBQUI7OWXUXFD
-  revision_type: github
-  application_name: SquacAPI
-  deployment_group: squacapi
-  region: us-west-2
-  on:
-    branch: master
+  - provider: codedeploy
+    secret_access_key:
+      secure: r+6ZxTwaKktiIreQNQopGkOeknr79cDeq/qQiIzksxGh2alAv+xlmAZuCtG1+BZX1q/2CC87rRQEsl6kkgZJX+oWtsOvvFYhP9czVB4gY59e1jOzTDs2FOzQPVp9975c4woeEG8Ej1f3RXLgPq0JMl5WDPHorIImHA2DEwDPUrq7KunQY3QsFzOKWAv3vgffBeN2hjpVOS1q1TfOX9gE/gWGE6rFueedmuQBAX5RmR4losLXce4QWUKXvJ2KJSxe+xmlEOsEF4QH98zTszs01dOfZvOV1pEdsiMr+e5gSdgTiOi52l+uYWZxnOxtGUKJFVTQNCuAsYdI7vwNCUenJMB7YaeX+709LEAtUtZNNiY84pDQjCNRj8m1toIGr3wuYvkZBsYN349WDbqHR9uN27UupTg0n/zSC/LAQBgwu0AgjteyM9HixwOtnX7R2xJ222qvJPkybihnrP2CzGN9w8o77x+cniRjgjTWo8vg2hierog9fPZ8PbVqBscUjrcou68bJyvkNkfHpXvYj/3yeydwKa5QNRuNdMyrtiCQwwVnEOErYfr+VZhi8JwJJsoM6f5ivwhNEAItUO6c2bs79dq9ibAUCrpuw3CQje9SPAInxIQQnVMeE9KogqVVyaemNaKWhzOYUOZvNoTXdfAkugC5imcp2HQYwszw9nhdQpE=
+    access_key_id: AKIA5FILBQUI7OWXUXFD
+    revision_type: github
+    application_name: SquacAPI
+    deployment_group: squacapi
+    region: us-west-2
+    on:
+      branch: master
