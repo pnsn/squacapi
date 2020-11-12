@@ -10,7 +10,7 @@ https://docs.djangoproject.com/en/dev/howto/deployment/wsgi/
 import os
 import sys
 from django.core.wsgi import get_wsgi_application
-from dotenv import load_dotenv
+from dotenv
 
 # there is probably a better way of doing this but without we get the module
 # squac not found
@@ -20,7 +20,7 @@ APP_ROOT = os.path.join(os.path.dirname(__file__), '..')
 sys.path.insert(0, os.path.abspath(APP_ROOT))
 # load env variables
 dotenv_path = os.path.join(APP_ROOT, '.env')
-load_dotenv(dotenv_path)
+dotenv.read_dotenv(dotenv_path)
 # load settings
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'squac.settings')
 
