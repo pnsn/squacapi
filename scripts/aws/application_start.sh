@@ -10,8 +10,8 @@ export SYMLINK=/var/www/$DEPLOYMENT_GROUP_NAME
 
 # track the previous link
 export PREVIOUS_RELEASE=`readlink -f $SYMLINK`
-echo $PREVIOUS_RELEASE > $SYMLINK/previous_release.txt
-rm $SYMLINK && ln -s $CURRENT_RELEASE $SYMLINK
+echo $PREVIOUS_RELEASE > $CURRENT_RELEASE/previous_release.txt
+rm -f $SYMLINK && ln -s $CURRENT_RELEASE $SYMLINK
 
 GUNICORN_SERVICE=gunicorn-production
 
@@ -22,7 +22,10 @@ fi
 export GUNICORN_SERVICE
 
 service $GUNICORN_SERVICE restart || \
- (rm $SYMLINK && ln -s $PREVIOUS_RELEASE $SYMLINK && echo '$DEPLOYMENT_GROUP_NAME fail' && exit 1)
+ (rm -f $SYMLINK && ln -s $PREVIOUS_RELEASE $SYMLINK && echo '$DEPLOYMENT_GROUP_NAME fail' && exit 1)
+
+#only keep 5 versions
+cd  /var/www/releases/$DEPLOYMENT_GROUP_NAME && ls -A1t | tail -n +5 | xargs rm -rf
 
 
 
