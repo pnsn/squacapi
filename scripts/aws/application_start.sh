@@ -16,7 +16,7 @@ rm $SYMLINK && ln -s $CURRENT_RELEASE $SYMLINK
 GUNICORN_SERVICE=gunicorn-production
 
 if [ $DEPLOYMENT_GROUP_NAME == 'staging-squacapi' ]; then
-    GUNICORN_SERVICE=gunicorn-error_test_please_remove
+    GUNICORN_SERVICE=gunicorn-staging
 fi
 
 export GUNICORN_SERVICE
