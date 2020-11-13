@@ -24,10 +24,8 @@ export GUNICORN_SERVICE
 echo $GUNICORN_SERVICE
 service $GUNICORN_SERVICE status
 
-service $GUNICORN_SERVICE restart || \
- (rm -f $SYMLINK && ln -s $PREVIOUS_RELEASE $SYMLINK && echo '$DEPLOYMENT_GROUP_NAME fail' && exit 1)
+PYTHONPATH=$SYMLINK service $GUNICORN_SERVICE restart || exit 1
 
-service $GUNICORN_SERVICE status
 #only keep 5 versions
 # cd  /var/www/releases/$DEPLOYMENT_GROUP_NAME && ls -A1t | tail -n +5 | xargs rm -rf
 

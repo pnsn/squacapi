@@ -22,7 +22,7 @@ workon $DEPLOYMENT_GROUP_NAME
 pip3 install  -r $dest/requirements/production.txt
 python $dest/app/manage.py migrate
 python $dest/app/manage.py collectstatic --noinput
+echo 'done with collectstatic'
 deactivate
-
-
+echo 'deactivated'
 
