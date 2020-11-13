@@ -18,7 +18,7 @@ export PATH=$PATH:/usr/local/bin
 # delete virtualenv so packages are consistent
 rmvirtualenv $DEPLOYMENT_GROUP_NAME
 mkvirtualenv $DEPLOYMENT_GROUP_NAME 2>&1
-workon $DEPLOYMENT_GROUP_NAME
+workon $DEPLOYMENT_GROUP_NAME || echo test
 pip3 install  -r $dest/requirements/production.txt
 python $dest/app/manage.py migrate
 python $dest/app/manage.py collectstatic --noinput
