@@ -10,6 +10,9 @@ WORKON_HOME=/var/.virtualenvs
 VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
 source /usr/local/bin/virtualenvwrapper.sh
 source $dest/app/.env
+# delete virtualenv so packages are consistent
+rmvirtualenv $DEPLOYMENT_GROUP_NAME
+mkvirtualenv $DEPLOYMENT_GROUP_NAME
 workon $DEPLOYMENT_GROUP_NAME
 pip3 install  -r $dest/requirements/production.txt
 python $dest/app/manage.py migrate

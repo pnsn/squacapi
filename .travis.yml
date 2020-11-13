@@ -17,7 +17,7 @@ deploy:
     deployment_group: staging-squacapi
     region: us-west-2
     on:
-      branch: staging
+      branch: staging-off
   
   - provider: codedeploy
     secret_access_key:
@@ -28,4 +28,4 @@ deploy:
     deployment_group: squacapi
     region: us-west-2
     on:
-      branch: master
+      branch: master-off
