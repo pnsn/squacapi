@@ -20,14 +20,11 @@ if [ $DEPLOYMENT_GROUP_NAME == 'staging-squacapi' ]; then
     GUNICORN_SERVICE=gunicorn-staging
 fi
 
-export GUNICORN_SERVICE
-echo $GUNICORN_SERVICE
-service $GUNICORN_SERVICE status
-
+systemctl daemon-reload
 PYTHONPATH=$SYMLINK service $GUNICORN_SERVICE restart || exit 1
 
 #only keep 5 versions
-# cd  /var/www/releases/$DEPLOYMENT_GROUP_NAME && ls -A1t | tail -n +5 | xargs rm -rf
+cd  /var/www/releases/$DEPLOYMENT_GROUP_NAME && ls -A1t | tail -n +5 | xargs rm -rf
 
 
 

@@ -10,7 +10,7 @@ echo `ls $dest/app/.env `
 # virtual env vars
 export WORKON_HOME=/var/.virtualenvs
 export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
-
+cd $dest
 source /usr/local/bin/virtualenvwrapper.sh
 source $dest/app/.env
 echo dest=$dest
@@ -22,7 +22,5 @@ workon $DEPLOYMENT_GROUP_NAME
 pip3 install  -r $dest/requirements/production.txt
 python $dest/app/manage.py migrate
 python $dest/app/manage.py collectstatic --noinput
-echo 'done with collectstatic'
 deactivate
-echo 'deactivated'
 
