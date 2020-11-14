@@ -20,5 +20,8 @@ rmvirtualenv $DEPLOYMENT_GROUP_NAME
 mkvirtualenv $DEPLOYMENT_GROUP_NAME #2>&1
 workon $DEPLOYMENT_GROUP_NAME 
 pip3 install  -r $dest/requirements/production.txt
+python $dest/app/manage.py migrate
+# static root most be overridden or it will be added to where current symlink points(previous)
+SQUACAPI_STATIC_ROOT=$dest/static python $dest/app/manage.py collectstatic --noinput
 deactivate
 
