@@ -1,6 +1,6 @@
 #!/bin/bash
-# set -e
-# set -o pipefail
+set -e
+set -o pipefail
 dest=/var/www/releases/$DEPLOYMENT_GROUP_NAME/$DEPLOYMENT_ID
 mv /var/www/releases/tmp $dest
 aws s3 cp s3://squacapi-config/bash/$DEPLOYMENT_GROUP_NAME.env  $dest/app/.env
@@ -18,7 +18,7 @@ export PATH=$PATH:/usr/local/bin
 # delete virtualenv so packages are consistent
 rmvirtualenv $DEPLOYMENT_GROUP_NAME
 mkvirtualenv $DEPLOYMENT_GROUP_NAME 2>&1
-workon $DEPLOYMENT_GROUP_NAME 
+workon $DEPLOYMENT_GROUP_NAME 2>&1
 pip3 install  -r $dest/requirements/production.txt
 python $dest/app/manage.py migrate
 # static root most be overridden or it will be added to where current symlink points(previous)
