@@ -1,3 +1,5 @@
+from unittest.mock import patch
+from django.core.management import call_command
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
@@ -117,7 +119,7 @@ class PrivateAlarmAPITests(TestCase):
             alarm=self.alarm,
             minval=2,
             maxval=5,
-            level=1,
+            level=AlarmThreshold.Level.ONE,
             user=self.user
         )
         self.alert = Alert.objects.create(
@@ -174,7 +176,7 @@ class PrivateAlarmAPITests(TestCase):
             'alarm': self.alarm.id,
             'minval': 15,
             'maxval': 20,
-            'level': 2,
+            'level': AlarmThreshold.Level.TWO,
             'user': self.user
         }
         res = self.client.post(url, payload)
@@ -365,7 +367,7 @@ class PrivateAlarmAPITests(TestCase):
         alarm_threshold = AlarmThreshold.objects.get(pk=2)
 
         alert = alarm_threshold.evaluate_alert(False)
-        self.assertEqual(2, alert.id)
+        self.assertNotEqual(2, alert.id)
         self.assertFalse(alert.in_alarm)
 
     def test_evaluate_alert_true_alert_in_alarm(self):
@@ -417,10 +419,11 @@ class PrivateAlarmAPITests(TestCase):
         self.assertTrue(alert.in_alarm)
 
         # alarm_threshold 3 is not breached
-        # already had an active alert, check that in_alarm is turned to False
+        # already had an active alert, check that there is a new one with
+        # in_alarm = True
         alarm_threshold = AlarmThreshold.objects.get(pk=3)
         alerts = alarm_threshold.alerts.all()
-        self.assertEqual(len(alerts), 3)
+        self.assertEqual(len(alerts), 4)
         # get most recent alert
         alert = alerts.latest('timestamp')
         self.assertFalse(alert.in_alarm)
@@ -441,4 +444,20 @@ class PrivateAlarmAPITests(TestCase):
         self.assertEqual(len(alerts), 0)
 
         all_alerts = Alert.objects.all()
-        self.assertEqual(len(all_alerts), 8)
+        self.assertEqual(len(all_alerts), 9)
+
+    def test_evaluate_alarms(self):
+        '''Test evaluate_alarm command'''
+        n_alarms = len(Alarm.objects.all())
+        with patch('measurement.models.Alarm.evaluate_alarm') as ea:
+            call_command('evaluate_alarms')
+            self.assertEqual(n_alarms, ea.call_count)
+            # print('Called {} times'.format(ea.call_count))
+
+    # def test_evaluate_alarms_filter_metric(self):
+    #     '''Test evaluate_alarm command'''
+    #     n_alarms = len(Alarm.objects.all())
+    #     with patch('measurement.models.Alarm.evaluate_alarm') as ea:
+    #         call_command('evaluate_alarms --metric=test2')
+    #         # self.assertEqual(n_alarms, ea.call_count)
+    #         print('Called {} times'.format(ea.call_count))

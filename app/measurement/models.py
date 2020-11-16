@@ -194,14 +194,6 @@ class Alarm(MeasurementBase):
             in_alarm = alarm_threshold.in_alarm_state(channel_values)
             alarm_threshold.evaluate_alert(in_alarm)
 
-    def handle_alarms():
-        '''
-        Loop through all alarms and evaluate if they should be turned on/off
-        '''
-        alarms = Alarm.objects.all()
-        for alarm in alarms:
-            alarm.evaluate_alarm()
-
     def __str__(self):
         return (f"{str(self.channel_group)}, "
                 f"{str(self.metric)}, "
@@ -213,6 +205,13 @@ class Alarm(MeasurementBase):
 
 class AlarmThreshold(MeasurementBase):
     '''Describe an individual alarm_threshold for an alarm'''
+
+    # Define choices for interval_type
+    class Level(models.IntegerChoices):
+        ONE = 1
+        TWO = 2
+        THREE = 3
+
     alarm = models.ForeignKey(
         Alarm,
         on_delete=models.CASCADE,
@@ -227,7 +226,9 @@ class AlarmThreshold(MeasurementBase):
     minval = models.FloatField(blank=True, null=True)
     maxval = models.FloatField(blank=True, null=True)
     band_inclusive = models.BooleanField(default=True)
-    level = models.IntegerField(default=1)
+    level = models.IntegerField(choices=Level.choices,
+                                default=Level.ONE
+                                )
 
     # channel_value is dict
     def is_breaching(self, channel_value):
@@ -272,12 +273,10 @@ class AlarmThreshold(MeasurementBase):
 
     def get_latest_alert(self):
         '''Return the most recent alert for this AlarmThreshold'''
-        alerts = self.alerts.all()
-        alert = None
-        if alerts:
-            alert = alerts.latest('timestamp')
+        return self.alerts.order_by('timestamp').last()
 
-        return alert
+    def get_alert_message(self, in_alarm):
+        return 'This is an alert for ' + str(self.id)
 
     def evaluate_alert(self, in_alarm):
         '''
@@ -286,27 +285,28 @@ class AlarmThreshold(MeasurementBase):
         '''
         alert = self.get_latest_alert()
 
+        create_alert = False
         if in_alarm:
-            # In alarm state, does alert exist yet?
+            # In alarm state, does alert exist yet? If not, create a new one.
             # Exist means the most recent one has in_alarm = True
-            # If not, create
             if not alert or not alert.in_alarm:
-                msg = 'This is an alert for ' + str(self.id)
-
-                new_alert = Alert(alarm_threshold=self,
-                                  timestamp=datetime.now(tz=pytz.UTC),
-                                  message=msg,
-                                  in_alarm=True,
-                                  user=self.user)
-                new_alert.save()
-                return new_alert
+                create_alert = True
         else:
             # Not in alarm state, is there an alert to cancel?
-            # If so, turn off
+            # If so, create new one saying in_alarm = False
             if alert and alert.in_alarm:
-                alert.in_alarm = False
-                alert.save()
-                return alert
+                create_alert = True
+
+        if create_alert:
+            msg = self.get_alert_message(in_alarm)
+            new_alert = Alert(alarm_threshold=self,
+                              timestamp=datetime.now(tz=pytz.UTC),
+                              message=msg,
+                              in_alarm=in_alarm,
+                              user=self.user)
+            new_alert.save()
+            # Notification.create_alert_notifications(new_alert)
+            return new_alert
 
         return alert
 

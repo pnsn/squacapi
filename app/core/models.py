@@ -4,6 +4,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, \
     PermissionsMixin, Group
 from django.utils.translation import gettext_lazy as _
 
+from measurement.models import AlarmThreshold
 from organization.models import Organization
 
 
@@ -111,6 +112,58 @@ class Notification(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
     )
+
+    def send_email(self, alert):
+        pass
+
+    def send_sms(self, alert):
+        pass
+
+    def send_slack(self, alert):
+        pass
+
+    def send(self, alert):
+        if self.notification_type == self.NotificationType.EMAIL:
+            self.send_email(alert)
+        elif self.notification_type == self.NotificationType.SLACK:
+            self.send_slack(alert)
+        elif self.notification_type == self.NotificationType.SMS:
+            self.send_sms(alert)
+
+    @classmethod
+    def define_alert_level(cls, level):
+        notification_types = []
+
+        # Determine which types to send. Use user preferences?
+        if level == AlarmThreshold.Level.ONE:
+            # Do email?
+            notification_types = [cls.NotificationType.EMAIL]
+        elif level == AlarmThreshold.Level.TWO:
+            # Do email and slack?
+            notification_types = [cls.NotificationType.EMAIL,
+                                  cls.NotificationType.SLACK]
+        elif level == AlarmThreshold.Level.THREE:
+            # Do email, slack and sms?
+            notification_types = [cls.NotificationType.EMAIL,
+                                  cls.NotificationType.SLACK,
+                                  cls.NotificationType.SMS]
+
+        return notification_types
+
+    @classmethod
+    def create_alert_notifications(cls, alert):
+        level = alert.alarm_threshold.level
+        notification_types = cls.define_alert_level(level)
+
+        for notification_type in notification_types:
+            # Get the notifications for this user and type
+            # Could there be multiple that fit this?
+            notifications = (
+                cls.objects.filter(user=alert.user,
+                                   notification_type=notification_type)
+            )
+            for notification in notifications:
+                notification.send(alert)
 
     def __str__(self):
         return f'{self.user} {self.notification_type} notification'
