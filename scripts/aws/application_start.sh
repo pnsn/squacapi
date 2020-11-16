@@ -10,19 +10,21 @@ export SYMLINK=/var/www/$DEPLOYMENT_GROUP_NAME
 
 # track the previous link
 export PREVIOUS_RELEASE=`readlink -f $SYMLINK`
-echo PREVIOUS_RELEASE > $SYMLINK/previous_release.txt
-rm $SYMLINK && ln -s $CURRENT_RELEASE $SYMLINK
+echo $PREVIOUS_RELEASE > $CURRENT_RELEASE/previous_release.txt
+rm -f $SYMLINK
+ln -s $CURRENT_RELEASE $SYMLINK
 
 GUNICORN_SERVICE=gunicorn-production
 
 if [ $DEPLOYMENT_GROUP_NAME == 'staging-squacapi' ]; then
-    GUNICORN_SERVICE=gunicorn-error_test_please_remove
+    GUNICORN_SERVICE=gunicorn-staging
 fi
 
-export GUNICORN_SERVICE
+systemctl daemon-reload
+PYTHONPATH=$SYMLINK service $GUNICORN_SERVICE restart || exit 1
 
-service $GUNICORN_SERVICE restart || \
- (rm $SYMLINK && ln -s $PREVIOUS_RELEASE $SYMLINK && echo '$DEPLOYMENT_GROUP_NAME fail' && exit 1)
+#only keep 5 versions
+cd  /var/www/releases/$DEPLOYMENT_GROUP_NAME && ls -A1t | tail -n +5 | xargs rm -rf
 
 
 

@@ -22,7 +22,7 @@ hooks:
   ApplicationStart:
     - location: scripts/aws/application_start.sh     
       timeout: 300
-      runas: root    
+      runas: root
   ValidateService:
     - location: scripts/aws/validate_service.sh     
       timeout: 300
