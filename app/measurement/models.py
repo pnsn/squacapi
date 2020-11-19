@@ -66,7 +66,11 @@ class Measurement(MeasurementBase):
         ]
 
     def __str__(self):
-        return f"Metric: {str(self.metric)} Channel: {str(self.channel)}"
+        return (f"Metric: {str(self.metric)} "
+                f"Channel: {str(self.channel)} "
+                f"starttime: {format(self.starttime, '%m-%d-%Y %M:%S')} "
+                f"endtime: {format(self.endtime, '%m-%d-%Y %M:%S')} "
+                )
 
 
 class Threshold(MeasurementBase):

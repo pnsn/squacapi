@@ -44,7 +44,7 @@ class TestArchiveCreation(TestCase):
                                     min_value=-(10**16) + 1,
                                     max_value=(10**16) - 1),
                                 # constrain end times to be in range
-                                endtime=datetimes(
+                                starttime=datetimes(
                                     min_value=day + relativedelta(seconds=1),
                                     max_value=day + relativedelta(hours=23),
                                     timezones=just(pytz.UTC))))
@@ -87,11 +87,13 @@ class TestArchiveCreation(TestCase):
     @given(generate_measurements(TEST_TIME))
     def test_single_day_archive(self, measurements):
         """ make sure a a single day's stats are correctly summarized """
-
         # create archives of measurements
         out = StringIO()
-        call_command('archive_measurements', 1, 'day',
-                     period_end=TestArchiveCreation.TEST_TIME, stdout=out)
+        if len(measurements) > 0:
+            call_command('archive_measurements', 1, 'day',
+                         period_end=TestArchiveCreation.TEST_TIME +
+                         relativedelta(days=1),
+                         stdout=out)
 
         # Don't create archive if there are no measurements
         if not measurements:
@@ -113,7 +115,9 @@ class TestArchiveCreation(TestCase):
         # create archives of past 2 days
         out = StringIO()
         call_command('archive_measurements', 2, 'day',
-                     period_end=TestArchiveCreation.TEST_TIME, stdout=out)
+                     period_end=TestArchiveCreation.TEST_TIME +
+                     relativedelta(days=1),
+                     stdout=out)
 
         # check the correct number of archives were created
         self.assertEqual(len(Archive.objects.all()),
@@ -129,15 +133,12 @@ class TestArchiveCreation(TestCase):
     def check_queryset_was_archived(self, measurements):
         """ checks that the entire given queryset of measurements was
         successfully archived """
-
         # refresh values from db for consistency with query
         measurement_data = [Measurement.objects.get(id=m.id).value for m in
                             measurements]
         min_start = min([m.starttime for m in measurements])
         max_end = max([measurement.endtime for measurement in measurements])
-
         archive = Archive.objects.get(endtime=max_end, starttime=min_start)
-
         # Assert created archive has correct statistics
         self.assertEqual(Archive.ArchiveType.DAY, archive.archive_type)
         self.assertAlmostEqual(min(measurement_data), archive.min)
@@ -155,7 +156,7 @@ class TestArchiveCreation(TestCase):
 
         # python and sql calculate stdev differently, break down the cases
         if len(measurements) > 1 and all([isfinite(value)
-                                          for value in measurement_data]):
+                                         for value in measurement_data]):
             self.assertAlmostEqual(
                 self.round_to_decimals(np.std(measurement_data, ddof=1).item(),
                                        self.DOUBLE_DECIMAL_PLACES),
