@@ -97,3 +97,4 @@ class Widget(DashboardBase):
     rows = models.IntegerField()
     x_position = models.IntegerField()
     y_position = models.IntegerField()
+    color_palet = models.CharField(max_length=255, blank=True, default='squac')
