@@ -89,10 +89,10 @@ class TestArchiveCreation(TestCase):
         """ make sure a a single day's stats are correctly summarized """
         # create archives of measurements
         out = StringIO()
+        period_end = TestArchiveCreation.TEST_TIME + relativedelta(days=1)
         if len(measurements) > 0:
             call_command('archive_measurements', 1, 'day',
-                         period_end=TestArchiveCreation.TEST_TIME +
-                         relativedelta(days=1),
+                         period_end=period_end,
                          stdout=out)
 
         # Don't create archive if there are no measurements
@@ -114,9 +114,9 @@ class TestArchiveCreation(TestCase):
 
         # create archives of past 2 days
         out = StringIO()
+        period_end = TestArchiveCreation.TEST_TIME + relativedelta(days=1)
         call_command('archive_measurements', 2, 'day',
-                     period_end=TestArchiveCreation.TEST_TIME +
-                     relativedelta(days=1),
+                     period_end=period_end,
                      stdout=out)
 
         # check the correct number of archives were created
