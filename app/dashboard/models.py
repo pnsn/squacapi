@@ -73,6 +73,10 @@ class Dashboard(DashboardBase):
 class Widget(DashboardBase):
     '''describes the widget'''
     metrics = models.ManyToManyField('measurement.Metric')
+
+    class Colors(models.TextChoices):
+        SQUAC = 'squac'
+
     dashboard = models.ForeignKey(
         Dashboard,
         on_delete=models.CASCADE,
@@ -97,3 +101,8 @@ class Widget(DashboardBase):
     rows = models.IntegerField()
     x_position = models.IntegerField()
     y_position = models.IntegerField()
+    color_pallet = models.CharField(
+        max_length=24,
+        choices=Colors.choices,
+        default=Colors.SQUAC
+    )
