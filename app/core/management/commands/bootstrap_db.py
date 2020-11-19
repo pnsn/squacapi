@@ -3,7 +3,7 @@ from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
 from django.utils.timezone import make_aware
 from numpy import random
-from datetime import datetime as dt, time, timedelta
+from datetime import datetime as dt, timedelta
 
 from measurement.models import Metric, Measurement
 from nslc.models import Channel
@@ -18,7 +18,6 @@ class Command(BaseCommand):
 
     def load_values(self, values, metric, channel, user, time_decrement):
         ''' Load measurment values for a given channel '''
-        print(len(values))
         endtime = make_aware(
             dt.now().replace(second=0, microsecond=0)
         )
