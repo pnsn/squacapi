@@ -5,6 +5,7 @@ from django.urls import reverse
 from django.utils import timezone
 # from django.db.models import Avg, Count, Max, Min, Sum
 
+from core.models import Notification
 from measurement.models import (Alarm, AlarmThreshold, Alert, Measurement,
                                 Metric)
 from nslc.models import Channel, Group, Network
@@ -453,6 +454,18 @@ class PrivateAlarmAPITests(TestCase):
             call_command('evaluate_alarms')
             self.assertEqual(n_alarms, ea.call_count)
             # print('Called {} times'.format(ea.call_count))
+
+    @patch.object(Notification, 'create_alert_notifications')
+    def test_function_create_alert(self, mock):
+        '''Test create_alert'''
+        in_alarm = True
+        alarm_threshold = AlarmThreshold.objects.get(pk=1)
+        alert = alarm_threshold.create_alert(in_alarm)
+
+        self.assertFalse(alert.id is None)
+        self.assertEqual(alert.in_alarm, in_alarm)
+        self.assertEqual(alarm_threshold.user, alert.user)
+        self.assertTrue(mock.called)
 
     # def test_evaluate_alarms_filter_metric(self):
     #     '''Test evaluate_alarm command'''
