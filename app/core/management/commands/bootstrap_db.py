@@ -1,3 +1,11 @@
+'''
+Command bootstraps a development database using fixture file and loads
+random sampling of hourly and latency measurements for the 10 channels in the
+fixture.
+
+Run command in docker-compose like:
+$: docker-compose run --rm sh -c "python manage.py bootstrap_db --days=7"
+'''
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
@@ -10,6 +18,13 @@ from nslc.models import Channel
 
 
 class Command(BaseCommand):
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--days',
+            default=7,
+            help='Number of days of measurements to generate'
+        )
+
     def sample_values(self, mu_min, mu_max, sigma_min, sigma_max, size):
         ''' Get a sampling of values from a normal distribution '''
         mu = random.uniform(mu_min, mu_max)
@@ -21,6 +36,10 @@ class Command(BaseCommand):
         endtime = make_aware(
             dt.now().replace(second=0, microsecond=0)
         )
+        if time_decrement.seconds == 600:
+            endtime.replace(minute=(endtime.minute // 10) * 10)
+        else:
+            endtime.replace(minute=0)
         endtime -= time_decrement * len(values)
         starttime = endtime - time_decrement
 
@@ -36,10 +55,17 @@ class Command(BaseCommand):
             endtime += time_decrement
             starttime += time_decrement
 
-    def load_sample_hourly_metric(self):
+    def load_sample_hourly_metric(self, kwargs):
         ''' Populates several days of hourly_mean metric for all 10 channels in
             fixture file
         '''
+        # Params controlling the normal distribution sample for hourly_mean
+        mu_min = 8e4
+        mu_max = 9e4
+        sigma_min = 1e3
+        sigma_max = 5e3
+        num_samples = kwargs['days'] * 24
+
         user = get_user_model().objects.get(email='loader@pnsn.org')
         metric_url = 'https://github.com/pnsn/'
         metric_url += 'station_metrics/blob/master/station_metrics.md'
@@ -55,15 +81,23 @@ class Command(BaseCommand):
                 'user': user
             }
         )
-        channels = Channel.objects.all()
 
+        channels = Channel.objects.all()
         for channel in channels:
             print(f'Loading hourly_mean measurements for {channel}')
-            values = self.sample_values(8e4, 9e4, 1e3, 3e3, 168)
+            values = self.sample_values(
+                mu_min, mu_max, sigma_min, sigma_max, num_samples)
             self.load_values(values, metric, channel, user, timedelta(hours=1))
 
-    def load_sample_latency_metric(self):
+    def load_sample_latency_metric(self, kwargs):
         ''' Populates several days of latency metric for several stations '''
+        # Params controlling the normal distribution sample for latency
+        mu_min = 1
+        mu_max = 4
+        sigma_min = 0.1
+        sigma_max = 0.3
+        num_samples = kwargs['days'] * 24 * 6
+
         user = get_user_model().objects.get(email='loader@pnsn.org')
         metric_url = 'https://github.com/pnsn/dataflow_metrics/'
         metric_url += 'blob/master/docs/pnsn_dataflow_metrics.md'
@@ -82,21 +116,22 @@ class Command(BaseCommand):
                 'user': user
             }
         )
-        channels = Channel.objects.all()
 
+        channels = Channel.objects.all()
         for channel in channels:
             print(f'Loading export_ring_latency measurements for {channel}')
-            values = self.sample_values(1, 4, 0.1, 0.3, 1008)
+            values = self.sample_values(
+                mu_min, mu_max, sigma_min, sigma_max, num_samples)
             self.load_values(
                 values, metric, channel, user, timedelta(minutes=10))
 
     def handle(self, *args, **kwargs):
         ''' This command flushes all data from db and reloads data from
-            fixture files, generates 7 days of hourly_mean and
+            fixture files, generates given days, default 7, of hourly_mean and
             export_ring_latency measurements for all channels in fixture
         '''
         call_command('flush', '--noinput')
         call_command('loaddata', 'fixtures/fixtures_all.json')
-        self.load_sample_hourly_metric()
-        self.load_sample_latency_metric()
+        self.load_sample_hourly_metric(kwargs)
+        self.load_sample_latency_metric(kwargs)
         print('Database loading complete')
