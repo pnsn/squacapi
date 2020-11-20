@@ -1,11 +1,11 @@
 To create fixtures from existing test data run:
-./mg.sh "dumpdata  --indent=2" > fixtures/fixtures_all.json
+./mg.sh "dumpdata  --indent=2 > fixtures/fixtures_all.json"
 
 to dump a single app
 
 ./mg.sh "dumpdata app_label --indent=2 > fixtures/fixtures_app_label.json"
 
-to dump single model 
+to dump single model
 
 ./mg.sh "dumpdata app_label.model --indent=2 > fixtures/fixtures_model.json"
 
