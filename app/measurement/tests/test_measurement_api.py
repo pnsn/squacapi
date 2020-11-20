@@ -184,10 +184,6 @@ class PrivateMeasurementAPITests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data['metric'], self.metric.id)
         self.assertEqual(res.data['channel'], self.chan.id)
-        self.assertEqual(
-            str(self.measurement),
-            'Metric: Sample metric Channel: UW:RCM:--:EHZ'
-        )
 
     def test_create_measurement(self):
         url = reverse('measurement:measurement-list')
