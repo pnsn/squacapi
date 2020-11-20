@@ -3,7 +3,7 @@ from django.db.models import Avg, Count, Max, Min, Sum
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
-# from core.models import Notification
+from core.models import Notification
 from dashboard.models import Widget
 from nslc.models import Channel, Group
 
@@ -217,12 +217,6 @@ class AlarmThreshold(MeasurementBase):
         on_delete=models.CASCADE,
         related_name='alarm_thresholds'
     )
-    # notification = models.ForeignKey(
-    #     Notification,
-    #     on_delete=models.CASCADE,
-    #     related_name='alarm_thresholds',
-    #     null=True
-    # )
     minval = models.FloatField(blank=True, null=True)
     maxval = models.FloatField(blank=True, null=True)
     band_inclusive = models.BooleanField(default=True)
@@ -278,6 +272,17 @@ class AlarmThreshold(MeasurementBase):
     def get_alert_message(self, in_alarm):
         return 'This is an alert for ' + str(self.id)
 
+    def create_alert(self, in_alarm):
+        msg = self.get_alert_message(in_alarm)
+        new_alert = Alert(alarm_threshold=self,
+                          timestamp=datetime.now(tz=pytz.UTC),
+                          message=msg,
+                          in_alarm=in_alarm,
+                          user=self.user)
+        new_alert.save()
+        Notification.create_alert_notifications(new_alert)
+        return new_alert
+
     def evaluate_alert(self, in_alarm):
         '''
         Determine what to do with alerts given that this AlarmThreshold is in
@@ -285,28 +290,16 @@ class AlarmThreshold(MeasurementBase):
         '''
         alert = self.get_latest_alert()
 
-        create_alert = False
         if in_alarm:
             # In alarm state, does alert exist yet? If not, create a new one.
             # Exist means the most recent one has in_alarm = True
             if not alert or not alert.in_alarm:
-                create_alert = True
+                return self.create_alert(in_alarm)
         else:
             # Not in alarm state, is there an alert to cancel?
             # If so, create new one saying in_alarm = False
             if alert and alert.in_alarm:
-                create_alert = True
-
-        if create_alert:
-            msg = self.get_alert_message(in_alarm)
-            new_alert = Alert(alarm_threshold=self,
-                              timestamp=datetime.now(tz=pytz.UTC),
-                              message=msg,
-                              in_alarm=in_alarm,
-                              user=self.user)
-            new_alert.save()
-            # Notification.create_alert_notifications(new_alert)
-            return new_alert
+                return self.create_alert(in_alarm)
 
         return alert
 

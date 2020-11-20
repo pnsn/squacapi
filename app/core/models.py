@@ -4,7 +4,8 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, \
     PermissionsMixin, Group
 from django.utils.translation import gettext_lazy as _
 
-from measurement.models import AlarmThreshold
+# from measurement.models.AlarmThreshold import AlarmThreshold
+# from measurement.models import AlarmThreshold
 from organization.models import Organization
 
 
@@ -132,6 +133,8 @@ class Notification(models.Model):
 
     @classmethod
     def define_alert_level(cls, level):
+        # error from circular imports if done above
+        from measurement.models import AlarmThreshold
         notification_types = []
 
         # Determine which types to send. Use user preferences?
