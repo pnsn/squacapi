@@ -130,6 +130,10 @@ class PrivateAlarmAPITests(TestCase):
             in_alarm=True,
             user=self.user
         )
+        self.notification = Notification.objects.create(
+            notification_type=Notification.NotificationType.EMAIL,
+            user=self.user
+        )
 
     def test_get_alarm(self):
         url = reverse(
@@ -466,6 +470,31 @@ class PrivateAlarmAPITests(TestCase):
         self.assertEqual(alert.in_alarm, in_alarm)
         self.assertEqual(alarm_threshold.user, alert.user)
         self.assertTrue(mock.called)
+
+    @patch.object(Notification, 'send')
+    def test_create_alert_notification(self, mock_send):
+        with patch.object(Notification,
+                          'define_alert_level',
+                          return_value=[self.notification.notification_type]
+                          ) as mock_method:
+            Notification.create_alert_notifications(self.alert)
+
+            self.assertTrue(mock_method.called)
+            self.assertEqual(mock_method.call_args[0][0],
+                             self.alert.alarm_threshold.level)
+
+            self.assertTrue(mock_send.called)
+            self.assertEqual(mock_send.call_args[0][0], self.alert)
+            # Alternative version
+            # mock_send.assert_called_once_with(self.alert)
+
+    # Do more extensive testing than this?
+    def test_define_alert_level(self):
+        level = AlarmThreshold.Level.ONE
+        notification_types = Notification.define_alert_level(level)
+
+        expected = [Notification.NotificationType.EMAIL]
+        self.assertEqual(notification_types, expected)
 
     # def test_evaluate_alarms_filter_metric(self):
     #     '''Test evaluate_alarm command'''
