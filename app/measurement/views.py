@@ -3,7 +3,8 @@ from django_filters import rest_framework as filters
 from squac.filters import CharInFilter, NumberInFilter
 from squac.mixins import SetUserMixin, DefaultPermissionsMixin
 from .exceptions import MissingParameterException
-from .models import Metric, Measurement, Threshold, Archive
+from .models import (Metric, Measurement, Threshold, Alarm, AlarmThreshold,
+                     Alert, Archive)
 from measurement import serializers
 
 
@@ -30,6 +31,24 @@ class MeasurementFilter(filters.FilterSet):
     metric = NumberInFilter(field_name='metric')
     channel = NumberInFilter(field_name='channel')
     group = NumberInFilter(field_name='channel__group')
+
+
+class AlarmFilter(filters.FilterSet):
+    class Meta:
+        model = Alarm
+        fields = ('channel_group', 'metric')
+
+
+class AlarmThresholdFilter(filters.FilterSet):
+    class Meta:
+        model = AlarmThreshold
+        fields = ('alarm',)
+
+
+class AlertFilter(filters.FilterSet):
+    class Meta:
+        model = Alert
+        fields = ('alarm_threshold', 'in_alarm')
 
 
 class ArchiveFilter(filters.FilterSet):
@@ -87,6 +106,30 @@ class ThresholdViewSet(BaseMeasurementViewSet):
 
     def get_queryset(self):
         return Threshold.objects.all()
+
+
+class AlarmViewSet(SetUserMixin, viewsets.ModelViewSet):
+    serializer_class = serializers.AlarmSerializer
+    filter_class = AlarmFilter
+
+    def get_queryset(self):
+        return Alarm.objects.all()
+
+
+class AlarmThresholdViewSet(SetUserMixin, viewsets.ModelViewSet):
+    serializer_class = serializers.AlarmThresholdSerializer
+    filter_class = AlarmThresholdFilter
+
+    def get_queryset(self):
+        return AlarmThreshold.objects.all()
+
+
+class AlertViewSet(SetUserMixin, viewsets.ModelViewSet):
+    serializer_class = serializers.AlertSerializer
+    filter_class = AlertFilter
+
+    def get_queryset(self):
+        return Alert.objects.all()
 
 
 class ArchiveViewSet(DefaultPermissionsMixin, viewsets.ReadOnlyModelViewSet):
