@@ -1,4 +1,5 @@
 from unittest.mock import patch
+from django.core import mail
 from django.core.management import call_command
 from django.test import TestCase
 from django.urls import reverse
@@ -488,6 +489,14 @@ class PrivateAlarmAPITests(TestCase):
             # Alternative version
             # mock_send.assert_called_once_with(self.alert)
 
+    @patch.object(Notification, 'send_email')
+    def test_send(self, mock_send):
+        # self.notification has notification_type = EMAIL
+        self.notification.send(self.alert)
+
+        self.assertTrue(mock_send.called)
+        self.assertEqual(mock_send.call_args[0][0], self.alert)
+
     # Do more extensive testing than this?
     def test_define_alert_level(self):
         level = AlarmThreshold.Level.ONE
@@ -495,6 +504,13 @@ class PrivateAlarmAPITests(TestCase):
 
         expected = [Notification.NotificationType.EMAIL]
         self.assertEqual(notification_types, expected)
+
+    def test_send_email(self):
+        self.notification.send_email(self.alert)
+
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertTrue(self.alert.message in mail.outbox[0].body)
+        self.assertTrue(self.user.email in mail.outbox[0].recipients())
 
     # def test_evaluate_alarms_filter_metric(self):
     #     '''Test evaluate_alarm command'''

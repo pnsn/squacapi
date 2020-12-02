@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, \
     PermissionsMixin, Group
+from django.core.mail import send_mail
 from django.utils.translation import gettext_lazy as _
 
 # from measurement.models.AlarmThreshold import AlarmThreshold
@@ -115,7 +116,19 @@ class Notification(models.Model):
     )
 
     def send_email(self, alert):
-        pass
+        # token = base64.urlsafe_b64encode(str(self.id).encode()).decode()
+        # org_desc = self.user.organization.description
+        text_to_send = (f"This is some information:\n"
+                        f"{alert.message}")
+        send_mail("Test message",
+                  text_to_send,
+                  settings.EMAIL_NO_REPLY,
+                  [self.user.email, ],
+                  fail_silently=False,
+                  )
+        # print('Sending email')
+        # print(f'text_to_send = \n    {text_to_send}')
+        # print(f'settings.EMAIL_NO_REPLY = \n    {settings.EMAIL_NO_REPLY}')
 
     def send_sms(self, alert):
         pass
