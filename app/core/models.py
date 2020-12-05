@@ -118,19 +118,15 @@ class Notification(models.Model):
     )
 
     def send_email(self, alert):
-        # token = base64.urlsafe_b64encode(str(self.id).encode()).decode()
-        # org_desc = self.user.organization.description
+        email_address = self.value  # validate this somehow?
         text_to_send = (f"This is some information:\n"
                         f"{alert.message}")
         send_mail("Test message",
                   text_to_send,
                   settings.EMAIL_NO_REPLY,
-                  [self.user.email, ],
+                  [email_address, ],
                   fail_silently=False,
                   )
-        # print('Sending email')
-        # print(f'text_to_send = \n    {text_to_send}')
-        # print(f'settings.EMAIL_NO_REPLY = \n    {settings.EMAIL_NO_REPLY}')
 
     def send_sms(self, alert):
         pass

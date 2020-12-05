@@ -133,7 +133,8 @@ class PrivateAlarmAPITests(TestCase):
         )
         self.notification = Notification.objects.create(
             notification_type=Notification.NotificationType.EMAIL,
-            user=self.user
+            user=self.user,
+            value=self.user.email
         )
 
     def test_get_alarm(self):
@@ -510,7 +511,8 @@ class PrivateAlarmAPITests(TestCase):
 
         self.assertEqual(len(mail.outbox), 1)
         self.assertTrue(self.alert.message in mail.outbox[0].body)
-        self.assertTrue(self.user.email in mail.outbox[0].recipients())
+        self.assertTrue(self.notification.value
+                        in mail.outbox[0].recipients())
 
     # def test_evaluate_alarms_filter_metric(self):
     #     '''Test evaluate_alarm command'''
