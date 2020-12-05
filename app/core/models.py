@@ -108,6 +108,8 @@ class Notification(models.Model):
         choices=NotificationType.choices,
         default=NotificationType.EMAIL
     )
+    value = models.CharField(max_length=255,
+                             default="")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(
