@@ -153,41 +153,20 @@ class Notification(models.Model):
             self.send_sms(alert)
 
     @classmethod
-    def define_alert_level(cls, level):
-        # error from circular imports if done above
-        from measurement.models import AlarmThreshold
-        notification_types = []
-
-        # Determine which types to send. Use user preferences?
-        if level == AlarmThreshold.Level.ONE:
-            # Do email?
-            notification_types = [cls.NotificationType.EMAIL]
-        elif level == AlarmThreshold.Level.TWO:
-            # Do email and slack?
-            notification_types = [cls.NotificationType.EMAIL,
-                                  cls.NotificationType.SLACK]
-        elif level == AlarmThreshold.Level.THREE:
-            # Do email, slack and sms?
-            notification_types = [cls.NotificationType.EMAIL,
-                                  cls.NotificationType.SLACK,
-                                  cls.NotificationType.SMS]
-
-        return notification_types
+    def get_notifications(cls, user, level):
+        notifications = (
+            cls.objects.filter(user=user,
+                               level=level)
+        )
+        return notifications
 
     @classmethod
     def create_alert_notifications(cls, alert):
         level = alert.alarm_threshold.level
-        notification_types = cls.define_alert_level(level)
+        notifications = cls.get_notifications(alert.user, level)
 
-        for notification_type in notification_types:
-            # Get the notifications for this user and type
-            # Could there be multiple that fit this?
-            notifications = (
-                cls.objects.filter(user=alert.user,
-                                   notification_type=notification_type)
-            )
-            for notification in notifications:
-                notification.send(alert)
+        for notification in notifications:
+            notification.send(alert)
 
     def __str__(self):
         return f'{self.user} {self.notification_type} notification'

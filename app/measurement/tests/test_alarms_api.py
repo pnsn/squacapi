@@ -475,14 +475,18 @@ class PrivateAlarmAPITests(TestCase):
 
     @patch.object(Notification, 'send')
     def test_create_alert_notification(self, mock_send):
+        notification_qs = (
+            Notification.objects.filter(pk=self.notification.id)
+        )
         with patch.object(Notification,
-                          'define_alert_level',
-                          return_value=[self.notification.notification_type]
+                          'get_notifications',
+                          return_value=notification_qs
                           ) as mock_method:
             Notification.create_alert_notifications(self.alert)
 
             self.assertTrue(mock_method.called)
-            self.assertEqual(mock_method.call_args[0][0],
+            self.assertEqual(mock_method.call_args[0][0], self.alert.user)
+            self.assertEqual(mock_method.call_args[0][1],
                              self.alert.alarm_threshold.level)
 
             self.assertTrue(mock_send.called)
@@ -497,14 +501,6 @@ class PrivateAlarmAPITests(TestCase):
 
         self.assertTrue(mock_send.called)
         self.assertEqual(mock_send.call_args[0][0], self.alert)
-
-    # Do more extensive testing than this?
-    def test_define_alert_level(self):
-        level = AlarmThreshold.Level.ONE
-        notification_types = Notification.define_alert_level(level)
-
-        expected = [Notification.NotificationType.EMAIL]
-        self.assertEqual(notification_types, expected)
 
     def test_send_email(self):
         self.notification.send_email(self.alert)
