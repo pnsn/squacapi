@@ -1,8 +1,10 @@
-from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, \
     PermissionsMixin, Group
+from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
+from django.core.validators import validate_email
+from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 # from measurement.models.AlarmThreshold import AlarmThreshold
@@ -126,17 +128,30 @@ class Notification(models.Model):
         on_delete=models.CASCADE,
     )
 
+    def is_email_valid(self):
+        try:
+            validate_email(self.value)
+            return True
+        except ValidationError as e:
+            print(f"{self.value} is not valid: \n{e}")
+            return False
+        # else:
+        #     return True
+
     def send_email(self, alert):
         # email address should be validated - on creation, or here?
-        email_address = self.value
+        if not self.is_email_valid():
+            return False
+
         text_to_send = (f"This is some information:\n"
                         f"{alert.message}")
-        send_mail("Test message",
+        send_mail(f"SQUAC alert, level {alert.alarm_threshold.level}",
                   text_to_send,
                   settings.EMAIL_NO_REPLY,
-                  [email_address, ],
+                  [self.value, ],
                   fail_silently=False,
                   )
+        return True
 
     def send_sms(self, alert):
         pass
@@ -154,11 +169,7 @@ class Notification(models.Model):
 
     @classmethod
     def get_notifications(cls, user, level):
-        notifications = (
-            cls.objects.filter(user=user,
-                               level=level)
-        )
-        return notifications
+        return cls.objects.filter(user=user, level=level)
 
     @classmethod
     def create_alert_notifications(cls, alert):
