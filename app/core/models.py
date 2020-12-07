@@ -103,6 +103,12 @@ class Notification(models.Model):
         SMS = 'sms', _('SMS')
         SLACK = 'slack', _('Slack')
 
+    # Define choices for notification level
+    class Level(models.IntegerChoices):
+        ONE = 1
+        TWO = 2
+        THREE = 3
+
     notification_type = models.CharField(
         max_length=255,
         choices=NotificationType.choices,
@@ -110,6 +116,9 @@ class Notification(models.Model):
     )
     value = models.CharField(max_length=255,
                              default="")
+    level = models.IntegerField(choices=Level.choices,
+                                default=Level.ONE
+                                )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(
@@ -118,7 +127,8 @@ class Notification(models.Model):
     )
 
     def send_email(self, alert):
-        email_address = self.value  # validate this somehow?
+        # email address should be validated - on creation, or here?
+        email_address = self.value
         text_to_send = (f"This is some information:\n"
                         f"{alert.message}")
         send_mail("Test message",

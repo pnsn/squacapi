@@ -205,7 +205,7 @@ class Alarm(MeasurementBase):
 class AlarmThreshold(MeasurementBase):
     '''Describe an individual alarm_threshold for an alarm'''
 
-    # Define choices for interval_type
+    # Define choices for notification level
     class Level(models.IntegerChoices):
         ONE = 1
         TWO = 2
