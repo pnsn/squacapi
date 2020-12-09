@@ -42,6 +42,7 @@ class Metric(MeasurementBase):
     default_minval = models.FloatField(blank=True, null=True)
     default_maxval = models.FloatField(blank=True, null=True)
     reference_url = models.CharField(max_length=255)
+    sample_rate = models.IntegerField(default=3600)
 
     class Meta:
         indexes = [
