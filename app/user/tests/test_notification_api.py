@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
@@ -25,7 +26,9 @@ class UnAuthenticatedNotificationApiTests(TestCase):
         # unauthenticate user
         self.client.force_authenticate(user=None)
         self.notification = Notification.objects.create(
-            user=self.user
+            user=self.user,
+            notification_type=Notification.NotificationType.SMS,
+            value='1'
         )
 
     def test_notification_unathorized(self):
@@ -52,10 +55,14 @@ class PrivateNotificationAPITests(TestCase):
         self.other = sample_user(email="other@pnsn.org", password="secret")
         self.client.force_authenticate(self.admin)
         self.notification = Notification.objects.create(
-            user=self.admin
+            user=self.admin,
+            notification_type=Notification.NotificationType.SMS,
+            value='1'
         )
         self.other_notification = Notification.objects.create(
-            user=self.other
+            user=self.other,
+            notification_type=Notification.NotificationType.SMS,
+            value='1'
         )
 
     def test_get_notification(self):
@@ -67,7 +74,10 @@ class PrivateNotificationAPITests(TestCase):
 
     def test_create_notification(self):
         url = reverse('user:notification-list')
-        payload = {'notification_type': Notification.NotificationType.SMS}
+        payload = {'notification_type': Notification.NotificationType.SMS,
+                   'user': self.other,
+                   'value': '1'
+                   }
         res = self.client.post(url, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         notification = Notification.objects.get(id=res.data['id'])
@@ -90,3 +100,20 @@ class PrivateNotificationAPITests(TestCase):
             res.data[0]['user_id'],
             self.other.id
         )
+
+    def test_create_notification_bad_email(self):
+        url = reverse('user:notification-list')
+        payload = {'notification_type': Notification.NotificationType.EMAIL,
+                   'user': self.other,
+                   'value': 'tempemail'
+                   }
+        res = self.client.post(url, payload)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_notification_bad_email_wo_http(self):
+        with self.assertRaises(ValidationError):
+            Notification.objects.create(
+                notification_type=Notification.NotificationType.EMAIL,
+                user=self.other,
+                value='tempemail'
+            )

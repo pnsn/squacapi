@@ -128,21 +128,17 @@ class Notification(models.Model):
         on_delete=models.CASCADE,
     )
 
-    def is_email_valid(self):
-        try:
+    def clean(self):
+        """Make sure the given value is valid for the notification_type"""
+        super().clean()
+        if self.notification_type == self.NotificationType.EMAIL:
             validate_email(self.value)
-            return True
-        except ValidationError as e:
-            print(f"{self.value} is not valid: \n{e}")
-            return False
-        # else:
-        #     return True
+        elif self.notification_type == self.NotificationType.SLACK:
+            print(_('Should validate Slack'))
+        elif self.notification_type == self.NotificationType.SMS:
+            print(_('Should validate SMS'))
 
     def send_email(self, alert):
-        # email address should be validated - on creation, or here?
-        if not self.is_email_valid():
-            return False
-
         text_to_send = (f"This is some information:\n"
                         f"{alert.message}")
         send_mail(f"SQUAC alert, level {alert.alarm_threshold.level}",
@@ -181,3 +177,17 @@ class Notification(models.Model):
 
     def __str__(self):
         return f'{self.user} {self.notification_type} notification'
+
+    def save(self, *args, **kwargs):
+        """
+        Do regular raise except also check input for 'value' field. This
+        should only come into play if a Notification is created via a program.
+        If created through a web request, the serializer will catch it first.
+        """
+        try:
+            self.full_clean()
+        except ValidationError as e:
+            print(f'Error validating {self.value}!\n{e}')
+            raise
+
+        super().save(*args, **kwargs)  # Call the "real" save() method.

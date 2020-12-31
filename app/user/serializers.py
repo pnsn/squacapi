@@ -1,5 +1,7 @@
 from django.contrib.auth import get_user_model, authenticate
 from django.contrib.auth.models import Group
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
 
 from rest_framework import serializers
 from organization.models import Organization
@@ -131,3 +133,21 @@ class NotificationSerializer(serializers.HyperlinkedModelSerializer):
             'updated_at', 'user_id'
         )
         read_only_fields = ('id',)
+
+    def validate(self, attrs):
+        """Validate the notification"""
+        notification_type = attrs.get('notification_type')
+        value = attrs.get('value')
+
+        if notification_type == Notification.NotificationType.EMAIL:
+            try:
+                validate_email(value)
+            except ValidationError as e:
+                msg = (f'Error validating {value}!\n{e}')
+                raise serializers.ValidationError(msg, code='authorization')
+        elif notification_type == Notification.NotificationType.SLACK:
+            print('Should validate Slack')
+        elif notification_type == Notification.NotificationType.SMS:
+            print('Should validate SMS')
+
+        return attrs
