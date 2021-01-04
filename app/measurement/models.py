@@ -135,6 +135,7 @@ class Alarm(MeasurementBase):
                             choices=Stat.choices,
                             default=Stat.SUM
                             )
+    name = models.CharField(max_length=255, default='')
 
     def calc_interval_seconds(self):
         '''Return the number of seconds in the alarm interval'''
@@ -194,12 +195,15 @@ class Alarm(MeasurementBase):
             alarm_threshold.evaluate_alert(in_alarm)
 
     def __str__(self):
-        return (f"{str(self.channel_group)}, "
-                f"{str(self.metric)}, "
-                f"{self.interval_count} {self.interval_type}, "
-                f"{self.num_channels} chan, "
-                f"{self.stat}"
-                )
+        if not self.name:
+            return (f"{str(self.channel_group)}, "
+                    f"{str(self.metric)}, "
+                    f"{self.interval_count} {self.interval_type}, "
+                    f"{self.num_channels} chan, "
+                    f"{self.stat}"
+                    )
+        else:
+            return self.name
 
 
 class AlarmThreshold(MeasurementBase):
