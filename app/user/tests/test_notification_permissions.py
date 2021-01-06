@@ -24,7 +24,9 @@ class NotificationPermissionTests(TestCase):
         self.admin.save()
 
         self.notification = Notification.objects.create(
-            user=self.me
+            user=self.me,
+            notification_type=Notification.NotificationType.SMS,
+            value='1'
         )
 
     def test_me_can_get(self):
