@@ -50,11 +50,10 @@ class Command(BaseCommand):
         period_end = kwargs['period_end']
         period_size = kwargs['period_size']
         period_start = period_end - self.DURATIONS[archive_type](period_size)
-
         # filter down to time range
         measurements = Measurement.objects.filter(
-            endtime__date__lte=period_end) \
-            .filter(endtime__date__gt=period_start)
+            starttime__date__lt=period_end) \
+            .filter(starttime__date__gte=period_start)
 
         # if specific metrics were selected, filter for them
         if len(metrics) != 0:
@@ -63,7 +62,6 @@ class Command(BaseCommand):
 
         # get the data to be archived
         archive_data = self.get_archive_data(measurements, archive_type)
-
         # create the archive entries
         created_archives = Archive.objects.bulk_create(
             [Archive(**archive) for archive in archive_data])
@@ -79,7 +77,7 @@ class Command(BaseCommand):
         # group on metric,channel, and time
         grouped_measurements = qs.annotate(
             # first add day/week/month/year to tuple so we can group on it
-            time=self.TIME_EXTRACTOR[archive_type]('endtime')) \
+            time=self.TIME_EXTRACTOR[archive_type]('starttime')) \
             .values('metric', 'channel', 'time')
 
         # calculate archive stats

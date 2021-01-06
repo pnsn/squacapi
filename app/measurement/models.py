@@ -42,6 +42,7 @@ class Metric(MeasurementBase):
     default_minval = models.FloatField(blank=True, null=True)
     default_maxval = models.FloatField(blank=True, null=True)
     reference_url = models.CharField(max_length=255)
+    sample_rate = models.IntegerField(default=3600)
 
     class Meta:
         indexes = [
@@ -73,7 +74,11 @@ class Measurement(MeasurementBase):
         ]
 
     def __str__(self):
-        return f"Metric: {str(self.metric)} Channel: {str(self.channel)}"
+        return (f"Metric: {str(self.metric)} "
+                f"Channel: {str(self.channel)} "
+                f"starttime: {format(self.starttime, '%m-%d-%Y %M:%S')} "
+                f"endtime: {format(self.endtime, '%m-%d-%Y %M:%S')} "
+                )
 
 
 class Threshold(MeasurementBase):
