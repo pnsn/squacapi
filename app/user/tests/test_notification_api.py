@@ -11,7 +11,7 @@ from squac.test_mixins import sample_user
 '''Tests for all Notification model API
 
 to run only the app tests:
-    /mg.sh "test user && flake8"
+    ./mg.sh "test user && flake8"
 to run only this file
     ./mg.sh "test user.tests.test_notification_api && flake8"
 '''
@@ -29,15 +29,10 @@ class UnAuthenticatedNotificationApiTests(TestCase):
             user=self.user,
             sms_value='1'
         )
-        # self.notification = Notification.objects.create(
-        #     user=self.user,
-        #     notification_type=Notification.NotificationType.SMS,
-        #     contact=self.contact
-        # )
         self.notification = Notification.objects.create(
             user=self.user,
             notification_type=Notification.NotificationType.SMS,
-            value='1'
+            contact=self.contact
         )
 
     def test_notification_unathorized(self):
@@ -71,25 +66,15 @@ class PrivateNotificationAPITests(TestCase):
             user=self.other,
             email_value=self.other.email
         )
-        # self.notification = Notification.objects.create(
-        #     user=self.admin,
-        #     notification_type=Notification.NotificationType.SMS,
-        #     contact=self.contact_admin
-        # )
-        # self.other_notification = Notification.objects.create(
-        #     user=self.other,
-        #     notification_type=Notification.NotificationType.SMS,
-        #     contact=self.contact_other
-        # )
         self.notification = Notification.objects.create(
             user=self.admin,
             notification_type=Notification.NotificationType.SMS,
-            value='1'
+            contact=self.contact_admin
         )
         self.other_notification = Notification.objects.create(
             user=self.other,
             notification_type=Notification.NotificationType.SMS,
-            value=self.other.email
+            contact=self.contact_other
         )
 
     def test_get_notification(self):
@@ -103,7 +88,7 @@ class PrivateNotificationAPITests(TestCase):
         url = reverse('user:notification-list')
         payload = {'notification_type': Notification.NotificationType.EMAIL,
                    'user': self.other,
-                   'value': 'testemail'
+                   'contact': self.contact_other.id
                    }
         res = self.client.post(url, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
@@ -151,7 +136,7 @@ class PrivateNotificationAPITests(TestCase):
 
     def test_create_contact_bad_email_wo_http(self):
         with self.assertRaises(ValidationError):
-            contact = Contact.objects.create(
+            Contact.objects.create(
                 user=self.other,
                 email_value='bademail'
             )
@@ -163,45 +148,16 @@ class PrivateNotificationAPITests(TestCase):
         )
         self.assertEqual(contact.email_value, '')
 
-    # def test_create_notification_empty_email(self):
-    #     url = reverse('user:notification-list')
-    #     payload = {'notification_type': Notification.NotificationType.EMAIL,
-    #                'user': self.admin,
-    #                'contact': self.contact_admin
-    #                }
-    #     res = self.client.post(url, payload)
-    #     self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-    #     notification = Notification.objects.get(id=res.data['id'])
-    #     self.assertEqual(
-    #         payload['notification_type'],
-    #         notification.notification_type
-    #     )
-
-    # def test_create_notification_bad_email(self):
-    #     url = reverse('user:notification-list')
-    #     payload = {'notification_type': Notification.NotificationType.EMAIL,
-    #                'user': self.other,
-    #                'contact': Contact.objects.create(
-    #                     user=self.other,
-    #                     email_value='1'
-    #                 )
-    #                }
-    #     res = self.client.post(url, payload)
-    #     self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-
-    # def test_create_notification_bad_email_wo_http(self):
-    #     # with self.assertRaises(ValidationError):
-    #     notification = Notification.objects.create(
-    #         notification_type=Notification.NotificationType.EMAIL,
-    #         user=self.other,
-    #         contact=Contact.objects.create(
-    #             user=self.other,
-    #             email_value='tempemail'
-    #         )
-    #     )
-    #     print(f"\nlevel = {notification.level}"
-    #           f"\ncontact = {notification.contact.email_value}"
-    #           )
-
-
-
+    def test_create_notification_empty_email(self):
+        url = reverse('user:notification-list')
+        payload = {'notification_type': Notification.NotificationType.EMAIL,
+                   'user': self.admin,
+                   'contact': self.contact_admin.id
+                   }
+        res = self.client.post(url, payload)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        notification = Notification.objects.get(id=res.data['id'])
+        self.assertEqual(
+            payload['notification_type'],
+            notification.notification_type
+        )

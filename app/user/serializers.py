@@ -137,31 +137,13 @@ class ContactSerializer(serializers.HyperlinkedModelSerializer):
 class NotificationSerializer(serializers.HyperlinkedModelSerializer):
     url = serializers.HyperlinkedIdentityField(
         view_name="user:notification-detail")
-    # contact = serializers.PrimaryKeyRelatedField(
-    #     queryset=Contact.objects.all())
+    contact = serializers.PrimaryKeyRelatedField(
+        queryset=Contact.objects.all())
 
     class Meta:
         model = Notification
         fields = (
-            'id', 'url', 'notification_type', 'value', 'level', 'created_at',
+            'id', 'url', 'notification_type', 'contact', 'level', 'created_at',
             'updated_at', 'user_id'
         )
         read_only_fields = ('id',)
-
-    # def validate(self, attrs):
-    #     """Validate the notification"""
-    #     notification_type = attrs.get('notification_type')
-    #     value = attrs.get('value')
-
-    #     if notification_type == Notification.NotificationType.EMAIL:
-    #         try:
-    #             validate_email(value)
-    #         except ValidationError as e:
-    #             msg = (f'Error validating {value}!\n{e}')
-    #             raise serializers.ValidationError(msg, code='authorization')
-    #     elif notification_type == Notification.NotificationType.SLACK:
-    #         print('Should validate Slack')
-    #     elif notification_type == Notification.NotificationType.SMS:
-    #         print('Should validate SMS')
-
-    #     return attrs

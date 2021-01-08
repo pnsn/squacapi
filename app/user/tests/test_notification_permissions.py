@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from squac.test_mixins import sample_user
-from core.models import Notification
+from core.models import Contact, Notification
 
 '''
     to run this file only
@@ -23,10 +23,14 @@ class NotificationPermissionTests(TestCase):
         self.admin.is_staff = True
         self.admin.save()
 
+        self.contact = Contact.objects.create(
+            user=self.me,
+            sms_value='1'
+        )
         self.notification = Notification.objects.create(
             user=self.me,
             notification_type=Notification.NotificationType.SMS,
-            value='1'
+            contact=self.contact
         )
 
     def test_me_can_get(self):

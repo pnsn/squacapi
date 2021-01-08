@@ -59,7 +59,6 @@ class ContactViewSet(SetUserMixin, viewsets.ModelViewSet):
 
 class NotificationViewSet(SetUserMixin, viewsets.ModelViewSet):
     '''Manage user notifications'''
-
     serializer_class = NotificationSerializer
     permission_classes = (IsAuthenticated, IsAdminOrOwner,)
 

@@ -7,8 +7,6 @@ from django.core.validators import validate_email
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-# from measurement.models.AlarmThreshold import AlarmThreshold
-# from measurement.models import Contact
 from organization.models import Organization
 
 
@@ -129,8 +127,7 @@ class Contact(models.Model):
         """
         try:
             self.full_clean()
-        except ValidationError as e:
-            # print(f'Error validating {self}!\n{e}')
+        except ValidationError:
             raise
 
         super().save(*args, **kwargs)  # Call the "real" save() method.
@@ -155,27 +152,22 @@ class Notification(models.Model):
         choices=NotificationType.choices,
         default=NotificationType.EMAIL
     )
-    value = models.CharField(max_length=255,
-                             default="")
-    level = models.IntegerField(choices=Level.choices,
-                                default=Level.ONE
-                                )
+    contact = models.ForeignKey(
+        Contact,
+        on_delete=models.CASCADE,
+        null=True,
+        related_name='notifications'
+    )
+    level = models.IntegerField(
+        choices=Level.choices,
+        default=Level.ONE
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
     )
-
-    # def clean(self):
-    #     """Make sure the given value is valid for the notification_type"""
-    #     super().clean()
-    #     if self.notification_type == self.NotificationType.EMAIL:
-    #         validate_email(self.value)
-    #     elif self.notification_type == self.NotificationType.SLACK:
-    #         print(_('Should validate Slack'))
-    #     elif self.notification_type == self.NotificationType.SMS:
-    #         print(_('Should validate SMS'))
 
     def send_email(self, alert):
         text_to_send = (f"This is some information:\n"
@@ -216,17 +208,3 @@ class Notification(models.Model):
 
     def __str__(self):
         return f'{self.user} {self.notification_type} notification'
-
-    # def save(self, *args, **kwargs):
-    #     """
-    #     Do regular raise except also check input for 'value' field. This
-    #     should only come into play if a Notification is created via a program.
-    #     If created through a web request, the serializer will catch it first.
-    #     """
-    #     try:
-    #         self.full_clean()
-    #     except ValidationError as e:
-    #         print(f'Error validating {self.value}!\n{e}')
-    #         raise
-
-    #     super().save(*args, **kwargs)  # Call the "real" save() method.
