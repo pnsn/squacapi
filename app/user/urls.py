@@ -8,6 +8,7 @@ router = DefaultRouter()
 router.register('groups', views.GroupViewSet, basename='group')
 router.register(
     'notifications', views.NotificationViewSet, basename='notification')
+router.register('contacts', views.ContactViewSet, basename='contact')
 
 urlpatterns = [
     path('create/', views.CreateUserView.as_view(), name='create'),

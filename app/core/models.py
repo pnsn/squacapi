@@ -8,7 +8,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 # from measurement.models.AlarmThreshold import AlarmThreshold
-# from measurement.models import AlarmThreshold
+# from measurement.models import Contact
 from organization.models import Organization
 
 
@@ -97,6 +97,45 @@ class User(AbstractBaseUser, PermissionsMixin):
             contributor.user_set.remove(self)
 
 
+class Contact(models.Model):
+    """Contains contact information for alert notifications"""
+    email_value = models.CharField(
+        max_length=255,
+        default="",
+        blank=True,
+        validators=[validate_email, ]
+    )
+    sms_value = models.CharField(
+        max_length=255,
+        default="",
+        blank=True
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+    )
+
+    def __str__(self):
+        return (f"email_value: {self.email_value}, "
+                f"sms_value: {self.sms_value}"
+                )
+
+    def save(self, *args, **kwargs):
+        """
+        Do regular save except also validate fields. This doesn't happen
+        automatically on save
+        """
+        try:
+            self.full_clean()
+        except ValidationError as e:
+            # print(f'Error validating {self}!\n{e}')
+            raise
+
+        super().save(*args, **kwargs)  # Call the "real" save() method.
+
+
 class Notification(models.Model):
     '''User notification model for alerting'''
 
@@ -128,15 +167,15 @@ class Notification(models.Model):
         on_delete=models.CASCADE,
     )
 
-    def clean(self):
-        """Make sure the given value is valid for the notification_type"""
-        super().clean()
-        if self.notification_type == self.NotificationType.EMAIL:
-            validate_email(self.value)
-        elif self.notification_type == self.NotificationType.SLACK:
-            print(_('Should validate Slack'))
-        elif self.notification_type == self.NotificationType.SMS:
-            print(_('Should validate SMS'))
+    # def clean(self):
+    #     """Make sure the given value is valid for the notification_type"""
+    #     super().clean()
+    #     if self.notification_type == self.NotificationType.EMAIL:
+    #         validate_email(self.value)
+    #     elif self.notification_type == self.NotificationType.SLACK:
+    #         print(_('Should validate Slack'))
+    #     elif self.notification_type == self.NotificationType.SMS:
+    #         print(_('Should validate SMS'))
 
     def send_email(self, alert):
         text_to_send = (f"This is some information:\n"
@@ -144,7 +183,7 @@ class Notification(models.Model):
         send_mail(f"SQUAC alert, level {alert.alarm_threshold.level}",
                   text_to_send,
                   settings.EMAIL_NO_REPLY,
-                  [self.value, ],
+                  [self.contact.email_value, ],
                   fail_silently=False,
                   )
         return True
@@ -178,16 +217,16 @@ class Notification(models.Model):
     def __str__(self):
         return f'{self.user} {self.notification_type} notification'
 
-    def save(self, *args, **kwargs):
-        """
-        Do regular raise except also check input for 'value' field. This
-        should only come into play if a Notification is created via a program.
-        If created through a web request, the serializer will catch it first.
-        """
-        try:
-            self.full_clean()
-        except ValidationError as e:
-            print(f'Error validating {self.value}!\n{e}')
-            raise
+    # def save(self, *args, **kwargs):
+    #     """
+    #     Do regular raise except also check input for 'value' field. This
+    #     should only come into play if a Notification is created via a program.
+    #     If created through a web request, the serializer will catch it first.
+    #     """
+    #     try:
+    #         self.full_clean()
+    #     except ValidationError as e:
+    #         print(f'Error validating {self.value}!\n{e}')
+    #         raise
 
-        super().save(*args, **kwargs)  # Call the "real" save() method.
+    #     super().save(*args, **kwargs)  # Call the "real" save() method.

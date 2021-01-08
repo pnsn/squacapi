@@ -7,9 +7,10 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.settings import api_settings
 
 from user.serializers import UserWriteSerializer, UserMeSerializer, \
-    AuthTokenSerializer, UserGroupSerializer, NotificationSerializer
+    AuthTokenSerializer, UserGroupSerializer, NotificationSerializer, \
+    ContactSerializer
 from drf_yasg.utils import swagger_auto_schema
-from core.models import Notification
+from core.models import Contact, Notification
 from squac.mixins import SetUserMixin
 from squac.permissions import IsAdminOrOwner
 
@@ -46,6 +47,14 @@ class GroupViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Group.objects.all()
+
+
+class ContactViewSet(SetUserMixin, viewsets.ModelViewSet):
+    """Manage contact info"""
+    serializer_class = ContactSerializer
+
+    def get_queryset(self):
+        return Contact.objects.all()
 
 
 class NotificationViewSet(SetUserMixin, viewsets.ModelViewSet):
