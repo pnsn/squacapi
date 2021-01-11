@@ -1,12 +1,13 @@
 from unittest.mock import patch
 from django.core import mail
+from django.core.exceptions import ValidationError
 from django.core.management import call_command
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 # from django.db.models import Avg, Count, Max, Min, Sum
 
-from core.models import Notification
+from core.models import Contact, Notification
 from measurement.models import (Alarm, AlarmThreshold, Alert, Measurement,
                                 Metric)
 from nslc.models import Channel, Group, Network
@@ -131,10 +132,14 @@ class PrivateAlarmAPITests(TestCase):
             in_alarm=True,
             user=self.user
         )
+        self.contact = Contact.objects.create(
+            user=self.user,
+            email_value=self.user.email
+        )
         self.notification = Notification.objects.create(
             notification_type=Notification.NotificationType.EMAIL,
             user=self.user,
-            value=self.user.email
+            contact=self.contact
         )
 
     def test_get_alarm(self):
@@ -483,6 +488,7 @@ class PrivateAlarmAPITests(TestCase):
                           return_value=notification_qs
                           ) as mock_method:
             Notification.create_alert_notifications(self.alert)
+            # self.alert.create_alert_notifications()
 
             self.assertTrue(mock_method.called)
             self.assertEqual(mock_method.call_args[0][0], self.alert.user)
@@ -496,7 +502,6 @@ class PrivateAlarmAPITests(TestCase):
 
     @patch.object(Notification, 'send_email')
     def test_send(self, mock_send):
-        # self.notification has notification_type = EMAIL
         self.notification.send(self.alert)
 
         self.assertTrue(mock_send.called)
@@ -507,8 +512,43 @@ class PrivateAlarmAPITests(TestCase):
 
         self.assertEqual(len(mail.outbox), 1)
         self.assertTrue(self.alert.message in mail.outbox[0].body)
-        self.assertTrue(self.notification.value
+        self.assertTrue(self.notification.contact.email_value
                         in mail.outbox[0].recipients())
+
+    def test_create_contact(self):
+        url = reverse('user:contact-list')
+        payload = {
+            'email_value': self.user.email,
+            'user': self.user
+        }
+        res = self.client.post(url, payload)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        contact = Contact.objects.get(id=res.data['id'])
+        for key in payload.keys():
+            self.assertEqual(payload[key], getattr(contact, key))
+
+    def test_create_contact_bad_email(self):
+        url = reverse('user:contact-list')
+        payload = {
+            'email_value': 'bademail',
+            'user': self.user
+        }
+        res = self.client.post(url, payload)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_contact_bad_email_wo_http(self):
+        with self.assertRaises(ValidationError):
+            Contact.objects.create(
+                user=self.user,
+                email_value='bademail'
+            )
+
+    def test_create_contact_empty_email_no_error(self):
+        contact = Contact.objects.create(
+            user=self.user,
+            email_value=''
+        )
+        self.assertEqual(contact.email_value, '')
 
     # def test_evaluate_alarms_filter_metric(self):
     #     '''Test evaluate_alarm command'''
