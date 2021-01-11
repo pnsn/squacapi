@@ -596,7 +596,7 @@
     }
 },
 {
-    "model": "measurement.alarmthreshold",
+    "model": "measurement.trigger",
     "pk": 1,
     "fields": {
         "created_at": "2019-08-28T23:30:31.262Z", 
@@ -604,7 +604,7 @@
         "user": [
             "loader@pnsn.org"
         ], 
-        "alarm": 1, 
+        "monitor": 1, 
         "minval": 6, 
         "maxval": null, 
         "band_inclusive": false, 
@@ -612,7 +612,7 @@
     }
 },
 {
-    "model": "measurement.alarmthreshold",
+    "model": "measurement.trigger",
     "pk": 2,
     "fields": {
         "created_at": "2019-08-28T23:30:31.262Z", 
@@ -620,7 +620,7 @@
         "user": [
             "loader@pnsn.org"
         ], 
-        "alarm": 1, 
+        "monitor": 1, 
         "minval": null, 
         "maxval": 1, 
         "band_inclusive": false, 
@@ -628,7 +628,7 @@
     }
 },
 {
-    "model": "measurement.alarmthreshold",
+    "model": "measurement.trigger",
     "pk": 3,
     "fields": {
         "created_at": "2019-08-28T23:30:31.262Z", 
@@ -636,7 +636,7 @@
         "user": [
             "loader@pnsn.org"
         ], 
-        "alarm": 1, 
+        "monitor": 1, 
         "minval": 1, 
         "maxval": 6, 
         "band_inclusive": false, 
@@ -644,7 +644,7 @@
     }
 },
 {
-    "model": "measurement.alarmthreshold",
+    "model": "measurement.trigger",
     "pk": 4,
     "fields": {
         "created_at": "2019-08-28T23:30:31.262Z", 
@@ -652,7 +652,7 @@
         "user": [
             "loader@pnsn.org"
         ], 
-        "alarm": 1, 
+        "monitor": 1, 
         "minval": 1, 
         "maxval": 6, 
         "band_inclusive": true, 
@@ -660,7 +660,7 @@
     }
 },
 {
-    "model": "measurement.alarmthreshold",
+    "model": "measurement.trigger",
     "pk": 5,
     "fields": {
         "created_at": "2019-08-28T23:30:31.262Z", 
@@ -668,7 +668,7 @@
         "user": [
             "loader@pnsn.org"
         ], 
-        "alarm": 1, 
+        "monitor": 1, 
         "minval": 4, 
         "maxval": 6, 
         "band_inclusive": true, 

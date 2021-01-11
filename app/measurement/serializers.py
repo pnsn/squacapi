@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import (Metric, Measurement, Threshold, Monitor, AlarmThreshold,
+from .models import (Metric, Measurement, Threshold, Monitor, Trigger,
                      Alert, Archive)
 from dashboard.models import Widget
 from nslc.models import Channel, Group
@@ -96,17 +96,17 @@ class MonitorSerializer(serializers.HyperlinkedModelSerializer):
         read_only_fields = ('id',)
 
 
-class AlarmThresholdSerializer(serializers.HyperlinkedModelSerializer):
+class TriggerSerializer(serializers.HyperlinkedModelSerializer):
     url = serializers.HyperlinkedIdentityField(
-        view_name="measurement:alarm-threshold-detail")
+        view_name="measurement:trigger-detail")
 
-    alarm = serializers.PrimaryKeyRelatedField(
+    monitor = serializers.PrimaryKeyRelatedField(
         queryset=Monitor.objects.all())
 
     class Meta:
-        model = AlarmThreshold
+        model = Trigger
         fields = (
-            'id', 'url', 'alarm', 'minval', 'maxval', 'band_inclusive',
+            'id', 'url', 'monitor', 'minval', 'maxval', 'band_inclusive',
             'level', 'created_at', 'updated_at', 'user_id'
         )
         read_only_fields = ('id',)
@@ -117,7 +117,7 @@ class AlertSerializer(serializers.HyperlinkedModelSerializer):
         view_name="measurement:alert-detail")
 
     alarm_threshold = serializers.PrimaryKeyRelatedField(
-        queryset=AlarmThreshold.objects.all())
+        queryset=Trigger.objects.all())
 
     class Meta:
         model = Alert

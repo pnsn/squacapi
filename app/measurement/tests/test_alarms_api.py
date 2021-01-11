@@ -8,7 +8,7 @@ from django.utils import timezone
 # from django.db.models import Avg, Count, Max, Min, Sum
 
 from core.models import Contact, Notification, User
-from measurement.models import (Monitor, AlarmThreshold, Alert, Measurement,
+from measurement.models import (Monitor, Trigger, Alert, Measurement,
                                 Metric)
 from nslc.models import Channel, Group, Network
 from organization.models import Organization
@@ -118,11 +118,11 @@ class PrivateAlarmAPITests(TestCase):
             stat=Monitor.Stat.SUM,
             user=self.user
         )
-        self.alarm_threshold = AlarmThreshold.objects.create(
-            alarm=self.monitor,
+        self.alarm_threshold = Trigger.objects.create(
+            monitor=self.monitor,
             minval=2,
             maxval=5,
-            level=AlarmThreshold.Level.ONE,
+            level=Trigger.Level.ONE,
             user=self.user
         )
         self.alert = Alert.objects.create(
@@ -175,28 +175,28 @@ class PrivateAlarmAPITests(TestCase):
 
     def test_get_alarm_threshold(self):
         url = reverse(
-            'measurement:alarm-threshold-detail',
+            'measurement:trigger-detail',
             kwargs={'pk': self.alarm_threshold.id}
         )
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data['alarm'], self.monitor.id)
+        self.assertEqual(res.data['monitor'], self.monitor.id)
 
     def test_create_alarm_threshold(self):
-        url = reverse('measurement:alarm-threshold-list')
+        url = reverse('measurement:trigger-list')
         payload = {
-            'alarm': self.monitor.id,
+            'monitor': self.monitor.id,
             'minval': 15,
             'maxval': 20,
-            'level': AlarmThreshold.Level.TWO,
+            'level': Trigger.Level.TWO,
             'user': self.user
         }
         res = self.client.post(url, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-        alarm_threshold = AlarmThreshold.objects.get(id=res.data['id'])
+        alarm_threshold = Trigger.objects.get(id=res.data['id'])
         for key in payload.keys():
-            if key == 'alarm':
-                self.assertEqual(payload[key], alarm_threshold.alarm.id)
+            if key == 'monitor':
+                self.assertEqual(payload[key], alarm_threshold.monitor.id)
             else:
                 self.assertEqual(payload[key], getattr(alarm_threshold, key))
 
@@ -299,7 +299,7 @@ class PrivateAlarmAPITests(TestCase):
         endtime = datetime(2018, 2, 1, 4, 30, 0, 0, tzinfo=pytz.UTC)
 
         q = monitor.agg_measurements(endtime=endtime)
-        alarm_threshold = AlarmThreshold.objects.get(pk=alarm_threshold_id)
+        alarm_threshold = Trigger.objects.get(pk=alarm_threshold_id)
 
         chan_id = 1
         for result in expected:
@@ -323,7 +323,7 @@ class PrivateAlarmAPITests(TestCase):
         endtime = datetime(2018, 2, 1, 4, 30, 0, 0, tzinfo=pytz.UTC)
 
         q = monitor.agg_measurements(endtime=endtime)
-        alarm_threshold = AlarmThreshold.objects.get(pk=alarm_threshold_id)
+        alarm_threshold = Trigger.objects.get(pk=alarm_threshold_id)
 
         res = alarm_threshold.get_breaching_channels(q)
         self.assertCountEqual(res, expected)
@@ -339,7 +339,7 @@ class PrivateAlarmAPITests(TestCase):
         endtime = datetime(2018, 2, 1, 4, 30, 0, 0, tzinfo=pytz.UTC)
 
         q = monitor.agg_measurements(endtime=endtime)
-        alarm_threshold = AlarmThreshold.objects.get(pk=alarm_threshold_id)
+        alarm_threshold = Trigger.objects.get(pk=alarm_threshold_id)
         if expected:
             self.assertTrue(alarm_threshold.in_alarm_state(q))
         else:
@@ -352,53 +352,53 @@ class PrivateAlarmAPITests(TestCase):
         self.check_in_alarm_state(1, 4, True)
 
     def test_get_latest_alert(self):
-        alarm_threshold = AlarmThreshold.objects.get(pk=3)
+        alarm_threshold = Trigger.objects.get(pk=3)
 
         alert = alarm_threshold.get_latest_alert()
         self.assertEqual(4, alert.id)
 
     def test_get_latest_alert_none_exist(self):
-        alarm_threshold = AlarmThreshold.objects.get(pk=4)
+        alarm_threshold = Trigger.objects.get(pk=4)
 
         alert = alarm_threshold.get_latest_alert()
         self.assertIsNone(alert)
 
     def test_evaluate_alert_false_alert_no_alarm(self):
-        alarm_threshold = AlarmThreshold.objects.get(pk=1)
+        alarm_threshold = Trigger.objects.get(pk=1)
 
         alert = alarm_threshold.evaluate_alert(False)
         self.assertEqual(1, alert.id)
         self.assertFalse(alert.in_alarm)
 
     def test_evaluate_alert_false_alert_in_alarm(self):
-        alarm_threshold = AlarmThreshold.objects.get(pk=1)
+        alarm_threshold = Trigger.objects.get(pk=1)
 
         alert = alarm_threshold.evaluate_alert(True)
         self.assertNotEqual(1, alert.id)
         self.assertTrue(alert.in_alarm)
 
     def test_evaluate_alert_true_alert_no_alarm(self):
-        alarm_threshold = AlarmThreshold.objects.get(pk=2)
+        alarm_threshold = Trigger.objects.get(pk=2)
 
         alert = alarm_threshold.evaluate_alert(False)
         self.assertNotEqual(2, alert.id)
         self.assertFalse(alert.in_alarm)
 
     def test_evaluate_alert_true_alert_in_alarm(self):
-        alarm_threshold = AlarmThreshold.objects.get(pk=2)
+        alarm_threshold = Trigger.objects.get(pk=2)
 
         alert = alarm_threshold.evaluate_alert(True)
         self.assertEqual(2, alert.id)
         self.assertTrue(alert.in_alarm)
 
     def test_evaluate_alert_no_alert_no_alarm(self):
-        alarm_threshold = AlarmThreshold.objects.get(pk=4)
+        alarm_threshold = Trigger.objects.get(pk=4)
 
         alert = alarm_threshold.evaluate_alert(False)
         self.assertIsNone(alert)
 
     def test_evaluate_alert_no_alert_in_alarm(self):
-        alarm_threshold = AlarmThreshold.objects.get(pk=4)
+        alarm_threshold = Trigger.objects.get(pk=4)
 
         alert = alarm_threshold.evaluate_alert(True)
         self.assertTrue(alert.in_alarm)
@@ -416,7 +416,7 @@ class PrivateAlarmAPITests(TestCase):
         # alarm_threshold 1 is breached
         # had previous alert with in_alarm = False,
         # check that a new one is created
-        alarm_threshold = AlarmThreshold.objects.get(pk=1)
+        alarm_threshold = Trigger.objects.get(pk=1)
         alerts = alarm_threshold.alerts.all()
         self.assertEqual(len(alerts), 2)
         # get most recent alert
@@ -425,7 +425,7 @@ class PrivateAlarmAPITests(TestCase):
 
         # alarm_threshold 2 is breached
         # already had an active alert, check that in_alarm is still True
-        alarm_threshold = AlarmThreshold.objects.get(pk=2)
+        alarm_threshold = Trigger.objects.get(pk=2)
         alerts = alarm_threshold.alerts.all()
         self.assertEqual(len(alerts), 1)
         # get most recent alert
@@ -435,7 +435,7 @@ class PrivateAlarmAPITests(TestCase):
         # alarm_threshold 3 is not breached
         # already had an active alert, check that there is a new one with
         # in_alarm = True
-        alarm_threshold = AlarmThreshold.objects.get(pk=3)
+        alarm_threshold = Trigger.objects.get(pk=3)
         alerts = alarm_threshold.alerts.all()
         self.assertEqual(len(alerts), 4)
         # get most recent alert
@@ -444,7 +444,7 @@ class PrivateAlarmAPITests(TestCase):
 
         # alarm_threshold 4 is breached
         # did not have an alert, check that new one is created
-        alarm_threshold = AlarmThreshold.objects.get(pk=4)
+        alarm_threshold = Trigger.objects.get(pk=4)
         alerts = alarm_threshold.alerts.all()
         self.assertEqual(len(alerts), 1)
         # get most recent alert
@@ -453,7 +453,7 @@ class PrivateAlarmAPITests(TestCase):
 
         # alarm_threshold 5 is not breached
         # did not have an alert, check that there is no new one
-        alarm_threshold = AlarmThreshold.objects.get(pk=5)
+        alarm_threshold = Trigger.objects.get(pk=5)
         alerts = alarm_threshold.alerts.all()
         self.assertEqual(len(alerts), 0)
 
@@ -472,7 +472,7 @@ class PrivateAlarmAPITests(TestCase):
     def test_function_create_alert(self, mock):
         '''Test create_alert'''
         in_alarm = True
-        alarm_threshold = AlarmThreshold.objects.get(pk=1)
+        alarm_threshold = Trigger.objects.get(pk=1)
         alert = alarm_threshold.create_alert(in_alarm)
 
         self.assertFalse(alert.id is None)
