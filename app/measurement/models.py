@@ -3,7 +3,6 @@ from django.db.models import Avg, Count, Max, Min, Sum
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
-from core.models import Notification
 from dashboard.models import Widget
 from nslc.models import Channel, Group
 
@@ -288,7 +287,7 @@ class AlarmThreshold(MeasurementBase):
                           in_alarm=in_alarm,
                           user=self.user)
         new_alert.save()
-        Notification.create_alert_notifications(new_alert)
+        new_alert.create_alert_notifications()
         return new_alert
 
     def evaluate_alert(self, in_alarm):
@@ -329,6 +328,13 @@ class Alert(MeasurementBase):
     timestamp = models.DateTimeField()
     message = models.CharField(max_length=255)
     in_alarm = models.BooleanField(default=True)
+
+    def create_alert_notifications(self):
+        level = self.alarm_threshold.level
+        notifications = self.user.get_notifications(level)
+
+        for notification in notifications:
+            notification.send(self)
 
     class Meta:
         indexes = [

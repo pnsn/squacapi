@@ -94,6 +94,9 @@ class User(AbstractBaseUser, PermissionsMixin):
             reporter.user_set.remove(self)
             contributor.user_set.remove(self)
 
+    def get_notifications(self, level):
+        return Notification.objects.filter(user=self, level=level)
+
 
 class Contact(models.Model):
     """Contains contact information for alert notifications"""
@@ -193,18 +196,6 @@ class Notification(models.Model):
             self.send_slack(alert)
         elif self.notification_type == self.NotificationType.SMS:
             self.send_sms(alert)
-
-    @classmethod
-    def get_notifications(cls, user, level):
-        return cls.objects.filter(user=user, level=level)
-
-    @classmethod
-    def create_alert_notifications(cls, alert):
-        level = alert.alarm_threshold.level
-        notifications = cls.get_notifications(alert.user, level)
-
-        for notification in notifications:
-            notification.send(alert)
 
     def __str__(self):
         return f'{self.user} {self.notification_type} notification'

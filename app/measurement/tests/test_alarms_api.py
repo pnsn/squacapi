@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.utils import timezone
 # from django.db.models import Avg, Count, Max, Min, Sum
 
-from core.models import Contact, Notification
+from core.models import Contact, Notification, User
 from measurement.models import (Alarm, AlarmThreshold, Alert, Measurement,
                                 Metric)
 from nslc.models import Channel, Group, Network
@@ -466,7 +466,7 @@ class PrivateAlarmAPITests(TestCase):
             self.assertEqual(n_alarms, ea.call_count)
             # print('Called {} times'.format(ea.call_count))
 
-    @patch.object(Notification, 'create_alert_notifications')
+    @patch.object(Alert, 'create_alert_notifications')
     def test_function_create_alert(self, mock):
         '''Test create_alert'''
         in_alarm = True
@@ -483,16 +483,16 @@ class PrivateAlarmAPITests(TestCase):
         notification_qs = (
             Notification.objects.filter(pk=self.notification.id)
         )
-        with patch.object(Notification,
+        with patch.object(User,
                           'get_notifications',
                           return_value=notification_qs
                           ) as mock_method:
-            Notification.create_alert_notifications(self.alert)
-            # self.alert.create_alert_notifications()
+            # Notification.create_alert_notifications(self.alert)
+            self.alert.create_alert_notifications()
 
             self.assertTrue(mock_method.called)
-            self.assertEqual(mock_method.call_args[0][0], self.alert.user)
-            self.assertEqual(mock_method.call_args[0][1],
+            # self.assertEqual(mock_method.call_args[0][0], self.alert.user)
+            self.assertEqual(mock_method.call_args[0][0],
                              self.alert.alarm_threshold.level)
 
             self.assertTrue(mock_send.called)
