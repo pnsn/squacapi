@@ -48,7 +48,7 @@ class TriggerFilter(filters.FilterSet):
 class AlertFilter(filters.FilterSet):
     class Meta:
         model = Alert
-        fields = ('alarm_threshold', 'in_alarm')
+        fields = ('trigger', 'in_alarm')
 
 
 class ArchiveFilter(filters.FilterSet):

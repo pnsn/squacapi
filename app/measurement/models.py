@@ -191,12 +191,12 @@ class Monitor(MeasurementBase):
         channel_values = self.agg_measurements(endtime)
 
         # Get Triggers for this alarm. Returns a QuerySet
-        alarm_thresholds = self.triggers.all()
+        triggers = self.triggers.all()
 
         # Evaluate whether each Trigger is breaching
-        for alarm_threshold in alarm_thresholds:
-            in_alarm = alarm_threshold.in_alarm_state(channel_values)
-            alarm_threshold.evaluate_alert(in_alarm)
+        for trigger in triggers:
+            in_alarm = trigger.in_alarm_state(channel_values)
+            trigger.evaluate_alert(in_alarm)
 
     def __str__(self):
         if not self.name:
@@ -281,7 +281,7 @@ class Trigger(MeasurementBase):
 
     def create_alert(self, in_alarm):
         msg = self.get_alert_message(in_alarm)
-        new_alert = Alert(alarm_threshold=self,
+        new_alert = Alert(trigger=self,
                           timestamp=datetime.now(tz=pytz.UTC),
                           message=msg,
                           in_alarm=in_alarm,
@@ -320,7 +320,7 @@ class Trigger(MeasurementBase):
 
 class Alert(MeasurementBase):
     '''Describe an alert for a trigger'''
-    alarm_threshold = models.ForeignKey(
+    trigger = models.ForeignKey(
         Trigger,
         on_delete=models.CASCADE,
         related_name='alerts'
@@ -330,7 +330,7 @@ class Alert(MeasurementBase):
     in_alarm = models.BooleanField(default=True)
 
     def create_alert_notifications(self):
-        level = self.alarm_threshold.level
+        level = self.trigger.level
         notifications = self.user.get_notifications(level)
 
         for notification in notifications:
@@ -344,7 +344,7 @@ class Alert(MeasurementBase):
 
     def __str__(self):
         return (f"Time: {self.timestamp}, "
-                f"{str(self.alarm_threshold)}"
+                f"{str(self.trigger)}"
                 )
 
 

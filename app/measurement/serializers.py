@@ -116,13 +116,13 @@ class AlertSerializer(serializers.HyperlinkedModelSerializer):
     url = serializers.HyperlinkedIdentityField(
         view_name="measurement:alert-detail")
 
-    alarm_threshold = serializers.PrimaryKeyRelatedField(
+    trigger = serializers.PrimaryKeyRelatedField(
         queryset=Trigger.objects.all())
 
     class Meta:
         model = Alert
         fields = (
-            'id', 'url', 'alarm_threshold', 'timestamp', 'message', 'in_alarm',
+            'id', 'url', 'trigger', 'timestamp', 'message', 'in_alarm',
             'created_at', 'updated_at', 'user_id'
         )
         read_only_fields = ('id',)

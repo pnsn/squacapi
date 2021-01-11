@@ -684,7 +684,7 @@
         "user": [
             "loader@pnsn.org"
         ], 
-        "alarm_threshold": 1, 
+        "trigger": 1, 
         "timestamp": "2018-02-01T04:30:00Z", 
         "message": "Wow, an alert!", 
         "in_alarm": false
@@ -699,7 +699,7 @@
         "user": [
             "loader@pnsn.org"
         ], 
-        "alarm_threshold": 2, 
+        "trigger": 2, 
         "timestamp": "2018-02-01T04:30:00Z", 
         "message": "Wow, an alert again!", 
         "in_alarm": true
@@ -714,7 +714,7 @@
         "user": [
             "loader@pnsn.org"
         ], 
-        "alarm_threshold": 3, 
+        "trigger": 3, 
         "timestamp": "2018-02-01T03:30:00Z", 
         "message": "Wow, an alert! It keeps happening!", 
         "in_alarm": false
@@ -729,7 +729,7 @@
         "user": [
             "loader@pnsn.org"
         ], 
-        "alarm_threshold": 3, 
+        "trigger": 3, 
         "timestamp": "2018-02-01T04:30:00Z", 
         "message": "Wow, an alert! It keeps happening!", 
         "in_alarm": true
@@ -744,7 +744,7 @@
         "user": [
             "loader@pnsn.org"
         ], 
-        "alarm_threshold": 3, 
+        "trigger": 3, 
         "timestamp": "2018-02-01T04:00:00Z", 
         "message": "Wow, an alert! It keeps happening!", 
         "in_alarm": false

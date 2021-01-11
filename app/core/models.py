@@ -175,7 +175,7 @@ class Notification(models.Model):
     def send_email(self, alert):
         text_to_send = (f"This is some information:\n"
                         f"{alert.message}")
-        send_mail(f"SQUAC alert, level {alert.alarm_threshold.level}",
+        send_mail(f"SQUAC alert, level {alert.trigger.level}",
                   text_to_send,
                   settings.EMAIL_NO_REPLY,
                   [self.contact.email_value, ],
