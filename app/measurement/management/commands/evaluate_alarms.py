@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from measurement.models import Alarm
+from measurement.models import Monitor
 
 
 class Command(BaseCommand):
@@ -26,16 +26,16 @@ class Command(BaseCommand):
         metrics = options['metric']
 
         # Get all alarms
-        alarms = Alarm.objects.all()
+        monitors = Monitor.objects.all()
 
         # Filter for specific channel_groups, metrics if they were selected
         if len(channel_groups) != 0:
-            alarms = alarms.filter(channel_group__name__in=channel_groups)
+            monitors = monitors.filter(channel_group__name__in=channel_groups)
         if len(metrics) != 0:
-            alarms = alarms.filter(metric__name__in=metrics)
+            monitors = monitors.filter(metric__name__in=metrics)
 
         # Evaluate each alarm
-        for alarm in alarms:
-            alarm.evaluate_alarm()
+        for monitor in monitors:
+            monitor.evaluate_alarm()
 
         self.stdout.write(self.style.SUCCESS('Finished checking alarms!'))

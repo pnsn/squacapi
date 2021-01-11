@@ -8,7 +8,7 @@ from django.utils import timezone
 # from django.db.models import Avg, Count, Max, Min, Sum
 
 from core.models import Contact, Notification, User
-from measurement.models import (Alarm, AlarmThreshold, Alert, Measurement,
+from measurement.models import (Monitor, AlarmThreshold, Alert, Measurement,
                                 Metric)
 from nslc.models import Channel, Group, Network
 from organization.models import Organization
@@ -55,15 +55,15 @@ class PrivateAlarmAPITests(TestCase):
             endtime=datetime(2599, 12, 31, tzinfo=pytz.UTC)
         )
 
-    def getTestAlarm(self, interval_type=Alarm.IntervalType.MINUTE,
-                     interval_count=2):
-        return Alarm.objects.create(
+    def getTestMonitor(self, interval_type=Monitor.IntervalType.MINUTE,
+                       interval_count=2):
+        return Monitor.objects.create(
             channel_group=self.grp,
             metric=self.metric,
             interval_type=interval_type,
             interval_count=interval_count,
             num_channels=5,
-            stat=Alarm.Stat.SUM,
+            stat=Monitor.Stat.SUM,
             user=self.user
         )
 
@@ -109,17 +109,17 @@ class PrivateAlarmAPITests(TestCase):
             user=self.user,
             reference_url='pnsn.org'
         )
-        self.alarm = Alarm.objects.create(
+        self.monitor = Monitor.objects.create(
             channel_group=self.grp,
             metric=self.metric,
-            interval_type=Alarm.IntervalType.DAY,
+            interval_type=Monitor.IntervalType.DAY,
             interval_count=1,
             num_channels=5,
-            stat=Alarm.Stat.SUM,
+            stat=Monitor.Stat.SUM,
             user=self.user
         )
         self.alarm_threshold = AlarmThreshold.objects.create(
-            alarm=self.alarm,
+            alarm=self.monitor,
             minval=2,
             maxval=5,
             level=AlarmThreshold.Level.ONE,
@@ -142,36 +142,36 @@ class PrivateAlarmAPITests(TestCase):
             contact=self.contact
         )
 
-    def test_get_alarm(self):
+    def test_get_monitor(self):
         url = reverse(
-            'measurement:alarm-detail',
-            kwargs={'pk': self.alarm.id}
+            'measurement:monitor-detail',
+            kwargs={'pk': self.monitor.id}
         )
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data['interval_type'], Alarm.IntervalType.DAY)
+        self.assertEqual(res.data['interval_type'], Monitor.IntervalType.DAY)
 
-    def test_create_alarm(self):
-        url = reverse('measurement:alarm-list')
+    def test_create_monitor(self):
+        url = reverse('measurement:monitor-list')
         payload = {
             'channel_group': self.grp.id,
             'metric': self.metric.id,
-            'interval_type': Alarm.IntervalType.MINUTE,
+            'interval_type': Monitor.IntervalType.MINUTE,
             'interval_count': 5,
             'num_channels': 3,
-            'stat': Alarm.Stat.SUM,
+            'stat': Monitor.Stat.SUM,
             'user': self.user
         }
         res = self.client.post(url, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-        alarm = Alarm.objects.get(id=res.data['id'])
+        monitor = Monitor.objects.get(id=res.data['id'])
         for key in payload.keys():
             if key == 'channel_group':
-                self.assertEqual(payload[key], alarm.channel_group.id)
+                self.assertEqual(payload[key], monitor.channel_group.id)
             elif key == 'metric':
-                self.assertEqual(payload[key], alarm.metric.id)
+                self.assertEqual(payload[key], monitor.metric.id)
             else:
-                self.assertEqual(payload[key], getattr(alarm, key))
+                self.assertEqual(payload[key], getattr(monitor, key))
 
     def test_get_alarm_threshold(self):
         url = reverse(
@@ -180,12 +180,12 @@ class PrivateAlarmAPITests(TestCase):
         )
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data['alarm'], self.alarm.id)
+        self.assertEqual(res.data['alarm'], self.monitor.id)
 
     def test_create_alarm_threshold(self):
         url = reverse('measurement:alarm-threshold-list')
         payload = {
-            'alarm': self.alarm.id,
+            'alarm': self.monitor.id,
             'minval': 15,
             'maxval': 20,
             'level': AlarmThreshold.Level.TWO,
@@ -228,25 +228,27 @@ class PrivateAlarmAPITests(TestCase):
                 self.assertEqual(payload[key], getattr(alert, key))
 
     def test_calc_interval_seconds_2_minutes(self):
-        alarm = self.getTestAlarm(interval_type=Alarm.IntervalType.MINUTE,
-                                  interval_count=2)
-        self.assertEqual(120, alarm.calc_interval_seconds())
+        monitor = self.getTestMonitor(
+            interval_type=Monitor.IntervalType.MINUTE,
+            interval_count=2
+        )
+        self.assertEqual(120, monitor.calc_interval_seconds())
 
     def test_calc_interval_seconds_3_hours(self):
-        alarm = self.getTestAlarm(interval_type=Alarm.IntervalType.HOUR,
-                                  interval_count=3)
-        self.assertEqual(10800, alarm.calc_interval_seconds())
+        monitor = self.getTestMonitor(interval_type=Monitor.IntervalType.HOUR,
+                                      interval_count=3)
+        self.assertEqual(10800, monitor.calc_interval_seconds())
 
     def test_calc_interval_seconds_2_days(self):
-        alarm = self.getTestAlarm(interval_type=Alarm.IntervalType.DAY,
-                                  interval_count=2)
-        self.assertEqual(172800, alarm.calc_interval_seconds())
+        monitor = self.getTestMonitor(interval_type=Monitor.IntervalType.DAY,
+                                      interval_count=2)
+        self.assertEqual(172800, monitor.calc_interval_seconds())
 
     def test_agg_measurements(self):
-        alarm = Alarm.objects.get(pk=1)
+        monitor = Monitor.objects.get(pk=1)
         endtime = datetime(2018, 2, 1, 4, 30, 0, 0, tzinfo=pytz.UTC)
 
-        q = alarm.agg_measurements(endtime=endtime)
+        q = monitor.agg_measurements(endtime=endtime)
 
         # check number of channels returned
         self.assertEqual(len(q), 3)
@@ -260,10 +262,10 @@ class PrivateAlarmAPITests(TestCase):
         self.assertEqual(q.get(channel=3)['sum'], 8)
 
     def test_agg_measurements_missing_channel(self):
-        alarm = Alarm.objects.get(pk=2)
+        monitor = Monitor.objects.get(pk=2)
         endtime = datetime(2018, 2, 1, 4, 30, 0, 0, tzinfo=pytz.UTC)
 
-        q = alarm.agg_measurements(endtime=endtime)
+        q = monitor.agg_measurements(endtime=endtime)
 
         # check number of channels returned
         self.assertEqual(len(q), 2)
@@ -275,28 +277,28 @@ class PrivateAlarmAPITests(TestCase):
         self.assertEqual(q.get(channel=2)['sum'], 14)
 
     def test_agg_measurements_out_of_time_period(self):
-        alarm = Alarm.objects.get(pk=2)
+        monitor = Monitor.objects.get(pk=2)
         endtime = datetime(2018, 2, 1, 1, 30, 0, 0, tzinfo=pytz.UTC)
 
-        q = alarm.agg_measurements(endtime=endtime)
+        q = monitor.agg_measurements(endtime=endtime)
 
         # check number of channels returned
         self.assertEqual(len(q), 0)
 
     def test_agg_measurements_empty_channel_group(self):
-        alarm = Alarm.objects.get(pk=3)
+        monitor = Monitor.objects.get(pk=3)
         endtime = datetime(2018, 2, 1, 4, 30, 0, 0, tzinfo=pytz.UTC)
 
-        q = alarm.agg_measurements(endtime=endtime)
+        q = monitor.agg_measurements(endtime=endtime)
 
         # check number of channels returned
         self.assertEqual(len(q), 0)
 
-    def check_is_breaching(self, alarm_id, alarm_threshold_id, expected):
-        alarm = Alarm.objects.get(pk=alarm_id)
+    def check_is_breaching(self, monitor_id, alarm_threshold_id, expected):
+        monitor = Monitor.objects.get(pk=monitor_id)
         endtime = datetime(2018, 2, 1, 4, 30, 0, 0, tzinfo=pytz.UTC)
 
-        q = alarm.agg_measurements(endtime=endtime)
+        q = monitor.agg_measurements(endtime=endtime)
         alarm_threshold = AlarmThreshold.objects.get(pk=alarm_threshold_id)
 
         chan_id = 1
@@ -315,12 +317,12 @@ class PrivateAlarmAPITests(TestCase):
         self.check_is_breaching(1, 3, [False, False, True])
         self.check_is_breaching(1, 4, [True, True, False])
 
-    def check_get_breaching_channels(self, alarm_id, alarm_threshold_id,
+    def check_get_breaching_channels(self, monitor_id, alarm_threshold_id,
                                      expected):
-        alarm = Alarm.objects.get(pk=alarm_id)
+        monitor = Monitor.objects.get(pk=monitor_id)
         endtime = datetime(2018, 2, 1, 4, 30, 0, 0, tzinfo=pytz.UTC)
 
-        q = alarm.agg_measurements(endtime=endtime)
+        q = monitor.agg_measurements(endtime=endtime)
         alarm_threshold = AlarmThreshold.objects.get(pk=alarm_threshold_id)
 
         res = alarm_threshold.get_breaching_channels(q)
@@ -332,11 +334,11 @@ class PrivateAlarmAPITests(TestCase):
         self.check_get_breaching_channels(1, 3, [3])
         self.check_get_breaching_channels(1, 4, [1, 2])
 
-    def check_in_alarm_state(self, alarm_id, alarm_threshold_id, expected):
-        alarm = Alarm.objects.get(pk=alarm_id)
+    def check_in_alarm_state(self, monitor_id, alarm_threshold_id, expected):
+        monitor = Monitor.objects.get(pk=monitor_id)
         endtime = datetime(2018, 2, 1, 4, 30, 0, 0, tzinfo=pytz.UTC)
 
-        q = alarm.agg_measurements(endtime=endtime)
+        q = monitor.agg_measurements(endtime=endtime)
         alarm_threshold = AlarmThreshold.objects.get(pk=alarm_threshold_id)
         if expected:
             self.assertTrue(alarm_threshold.in_alarm_state(q))
@@ -403,13 +405,13 @@ class PrivateAlarmAPITests(TestCase):
 
     def test_evaluate_alarm(self):
         '''This is more like an integration test at the moment'''
-        alarm = Alarm.objects.get(pk=1)
+        monitor = Monitor.objects.get(pk=1)
         endtime = datetime(2018, 2, 1, 4, 30, 0, 0, tzinfo=pytz.UTC)
 
         all_alerts = Alert.objects.all()
         self.assertEqual(len(all_alerts), 6)
 
-        alarm.evaluate_alarm(endtime=endtime)
+        monitor.evaluate_alarm(endtime=endtime)
 
         # alarm_threshold 1 is breached
         # had previous alert with in_alarm = False,
@@ -460,10 +462,10 @@ class PrivateAlarmAPITests(TestCase):
 
     def test_evaluate_alarms(self):
         '''Test evaluate_alarm command'''
-        n_alarms = len(Alarm.objects.all())
-        with patch('measurement.models.Alarm.evaluate_alarm') as ea:
+        n_monitors = len(Monitor.objects.all())
+        with patch('measurement.models.Monitor.evaluate_alarm') as ea:
             call_command('evaluate_alarms')
-            self.assertEqual(n_alarms, ea.call_count)
+            self.assertEqual(n_monitors, ea.call_count)
             # print('Called {} times'.format(ea.call_count))
 
     @patch.object(Alert, 'create_alert_notifications')
@@ -552,8 +554,8 @@ class PrivateAlarmAPITests(TestCase):
 
     # def test_evaluate_alarms_filter_metric(self):
     #     '''Test evaluate_alarm command'''
-    #     n_alarms = len(Alarm.objects.all())
-    #     with patch('measurement.models.Alarm.evaluate_alarm') as ea:
+    #     n_monitors = len(Monitor.objects.all())
+    #     with patch('measurement.models.Monitor.evaluate_alarm') as ea:
     #         call_command('evaluate_alarms --metric=test2')
-    #         # self.assertEqual(n_alarms, ea.call_count)
+    #         # self.assertEqual(n_monitors, ea.call_count)
     #         print('Called {} times'.format(ea.call_count))

@@ -101,7 +101,7 @@ class Threshold(MeasurementBase):
                 )
 
 
-class Alarm(MeasurementBase):
+class Monitor(MeasurementBase):
     '''Describes alarms on metrics and channel_groups'''
 
     # Define choices for interval_type
@@ -122,12 +122,12 @@ class Alarm(MeasurementBase):
     channel_group = models.ForeignKey(
         Group,
         on_delete=models.CASCADE,
-        related_name='alarms'
+        related_name='monitors'
     )
     metric = models.ForeignKey(
         Metric,
         on_delete=models.CASCADE,
-        related_name='alarms'
+        related_name='monitors'
     )
     interval_type = models.CharField(max_length=8,
                                      choices=IntervalType.choices,
@@ -220,7 +220,7 @@ class AlarmThreshold(MeasurementBase):
         THREE = 3
 
     alarm = models.ForeignKey(
-        Alarm,
+        Monitor,
         on_delete=models.CASCADE,
         related_name='alarm_thresholds'
     )
@@ -311,7 +311,7 @@ class AlarmThreshold(MeasurementBase):
         return alert
 
     def __str__(self):
-        return (f"Alarm: {str(self.alarm)}, "
+        return (f"Monitor: {str(self.alarm)}, "
                 f"Min: {self.minval}, "
                 f"Max: {self.maxval}, "
                 f"Level: {self.level}"
