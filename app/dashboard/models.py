@@ -1,4 +1,5 @@
 from django.db import models
+from django.db import transaction
 from django.conf import settings
 
 from nslc.models import Group
@@ -62,6 +63,15 @@ class Dashboard(DashboardBase):
         on_delete=models.CASCADE,
         related_name='dashboards'
     )
+    home = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        if not self.home:
+            return super(Dashboard, self).save(*args, **kwargs)
+        with transaction.atomic():
+            Dashboard.objects.filter(
+                home=True).update(home=False)
+            return super(Dashboard, self).save(*args, **kwargs)
 
     class Meta:
         indexes = [
