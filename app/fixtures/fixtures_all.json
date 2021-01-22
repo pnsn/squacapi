@@ -870,7 +870,7 @@
   "model": "core.user",
   "pk": 1,
   "fields": {
-    "password": "pbkdf2_sha256$150000$Maki0QGWXOfV$d+iR6jNQ5v4X4QhgZ58qsloHqqF98lnf5yf/feQBaIo=",
+    "password": "pbkdf2_sha256$216000$I9CDhaDW0GTy$6Uq01zrVQjkIGgqJ6VLR+Zhj9sNhmCmnAx4Hd/82qzM=",
     "last_login": null,
     "is_superuser": true,
     "email": "loader@pnsn.org",
@@ -888,7 +888,7 @@
   "model": "core.user",
   "pk": 2,
   "fields": {
-    "password": "pbkdf2_sha256$216000$76EZ9ySFF7X7$sKCEjXk3HVy65U0vdl9E7XT1JoQ64F6Vzl4h5We5HMg=",
+    "password": "pbkdf2_sha256$216000$I9CDhaDW0GTy$6Uq01zrVQjkIGgqJ6VLR+Zhj9sNhmCmnAx4Hd/82qzM=",
     "last_login": null,
     "is_superuser": true,
     "email": "admin@pnsn.org",
@@ -906,7 +906,7 @@
   "model": "core.user",
   "pk": 3,
   "fields": {
-    "password": "pbkdf2_sha256$216000$BWEW1Oh21N7H$2XVn7eZ2Dr9NPHJBGhieJ7hK5Y97JtNWbU6Owl3iJeM=",
+    "password": "pbkdf2_sha256$216000$I9CDhaDW0GTy$6Uq01zrVQjkIGgqJ6VLR+Zhj9sNhmCmnAx4Hd/82qzM=",
     "last_login": null,
     "is_superuser": false,
     "email": "contributor@pnsn.org",
@@ -926,7 +926,7 @@
   "model": "core.user",
   "pk": 4,
   "fields": {
-    "password": "pbkdf2_sha256$216000$4YWIi7RdNPiy$Qj36NYnboXWTkgshYoVVXa7vMFcvS8xf4TRo++Xpxjk=",
+    "password": "pbkdf2_sha256$216000$I9CDhaDW0GTy$6Uq01zrVQjkIGgqJ6VLR+Zhj9sNhmCmnAx4Hd/82qzM=",
     "last_login": null,
     "is_superuser": false,
     "email": "reporter@pnsn.org",
@@ -946,7 +946,7 @@
   "model": "core.user",
   "pk": 5,
   "fields": {
-    "password": "pbkdf2_sha256$216000$HQGwKE6pIELm$dhQ7iwtCX5OTkwDHqPZpYRTcKFc+mhFSY69qcW5GIyE=",
+    "password": "pbkdf2_sha256$216000$I9CDhaDW0GTy$6Uq01zrVQjkIGgqJ6VLR+Zhj9sNhmCmnAx4Hd/82qzM=",
     "last_login": null,
     "is_superuser": false,
     "email": "viewer@pnsn.org",
@@ -966,7 +966,7 @@
   "model": "core.user",
   "pk": 6,
   "fields": {
-    "password": "pbkdf2_sha256$216000$qLFCJwtsVib8$tIzBLy0llgCtuNXtJ6TZnbi6je4vzOqCkycBR+gwNRc=",
+    "password": "pbkdf2_sha256$216000$I9CDhaDW0GTy$6Uq01zrVQjkIGgqJ6VLR+Zhj9sNhmCmnAx4Hd/82qzM=",
     "last_login": null,
     "is_superuser": false,
     "email": "contributor@bsl.org",
@@ -986,7 +986,7 @@
   "model": "core.user",
   "pk": 7,
   "fields": {
-    "password": "pbkdf2_sha256$216000$JtO3U6Da6XCc$VFAJFwUcJdunD1oiRSIjp64s0V7nOtSAORrRH2yL5jA=",
+    "password": "pbkdf2_sha256$216000$I9CDhaDW0GTy$6Uq01zrVQjkIGgqJ6VLR+Zhj9sNhmCmnAx4Hd/82qzM=",
     "last_login": null,
     "is_superuser": false,
     "email": "reporter@bsl.org",
@@ -1006,7 +1006,7 @@
   "model": "core.user",
   "pk": 8,
   "fields": {
-    "password": "pbkdf2_sha256$216000$FM9oCQgTFNIF$xTia/LCcwpyK/tvShypclllOw5cEOpraLI1vkTWjUr8=",
+    "password": "pbkdf2_sha256$216000$I9CDhaDW0GTy$6Uq01zrVQjkIGgqJ6VLR+Zhj9sNhmCmnAx4Hd/82qzM=",
     "last_login": null,
     "is_superuser": false,
     "email": "viewer@bsl.org",
