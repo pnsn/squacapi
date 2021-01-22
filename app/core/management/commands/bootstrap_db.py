@@ -29,6 +29,7 @@ class Command(BaseCommand):
         ''' Get a sampling of values from a normal distribution '''
         mu = random.uniform(mu_min, mu_max)
         sigma = random.uniform(sigma_min, sigma_max)
+        # print('mu', mu, 'sigma', sigma, 'size', size)
         return list(random.normal(mu, sigma, size))
 
     def load_values(self, values, metric, channel, user, time_decrement):
@@ -64,7 +65,7 @@ class Command(BaseCommand):
         mu_max = 9e4
         sigma_min = 1e3
         sigma_max = 5e3
-        num_samples = kwargs['days'] * 24
+        num_samples = int(kwargs['days']) * 24
 
         user = get_user_model().objects.get(email='loader@pnsn.org')
         metric_url = 'https://github.com/pnsn/'
@@ -96,7 +97,7 @@ class Command(BaseCommand):
         mu_max = 4
         sigma_min = 0.1
         sigma_max = 0.3
-        num_samples = kwargs['days'] * 24 * 6
+        num_samples = int(kwargs['days']) * 24 * 6
 
         user = get_user_model().objects.get(email='loader@pnsn.org')
         metric_url = 'https://github.com/pnsn/dataflow_metrics/'
