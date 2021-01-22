@@ -4,7 +4,8 @@ random sampling of hourly and latency measurements for the 10 channels in the
 fixture.
 
 Run command in docker-compose like:
-$: docker-compose run --rm sh -c "python manage.py bootstrap_db --days=7"
+$: docker-compose run --rm app sh -c "python manage.py bootstrap_db --days=7"
+$: ./mg.sh 'bootstrap_db --days=7'
 '''
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
