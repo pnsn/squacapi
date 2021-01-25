@@ -7,12 +7,14 @@ Run command in docker-compose like:
 $: docker-compose run --rm app sh -c "python manage.py bootstrap_db --days=7"
 $: ./mg.sh 'bootstrap_db --days=7'
 '''
+from django.db import NotSupportedError
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
 from django.utils.timezone import make_aware
 from numpy import random
 from datetime import datetime as dt, timedelta
+from django.conf import settings
 
 from measurement.models import Metric, Measurement
 from nslc.models import Channel
@@ -128,12 +130,21 @@ class Command(BaseCommand):
                 values, metric, channel, user, timedelta(minutes=10))
 
     def handle(self, *args, **kwargs):
-        ''' This command flushes all data from db and reloads data from
-            fixture files, generates given days, default 7, of hourly_mean and
-            export_ring_latency measurements for all channels in fixture
+        ''' This command ensures that this is the staging db,
+            flushes all data from db and reloads data from
+            fixture files, generates given days, default 7, of
+            hourly_mean and export_ring_latency measurements
+            for all channels in fixture
         '''
-        call_command('flush', '--noinput')
-        call_command('loaddata', 'fixtures/fixtures_all.json')
-        self.load_sample_hourly_metric(kwargs)
-        self.load_sample_latency_metric(kwargs)
-        print('Database loading complete')
+        db = settings.DATABASES['default']['NAME']
+        allowed_dbs = ['squac_dev', 'squacapi_staging']
+        if db in allowed_dbs:
+            call_command('flush', '--noinput', f'--database={db}')
+            call_command('loaddata', 'fixtures/fixtures_all.json')
+            self.load_sample_hourly_metric(kwargs)
+            self.load_sample_latency_metric(kwargs)
+            print('Database loading complete')
+        else:
+            error_msg = (f"Can't bootstrap {db}"
+                         f"DB name must be in {str(allowed_dbs)}")
+            raise NotSupportedError(error_msg)
