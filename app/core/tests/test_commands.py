@@ -1,9 +1,7 @@
-import os
 from unittest.mock import patch
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from django.db.utils import OperationalError
-from django.db import NotSupportedError
 from django.test import TestCase
 from io import StringIO
 
@@ -41,8 +39,3 @@ class CommandTests(TestCase):
         new_superuser = get_user_model().objects.get(email='test@email.com')
         self.assertIsNotNone(new_superuser)
         self.assertEqual(new_superuser.organization, default_org)
-
-    def test_bootstrap_db_fails_on_invalid_db(self):
-        os.environ.setdefault("SQUAC_DB_NAME", "not_real_db")
-        with self.assertRaises(NotSupportedError):
-            call_command('bootstrap_db', days=7)

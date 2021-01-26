@@ -49,7 +49,6 @@ class Command(BaseCommand):
         ''' Get a sampling of values from a normal distribution '''
         mu = random.uniform(mu_min, mu_max)
         sigma = random.uniform(sigma_min, sigma_max)
-        # print('mu', mu, 'sigma', sigma, 'size', size)
         return list(random.normal(mu, sigma, size))
 
     def load_values(self, values, metric, channel, user, time_decrement):
@@ -147,7 +146,6 @@ class Command(BaseCommand):
                 values, metric, channel, user, timedelta(minutes=10))
 
     def handle(self, *args, **kwargs):
-        print(kwargs)
         ''' This command ensures that this is the staging db,
             flushes all data from db and reloads data from
             fixture files, generates given days, default 7, of
