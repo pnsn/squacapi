@@ -6,8 +6,20 @@ fixture.
 Run command in docker-compose like:
 $: docker-compose run --rm app sh -c "python manage.py bootstrap_db --days=7"
 $: ./mg.sh 'bootstrap_db --days=7'
+This command is meant to be run after dropping a db, which must be done
+in seperate process to prevent touching prod.
+process checks for allowed dbs, migrates, then stubs out data
+
+Local:
+docker rm squacapi_db
+docker-compose up (will run all migrations)
+then run this command
+
+Staging: (must have access):
+For staging, use /script/copy_prod_schema.sh
+Then run this command
 '''
-from django.db import NotSupportedError
+import os
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
@@ -26,6 +38,11 @@ class Command(BaseCommand):
             '--days',
             default=7,
             help='Number of days of measurements to generate'
+        )
+        parser.add_argument(
+            '--env',
+            default='default',
+            help='which env to run this [default|staging]'
         )
 
     def sample_values(self, mu_min, mu_max, sigma_min, sigma_max, size):
@@ -130,21 +147,29 @@ class Command(BaseCommand):
                 values, metric, channel, user, timedelta(minutes=10))
 
     def handle(self, *args, **kwargs):
+        print(kwargs)
         ''' This command ensures that this is the staging db,
             flushes all data from db and reloads data from
             fixture files, generates given days, default 7, of
             hourly_mean and export_ring_latency measurements
             for all channels in fixture
         '''
-        db = settings.DATABASES['default']['NAME']
+        # don't want this in setting file. This is meant to run from local
+        env = kwargs['env']
+        if env == 'staging':
+            settings.DATABASES['staging'] = {
+                'ENGINE': 'django.db.backends.postgresql',
+                'HOST': os.environ.get('SQUAC_STAGING_DB_HOST'),
+                'NAME': 'squacapi_staging',
+                'USER': os.environ.get('SQUAC_STAGING_DB_USER'),
+                'PASSWORD': os.environ.get('SQUAC_STAGING_DB_PASS')
+            }
         allowed_dbs = ['squac_dev', 'squacapi_staging']
-        if db in allowed_dbs:
-            call_command('flush', '--noinput', f'--database={db}')
-            call_command('loaddata', 'fixtures/fixtures_all.json')
+        # set database to staging
+        if settings.DATABASES[env]['NAME'] in allowed_dbs:
+            # run migrations
+            call_command('loaddata', 'fixtures/fixtures_all.json',
+                         f'--database={env}')
             self.load_sample_hourly_metric(kwargs)
             self.load_sample_latency_metric(kwargs)
             print('Database loading complete')
-        else:
-            error_msg = (f"Can't bootstrap {db}"
-                         f"DB name must be in {str(allowed_dbs)}")
-            raise NotSupportedError(error_msg)
