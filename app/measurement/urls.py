@@ -12,7 +12,14 @@ router.register('alarms', views.AlarmViewSet, basename='alarm')
 router.register('alarm-thresholds', views.AlarmThresholdViewSet,
                 basename='alarm-threshold')
 router.register('alerts', views.AlertViewSet, basename='alert')
-router.register('archives', views.ArchiveViewSet, basename='archive')
+router.register('hour-archives', views.ArchiveHourViewSet,
+                basename='archive-hour')
+router.register('day-archives', views.ArchiveDayViewSet,
+                basename='archive-day')
+router.register('week-archives', views.ArchiveWeekViewSet,
+                basename='archive-week')
+router.register('month-archives', views.ArchiveMonthViewSet,
+                basename='archive-month')
 
 app_name = "measurement"
 urlpatterns = [path('', include(router.urls))]

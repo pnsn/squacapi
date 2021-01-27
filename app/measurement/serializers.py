@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import (Metric, Measurement, Threshold, Alarm, AlarmThreshold,
-                     Alert, Archive)
+                     Alert, ArchiveHour, ArchiveDay, ArchiveWeek,
+                     ArchiveMonth)
 from dashboard.models import Widget
 from nslc.models import Channel, Group
 
@@ -128,15 +129,49 @@ class AlertSerializer(serializers.HyperlinkedModelSerializer):
         read_only_fields = ('id',)
 
 
-class ArchiveSerializer(serializers.HyperlinkedModelSerializer):
+class ArchiveBaseSerializer(serializers.HyperlinkedModelSerializer):
     """converts an Archive into a serialized representation """
-    id = serializers.HyperlinkedIdentityField(
-        view_name="measurement:archive-detail", read_only=True)
     channel = serializers.PrimaryKeyRelatedField(
         queryset=Channel.objects.all())
     metric = serializers.PrimaryKeyRelatedField(
         queryset=Metric.objects.all())
 
+
+class ArchiveHourSerializer(ArchiveBaseSerializer):
+
+    id = serializers.HyperlinkedIdentityField(
+        view_name="measurement:archive-hour-detail", read_only=True)
+
     class Meta:
-        model = Archive
+        model = ArchiveHour
+        exclude = ("url",)
+
+
+class ArchiveDaySerializer(ArchiveBaseSerializer):
+
+    id = serializers.HyperlinkedIdentityField(
+        view_name="measurement:archive-day-detail", read_only=True)
+
+    class Meta:
+        model = ArchiveDay
+        exclude = ("url",)
+
+
+class ArchiveWeekSerializer(ArchiveBaseSerializer):
+
+    id = serializers.HyperlinkedIdentityField(
+        view_name="measurement:archive-week-detail", read_only=True)
+
+    class Meta:
+        model = ArchiveWeek
+        exclude = ("url",)
+
+
+class ArchiveMonthSerializer(ArchiveBaseSerializer):
+    """converts an Archive into a serialized representation """
+    id = serializers.HyperlinkedIdentityField(
+        view_name="measurement:archive-month-detail", read_only=True)
+
+    class Meta:
+        model = ArchiveMonth
         exclude = ("url",)

@@ -26,11 +26,17 @@ REPORTER_PERMISSIONS = ['view_metric', 'add_metric', 'change_metric',
                         'delete_metric',
                         'view_measurement', 'add_measurement',
                         'change_measurement', 'delete_measurement',
-                        'view_archive', 'add_archive']
+                        'view_archivehour', 'add_archivehour',
+                        'view_archiveday', 'add_archiveday',
+                        'view_archiveweek', 'add_archiveweek',
+                        'view_archivemonth', 'add_archivemonth']
 
 VIEWER_PERMISSIONS = ['view_metric',
                       'view_measurement',
-                      'view_archive']
+                      'view_archivehour',
+                      'view_archiveday',
+                      'view_archiveweek',
+                      'view_archivemonth']
 
 
 class MeasurementPermissionTests(TestCase):
@@ -129,10 +135,38 @@ class MeasurementPermissionTests(TestCase):
             'measurement.change_measurement'))
         self.assertTrue(self.reporter.has_perm(
             'measurement.delete_measurement'))
-        self.assertTrue(self.reporter.has_perm('measurement.view_archive'))
-        self.assertTrue(self.reporter.has_perm('measurement.add_archive'))
-        self.assertFalse(self.reporter.has_perm('measurement.change_archive'))
-        self.assertFalse(self.reporter.has_perm('measurement.delete_archive'))
+        self.assertTrue(self.reporter.has_perm(
+            'measurement.view_archivehour'))
+        self.assertTrue(self.reporter.has_perm(
+            'measurement.add_archivehour'))
+        self.assertFalse(self.reporter.has_perm(
+            'measurement.change_archivehour'))
+        self.assertFalse(self.reporter.has_perm(
+            'measurement.delete_archivehour'))
+        self.assertTrue(self.reporter.has_perm(
+            'measurement.view_archiveday'))
+        self.assertTrue(self.reporter.has_perm(
+            'measurement.add_archiveday'))
+        self.assertFalse(self.reporter.has_perm(
+            'measurement.change_archiveday'))
+        self.assertFalse(self.reporter.has_perm(
+            'measurement.delete_archiveday'))
+        self.assertTrue(self.reporter.has_perm(
+            'measurement.view_archiveweek'))
+        self.assertTrue(self.reporter.has_perm(
+            'measurement.add_archiveweek'))
+        self.assertFalse(self.reporter.has_perm(
+            'measurement.change_archiveweek'))
+        self.assertFalse(self.reporter.has_perm(
+            'measurement.delete_archiveweek'))
+        self.assertTrue(self.reporter.has_perm(
+            'measurement.view_archivemonth'))
+        self.assertTrue(self.reporter.has_perm(
+            'measurement.add_archivemonth'))
+        self.assertFalse(self.reporter.has_perm(
+            'measurement.change_archivemonth'))
+        self.assertFalse(self.reporter.has_perm(
+            'measurement.delete_archivemonth'))
 
     def test_viewer_has_perms(self):
         '''viewers can view all models'''
@@ -146,7 +180,35 @@ class MeasurementPermissionTests(TestCase):
             'measurement.change_measurement'))
         self.assertFalse(self.viewer.has_perm(
             'measurement.delete_measurement'))
-        self.assertTrue(self.viewer.has_perm('measurement.view_archive'))
-        self.assertFalse(self.viewer.has_perm('measurement.add_archive'))
-        self.assertFalse(self.viewer.has_perm('measurement.change_archive'))
-        self.assertFalse(self.viewer.has_perm('measurement.delete_archive'))
+        self.assertTrue(self.viewer.has_perm(
+            'measurement.view_archivehour'))
+        self.assertFalse(self.viewer.has_perm(
+            'measurement.add_archivehour'))
+        self.assertFalse(self.viewer.has_perm(
+            'measurement.change_archivehour'))
+        self.assertFalse(self.viewer.has_perm(
+            'measurement.delete_archivehour'))
+        self.assertTrue(self.viewer.has_perm(
+            'measurement.view_archiveday'))
+        self.assertFalse(self.viewer.has_perm(
+            'measurement.add_archiveday'))
+        self.assertFalse(self.viewer.has_perm(
+            'measurement.change_archiveday'))
+        self.assertFalse(self.viewer.has_perm(
+            'measurement.delete_archiveday'))
+        self.assertTrue(self.viewer.has_perm(
+            'measurement.view_archiveweek'))
+        self.assertFalse(self.viewer.has_perm(
+            'measurement.add_archiveweek'))
+        self.assertFalse(self.viewer.has_perm(
+            'measurement.change_archiveweek'))
+        self.assertFalse(self.viewer.has_perm(
+            'measurement.delete_archiveweek'))
+        self.assertTrue(self.viewer.has_perm(
+            'measurement.view_archivemonth'))
+        self.assertFalse(self.viewer.has_perm(
+            'measurement.add_archivemonth'))
+        self.assertFalse(self.viewer.has_perm(
+            'measurement.change_archivemonth'))
+        self.assertFalse(self.viewer.has_perm(
+            'measurement.delete_archivemonth'))
