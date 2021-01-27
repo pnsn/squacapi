@@ -115,6 +115,11 @@ class MonitorViewSet(SetUserMixin, viewsets.ModelViewSet):
     def get_queryset(self):
         return Monitor.objects.all()
 
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return serializers.MonitorDetailSerializer
+        return self.serializer_class
+
 
 class TriggerViewSet(SetUserMixin, viewsets.ModelViewSet):
     serializer_class = serializers.TriggerSerializer

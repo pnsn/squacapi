@@ -3,6 +3,7 @@ from .models import (Metric, Measurement, Threshold, Monitor, Trigger,
                      Alert, Archive)
 from dashboard.models import Widget
 from nslc.models import Channel, Group
+from nslc.serializers import GroupSerializer
 
 
 class MeasurementSerializer(serializers.ModelSerializer):
@@ -140,3 +141,21 @@ class ArchiveSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Archive
         exclude = ("url",)
+
+
+class MonitorDetailSerializer(serializers.HyperlinkedModelSerializer):
+    url = serializers.HyperlinkedIdentityField(
+        view_name="measurement:monitor-detail")
+
+    channel_group = GroupSerializer(read_only=True)
+    metric = MetricSerializer(read_only=True)
+    triggers = TriggerSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Monitor
+        fields = (
+            'id', 'url', 'channel_group', 'metric', 'interval_type',
+            'interval_count', 'num_channels', 'stat', 'name', 'created_at',
+            'updated_at', 'user_id', 'triggers'
+        )
+        read_only_fields = ('id',)
