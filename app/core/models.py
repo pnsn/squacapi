@@ -1,11 +1,12 @@
-from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, \
     PermissionsMixin, Group
+from django.core.exceptions import ValidationError
+from django.core.mail import send_mail
+from django.core.validators import validate_email
+from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-# from measurement.models.AlarmThreshold import AlarmThreshold
-# from measurement.models import AlarmThreshold
 from organization.models import Organization
 
 
@@ -93,6 +94,47 @@ class User(AbstractBaseUser, PermissionsMixin):
             reporter.user_set.remove(self)
             contributor.user_set.remove(self)
 
+    def get_notifications(self, level):
+        return Notification.objects.filter(user=self, level=level)
+
+
+class Contact(models.Model):
+    """Contains contact information for alert notifications"""
+    email_value = models.CharField(
+        max_length=255,
+        default="",
+        blank=True,
+        validators=[validate_email, ]
+    )
+    sms_value = models.CharField(
+        max_length=255,
+        default="",
+        blank=True
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+    )
+
+    def __str__(self):
+        return (f"email_value: {self.email_value}, "
+                f"sms_value: {self.sms_value}"
+                )
+
+    def save(self, *args, **kwargs):
+        """
+        Do regular save except also validate fields. This doesn't happen
+        automatically on save
+        """
+        try:
+            self.full_clean()
+        except ValidationError:
+            raise
+
+        super().save(*args, **kwargs)  # Call the "real" save() method.
+
 
 class Notification(models.Model):
     '''User notification model for alerting'''
@@ -102,10 +144,26 @@ class Notification(models.Model):
         SMS = 'sms', _('SMS')
         SLACK = 'slack', _('Slack')
 
+    # Define choices for notification level
+    class Level(models.IntegerChoices):
+        ONE = 1
+        TWO = 2
+        THREE = 3
+
     notification_type = models.CharField(
         max_length=255,
         choices=NotificationType.choices,
         default=NotificationType.EMAIL
+    )
+    contact = models.ForeignKey(
+        Contact,
+        on_delete=models.CASCADE,
+        null=True,
+        related_name='notifications'
+    )
+    level = models.IntegerField(
+        choices=Level.choices,
+        default=Level.ONE
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -115,7 +173,15 @@ class Notification(models.Model):
     )
 
     def send_email(self, alert):
-        pass
+        text_to_send = (f"This is some information:\n"
+                        f"{alert.message}")
+        send_mail(f"SQUAC alert, level {alert.trigger.level}",
+                  text_to_send,
+                  settings.EMAIL_NO_REPLY,
+                  [self.contact.email_value, ],
+                  fail_silently=False,
+                  )
+        return True
 
     def send_sms(self, alert):
         pass
@@ -130,43 +196,6 @@ class Notification(models.Model):
             self.send_slack(alert)
         elif self.notification_type == self.NotificationType.SMS:
             self.send_sms(alert)
-
-    @classmethod
-    def define_alert_level(cls, level):
-        # error from circular imports if done above
-        from measurement.models import AlarmThreshold
-        notification_types = []
-
-        # Determine which types to send. Use user preferences?
-        if level == AlarmThreshold.Level.ONE:
-            # Do email?
-            notification_types = [cls.NotificationType.EMAIL]
-        elif level == AlarmThreshold.Level.TWO:
-            # Do email and slack?
-            notification_types = [cls.NotificationType.EMAIL,
-                                  cls.NotificationType.SLACK]
-        elif level == AlarmThreshold.Level.THREE:
-            # Do email, slack and sms?
-            notification_types = [cls.NotificationType.EMAIL,
-                                  cls.NotificationType.SLACK,
-                                  cls.NotificationType.SMS]
-
-        return notification_types
-
-    @classmethod
-    def create_alert_notifications(cls, alert):
-        level = alert.alarm_threshold.level
-        notification_types = cls.define_alert_level(level)
-
-        for notification_type in notification_types:
-            # Get the notifications for this user and type
-            # Could there be multiple that fit this?
-            notifications = (
-                cls.objects.filter(user=alert.user,
-                                   notification_type=notification_type)
-            )
-            for notification in notifications:
-                notification.send(alert)
 
     def __str__(self):
         return f'{self.user} {self.notification_type} notification'

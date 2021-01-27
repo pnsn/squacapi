@@ -3,7 +3,6 @@ from django.db.models import Avg, Count, Max, Min, Sum
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
-from core.models import Notification
 from dashboard.models import Widget
 from nslc.models import Channel, Group
 
@@ -93,7 +92,6 @@ class Threshold(MeasurementBase):
         related_name='thresholds')
     minval = models.FloatField(blank=True, null=True)
     maxval = models.FloatField(blank=True, null=True)
-    band_inclusive = models.BooleanField(default=True)
 
     def __str__(self):
         return (f"Threshold for Widget: {str(self.widget)} "
@@ -103,7 +101,7 @@ class Threshold(MeasurementBase):
                 )
 
 
-class Alarm(MeasurementBase):
+class Monitor(MeasurementBase):
     '''Describes alarms on metrics and channel_groups'''
 
     # Define choices for interval_type
@@ -124,12 +122,12 @@ class Alarm(MeasurementBase):
     channel_group = models.ForeignKey(
         Group,
         on_delete=models.CASCADE,
-        related_name='alarms'
+        related_name='monitors'
     )
     metric = models.ForeignKey(
         Metric,
         on_delete=models.CASCADE,
-        related_name='alarms'
+        related_name='monitors'
     )
     interval_type = models.CharField(max_length=8,
                                      choices=IntervalType.choices,
@@ -141,6 +139,7 @@ class Alarm(MeasurementBase):
                             choices=Stat.choices,
                             default=Stat.SUM
                             )
+    name = models.CharField(max_length=255, default='')
 
     def calc_interval_seconds(self):
         '''Return the number of seconds in the alarm interval'''
@@ -191,36 +190,39 @@ class Alarm(MeasurementBase):
         # Get aggregate values for each channel. Returns a QuerySet
         channel_values = self.agg_measurements(endtime)
 
-        # Get AlarmThresholds for this alarm. Returns a QuerySet
-        alarm_thresholds = self.alarm_thresholds.all()
+        # Get Triggers for this alarm. Returns a QuerySet
+        triggers = self.triggers.all()
 
-        # Evaluate whether each AlarmThreshold is breaching
-        for alarm_threshold in alarm_thresholds:
-            in_alarm = alarm_threshold.in_alarm_state(channel_values)
-            alarm_threshold.evaluate_alert(in_alarm)
+        # Evaluate whether each Trigger is breaching
+        for trigger in triggers:
+            in_alarm = trigger.in_alarm_state(channel_values)
+            trigger.evaluate_alert(in_alarm)
 
     def __str__(self):
-        return (f"{str(self.channel_group)}, "
-                f"{str(self.metric)}, "
-                f"{self.interval_count} {self.interval_type}, "
-                f"{self.num_channels} chan, "
-                f"{self.stat}"
-                )
+        if not self.name:
+            return (f"{str(self.channel_group)}, "
+                    f"{str(self.metric)}, "
+                    f"{self.interval_count} {self.interval_type}, "
+                    f"{self.num_channels} chan, "
+                    f"{self.stat}"
+                    )
+        else:
+            return self.name
 
 
-class AlarmThreshold(MeasurementBase):
-    '''Describe an individual alarm_threshold for an alarm'''
+class Trigger(MeasurementBase):
+    '''Describe an individual trigger for a monitor'''
 
-    # Define choices for interval_type
+    # Define choices for notification level
     class Level(models.IntegerChoices):
         ONE = 1
         TWO = 2
         THREE = 3
 
-    alarm = models.ForeignKey(
-        Alarm,
+    monitor = models.ForeignKey(
+        Monitor,
         on_delete=models.CASCADE,
-        related_name='alarm_thresholds'
+        related_name='triggers'
     )
     minval = models.FloatField(blank=True, null=True)
     maxval = models.FloatField(blank=True, null=True)
@@ -233,9 +235,9 @@ class AlarmThreshold(MeasurementBase):
     def is_breaching(self, channel_value):
         '''
         Determine if an individual aggregate channel value is breaching for
-        this AlarmThreshold
+        this Trigger
         '''
-        val = channel_value[self.alarm.stat]
+        val = channel_value[self.monitor.stat]
         # check three cases: only minval, only maxval, both min and max
         if not self.minval and not self.maxval:
             print('minval or maxval should be defined!')
@@ -253,7 +255,7 @@ class AlarmThreshold(MeasurementBase):
 
     # channel_values is QuerySet
     def get_breaching_channels(self, channel_values):
-        '''Return all channels that are breaching this AlarmThreshold'''
+        '''Return all channels that are breaching this Trigger'''
         breaching_channels = []
         for channel_value in channel_values:
             if self.is_breaching(channel_value):
@@ -264,14 +266,14 @@ class AlarmThreshold(MeasurementBase):
     # channel_values is QuerySet
     def in_alarm_state(self, channel_values):
         '''
-        Determine if AlarmThreshold is breaching for input aggregate channel
+        Determine if Trigger is breaching for input aggregate channel
         values
         '''
         breaching_channels = self.get_breaching_channels(channel_values)
-        return len(breaching_channels) >= self.alarm.num_channels
+        return len(breaching_channels) >= self.monitor.num_channels
 
     def get_latest_alert(self):
-        '''Return the most recent alert for this AlarmThreshold'''
+        '''Return the most recent alert for this Trigger'''
         return self.alerts.order_by('timestamp').last()
 
     def get_alert_message(self, in_alarm):
@@ -279,18 +281,18 @@ class AlarmThreshold(MeasurementBase):
 
     def create_alert(self, in_alarm):
         msg = self.get_alert_message(in_alarm)
-        new_alert = Alert(alarm_threshold=self,
+        new_alert = Alert(trigger=self,
                           timestamp=datetime.now(tz=pytz.UTC),
                           message=msg,
                           in_alarm=in_alarm,
                           user=self.user)
         new_alert.save()
-        Notification.create_alert_notifications(new_alert)
+        new_alert.create_alert_notifications()
         return new_alert
 
     def evaluate_alert(self, in_alarm):
         '''
-        Determine what to do with alerts given that this AlarmThreshold is in
+        Determine what to do with alerts given that this Trigger is in
         or out of spec
         '''
         alert = self.get_latest_alert()
@@ -309,7 +311,7 @@ class AlarmThreshold(MeasurementBase):
         return alert
 
     def __str__(self):
-        return (f"Alarm: {str(self.alarm)}, "
+        return (f"Monitor: {str(self.monitor)}, "
                 f"Min: {self.minval}, "
                 f"Max: {self.maxval}, "
                 f"Level: {self.level}"
@@ -317,15 +319,22 @@ class AlarmThreshold(MeasurementBase):
 
 
 class Alert(MeasurementBase):
-    '''Describe an alert for an alarm_threshold'''
-    alarm_threshold = models.ForeignKey(
-        AlarmThreshold,
+    '''Describe an alert for a trigger'''
+    trigger = models.ForeignKey(
+        Trigger,
         on_delete=models.CASCADE,
         related_name='alerts'
     )
     timestamp = models.DateTimeField()
     message = models.CharField(max_length=255)
     in_alarm = models.BooleanField(default=True)
+
+    def create_alert_notifications(self):
+        level = self.trigger.level
+        notifications = self.user.get_notifications(level)
+
+        for notification in notifications:
+            notification.send(self)
 
     class Meta:
         indexes = [
@@ -335,7 +344,7 @@ class Alert(MeasurementBase):
 
     def __str__(self):
         return (f"Time: {self.timestamp}, "
-                f"{str(self.alarm_threshold)}"
+                f"{str(self.trigger)}"
                 )
 
 

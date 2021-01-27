@@ -3,9 +3,9 @@ from django_filters import rest_framework as filters
 from squac.filters import CharInFilter, NumberInFilter
 from squac.mixins import SetUserMixin, DefaultPermissionsMixin
 from .exceptions import MissingParameterException
-from .models import (Metric, Measurement, Threshold, Alarm, AlarmThreshold,
+from .models import (Metric, Measurement, Threshold,
                      Alert, ArchiveDay, ArchiveWeek, ArchiveMonth,
-                     ArchiveHour)
+                     ArchiveHour, Monitor, Trigger)
 from measurement import serializers
 
 
@@ -34,22 +34,22 @@ class MeasurementFilter(filters.FilterSet):
     group = NumberInFilter(field_name='channel__group')
 
 
-class AlarmFilter(filters.FilterSet):
+class MonitorFilter(filters.FilterSet):
     class Meta:
-        model = Alarm
+        model = Monitor
         fields = ('channel_group', 'metric')
 
 
-class AlarmThresholdFilter(filters.FilterSet):
+class TriggerFilter(filters.FilterSet):
     class Meta:
-        model = AlarmThreshold
-        fields = ('alarm',)
+        model = Trigger
+        fields = ('monitor',)
 
 
 class AlertFilter(filters.FilterSet):
     class Meta:
         model = Alert
-        fields = ('alarm_threshold', 'in_alarm')
+        fields = ('trigger', 'in_alarm')
 
 
 class ArchiveBaseFilter(filters.FilterSet):
@@ -133,20 +133,20 @@ class ThresholdViewSet(BaseMeasurementViewSet):
         return Threshold.objects.all()
 
 
-class AlarmViewSet(SetUserMixin, viewsets.ModelViewSet):
-    serializer_class = serializers.AlarmSerializer
-    filter_class = AlarmFilter
+class MonitorViewSet(SetUserMixin, viewsets.ModelViewSet):
+    serializer_class = serializers.MonitorSerializer
+    filter_class = MonitorFilter
 
     def get_queryset(self):
-        return Alarm.objects.all()
+        return Monitor.objects.all()
 
 
-class AlarmThresholdViewSet(SetUserMixin, viewsets.ModelViewSet):
-    serializer_class = serializers.AlarmThresholdSerializer
-    filter_class = AlarmThresholdFilter
+class TriggerViewSet(SetUserMixin, viewsets.ModelViewSet):
+    serializer_class = serializers.TriggerSerializer
+    filter_class = TriggerFilter
 
     def get_queryset(self):
-        return AlarmThreshold.objects.all()
+        return Trigger.objects.all()
 
 
 class AlertViewSet(SetUserMixin, viewsets.ModelViewSet):

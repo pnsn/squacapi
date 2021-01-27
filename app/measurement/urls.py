@@ -8,9 +8,8 @@ router.register('metrics', views.MetricViewSet, basename='metric')
 router.register('measurements', views.MeasurementViewSet,
                 basename='measurement')
 router.register('thresholds', views.ThresholdViewSet, basename='threshold')
-router.register('alarms', views.AlarmViewSet, basename='alarm')
-router.register('alarm-thresholds', views.AlarmThresholdViewSet,
-                basename='alarm-threshold')
+router.register('monitors', views.MonitorViewSet, basename='monitor')
+router.register('triggers', views.TriggerViewSet, basename='trigger')
 router.register('alerts', views.AlertViewSet, basename='alert')
 router.register('hour-archives', views.ArchiveHourViewSet,
                 basename='archive-hour')
