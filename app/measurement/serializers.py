@@ -159,3 +159,18 @@ class MonitorDetailSerializer(serializers.HyperlinkedModelSerializer):
             'updated_at', 'user_id', 'triggers'
         )
         read_only_fields = ('id',)
+
+
+class AlertDetailSerializer(serializers.HyperlinkedModelSerializer):
+    url = serializers.HyperlinkedIdentityField(
+        view_name="measurement:alert-detail")
+
+    trigger = TriggerSerializer(read_only=True)
+
+    class Meta:
+        model = Alert
+        fields = (
+            'id', 'url', 'trigger', 'timestamp', 'message', 'in_alarm',
+            'created_at', 'updated_at', 'user_id'
+        )
+        read_only_fields = ('id',)

@@ -217,7 +217,7 @@ class PrivateAlarmAPITests(TestCase):
         )
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data['trigger'], self.trigger.id)
+        self.assertEqual(res.data['trigger']['id'], self.trigger.id)
 
     def test_create_alert(self):
         url = reverse('measurement:alert-list')

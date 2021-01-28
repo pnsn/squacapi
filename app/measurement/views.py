@@ -136,6 +136,11 @@ class AlertViewSet(SetUserMixin, viewsets.ModelViewSet):
     def get_queryset(self):
         return Alert.objects.all()
 
+    def get_serializer_class(self):
+        if self.action == 'retrieve' or self.action == 'list':
+            return serializers.AlertDetailSerializer
+        return self.serializer_class
+
 
 class ArchiveViewSet(DefaultPermissionsMixin, viewsets.ReadOnlyModelViewSet):
     """Viewset that provides access to Archive data
