@@ -182,6 +182,6 @@ class Command(BaseCommand):
             for fix in ['all']:
                 call_command('loaddata', f'fixtures/{fix}.json',
                              f'--database={env}')
-            self.load_sample_hourly_metric(kwargs) 
+            self.load_sample_hourly_metric(kwargs)
             self.load_sample_latency_metric(kwargs)
             print('Database loading complete')
