@@ -37,7 +37,7 @@ class PrivateAlarmAPITests(TestCase):
         routes and methods
     '''
     # More data to test filtering for alarm calculations
-    fixtures = ['fixtures_measurements.json']
+    fixtures = ['alarms.json']
 
     def getTestChannel(self, station_code):
         return Channel.objects.create(

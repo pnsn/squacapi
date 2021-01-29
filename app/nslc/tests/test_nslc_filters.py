@@ -18,7 +18,7 @@ from organization.models import Organization
 
 class NslcFilterTests(TestCase):
     # Tests for nslc filters
-    fixtures = ['fixtures_all.json']
+    fixtures = ['core_user.json', 'base.json']
 
     def setUp(self):
         self.client = APIClient()

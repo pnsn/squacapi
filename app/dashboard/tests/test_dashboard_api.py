@@ -122,7 +122,7 @@ class UnathenticatedMeasurementApiTests(TestCase):
 class PrivateMeasurementAPITests(TestCase):
     '''For authenticated tests in dashboard API'''
 
-    fixtures = ['fixtures_all.json']
+    fixtures = ['core_user.json', 'base.json']
 
     def setUp(self):
         self.client = APIClient()
