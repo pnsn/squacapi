@@ -13,7 +13,7 @@ from hypothesis.strategies import (lists, datetimes, just, deferred, integers,
                                    data)
 from hypothesis.extra.django import TestCase, from_model
 
-from measurement.models import Metric, Measurement, Archive
+from measurement.models import Metric, Measurement, ArchiveDay
 from nslc.models import Network, Channel
 from squac.test_mixins import sample_user
 
@@ -97,7 +97,7 @@ class TestArchiveCreation(TestCase):
 
         # Don't create archive if there are no measurements
         if not measurements:
-            self.assertEqual(len(Archive.objects.all()), 0)
+            self.assertEqual(len(ArchiveDay.objects.all()), 0)
             return
 
         self.check_queryset_was_archived(measurements)
@@ -120,7 +120,7 @@ class TestArchiveCreation(TestCase):
                      stdout=out)
 
         # check the correct number of archives were created
-        self.assertEqual(len(Archive.objects.all()),
+        self.assertEqual(len(ArchiveDay.objects.all()),
                          sum([1 if day else 0
                               for day in (yesterday, today)]))
 
@@ -138,9 +138,8 @@ class TestArchiveCreation(TestCase):
                             measurements]
         min_start = min([m.starttime for m in measurements])
         max_end = max([measurement.endtime for measurement in measurements])
-        archive = Archive.objects.get(endtime=max_end, starttime=min_start)
+        archive = ArchiveDay.objects.get(endtime=max_end, starttime=min_start)
         # Assert created archive has correct statistics
-        self.assertEqual(Archive.ArchiveType.DAY, archive.archive_type)
         self.assertAlmostEqual(min(measurement_data), archive.min)
         self.assertAlmostEqual(max(measurement_data), archive.max)
         self.assertAlmostEqual(

@@ -7,6 +7,10 @@ from io import StringIO
 
 from organization.models import Organization
 
+'''
+./mg.sh "test core.tests.test_commands && flake8"
+'''
+
 
 class CommandTests(TestCase):
 

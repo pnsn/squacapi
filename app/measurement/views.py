@@ -3,8 +3,9 @@ from django_filters import rest_framework as filters
 from squac.filters import CharInFilter, NumberInFilter
 from squac.mixins import SetUserMixin, DefaultPermissionsMixin
 from .exceptions import MissingParameterException
-from .models import (Metric, Measurement, Threshold, Monitor, Trigger,
-                     Alert, Archive)
+from .models import (Metric, Measurement, Threshold,
+                     Alert, ArchiveDay, ArchiveWeek, ArchiveMonth,
+                     ArchiveHour, Monitor, Trigger)
 from measurement import serializers
 
 
@@ -51,14 +52,38 @@ class AlertFilter(filters.FilterSet):
         fields = ('trigger', 'in_alarm')
 
 
-class ArchiveFilter(filters.FilterSet):
-    """filters archives by metric, channel, starttime, type, and endtime"""
+class ArchiveBaseFilter(filters.FilterSet):
+    """filters archives by metric, channel, starttime, endtime"""
     starttime = filters.CharFilter(field_name='starttime', lookup_expr='gte')
     endtime = filters.CharFilter(field_name='endtime', lookup_expr='lte')
 
+
+class ArchiveHourFilter(ArchiveBaseFilter):
+
     class Meta:
-        model = Archive
-        fields = ('metric', 'channel', 'archive_type')
+        model = ArchiveHour
+        fields = ('metric', 'channel')
+
+
+class ArchiveDayFilter(ArchiveBaseFilter):
+
+    class Meta:
+        model = ArchiveDay
+        fields = ('metric', 'channel')
+
+
+class ArchiveWeekFilter(ArchiveBaseFilter):
+
+    class Meta:
+        model = ArchiveWeek
+        fields = ('metric', 'channel')
+
+
+class ArchiveMonthFilter(ArchiveBaseFilter):
+
+    class Meta:
+        model = ArchiveMonth
+        fields = ('metric', 'channel')
 
 
 class BaseMeasurementViewSet(SetUserMixin, DefaultPermissionsMixin,
@@ -142,7 +167,8 @@ class AlertViewSet(SetUserMixin, viewsets.ModelViewSet):
         return self.serializer_class
 
 
-class ArchiveViewSet(DefaultPermissionsMixin, viewsets.ReadOnlyModelViewSet):
+class ArchiveBaseViewSet(DefaultPermissionsMixin,
+                         viewsets.ReadOnlyModelViewSet):
     """Viewset that provides access to Archive data
 
         since there is not a user set on archive, all permissions will be
@@ -150,11 +176,6 @@ class ArchiveViewSet(DefaultPermissionsMixin, viewsets.ReadOnlyModelViewSet):
     """
 
     REQUIRED_PARAMS = ("metric", "channel", "starttime", "endtime")
-    serializer_class = serializers.ArchiveSerializer
-    filter_class = ArchiveFilter
-
-    def get_queryset(self):
-        return Archive.objects.all()
 
     def list(self, request, *args, **kwargs):
         if not all([required_param in request.query_params
@@ -162,3 +183,39 @@ class ArchiveViewSet(DefaultPermissionsMixin, viewsets.ReadOnlyModelViewSet):
             raise MissingParameterException
 
         return super().list(self, request, *args, **kwargs)
+
+
+class ArchiveHourViewSet(ArchiveBaseViewSet):
+
+    filter_class = ArchiveHourFilter
+    serializer_class = serializers.ArchiveHourSerializer
+
+    def get_queryset(self):
+        return ArchiveHour.objects.all()
+
+
+class ArchiveDayViewSet(ArchiveBaseViewSet):
+
+    filter_class = ArchiveDayFilter
+    serializer_class = serializers.ArchiveDaySerializer
+
+    def get_queryset(self):
+        return ArchiveDay.objects.all()
+
+
+class ArchiveWeekViewSet(ArchiveBaseViewSet):
+
+    filter_class = ArchiveWeekFilter
+    serializer_class = serializers.ArchiveWeekSerializer
+
+    def get_queryset(self):
+        return ArchiveWeek.objects.all()
+
+
+class ArchiveMonthViewSet(ArchiveBaseViewSet):
+
+    filter_class = ArchiveMonthFilter
+    serializer_class = serializers.ArchiveMonthSerializer
+
+    def get_queryset(self):
+        return ArchiveMonth.objects.all()

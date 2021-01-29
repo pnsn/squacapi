@@ -6,13 +6,34 @@ fixture.
 Run command in docker-compose like:
 $: docker-compose run --rm app sh -c "python manage.py bootstrap_db --days=7"
 $: ./mg.sh 'bootstrap_db --days=7'
+This command is meant to be run after dropping a db, which must be done
+in seperate process to prevent touching prod.
+process checks for allowed dbs, migrates, then stubs out data
+to update test account passwords use
+python manage.py changepassword user@pnsn.org
+Then run
+./mg.sh "dumpdata core.user --indent=2 > fixtures/core_user.json"
+Then cut and past into all
+
+Local:
+docker rm squacapi_db (only if you want to remove an existing container)
+./mg.sh 'bootstrap_db --days=7'
+docker-compose up
+
+Staging: (must have access):
+For staging, use ./scripts/drop_and_create_staging.sh
+Then
+./mg.sh 'bootstrap_db --days=7 --env=staging'
+
 '''
+import os
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
 from django.utils.timezone import make_aware
 from numpy import random
 from datetime import datetime as dt, timedelta
+from django.conf import settings
 
 from measurement.models import Metric, Measurement
 from nslc.models import Channel
@@ -25,12 +46,16 @@ class Command(BaseCommand):
             default=7,
             help='Number of days of measurements to generate'
         )
+        parser.add_argument(
+            '--env',
+            default='default',
+            help='which env to run this [default|staging]'
+        )
 
     def sample_values(self, mu_min, mu_max, sigma_min, sigma_max, size):
         ''' Get a sampling of values from a normal distribution '''
         mu = random.uniform(mu_min, mu_max)
         sigma = random.uniform(sigma_min, sigma_max)
-        # print('mu', mu, 'sigma', sigma, 'size', size)
         return list(random.normal(mu, sigma, size))
 
     def load_values(self, values, metric, channel, user, time_decrement):
@@ -128,12 +153,35 @@ class Command(BaseCommand):
                 values, metric, channel, user, timedelta(minutes=10))
 
     def handle(self, *args, **kwargs):
-        ''' This command flushes all data from db and reloads data from
-            fixture files, generates given days, default 7, of hourly_mean and
-            export_ring_latency measurements for all channels in fixture
+        ''' This command ensures that this is the staging db,
+            flushes all data from db and reloads data from
+            fixture files, generates given days, default 7, of
+            hourly_mean and export_ring_latency measurements
+            for all channels in fixture
         '''
-        call_command('flush', '--noinput')
-        call_command('loaddata', 'fixtures/fixtures_all.json')
-        self.load_sample_hourly_metric(kwargs)
-        self.load_sample_latency_metric(kwargs)
-        print('Database loading complete')
+        # don't want this in setting file. This is meant to run from local
+        env = kwargs['env']
+        if env == 'staging':
+            settings.DATABASES['staging'] = {
+                'ENGINE': 'django.db.backends.postgresql',
+                'HOST': os.environ.get('SQUAC_STAGING_DB_HOST'),
+                'NAME': 'squacapi_staging',
+                'USER': os.environ.get('SQUAC_STAGING_DB_USER'),
+                'PASSWORD': os.environ.get('SQUAC_STAGING_DB_PASS')
+            }
+        allowed_dbs = ['squac_dev', 'squacapi_staging']
+        # set database to staging
+        if settings.DATABASES[env]['NAME'] in allowed_dbs:
+            print(env)
+            # run migrations
+            call_command('migrate', f'--database={env}')
+            # FIXME The fixture data need to be loaded in a single call
+            # to avoid fk dependency errors. Currently the single file is
+            # built by cutting and pasting. This file should assemble the json
+            # into a single file
+            for fix in ['all']:
+                call_command('loaddata', f'fixtures/{fix}.json',
+                             f'--database={env}')
+            self.load_sample_hourly_metric(kwargs)
+            self.load_sample_latency_metric(kwargs)
+            print('Database loading complete')

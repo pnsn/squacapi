@@ -348,14 +348,11 @@ class Alert(MeasurementBase):
                 )
 
 
-class Archive(models.Model):
+class ArchiveBase(models.Model):
     """An archive-summary of measurements"""
-    class ArchiveType(models.TextChoices):
-        DAY = 'day', 'Day'
-        WEEK = 'week', 'Week'
-        MONTH = 'month', 'Month'
+    class Meta:
+        abstract = True
 
-    archive_type = models.CharField(max_length=8, choices=ArchiveType.choices)
     channel = models.ForeignKey(Channel, on_delete=models.CASCADE)
     metric = models.ForeignKey(Metric, on_delete=models.CASCADE)
     min = models.FloatField()
@@ -374,3 +371,19 @@ class Archive(models.Model):
                 f"Channel: {str(self.channel)} "
                 f"from {format(self.starttime, '%m-%d-%Y')} "
                 f"to {format(self.endtime, '%m-%d-%Y')}")
+
+
+class ArchiveHour(ArchiveBase):
+    pass
+
+
+class ArchiveDay(ArchiveBase):
+    pass
+
+
+class ArchiveWeek(ArchiveBase):
+    pass
+
+
+class ArchiveMonth(ArchiveBase):
+    pass

@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
-from measurement.models import Metric, Archive
+from measurement.models import Metric, ArchiveDay
 from nslc.models import Network, Channel
 
 from rest_framework.test import APIClient
@@ -57,8 +57,7 @@ class UnauthenticatedArchiveApiTests(TestCase):
             starttime=datetime(1970, 1, 1, tzinfo=pytz.UTC),
             endtime=datetime(2599, 12, 31, tzinfo=pytz.UTC)
         )
-        self.archive = Archive.objects.create(
-            archive_type=Archive.ArchiveType.DAY,
+        self.archive = ArchiveDay.objects.create(
             channel=chan,
             metric=metric,
             min=0, max=0, mean=0, median=0, stdev=0, num_samps=1,
@@ -68,7 +67,7 @@ class UnauthenticatedArchiveApiTests(TestCase):
 
     def test_unauthenticated_archive(self):
         url = reverse(
-            'measurement:archive-detail',
+            'measurement:archive-day-detail',
             kwargs={'pk': self.archive.id}
         )
         res = self.client.get(url)
@@ -76,7 +75,7 @@ class UnauthenticatedArchiveApiTests(TestCase):
 
     def test_archive_res_and_str(self):
         url = reverse(
-            'measurement:archive-detail',
+            'measurement:archive-day-detail',
             kwargs={'pk': self.archive.id}
         )
         res = self.client.get(url)
@@ -120,8 +119,7 @@ class ArchiveApiTests(TestCase):
             starttime=datetime(1970, 1, 1, tzinfo=pytz.UTC),
             endtime=datetime(2599, 12, 31, tzinfo=pytz.UTC)
         )
-        self.archive = Archive.objects.create(
-            archive_type=Archive.ArchiveType.DAY,
+        self.archive = ArchiveDay.objects.create(
             channel=self.chan,
             metric=self.metric,
             min=0, max=0, mean=0, median=0, stdev=0, num_samps=1,
@@ -131,7 +129,7 @@ class ArchiveApiTests(TestCase):
 
     def test_get_archive(self):
         url = reverse(
-            'measurement:archive-list'
+            'measurement:archive-day-list',
         )
         data = {
             "metric": self.metric.id,
@@ -144,31 +142,31 @@ class ArchiveApiTests(TestCase):
         res = self.client.get(url, data)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertTrue(reverse(
-            'measurement:archive-detail',
+            'measurement:archive-day-detail',
             kwargs={'pk': self.archive.id}
         ) in res.data[0]["id"])
 
     def test_get_archive_missing_params(self):
         url = reverse(
-            'measurement:archive-list',
+            'measurement:archive-day-list',
             kwargs={}
         )
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
 
     def test_create_archive_fail(self):
-        url = reverse('measurement:archive-list')
+        url = reverse('measurement:archive-day-list')
         payload = {}
         res = self.client.post(url, payload)
         self.assertEqual(res.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_update_archive_fail(self):
-        url = reverse('measurement:archive-list')
+        url = reverse('measurement:archive-day-list')
         payload = {}
         res = self.client.put(url, payload)
         self.assertEqual(res.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_delete_archive_fail(self):
-        url = reverse('measurement:archive-list')
+        url = reverse('measurement:archive-day-list')
         res = self.client.delete(url)
         self.assertEqual(res.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)

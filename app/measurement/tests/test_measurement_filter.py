@@ -20,7 +20,7 @@ to run only this file
 
 class AuthenticatedMeasurementFilterTests(TestCase):
     # Public tests for filters
-    fixtures = ['fixtures_all.json']
+    fixtures = ['core_user.json', 'base.json', 'measurements.json']
     # Fixtures load from fixture directory within measurement app
 
     def setUp(self):

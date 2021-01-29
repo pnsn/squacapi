@@ -20,7 +20,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         '''method called by manager'''
-        self.stdout.write('Evaluating alarms...')
 
         channel_groups = options['channel_group']
         metrics = options['metric']
@@ -37,5 +36,3 @@ class Command(BaseCommand):
         # Evaluate each alarm
         for monitor in monitors:
             monitor.evaluate_alarm()
-
-        self.stdout.write(self.style.SUCCESS('Finished checking alarms!'))
