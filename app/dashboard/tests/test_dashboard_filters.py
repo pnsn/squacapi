@@ -16,7 +16,7 @@ from dashboard.models import Dashboard
 
 class PublicDashboardFilterTests(TestCase):
     # Public tests for dashboard filters
-    fixtures = ['fixtures_all.json']
+    fixtures = ['core_user.json', 'base.json']
 
     def setUp(self):
         self.client = APIClient()
