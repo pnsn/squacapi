@@ -1,5 +1,8 @@
+Fixture data is used for dev, testing and staging evironments
+For dev and staging use the bootstrap_db manager. In testing fixtures are 
+referenced in test class
 To create fixtures from existing test data run:
-./mg.sh "dumpdata  --indent=2 > fixtures/fixtures_all.json"
+./mg.sh "dumpdata  --indent=2 > fixtures/name_of_file.json"
 
 to dump a single app
 
@@ -7,15 +10,11 @@ to dump a single app
 
 to dump single model
 
-./mg.sh "dumpdata app_label.model --indent=2 > fixtures/fixtures_model.json"
+./mg.sh "dumpdata app_label.model --indent=2 > fixtures/model.json"
 
-Example:
-To recreate permissions for testing:
-./mg.sh "dumpdata auth --indent=2 > fixtures/auth.json"
-
+the bootstrap_db needs all fixtures in a single file to avoid fk errors. 
 and django_content_type:
 
-./mg.sh "dumpdata contenttypes --indent=2 > fixtures/fixtures_content_type.json"
 Then open file and delete first line
 Congratulations, you just fixtured
 
@@ -23,5 +22,4 @@ Congratulations, you just fixtured
 Note: changing model name does not remove the legacy permissions
 1) delete  from auth_group_permissions where ...
 2) delete  from auth_permission where codename like '%archive';
-3) delete from django_content_type where model like '%archive';
-
+3) delete from django_content_type where model like '%archive'; 

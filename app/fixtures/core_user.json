@@ -1,0 +1,158 @@
+[
+{
+  "model": "core.user",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$216000$6OFhTsfQL5Zm$t3kx1oWuChnXv8xLJluiKIRgx2+WbApFBBAQqMasnWQ=",
+    "last_login": null,
+    "is_superuser": true,
+    "email": "loader@pnsn.org",
+    "firstname": "your",
+    "lastname": "mom",
+    "is_active": true,
+    "is_staff": true,
+    "is_org_admin": false,
+    "organization": 1,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "core.user",
+  "pk": 2,
+  "fields": {
+    "password": "pbkdf2_sha256$216000$k3QtdyWPZU3U$1lqHxFuF0UyNvSeoCNRQT0YfI+Owo/pwWmqknf+B+qE=",
+    "last_login": null,
+    "is_superuser": true,
+    "email": "admin@pnsn.org",
+    "firstname": "",
+    "lastname": "",
+    "is_active": true,
+    "is_staff": true,
+    "is_org_admin": false,
+    "organization": 1,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "core.user",
+  "pk": 3,
+  "fields": {
+    "password": "pbkdf2_sha256$216000$FbDdCPCOKVl2$EpLeZIfhDw7Hp3BZkKZqfTSLfDlXAIYFECZLEc7S41c=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "contributor@pnsn.org",
+    "firstname": "",
+    "lastname": "",
+    "is_active": true,
+    "is_staff": false,
+    "is_org_admin": false,
+    "organization": 1,
+    "groups": [
+      3
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "core.user",
+  "pk": 4,
+  "fields": {
+    "password": "pbkdf2_sha256$216000$LFVVITU8iSmT$SyAbOzm8WdI9QFiOQb09tEXWmA+Ww5QTINqdr/mJyu8=",
+    "last_login": "2021-01-29T18:52:03.008Z",
+    "is_superuser": false,
+    "email": "reporter@pnsn.org",
+    "firstname": "",
+    "lastname": "",
+    "is_active": true,
+    "is_staff": false,
+    "is_org_admin": false,
+    "organization": 1,
+    "groups": [
+      2
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "core.user",
+  "pk": 5,
+  "fields": {
+    "password": "pbkdf2_sha256$216000$dj8RKyjot0zr$35SuOVqxWZnwNRVO5OlRW848z8oQIjxWVA5TQbTz9Xo=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "viewer@pnsn.org",
+    "firstname": "",
+    "lastname": "",
+    "is_active": true,
+    "is_staff": false,
+    "is_org_admin": false,
+    "organization": 1,
+    "groups": [
+      1
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "core.user",
+  "pk": 6,
+  "fields": {
+    "password": "pbkdf2_sha256$216000$JmHFgh1deJ5p$VKVbrrqh5/gOCbin7EA1DJOU8cZ8kg1pk2lUaFihlnY=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "contributor@bsl.org",
+    "firstname": "",
+    "lastname": "",
+    "is_active": true,
+    "is_staff": false,
+    "is_org_admin": false,
+    "organization": 2,
+    "groups": [
+      3
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "core.user",
+  "pk": 7,
+  "fields": {
+    "password": "pbkdf2_sha256$216000$gUDhUTpzcqtd$ugneNT+x0L4m+kHhMcZuwtW6jvSTo1VwmfkzAdBYjgY=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "reporter@bsl.org",
+    "firstname": "",
+    "lastname": "",
+    "is_active": true,
+    "is_staff": false,
+    "is_org_admin": false,
+    "organization": 2,
+    "groups": [
+      2
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "core.user",
+  "pk": 8,
+  "fields": {
+    "password": "pbkdf2_sha256$216000$2S9AHVcMykJp$O4FLpCmP1yGmkxgORaZl8u+cpjoIXzBgWFWdnPT+1N4=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "viewer@bsl.org",
+    "firstname": "",
+    "lastname": "",
+    "is_active": true,
+    "is_staff": false,
+    "is_org_admin": false,
+    "organization": 2,
+    "groups": [
+      1
+    ],
+    "user_permissions": []
+  }
+}
+]
