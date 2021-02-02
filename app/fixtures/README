@@ -19,5 +19,9 @@ and django_content_type:
 Then open file and delete first line
 Congratulations, you just fixtured
 
-to load fixture data into dev db
-./mg.sh "loaddata fixtures/fixtures_all.json"
+
+Note: changing model name does not remove the legacy permissions
+1) delete  from auth_group_permissions where ...
+2) delete  from auth_permission where codename like '%archive';
+3) delete from django_content_type where model like '%archive';
+
