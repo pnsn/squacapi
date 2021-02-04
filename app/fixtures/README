@@ -1,18 +1,25 @@
 Fixture data is used for dev, testing and staging evironments
 For dev and staging use the bootstrap_db manager. In testing fixtures are 
 referenced in test class
-To create fixtures from existing test data run:
-./mg.sh "dumpdata  --indent=2 > fixtures/name_of_file.json"
+The following fixture files are created serpartely to allow for easier updating
+auth.json (all auth models)
+    ./mg.sh "dumpdata auth --indent=2 > fixtures/auth.json"
+core_user.json
+    ./mg.sh "dumpdata core_user --indent=2 > fixtures/core_user.json"
+base.json 
+    ./mg.sh 'dumpdata --exclude=core.user \
+                      --exclude=auth.permission \
+                      --exclude=measurement.measurement \
+                      --exclude=contenttypes.contenttype \
+                      --indent=2 > fixtures/base.json'
 
-to dump a single app
+measurements.json
+    This is used only in testing. For dev and staging, the bootstrap_db
+    manager creates these dynamically
 
-./mg.sh "dumpdata app_label --indent=2 > fixtures/fixtures_app_label.json"
+the bootstrap_db needs all fixtures in the same file to avoid race conditions
+use the ./scripts/build_fixtures.py to compile to a single all.json file
 
-to dump single model
-
-./mg.sh "dumpdata app_label.model --indent=2 > fixtures/model.json"
-
-the bootstrap_db needs all fixtures in a single file to avoid fk errors. 
 and django_content_type:
 
 Then open file and delete first line
