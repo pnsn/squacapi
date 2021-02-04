@@ -277,7 +277,11 @@ class Trigger(MeasurementBase):
         return self.alerts.order_by('timestamp').last()
 
     def get_alert_message(self, in_alarm):
-        return 'This is an alert for ' + str(self.id)
+        if in_alarm:
+            msg = 'Trigger in alert for ' + str(self)
+        else:
+            msg = 'Trigger out of alert for ' + str(self)
+        return msg
 
     def create_alert(self, in_alarm):
         msg = self.get_alert_message(in_alarm)
