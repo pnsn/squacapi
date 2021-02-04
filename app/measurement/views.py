@@ -133,7 +133,7 @@ class ThresholdViewSet(BaseMeasurementViewSet):
         return Threshold.objects.all()
 
 
-class MonitorViewSet(SetUserMixin, viewsets.ModelViewSet):
+class MonitorViewSet(BaseMeasurementViewSet):
     serializer_class = serializers.MonitorSerializer
     filter_class = MonitorFilter
 
@@ -146,7 +146,7 @@ class MonitorViewSet(SetUserMixin, viewsets.ModelViewSet):
         return self.serializer_class
 
 
-class TriggerViewSet(SetUserMixin, viewsets.ModelViewSet):
+class TriggerViewSet(BaseMeasurementViewSet):
     serializer_class = serializers.TriggerSerializer
     filter_class = TriggerFilter
 
@@ -154,7 +154,7 @@ class TriggerViewSet(SetUserMixin, viewsets.ModelViewSet):
         return Trigger.objects.all()
 
 
-class AlertViewSet(SetUserMixin, viewsets.ModelViewSet):
+class AlertViewSet(BaseMeasurementViewSet):
     serializer_class = serializers.AlertSerializer
     filter_class = AlertFilter
 
