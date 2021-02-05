@@ -44,6 +44,12 @@ class ChannelFilter(filters.FilterSet):
     lon_max = filters.NumberFilter(field_name='lon', lookup_expr='lte')
 
 
+class GroupFilter(filters.FilterSet):
+    class Meta:
+        model = Group
+        fields = ('name', 'organization')
+
+
 @api_view(['GET'])
 def api_root(request, format=None):
     '''api root'''
@@ -85,6 +91,7 @@ class ChannelViewSet(BaseNslcViewSet):
 
 
 class GroupViewSet(SharedPermissionsMixin, BaseNslcViewSet):
+    filter_class = GroupFilter
     serializer_class = GroupSerializer
 
     def get_serializer_class(self):
