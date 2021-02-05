@@ -129,11 +129,7 @@ class OrganizationAPITests(TestCase):
     def test_member_can_view_own_org(self):
         ''' test member view own org page'''
         url = reverse('organization:organization-detail', args=[self.org1.id])
-        payload = {
-            'name': "new_name",
-            "description": "new description"
-        }
-        res = self.org1_member_client.get(url, payload, format='json')
+        res = self.org1_member_client.get(url, format='json')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
     def test_member_cannot_view_other_org(self):
