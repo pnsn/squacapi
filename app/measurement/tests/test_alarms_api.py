@@ -151,6 +151,16 @@ class PrivateAlarmAPITests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data['interval_type'], Monitor.IntervalType.DAY)
 
+    def test_get_monitor_includes_triggers(self):
+        url = reverse(
+            'measurement:monitor-detail',
+            kwargs={'pk': 1}
+        )
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        # There are 5 triggers keyed to this monitor in fixtures_measurement
+        self.assertEqual(5, len(res.data['triggers']))
+
     def test_create_monitor(self):
         url = reverse('measurement:monitor-list')
         payload = {
@@ -207,7 +217,7 @@ class PrivateAlarmAPITests(TestCase):
         )
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data['trigger'], self.trigger.id)
+        self.assertEqual(res.data['trigger']['id'], self.trigger.id)
 
     def test_create_alert(self):
         url = reverse('measurement:alert-list')

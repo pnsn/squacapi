@@ -676,6 +676,22 @@
     }
 },
 {
+    "model": "measurement.trigger",
+    "pk": 6,
+    "fields": {
+        "created_at": "2019-08-28T23:30:31.262Z", 
+        "updated_at": "2019-08-28T23:30:31.262Z", 
+        "user": [
+            "loader@pnsn.org"
+        ], 
+        "monitor": 2, 
+        "minval": 4, 
+        "maxval": 6, 
+        "band_inclusive": true, 
+        "level": 2
+    }
+},
+{
     "model": "measurement.alert",
     "pk": 1,
     "fields": {
