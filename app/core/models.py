@@ -173,12 +173,12 @@ class Notification(models.Model):
     )
 
     def send_email(self, alert):
-        title_text = (f"SQUAC alert for {alert.trigger.monitor}, "
-                      f"level {alert.trigger.level}"
-                     )
-        text_to_send = alert.message
-        send_mail(title_text,
-                  text_to_send,
+        subject = (f"SQUAC alert for '{alert.trigger.monitor}', "
+                   f"level {alert.trigger.level}"
+                   )
+        message = alert.message
+        send_mail(subject,
+                  message,
                   settings.EMAIL_NO_REPLY,
                   [self.contact.email_value, ],
                   fail_silently=False,
