@@ -1,8 +1,10 @@
+from django.core.management import call_command
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 from datetime import datetime
+import os
 import pytz
 from nslc.models import Network, Channel, Group
 from organization.models import Organization
@@ -19,7 +21,7 @@ from squac.test_mixins import sample_user
 to run only the app tests:
     /mg.sh "test nslc && flake8"
 to run only this file
-    ./mg.sh "test nslc.tests.test_nslc_api  && flake8"
+    ./mg.sh "test nslc.tests.test_nslc_api && flake8"
 
 '''
 
@@ -244,3 +246,31 @@ class PrivateNslcAPITests(TestCase):
         self.assertEqual(len(new_channels), 5)
         for channel in new_chan_list:
             self.assertIn(channel, new_channels)
+
+    def test_load_from_fdsn(self):
+        '''Test that load script will update fields that have changed'''
+        # Load new station
+        station_name = 'BST23'
+        os.environ['LOADER_EMAIL'] = 'contributor@pnsn.org'
+        call_command('load_from_fdsn', sta=station_name)
+
+        # Get channel, modify it
+        channels = Channel.objects.all()
+        chan = channels.filter(station_code=station_name.lower(),
+                               code__contains='z')
+        self.assertTrue(len(chan) >= 1)
+        chan = chan[0]
+        original_depth = chan.depth
+        chan.depth = -999
+        chan.save()
+
+        # Verify changes are saved
+        chan2 = Channel.objects.get(id=chan.id)
+        self.assertEqual(chan2.depth, -999)
+
+        # Load again, verify it has been clobbered without adding additional
+        # channels
+        call_command('load_from_fdsn', sta=station_name)
+        chan3 = Channel.objects.get(id=chan.id)
+        self.assertEqual(chan3.depth, original_depth)
+        self.assertEqual(len(Channel.objects.all()), len(channels))
