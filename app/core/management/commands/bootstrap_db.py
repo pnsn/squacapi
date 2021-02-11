@@ -12,7 +12,7 @@ docker rm squacapi_db (only if you want to remove an existing container)
 docker-compose up
 
 Staging: (must have access):
-For staging, use ./scripts/drop_and_create_staging.shm (if needed)
+For staging, use ./scripts/drop_and_create_staging.sh (if needed)
 Then
 ./mg.sh 'bootstrap_db --days=7 --env=staging'
 
