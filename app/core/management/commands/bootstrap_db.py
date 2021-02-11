@@ -6,22 +6,13 @@ fixture.
 Run command in docker-compose like:
 $: docker-compose run --rm app sh -c "python manage.py bootstrap_db --days=7"
 $: ./mg.sh 'bootstrap_db --days=7'
-This command is meant to be run after dropping a db, which must be done
-in seperate process to prevent touching prod.
-process checks for allowed dbs, migrates, then stubs out data
-to update test account passwords use
-python manage.py changepassword user@pnsn.org
-Then run
-./mg.sh "dumpdata core.user --indent=2 > fixtures/core_user.json"
-Then cut and past into all
 
-Local:
 docker rm squacapi_db (only if you want to remove an existing container)
 ./mg.sh 'bootstrap_db --days=7'
 docker-compose up
 
 Staging: (must have access):
-For staging, use ./scripts/drop_and_create_staging.sh
+For staging, use ./scripts/drop_and_create_staging.shm (if needed)
 Then
 ./mg.sh 'bootstrap_db --days=7 --env=staging'
 
@@ -175,13 +166,10 @@ class Command(BaseCommand):
             print(env)
             # run migrations
             call_command('migrate', f'--database={env}')
-            # FIXME The fixture data need to be loaded in a single call
-            # to avoid fk dependency errors. Currently the single file is
-            # built by cutting and pasting. This file should assemble the json
-            # into a single file
-            for fix in ['all']:
-                call_command('loaddata', f'fixtures/{fix}.json',
-                             f'--database={env}')
+            call_command('flush', f'--database={env}', 
+                         '--noinput')
+            call_command('loaddata', f'fixtures/dev.json',
+                         f'--database={env}')
             self.load_sample_hourly_metric(kwargs)
             self.load_sample_latency_metric(kwargs)
             print('Database loading complete')
