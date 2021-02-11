@@ -166,9 +166,9 @@ class Command(BaseCommand):
             print(env)
             # run migrations
             call_command('migrate', f'--database={env}')
-            call_command('flush', f'--database={env}', 
+            call_command('flush', f'--database={env}',
                          '--noinput')
-            call_command('loaddata', f'fixtures/dev.json',
+            call_command('loaddata', 'fixtures/dev.json',
                          f'--database={env}')
             self.load_sample_hourly_metric(kwargs)
             self.load_sample_latency_metric(kwargs)
