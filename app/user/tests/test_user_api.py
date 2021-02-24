@@ -35,7 +35,7 @@ class PublicUserApiTests(TestCase):
 
 
 class AuthenticateApiUser(TestCase):
-    fixtures = ['fixtures_all.json']
+    fixtures = ['core_user.json', 'base.json']
 
     '''actually test the auth route'''
 
@@ -59,7 +59,7 @@ class AuthenticateApiUser(TestCase):
 
 class PrivateUserAPITests(TestCase):
     '''test api request that require auth'''
-    fixtures = ['fixtures_all.json']
+    fixtures = ['core_user.json', 'base.json']
 
     def setUp(self):
         self.organization = Organization.objects.create(name='PNSN')

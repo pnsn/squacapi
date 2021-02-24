@@ -14,10 +14,18 @@ source /usr/local/bin/virtualenvwrapper.sh
 source $dest/app/.env
 echo dest=$dest
 export PATH=$PATH:/usr/local/bin
+
 # delete virtualenv so packages are consistent
 rmvirtualenv $DEPLOYMENT_GROUP_NAME
 mkvirtualenv $DEPLOYMENT_GROUP_NAME 2>&1
 workon $DEPLOYMENT_GROUP_NAME 2>&1
+
+# if staging, bootstrap
+if [ $DEPLOYMENT_GROUP_NAME == 'staging-squacapi' ]; then
+    python $dest/app/manage.py bootstrap_db --days=7
+fi
+
+# both staging and prod use production.txt
 pip3 install  -r $dest/requirements/production.txt
 python $dest/app/manage.py migrate
 # static root most be overridden or it will be added to where current symlink points(previous)

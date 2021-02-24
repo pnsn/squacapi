@@ -15,12 +15,19 @@ class OrganizationUserFilter(filters.FilterSet):
         fields = ('organization', )
 
 
+class OrganizationFilter(filters.FilterSet):
+    class Meta:
+        model = Organization
+        fields = ('name',)
+
+
 class OrganizationBase(SetUserMixin, OrganizationPermissionsMixin,
                        viewsets.ModelViewSet):
     pass
 
 
 class OrganizationViewSet(OrganizationBase):
+    filter_class = OrganizationFilter
     serializer_class = OrganizationSerializer
 
     def get_queryset(self):

@@ -1,23 +1,22 @@
-To create fixtures from existing test data run:
-./mg.sh "dumpdata  --indent=2 > fixtures/fixtures_all.json"
+Fixture data is used for dev, testing and staging evironments
+For dev and staging use the bootstrap_db manager. In testing fixtures are 
+referenced in test class
 
-to dump a single app
+# Files
+*dev.json used for staging and dev
+    *composed of 
+        *base.json
+        *core_user.json
+        *alarms.json
+The remainder of the files are used as test fixtures
 
-./mg.sh "dumpdata app_label --indent=2 > fixtures/fixtures_app_label.json"
 
-to dump single model
+After edits save
 
-./mg.sh "dumpdata app_label.model --indent=2 > fixtures/fixtures_model.json"
+./mg.sh 'dumpdata --indent=2 > fixtures/dev.json'
 
-Example:
-To recreate permissions for testing:
-./mg.sh "dumpdata auth --indent=2 > fixtures/auth.json"
 
-and django_content_type:
+append to all to all.json
 
-./mg.sh "dumpdata contenttypes --indent=2 > fixtures/fixtures_content_type.json"
-Then open file and delete first line
-Congratulations, you just fixtured
 
-to load fixture data into dev db
-./mg.sh "loaddata fixtures/fixtures_all.json"
+

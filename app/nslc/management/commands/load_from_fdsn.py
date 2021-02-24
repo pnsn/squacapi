@@ -4,15 +4,15 @@ Command run without any options will give default URL
         query?datacenter=IRISDMC,NCEDC,SCEDC
         &targetservice=station
         &level=channel
-        &net=AZ,BC,BK,CC,CE,CI,CN,IU,MB,NC,NN,NP,NV,OO,PB,SN,UO,US,UW
+        &net=AZ,BC,BK,CC,CE,CI,CN,IU,IW,MB,NC,NN,NP,NV,OO,PB,SN,UO,US,UW
         &sta=*
-        &cha=?N?,?H?
+        &cha=EN?,HN?,?H?
         &loc=*
         &minlat=31.5
-        &maxlat=50
-        &minlon=-128.1
+        &maxlat=51
+        &minlon=-128.5
         &maxlon=-113.8930
-        &endafter=YYYY-MM-DD (Current date)
+        &starttime=2019-01-01
         &format=text
 
 load channels from fdsn webservice run in docker-compose like:
@@ -28,7 +28,7 @@ $:docker-compose run --rm app sh -c "LOADER_EMAIL=email@pnsn.org \
                     --maxlat=50
                     --minlon=-128.1
                     --maxlon=-113.9
-                    --endtime=[YYYY-mm-dd]"
+                    --starttime='YYYY-mm-dd'"
 
  text response from fdsn has following schema:
  Network | Station | Location | Channel | Latitude | Longitude |
@@ -58,7 +58,7 @@ class Command(BaseCommand):
         parser.add_argument(
             '--datacenter',
             default="IRISDMC,NCEDC,SCEDC",
-            help="Comma seperated list of datacenters"
+            help="Comma separated list of datacenters"
         )
         parser.add_argument(
             '--sta',
@@ -67,9 +67,9 @@ class Command(BaseCommand):
         )
         parser.add_argument(
             '--cha',
-            default="?N?,?H?",
-            help="Comma separated regex for channel code, ? wildcard, ?N?,?H?\
-                default"
+            default="EN?,HN?,?H?",
+            help="Comma separated regex for channel code, ? wildcard, \
+                EN?,HN?,?H? default"
         )
         parser.add_argument(
             '--loc',
@@ -83,13 +83,13 @@ class Command(BaseCommand):
         )
         parser.add_argument(
             '--maxlat',
-            default=50,
-            help="Upper latitude for search box, 50 default"
+            default=51,
+            help="Upper latitude for search box, 51 default"
         )
         parser.add_argument(
             '--minlon',
-            default=-128.1,
-            help="Left latitude for search box, -128.1 default"
+            default=-128.5,
+            help="Left latitude for search box, -128.5 default"
         )
         parser.add_argument(
             '--maxlon',
@@ -97,15 +97,15 @@ class Command(BaseCommand):
             help="Right latitude for search box, -113.893 default"
         )
         parser.add_argument(
-            '--endafter',
-            default=datetime.now().strftime("%Y-%m-%d"),
-            help="filter for channels with offdates greater than datetime if\
-                missing, defaults to datetime.now()"
+            '--starttime',
+            default="2019-01-01",
+            help="filter for channels with metadata listed on or after the \
+                specified time"
         )
 
     def build_url(self, params, level):
         ''' create url based on params
-            documentation at https://service.iris.edu/fdsnws/station/1/
+            documentation at https://service.iris.edu/irisws/fedcatalog/1/
         '''
         url = (
             f"http://service.iris.edu/irisws/fedcatalog/1/query?"
@@ -113,7 +113,7 @@ class Command(BaseCommand):
             f"&targetservice=station"
             f"&level={level}"
             f"&net={params['net']}"
-            f"&endafter={params['endafter']}"
+            f"&starttime={params['starttime']}"
             "&format=text"
         )
         if (level != "network"):
@@ -131,8 +131,8 @@ class Command(BaseCommand):
     '''Django command to check network and channel tables with FDSN service'''
     def handle(self, *args, **options):
         ALLOWED_NETWORKS = [
-            "AZ", "BC", "BK", "CC", "CE", "CI", "CN", "IU", "MB", "NC", "NN",
-            "NP", "NV", "OO", "PB", "SN", "UO", "US", "UW"
+            "AZ", "BC", "BK", "CC", "CE", "CI", "CN", "IU", "IW", "MB", "NC",
+            "NN", "NP", "NV", "OO", "PB", "SN", "UO", "US", "UW"
         ]
         options["net"] = ','.join(ALLOWED_NETWORKS)
         print('Getting data from FDSN...')
@@ -221,7 +221,7 @@ class Command(BaseCommand):
                     print(f'{net}: {sta} {cha}')
                     try:
                         # Get or create the channel using data
-                        Channel.objects.get_or_create(
+                        Channel.objects.update_or_create(
                             network=Network.objects.get(code=net.lower()),
                             station_code=sta.lower(),
                             loc='--' if not loc else loc.lower(),

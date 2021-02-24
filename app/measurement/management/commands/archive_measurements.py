@@ -1,9 +1,10 @@
 from django.core.management.base import BaseCommand
-from django.db.models import (Avg, StdDev, Min, Max, Count, Value, CharField,
+from django.db.models import (Avg, StdDev, Min, Max, Count,
                               F, FloatField)
 from django.db.models.functions import (ExtractDay, ExtractWeek, ExtractMonth,
                                         Coalesce)
-from measurement.models import Measurement, Archive
+from measurement.models import (Measurement, ArchiveHour, ArchiveWeek,
+                                ArchiveDay, ArchiveMonth)
 from measurement.aggregates.percentile import Percentile
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
@@ -15,16 +16,16 @@ class Command(BaseCommand):
     help = 'Archives Measurements older than the specified age'
 
     TIME_EXTRACTOR = {
-        Archive.ArchiveType.DAY: ExtractDay,
-        Archive.ArchiveType.WEEK: ExtractWeek,
-        Archive.ArchiveType.MONTH: ExtractMonth,
+        'day': ExtractDay,
+        'week': ExtractWeek,
+        'month': ExtractMonth,
     }
     """" Django datetime extractors for dealing with portions of datetimes """
 
     DURATIONS = {
-        Archive.ArchiveType.DAY: lambda count: relativedelta(day=count),
-        Archive.ArchiveType.WEEK: lambda count: relativedelta(week=count),
-        Archive.ArchiveType.MONTH: lambda count: relativedelta(month=count),
+        'day': lambda count: relativedelta(day=count),
+        'week': lambda count: relativedelta(week=count),
+        'month': lambda count: relativedelta(month=count),
     }
     """ functions for generating timesteps of sizes """
 
@@ -63,8 +64,18 @@ class Command(BaseCommand):
         # get the data to be archived
         archive_data = self.get_archive_data(measurements, archive_type)
         # create the archive entries
-        created_archives = Archive.objects.bulk_create(
-            [Archive(**archive) for archive in archive_data])
+        if archive_type == 'hour':
+            created_archives = ArchiveHour.objects.bulk_create(
+                [ArchiveHour(**archive) for archive in archive_data])
+        elif archive_type == 'day':
+            created_archives = ArchiveDay.objects.bulk_create(
+                [ArchiveDay(**archive) for archive in archive_data])
+        elif archive_type == 'week':
+            created_archives = ArchiveWeek.objects.bulk_create(
+                [ArchiveWeek(**archive) for archive in archive_data])
+        elif archive_type == 'month':
+            created_archives = ArchiveMonth.objects.bulk_create(
+                [ArchiveMonth(**archive) for archive in archive_data])
 
         # report back to user
         self.stdout.write(f"Created {len(created_archives)} entries \
@@ -84,7 +95,6 @@ class Command(BaseCommand):
         archive_data = grouped_measurements.annotate(
             # also annotate type so it can be directly transferred over to
             # Archive
-            archive_type=Value(archive_type, CharField(max_length=8)),
             mean=Avg('value'),
             median=Percentile('value', percentile=0.5),
             min=Min('value'),
@@ -101,7 +111,7 @@ class Command(BaseCommand):
 
         # select only columns that will be stored in Archive model
         filtered_archive_data = archive_data.values(
-            'archive_type', 'channel_id', 'metric_id', 'min', 'max', 'mean',
+            'channel_id', 'metric_id', 'min', 'max', 'mean',
             'median', 'stdev', 'num_samps', 'starttime', 'endtime')
 
         return filtered_archive_data
