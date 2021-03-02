@@ -8,10 +8,10 @@ Command run without any options will give default URL
         &sta=*
         &cha=EN?,HN?,?H?
         &loc=*
-        &minlat=31.5
+        &minlat=30.5
         &maxlat=51
-        &minlon=-128.5
-        &maxlon=-113.8930
+        &minlon=-131
+        &maxlon=-113
         &starttime=2019-01-01
         &format=text
 
@@ -78,8 +78,8 @@ class Command(BaseCommand):
         )
         parser.add_argument(
             '--minlat',
-            default=31.5,
-            help="Lower latitude for search box, 31.5 default"
+            default=30.5,
+            help="Lower latitude for search box, 30.5 default"
         )
         parser.add_argument(
             '--maxlat',
@@ -88,13 +88,13 @@ class Command(BaseCommand):
         )
         parser.add_argument(
             '--minlon',
-            default=-128.5,
-            help="Left latitude for search box, -128.5 default"
+            default=-131,
+            help="Left latitude for search box, -131 default"
         )
         parser.add_argument(
             '--maxlon',
-            default=-113.893,
-            help="Right latitude for search box, -113.893 default"
+            default=-113,
+            help="Right latitude for search box, -113 default"
         )
         parser.add_argument(
             '--starttime',
