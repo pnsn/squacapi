@@ -86,7 +86,7 @@ class Command(BaseCommand):
                         partition_end_date.strftime("%Y-%m-%d")
                     ])
 
-                    # gant permissions
+                    # grant permissions
                     sql_grant = '''GRANT ALL PRIVILEGES
                         ON TABLE measurement_measurement_%s_%s_%s
                         TO %s; '''
@@ -106,7 +106,7 @@ class Command(BaseCommand):
             '''
             import logging
             logging.getLogger(
-                'googleapicliet.discovery_cache').setLevel(logging.ERROR)
+                'googleapiclient.discovery_cache').setLevel(logging.ERROR)
 
             send_mail("Error in measurement table partitioning",
                       error_string,
