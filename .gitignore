@@ -6,3 +6,4 @@ dev_notes.md
 docs/build
 **/.hypothesis/**
 .codegen/*
+docker-compose-test.yml
