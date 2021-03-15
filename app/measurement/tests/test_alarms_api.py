@@ -570,17 +570,17 @@ class PrivateAlarmAPITests(TestCase):
             self.assertTrue(n_test2_monitors < n_monitors)
 
     def test_alert_queryset_sorted_by_timestamp(self):
-        # Add two alerts out of timestamp order
+        # Add two alerts out of (reverse) timestamp order
         Alert.objects.create(
             trigger=self.trigger,
-            timestamp=datetime(1980, 1, 1, tzinfo=pytz.UTC),
+            timestamp=datetime(1975, 1, 1, tzinfo=pytz.UTC),
             message='This one should come second!',
             in_alarm=True,
             user=self.user
         )
         Alert.objects.create(
             trigger=self.trigger,
-            timestamp=datetime(1975, 1, 1, tzinfo=pytz.UTC),
+            timestamp=datetime(1980, 1, 1, tzinfo=pytz.UTC),
             message='This one should come first!',
             in_alarm=True,
             user=self.user
@@ -589,6 +589,6 @@ class PrivateAlarmAPITests(TestCase):
         url = reverse('measurement:alert-list')
         res = self.client.get(url)
 
-        # Verify results are sorted by timestamps
+        # Verify results are reverse sorted by timestamps
         timestamps = [alert['timestamp'] for alert in res.data]
-        self.assertTrue(sorted(timestamps) == timestamps)
+        self.assertTrue(sorted(timestamps, reverse=True) == timestamps)
