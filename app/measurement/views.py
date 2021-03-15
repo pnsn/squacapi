@@ -159,7 +159,7 @@ class AlertViewSet(BaseMeasurementViewSet):
     filter_class = AlertFilter
 
     def get_queryset(self):
-        return Alert.objects.all().order_by('timestamp')
+        return Alert.objects.all().order_by('-timestamp')
 
     def get_serializer_class(self):
         if self.action == 'retrieve' or self.action == 'list':
