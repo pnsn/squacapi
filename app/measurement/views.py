@@ -141,7 +141,7 @@ class MonitorViewSet(BaseMeasurementViewSet):
         return Monitor.objects.all()
 
     def get_serializer_class(self):
-        if self.action == 'retrieve':
+        if self.action == 'retrieve' or self.action == 'list':
             return serializers.MonitorDetailSerializer
         return self.serializer_class
 

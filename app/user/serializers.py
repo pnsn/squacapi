@@ -18,11 +18,15 @@ class UserSimpleSerializer(serializers.ModelSerializer):
     organization = serializers.PrimaryKeyRelatedField(
         queryset=Organization.objects.all()
     )
+    groups = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=Group.objects.all()
+    )
 
     class Meta:
         model = get_user_model()
         fields = ('email', 'firstname', 'lastname', 'id', 'is_active',
-                  'last_login', 'organization', 'is_org_admin')
+                  'last_login', 'organization', 'is_org_admin', 'groups')
 
 
 class UserBaseSerializer(serializers.ModelSerializer):

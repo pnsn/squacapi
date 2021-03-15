@@ -135,7 +135,6 @@ class Command(BaseCommand):
             "NN", "NP", "NV", "OO", "PB", "SN", "UO", "US", "UW"
         ]
         options["net"] = ','.join(ALLOWED_NETWORKS)
-        print('Getting data from FDSN...')
         LOADER_EMAIL = os.environ.get('LOADER_EMAIL')
         if not LOADER_EMAIL:
             print(
@@ -218,7 +217,7 @@ class Command(BaseCommand):
                         # If end time is null set to 2599 dummy date
                         end_datetime = datetime(
                             year=2599, month=12, day=31, tzinfo=pytz.UTC)
-                    print(f'{net}: {sta} {cha}')
+                    # print(f'{net}: {sta} {cha}')
                     try:
                         # Get or create the channel using data
                         Channel.objects.update_or_create(
