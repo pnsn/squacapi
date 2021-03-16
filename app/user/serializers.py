@@ -132,7 +132,7 @@ class ContactSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Contact
         fields = (
-            'id', 'url', 'email_value', 'sms_value', 'created_at',
+            'id', 'url', 'email_value', 'sms_value', 'name', 'created_at',
             'updated_at', 'user_id'
         )
         read_only_fields = ('id',)
@@ -143,6 +143,20 @@ class NotificationSerializer(serializers.HyperlinkedModelSerializer):
         view_name="user:notification-detail")
     contact = serializers.PrimaryKeyRelatedField(
         queryset=Contact.objects.all())
+
+    class Meta:
+        model = Notification
+        fields = (
+            'id', 'url', 'notification_type', 'contact', 'level', 'created_at',
+            'updated_at', 'user_id'
+        )
+        read_only_fields = ('id',)
+
+
+class NotificationDetailSerializer(serializers.HyperlinkedModelSerializer):
+    url = serializers.HyperlinkedIdentityField(
+        view_name="user:notification-detail")
+    contact = ContactSerializer(read_only=True)
 
     class Meta:
         model = Notification

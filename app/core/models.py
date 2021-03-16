@@ -111,6 +111,11 @@ class Contact(models.Model):
         default="",
         blank=True
     )
+    name = models.CharField(
+        max_length=255,
+        default="",
+        blank=True
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(
@@ -119,9 +124,12 @@ class Contact(models.Model):
     )
 
     def __str__(self):
-        return (f"email_value: {self.email_value}, "
-                f"sms_value: {self.sms_value}"
-                )
+        if not self.name:
+            return (f"email_value: {self.email_value}, "
+                    f"sms_value: {self.sms_value}"
+                    )
+        else:
+            return self.name
 
     def save(self, *args, **kwargs):
         """
