@@ -151,3 +151,17 @@ class NotificationSerializer(serializers.HyperlinkedModelSerializer):
             'updated_at', 'user_id'
         )
         read_only_fields = ('id',)
+
+
+class NotificationDetailSerializer(serializers.HyperlinkedModelSerializer):
+    url = serializers.HyperlinkedIdentityField(
+        view_name="user:notification-detail")
+    contact = ContactSerializer(read_only=True)
+
+    class Meta:
+        model = Notification
+        fields = (
+            'id', 'url', 'notification_type', 'contact', 'level', 'created_at',
+            'updated_at', 'user_id'
+        )
+        read_only_fields = ('id',)
