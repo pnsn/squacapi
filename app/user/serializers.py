@@ -132,7 +132,7 @@ class ContactSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Contact
         fields = (
-            'id', 'url', 'email_value', 'sms_value', 'created_at',
+            'id', 'url', 'email_value', 'sms_value', 'name', 'created_at',
             'updated_at', 'user_id'
         )
         read_only_fields = ('id',)
