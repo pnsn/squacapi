@@ -28,6 +28,12 @@ fi
 # both staging and prod use production.txt
 pip3 install  -r $dest/requirements/production.txt
 python $dest/app/manage.py migrate
+
+# if production, update cronjobs
+if [ $DEPLOYMENT_GROUP_NAME == 'squacapi' ]; then
+    python $dest/app/manage.py crontab add
+fi
+
 # static root most be overridden or it will be added to where current symlink points(previous)
 SQUACAPI_STATIC_ROOT=$dest/static python $dest/app/manage.py collectstatic --noinput
 deactivate

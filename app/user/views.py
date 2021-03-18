@@ -8,7 +8,7 @@ from rest_framework.settings import api_settings
 
 from user.serializers import UserWriteSerializer, UserMeSerializer, \
     AuthTokenSerializer, UserGroupSerializer, NotificationSerializer, \
-    ContactSerializer
+    ContactSerializer, NotificationDetailSerializer
 from drf_yasg.utils import swagger_auto_schema
 from core.models import Contact, Notification
 from squac.mixins import SetUserMixin
@@ -66,3 +66,8 @@ class NotificationViewSet(SetUserMixin, viewsets.ModelViewSet):
         if self.request.user.is_staff:
             return Notification.objects.all()
         return Notification.objects.filter(user=self.request.user)
+
+    def get_serializer_class(self):
+        if self.action == 'retrieve' or self.action == 'list':
+            return NotificationDetailSerializer
+        return self.serializer_class
