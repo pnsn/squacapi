@@ -16,13 +16,13 @@ To run locally (must have production db info in .env):
 $: ./mg.sh 's3_query_export --env=prod'
 
 To specify date range (inclusive):
-$: ./mg.sh 's3_query_export --startdate=YYYY-mm-dd --enddate=YYYY-mm-dd'
+$: ./mg.sh 's3_query_export --start_date=YYYY-mm-dd --end_date=YYYY-mm-dd'
 
 To specify single metric (must know metric_id):
 $: ./mg.sh 's3_query_export --metric=12'
 
-To not overwrite files if they already exist (default is True):
-$: ./mg.sh 's3_query_export --overwrite=False'
+To not overwrite files if they already exist (default is overwrite):
+$: ./mg.sh 's3_query_export --no_overwrite'
 
 '''
 from django.core.management.base import BaseCommand
@@ -51,17 +51,16 @@ class Command(BaseCommand):
             desc: choose a specific metric to backup
             type: int
             default: -1 (do all)
-        overwrite:
-            desc: if exists in s3 bucket, clobber
-            default: True
+        no_overwrite:
+            desc: Don't clobber if it already exists in s3 bucket
         env:
             desc: Choose environment to get data from, allows local user to
                   backup remote db (default|prod)
             default: 'default'
 
     '''
-    BUCKET_NAME = 'squacapi-measurements'
-    REGION = 'us-west-2'
+    BUCKET_NAME = settings.SQUAC_MEASUREMENTS_BUCKET
+    REGION = settings.AWS_DEFAULT_REGION
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -83,9 +82,9 @@ class Command(BaseCommand):
             help="Backup a specific metric, by id"
         )
         parser.add_argument(
-            '--overwrite',
-            default=True,
-            help="Overwrite files on s3"
+            '--no_overwrite',
+            action='store_true',
+            help="Don't overwrite files on s3 (will overwrite by default)"
         )
         parser.add_argument(
             '--env',
@@ -167,7 +166,7 @@ class Command(BaseCommand):
                     print(f"save to {file_path}")
 
                     # Check overwrite status, does metric file already exist?
-                    if not kwargs['overwrite']:
+                    if kwargs['no_overwrite']:
                         if self.check_s3_file_exists(file_path):
                             print("Not writing file either because it exists"
                                   " or cannot confirm its existence!")
