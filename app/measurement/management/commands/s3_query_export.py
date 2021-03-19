@@ -60,7 +60,7 @@ class Command(BaseCommand):
             default: 'default'
 
     '''
-    BUCKET_NAME = 'squacapi-backup'
+    BUCKET_NAME = 'squacapi-measurements'
     REGION = 'us-west-2'
 
     def add_arguments(self, parser):
@@ -100,9 +100,8 @@ class Command(BaseCommand):
             - For each metric
                 - Execute sql to save all measurements for this metric as an
                   s3 object
-                - Path format: YYYY/YYYY_mm_dd/YYYY_mm_dd_metric_{id}.csv
+                - Path format: raw/YYYY/mm/YYYY_mm_dd_metric_{id}.csv
         """
-        # Is this ok? See AsIs, etc.
         sql = '''
             SELECT * FROM aws_s3.query_export_to_s3(
                 '
@@ -127,13 +126,13 @@ class Command(BaseCommand):
             settings.DATABASES['prod'] = {
                 'ENGINE': 'django.db.backends.postgresql',
                 'HOST': os.environ.get('SQUAC_PROD_DB_HOST'),
-                'NAME': 'squacapi_production',
+                'NAME': os.environ.get('SQUAC_PROD_DB_NAME'),
                 'USER': os.environ.get('SQUAC_PROD_DB_USER'),
                 'PASSWORD': os.environ.get('SQUAC_PROD_DB_PASS'),
             }
 
         # Verify using correct db
-        allowed_dbs = ['squacapi_production', ]
+        allowed_dbs = [os.environ.get('SQUAC_PROD_DB_NAME'), ]
         if settings.DATABASES[env]['NAME'] not in allowed_dbs:
             print(f'{env} is not a valid db option!')
             return
@@ -142,12 +141,12 @@ class Command(BaseCommand):
             # Loop over days
             for kday in range((end_date - start_date).days + 1):
                 # current date object in the loop
-                curr_date = start_date + timedelta(days=kday)
+                cursor_date = start_date + timedelta(days=kday)
                 # used for SQL query
-                days_before_today = (date.today() - curr_date).days
+                days_before_today = (date.today() - cursor_date).days
 
                 # Get all metrics available for this date
-                metrics = self.get_db_date_metrics(cursor, curr_date)
+                metrics = self.get_db_date_metrics(cursor, cursor_date)
 
                 # Select single metric if requested
                 if kwargs['metric'] >= 0:
@@ -159,10 +158,11 @@ class Command(BaseCommand):
                 for metric in metrics:
                     '''
                     file name format:
-                    YYYY/mm_dd_metric_{id}.csv
+                    raw/YYYY/mm/YYYY_mm_dd_metric_{id}.csv
                     '''
                     file_path = (
-                        f"{curr_date.strftime('%Y/%m_%d')}_metric_{metric}.csv"
+                        f"raw/{cursor_date.strftime('%Y/%m/%Y_%m_%d')}"
+                        f"_metric_{metric}.csv"
                     )
                     print(f"save to {file_path}")
 
@@ -182,7 +182,7 @@ class Command(BaseCommand):
                         self.REGION
                     ])
 
-    def get_db_date_metrics(self, cursor, check_date):
+    def get_db_date_metrics(self, cursor, cursor_date):
         '''
         Get all metrics for a given date.
         '''
@@ -192,7 +192,7 @@ class Command(BaseCommand):
                 AND starttime < current_date - %s
             ORDER BY metric_id;
         '''
-        days_before_today = (date.today() - check_date).days
+        days_before_today = (date.today() - cursor_date).days
         cursor.execute(sql, [days_before_today, days_before_today - 1])
         return [res[0] for res in cursor.fetchall()]
 
@@ -214,4 +214,4 @@ class Command(BaseCommand):
             print('Cannot connect to aws client, check your credentials!')
             return False
 
-        return len(objs) == 1
+        return len(objs) != 0
