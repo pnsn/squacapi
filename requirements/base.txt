@@ -29,7 +29,7 @@ idna==2.10
 importlib-metadata==2.0.0
 inflection==0.5.1
 itypes==1.2.0
-Jinja2==2.11.2
+Jinja2==2.11.3
 jmespath==0.10.0
 MarkupSafe==1.1.1
 mccabe==0.6.1
