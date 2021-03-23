@@ -168,8 +168,7 @@ class Command(BaseCommand):
                     # Check overwrite status, does metric file already exist?
                     if kwargs['no_overwrite']:
                         if self.check_s3_file_exists(file_path):
-                            print("Not writing file either because it exists"
-                                  " or cannot confirm its existence!")
+                            print("File already exists, not overwriting!")
                             continue
 
                     cursor.execute(sql, [
@@ -206,11 +205,11 @@ class Command(BaseCommand):
             s3 = boto3.resource('s3')
             bucket = s3.Bucket(self.BUCKET_NAME)
             objs = list(bucket.objects.filter(Prefix=file_path))
-        except botocore.exceptions.NoCredentialsError:
-            print('AWS credentials do not exist!')
+        except botocore.exceptions.NoCredentialsError as e:
+            print(e)
             return False
-        except botocore.exceptions.ClientError:
-            print('Cannot connect to aws client, check your credentials!')
+        except botocore.exceptions.ClientError as e:
+            print(e)
             return False
 
         return len(objs) != 0
