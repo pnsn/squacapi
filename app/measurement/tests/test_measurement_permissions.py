@@ -43,10 +43,7 @@ VIEWER_PERMISSIONS = ['view_metric',
                       'view_archivehour',
                       'view_archiveday',
                       'view_archiveweek',
-                      'view_archivemonth',
-                      'view_monitor',
-                      'view_trigger',
-                      'view_alert'
+                      'view_archivemonth'
                       ]
 
 
@@ -247,7 +244,7 @@ class MeasurementPermissionTests(TestCase):
             'measurement.change_archivemonth'))
         self.assertFalse(self.viewer.has_perm(
             'measurement.delete_archivemonth'))
-        self.assertTrue(self.viewer.has_perm(
+        self.assertFalse(self.viewer.has_perm(
             'measurement.view_monitor'))
         self.assertFalse(self.viewer.has_perm(
             'measurement.add_monitor'))
@@ -255,7 +252,7 @@ class MeasurementPermissionTests(TestCase):
             'measurement.change_monitor'))
         self.assertFalse(self.viewer.has_perm(
             'measurement.delete_monitor'))
-        self.assertTrue(self.viewer.has_perm(
+        self.assertFalse(self.viewer.has_perm(
             'measurement.view_trigger'))
         self.assertFalse(self.viewer.has_perm(
             'measurement.add_trigger'))
@@ -263,7 +260,7 @@ class MeasurementPermissionTests(TestCase):
             'measurement.change_trigger'))
         self.assertFalse(self.viewer.has_perm(
             'measurement.delete_trigger'))
-        self.assertTrue(self.viewer.has_perm(
+        self.assertFalse(self.viewer.has_perm(
             'measurement.view_alert'))
         self.assertFalse(self.viewer.has_perm(
             'measurement.add_alert'))
