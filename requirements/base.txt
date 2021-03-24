@@ -18,7 +18,7 @@ django-extensions==3.0.9
 django-filter==2.4.0
 django-gmailapi-backend==0.1.0
 django-rest-passwordreset==1.1.0
-djangorestframework==3.11.0
+djangorestframework==3.11.2
 drf-yasg==1.17.1
 google==3.0.0
 google-api-python-client==1.7.11
@@ -29,7 +29,7 @@ idna==2.10
 importlib-metadata==2.0.0
 inflection==0.5.1
 itypes==1.2.0
-Jinja2==2.11.2
+Jinja2==2.11.3
 jmespath==0.10.0
 MarkupSafe==1.1.1
 mccabe==0.6.1

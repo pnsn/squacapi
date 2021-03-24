@@ -1,12 +1,15 @@
 from rest_framework import viewsets
 from django_filters import rest_framework as filters
 from squac.filters import CharInFilter, NumberInFilter
-from squac.mixins import SetUserMixin, DefaultPermissionsMixin
+from squac.mixins import (SetUserMixin, DefaultPermissionsMixin,
+                          AdminOrOwnerPermissionMixin)
 from .exceptions import MissingParameterException
 from .models import (Metric, Measurement, Threshold,
                      Alert, ArchiveDay, ArchiveWeek, ArchiveMonth,
                      ArchiveHour, Monitor, Trigger)
 from measurement import serializers
+
+'''Filters'''
 
 
 class MetricFilter(filters.FilterSet):
@@ -86,9 +89,39 @@ class ArchiveMonthFilter(ArchiveBaseFilter):
         fields = ('metric', 'channel')
 
 
+'''Base Viewsets'''
+
+
 class BaseMeasurementViewSet(SetUserMixin, DefaultPermissionsMixin,
                              viewsets.ModelViewSet):
     pass
+
+
+class BaseMonitorViewSet(SetUserMixin, AdminOrOwnerPermissionMixin,
+                         viewsets.ModelViewSet):
+    '''only owner can see monitors and alert'''
+    pass
+
+
+class ArchiveBaseViewSet(DefaultPermissionsMixin,
+                         viewsets.ReadOnlyModelViewSet):
+    """Viewset that provides access to Archive data
+
+        since there is not a user set on archive, all permissions will be
+        model
+    """
+
+    REQUIRED_PARAMS = ("metric", "channel", "starttime", "endtime")
+
+    def list(self, request, *args, **kwargs):
+        if not all([required_param in request.query_params
+           for required_param in self.REQUIRED_PARAMS]):
+            raise MissingParameterException
+
+        return super().list(self, request, *args, **kwargs)
+
+
+'''Viewsets'''
 
 
 class MetricViewSet(BaseMeasurementViewSet):
@@ -133,7 +166,7 @@ class ThresholdViewSet(BaseMeasurementViewSet):
         return Threshold.objects.all()
 
 
-class MonitorViewSet(BaseMeasurementViewSet):
+class MonitorViewSet(BaseMonitorViewSet):
     serializer_class = serializers.MonitorSerializer
     filter_class = MonitorFilter
 
@@ -146,7 +179,7 @@ class MonitorViewSet(BaseMeasurementViewSet):
         return self.serializer_class
 
 
-class TriggerViewSet(BaseMeasurementViewSet):
+class TriggerViewSet(BaseMonitorViewSet):
     serializer_class = serializers.TriggerSerializer
     filter_class = TriggerFilter
 
@@ -154,7 +187,7 @@ class TriggerViewSet(BaseMeasurementViewSet):
         return Trigger.objects.all()
 
 
-class AlertViewSet(BaseMeasurementViewSet):
+class AlertViewSet(BaseMonitorViewSet):
     serializer_class = serializers.AlertSerializer
     filter_class = AlertFilter
 
@@ -165,24 +198,6 @@ class AlertViewSet(BaseMeasurementViewSet):
         if self.action == 'retrieve' or self.action == 'list':
             return serializers.AlertDetailSerializer
         return self.serializer_class
-
-
-class ArchiveBaseViewSet(DefaultPermissionsMixin,
-                         viewsets.ReadOnlyModelViewSet):
-    """Viewset that provides access to Archive data
-
-        since there is not a user set on archive, all permissions will be
-        model
-    """
-
-    REQUIRED_PARAMS = ("metric", "channel", "starttime", "endtime")
-
-    def list(self, request, *args, **kwargs):
-        if not all([required_param in request.query_params
-           for required_param in self.REQUIRED_PARAMS]):
-            raise MissingParameterException
-
-        return super().list(self, request, *args, **kwargs)
 
 
 class ArchiveHourViewSet(ArchiveBaseViewSet):
