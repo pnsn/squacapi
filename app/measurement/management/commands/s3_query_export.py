@@ -27,11 +27,12 @@ $: ./mg.sh 's3_query_export --no_overwrite'
 '''
 from django.core.management.base import BaseCommand
 from django.db import connections
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta
 from django.conf import settings
 import os
 import boto3
 import botocore
+import pytz
 
 
 class Command(BaseCommand):
@@ -66,13 +67,13 @@ class Command(BaseCommand):
         parser.add_argument(
             '--start_date',
             type=lambda s: datetime.strptime(s, "%Y-%m-%d").date(),
-            default=date.today() - timedelta(days=1),
+            default=(datetime.now(tz=pytz.utc) - timedelta(days=1)).date(),
             help="When to start backup (inclusive, format: YYYY-MM-DD)"
         )
         parser.add_argument(
             '--end_date',
             type=lambda s: datetime.strptime(s, "%Y-%m-%d").date(),
-            default=date.today() - timedelta(days=1),
+            default=(datetime.now(tz=pytz.utc) - timedelta(days=1)).date(),
             help="When to end backup (inclusive, format: YYYY-MM-DD)"
         )
         parser.add_argument(
@@ -142,7 +143,8 @@ class Command(BaseCommand):
                 # current date object in the loop
                 cursor_date = start_date + timedelta(days=kday)
                 # used for SQL query
-                days_before_today = (date.today() - cursor_date).days
+                days_before_today = (
+                    datetime.now(tz=pytz.utc).date() - cursor_date).days
 
                 # Get all metrics available for this date
                 metrics = self.get_db_date_metrics(cursor, cursor_date)
@@ -168,8 +170,7 @@ class Command(BaseCommand):
                     # Check overwrite status, does metric file already exist?
                     if kwargs['no_overwrite']:
                         if self.check_s3_file_exists(file_path):
-                            print("Not writing file either because it exists"
-                                  " or cannot confirm its existence!")
+                            print("File already exists, not overwriting!")
                             continue
 
                     cursor.execute(sql, [
@@ -191,7 +192,8 @@ class Command(BaseCommand):
                 AND starttime < current_date - %s
             ORDER BY metric_id;
         '''
-        days_before_today = (date.today() - cursor_date).days
+        days_before_today = (
+            datetime.now(tz=pytz.utc).date() - cursor_date).days
         cursor.execute(sql, [days_before_today, days_before_today - 1])
         return [res[0] for res in cursor.fetchall()]
 
@@ -206,11 +208,11 @@ class Command(BaseCommand):
             s3 = boto3.resource('s3')
             bucket = s3.Bucket(self.BUCKET_NAME)
             objs = list(bucket.objects.filter(Prefix=file_path))
-        except botocore.exceptions.NoCredentialsError:
-            print('AWS credentials do not exist!')
+        except botocore.exceptions.NoCredentialsError as e:
+            print(e)
             return False
-        except botocore.exceptions.ClientError:
-            print('Cannot connect to aws client, check your credentials!')
+        except botocore.exceptions.ClientError as e:
+            print(e)
             return False
 
         return len(objs) != 0
