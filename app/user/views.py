@@ -11,8 +11,7 @@ from user.serializers import UserWriteSerializer, UserMeSerializer, \
     ContactSerializer, NotificationDetailSerializer
 from drf_yasg.utils import swagger_auto_schema
 from core.models import Contact, Notification
-from squac.mixins import SetUserMixin
-from squac.permissions import IsAdminOrOwner
+from squac.mixins import SetUserMixin, AdminOrOwnerPermissionMixin
 
 
 class CreateUserView(generics.CreateAPIView):
@@ -49,23 +48,31 @@ class GroupViewSet(viewsets.ModelViewSet):
         return Group.objects.all()
 
 
-class ContactViewSet(SetUserMixin, viewsets.ModelViewSet):
+class ContactBaseViewSet(SetUserMixin, AdminOrOwnerPermissionMixin,
+                         viewsets.ModelViewSet):
+    pass
+
+
+class ContactViewSet(ContactBaseViewSet):
     """Manage contact info"""
     serializer_class = ContactSerializer
 
     def get_queryset(self):
-        return Contact.objects.all()
+        queryset = Contact.objects.all()
+        if self.request.user.is_staff:
+            return queryset
+        return queryset.filter(user=self.request.user)
 
 
-class NotificationViewSet(SetUserMixin, viewsets.ModelViewSet):
+class NotificationViewSet(ContactBaseViewSet):
     '''Manage user notifications'''
     serializer_class = NotificationSerializer
-    permission_classes = (IsAuthenticated, IsAdminOrOwner,)
 
     def get_queryset(self):
+        queryset = Notification.objects.all()
         if self.request.user.is_staff:
-            return Notification.objects.all()
-        return Notification.objects.filter(user=self.request.user)
+            return queryset
+        return queryset.filter(user=self.request.user)
 
     def get_serializer_class(self):
         if self.action == 'retrieve' or self.action == 'list':

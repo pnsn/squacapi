@@ -92,12 +92,12 @@ class ArchiveMonthFilter(ArchiveBaseFilter):
 '''Base Viewsets'''
 
 
-class BaseMeasurementViewSet(SetUserMixin, DefaultPermissionsMixin,
+class MeasurementBaseViewSet(SetUserMixin, DefaultPermissionsMixin,
                              viewsets.ModelViewSet):
     pass
 
 
-class BaseMonitorViewSet(SetUserMixin, AdminOrOwnerPermissionMixin,
+class MonitorBaseViewSet(SetUserMixin, AdminOrOwnerPermissionMixin,
                          viewsets.ModelViewSet):
     '''only owner can see monitors and alert'''
     pass
@@ -124,7 +124,7 @@ class ArchiveBaseViewSet(DefaultPermissionsMixin,
 '''Viewsets'''
 
 
-class MetricViewSet(BaseMeasurementViewSet):
+class MetricViewSet(MeasurementBaseViewSet):
     serializer_class = serializers.MetricSerializer
     filter_class = MetricFilter
 
@@ -132,7 +132,7 @@ class MetricViewSet(BaseMeasurementViewSet):
         return Metric.objects.all()
 
 
-class MeasurementViewSet(BaseMeasurementViewSet):
+class MeasurementViewSet(MeasurementBaseViewSet):
     '''end point for using channel filter'''
     REQUIRED_PARAMS = ("metric", "starttime", "endtime")
     serializer_class = serializers.MeasurementSerializer
@@ -158,7 +158,7 @@ class MeasurementViewSet(BaseMeasurementViewSet):
         return super().list(self, request, *args, **kwargs)
 
 
-class ThresholdViewSet(BaseMeasurementViewSet):
+class ThresholdViewSet(MeasurementBaseViewSet):
     serializer_class = serializers.ThresholdSerializer
     filter_class = ThresholdFilter
 
@@ -166,12 +166,15 @@ class ThresholdViewSet(BaseMeasurementViewSet):
         return Threshold.objects.all()
 
 
-class MonitorViewSet(BaseMonitorViewSet):
+class MonitorViewSet(MonitorBaseViewSet):
     serializer_class = serializers.MonitorSerializer
     filter_class = MonitorFilter
 
     def get_queryset(self):
-        return Monitor.objects.all()
+        queryset = Monitor.objects.all()
+        if self.request.user.is_staff:
+            return queryset
+        return queryset.filter(user=self.request.user)
 
     def get_serializer_class(self):
         if self.action == 'retrieve' or self.action == 'list':
@@ -179,20 +182,26 @@ class MonitorViewSet(BaseMonitorViewSet):
         return self.serializer_class
 
 
-class TriggerViewSet(BaseMonitorViewSet):
+class TriggerViewSet(MonitorBaseViewSet):
     serializer_class = serializers.TriggerSerializer
     filter_class = TriggerFilter
 
     def get_queryset(self):
-        return Trigger.objects.all()
+        queryset = Trigger.objects.all()
+        if self.request.user.is_staff:
+            return queryset
+        return queryset.filter(user=self.request.user)
 
 
-class AlertViewSet(BaseMonitorViewSet):
+class AlertViewSet(MonitorBaseViewSet):
     serializer_class = serializers.AlertSerializer
     filter_class = AlertFilter
 
     def get_queryset(self):
-        return Alert.objects.all().order_by('-timestamp')
+        queryset = Alert.objects.all().order_by('-timestamp')
+        if self.request.user.is_staff:
+            return queryset
+        return queryset.filter(user=self.request.user)
 
     def get_serializer_class(self):
         if self.action == 'retrieve' or self.action == 'list':
