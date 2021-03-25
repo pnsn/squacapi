@@ -45,7 +45,7 @@ class SharedPermissionsMixin:
             ',' commas act as 'and' '|' pipes act as 'or'
          '''
     permission_classes = (
-        IsAuthenticated, IsAdminOwnerOrShared)
+        IsAuthenticated, IsAdminOwnerOrShared,)
 
 
 class OrganizationPermissionsMixin:

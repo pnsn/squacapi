@@ -1,10 +1,13 @@
 from django.test import TestCase
 from rest_framework.test import APIClient
+from rest_framework import status
+from django.urls import reverse
 from datetime import datetime
 import pytz
-from measurement.models import Metric, Measurement
-from nslc.models import Network, Channel
+from measurement.models import Metric, Measurement, Monitor
+from nslc.models import Network, Channel, Group
 from squac.test_mixins import sample_user, create_group
+from organization.models import Organization
 
 
 '''
@@ -53,16 +56,20 @@ class MeasurementPermissionTests(TestCase):
     def setUp(self):
         '''create sample authenticated user'''
         self.reporter = sample_user()
+        self.reporter2 = sample_user('reporter2@pnsn.org')
         self.viewer = sample_user('viewer@pnsn.org')
         self.other = sample_user('other@pnsn.org')
         self.reporter_client = APIClient()
+        self.reporter2_client = APIClient()
         self.viewer_client = APIClient()
 
         self.reporter_group = create_group('reporter', REPORTER_PERMISSIONS)
         self.viewer_group = create_group('viewer', VIEWER_PERMISSIONS)
         self.reporter.groups.add(self.reporter_group)
+        self.reporter2.groups.add(self.reporter_group)
         self.viewer.groups.add(self.viewer_group)
         self.reporter_client.force_authenticate(user=self.reporter)
+        self.reporter2_client.force_authenticate(user=self.reporter)
         self.viewer_client.force_authenticate(user=self.viewer)
 
         self.metric = Metric.objects.create(
@@ -118,14 +125,42 @@ class MeasurementPermissionTests(TestCase):
             endtime=datetime(2019, 6, 5, 9, 8, 7, 127325, tzinfo=pytz.UTC),
             user=self.other
         )
-        # self.archive = Archive.objects.create(
-        #     archive_type=Archive.DAY,
-        #     channel=self.chan,
-        #     metric=self.metric,
-        #     min=0, max=0, mean=0, median=0, stdev=0, num_samps=1,
-        #     starttime=datetime(2019, 5, 5, 8, 8, 7, 127325, tzinfo=pytz.UTC),
-        #     endtime=datetime(2019, 5, 5, 8, 8, 7, 127325, tzinfo=pytz.UTC)
-        # )
+
+        self.organization = Organization.objects.create(
+            name='PNSN'
+        )
+        self.grp = Group.objects.create(
+            name='Test group',
+            share_all=False,
+            share_org=False,
+            user=self.reporter,
+            organization=self.organization
+        )
+
+        self.grp.channels.add(self.chan)
+
+        # reporter 1
+        self.monitor = Monitor.objects.create(
+            metric=self.metric,
+            channel_group=self.grp,
+            interval_type='hour',
+            interval_count=1,
+            num_channels=1,
+            stat="sum",
+            name='test',
+            user=self.reporter
+        )
+        # and one for reporter 2
+        self.monitor2 = Monitor.objects.create(
+            metric=self.metric,
+            channel_group=self.grp,
+            interval_type='hour',
+            interval_count=1,
+            num_channels=1,
+            stat="sum",
+            name='test',
+            user=self.reporter2
+        )
 
     def test_reporter_has_perms(self):
         '''reporters can:
@@ -268,3 +303,22 @@ class MeasurementPermissionTests(TestCase):
             'measurement.change_alert'))
         self.assertFalse(self.viewer.has_perm(
             'measurement.delete_alert'))
+
+    def test_get_list_monitors(self):
+        self.assertFalse(self.reporter.is_staff)
+        url = reverse('measurement:monitor-list')
+        res = self.reporter_client.get(url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data), 1)
+
+    def test_get_user_monitor(self):
+        url = reverse('measurement:monitor-detail',
+                      kwargs={'pk': self.monitor.id})
+        res = self.reporter_client.get(url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+    def test_get_other_user_monitor(self):
+        url = reverse('measurement:monitor-detail',
+                      kwargs={'pk': self.monitor2.id})
+        res = self.reporter_client.get(url)
+        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
