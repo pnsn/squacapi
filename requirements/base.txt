@@ -16,13 +16,13 @@ django-debug-toolbar==3.1.1
 django-dotenv==1.4.2
 django-extensions==3.0.9
 django-filter==2.4.0
-django-gmailapi-backend==0.1.0
+django-gmailapi-backend==0.3.0
 django-rest-passwordreset==1.1.0
 djangorestframework==3.11.2
 drf-yasg==1.17.1
 google==3.0.0
-google-api-python-client==1.7.11
-google-auth==1.11.2
+google-api-python-client==2.0.2
+google-auth==1.28.0
 google-auth-httplib2==0.0.4
 httplib2==0.19.0
 idna==2.10
