@@ -12,6 +12,6 @@ CRONJOBS=[ # noqa
     ('0 20 * * *', 'django.core.management.call_command',
         ['create_table_partition']),
     ('5 * * * *', 'django.core.management.call_command', ['evaluate_alarms']),
-    ('0 5 * * *', 'django.core.management.call_command', 
+    ('0 5 * * *', 'django.core.management.call_command',
         ['s3_query_export', f'--startdate={s3_export_startdate}'])
 ]
