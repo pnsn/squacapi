@@ -158,7 +158,7 @@ class MeasurementViewSet(MeasurementBaseViewSet):
         return super().list(self, request, *args, **kwargs)
 
 
-class ThresholdViewSet(MeasurementBaseViewSet):
+class ThresholdViewSet(MonitorBaseViewSet):
     serializer_class = serializers.ThresholdSerializer
     filter_class = ThresholdFilter
 
