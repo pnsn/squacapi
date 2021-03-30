@@ -1,4 +1,8 @@
-'''list all application  crons here. These are imported by settings'''
+'''
+List all application  crons here. These are imported by settings.
+Verify they look correct with 'python {squac_dir}/app/manage.py crontab show'
+Reference: https://pypi.org/project/django-crontab/
+'''
 from datetime import datetime, timedelta
 import pytz
 
@@ -12,6 +16,5 @@ CRONJOBS=[ # noqa
     ('0 20 * * *', 'django.core.management.call_command',
         ['create_table_partition']),
     ('5 * * * *', 'django.core.management.call_command', ['evaluate_alarms']),
-    ('0 5 * * *', 'django.core.management.call_command',
-        ['s3_query_export', f'--startdate={s3_export_startdate}'])
+    ('0 5 * * *', 'django.core.management.call_command', ['s3_query_export'])
 ]
