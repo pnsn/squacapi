@@ -8,6 +8,9 @@ select * from aws_s3.query_export_to_s3( \
                                'sample-filepath',\
                                'us-west-2') ) ;
 
+Run command on production server like:
+$: python $SQUAC_HOME/app/manage.py s3_query_export
+
 Run command in docker-compose like:
 $: docker-compose run --rm app sh -c "python manage.py s3_query_export"
 $: ./mg.sh 's3_query_export'
@@ -42,7 +45,7 @@ class Command(BaseCommand):
         start_date:
             desc: when to start backup (inclusive)
             format: 'YYYY-MM-DD'
-            default: now - 1.day
+            default: now - 3.day
         end_date:
             desc: when to end backup (inclusive)
             format: 'YYYY-MM-DD'
@@ -67,7 +70,7 @@ class Command(BaseCommand):
         parser.add_argument(
             '--start_date',
             type=lambda s: datetime.strptime(s, "%Y-%m-%d").date(),
-            default=(datetime.now(tz=pytz.utc) - timedelta(days=1)).date(),
+            default=(datetime.now(tz=pytz.utc) - timedelta(days=3)).date(),
             help="When to start backup (inclusive, format: YYYY-MM-DD)"
         )
         parser.add_argument(
