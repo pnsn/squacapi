@@ -132,15 +132,11 @@ class OrganizationAPITests(TestCase):
         res = self.org1_member_client.get(url, format='json')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
-    def test_member_cannot_view_other_org(self):
+    def test_member_can_view_other_org(self):
         '''test member cannot view other org page'''
         url = reverse('organization:organization-detail', args=[self.org1.id])
-        payload = {
-            'name': "new_name",
-            "description": "new description"
-        }
-        res = self.org2_member_client.get(url, payload, format='json')
-        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+        res = self.org2_member_client.get(url, format='json')
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
 
     def test_admin_create_org_user_new_user(self):
         '''org admin should be able to create org_user'''

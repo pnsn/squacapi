@@ -75,16 +75,16 @@ class IsOrgAdminOrMember(DjangoModelPermissions):
     ''' Custom to check if user belongs to org'''
 
     def has_permission(self, request, view):
-        '''if user is staff we're done, otherwise check model then
-            object perms
-            if user is staff then we're good
+        '''if user is staff or if SAFE request, we're done
+            otherwise check model object perms
+
             try for user object
                 if request.user is member or admin of org check perms
             except:
                 this is org object, check permissions
         '''
 
-        if request.user.is_staff:
+        if request.user.is_staff or request.method in permissions.SAFE_METHODS:
             return True
         try:
             org = Organization.objects.get(pk=request.data['organization'])
@@ -110,10 +110,9 @@ class IsOrgAdminOrMember(DjangoModelPermissions):
             '''org object'''
             org = obj
         org_admin = org.is_admin(request.user)
-        org_member = org.is_member(request.user)
         if request.user.is_staff or org_admin:
             return True
-        return request.method in permissions.SAFE_METHODS and org_member
+        return request.method in permissions.SAFE_METHODS
 
 
 class IsAdminOrOwner(DjangoModelPermissions):

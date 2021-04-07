@@ -31,12 +31,7 @@ class OrganizationViewSet(OrganizationBase):
     serializer_class = OrganizationSerializer
 
     def get_queryset(self):
-        queryset = Organization.objects.all()
-        if self.request.user.is_staff:
-            return queryset
-        user_org = self.request.user.organization
-        queryset = queryset.filter(pk=user_org.id)
-        return queryset
+        return Organization.objects.all()
 
 
 class OrganizationUserViewSet(OrganizationBase):
@@ -44,12 +39,7 @@ class OrganizationUserViewSet(OrganizationBase):
     serializer_class = UserWriteSerializer
 
     def get_queryset(self):
-        queryset = get_user_model().objects.all()
-        if self.request.user.is_staff:
-            return queryset
-        user_org = self.request.user.organization
-        queryset = queryset.filter(organization=user_org)
-        return queryset
+        return get_user_model().objects.all()
 
     def create(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
