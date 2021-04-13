@@ -227,31 +227,17 @@ LOGOUT_URL = 'rest_framework:logout'
 
 
 
-CACHES = { 
-    'default': { 
-        'BACKEND': 'django.core.cache.backends.dummy.DummyCache'
-    }
-}
-# need to do it this way since we don't want to install redis locally
-if not DEBUG:   
-    CACHES['staging'] = { 
-        'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': os.environ.get('CACHE_LOCATION'),
-        'OPTIONS': {
-            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+if not DEBUG:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django_redis.cache.RedisCache',
+            'LOCATION': os.environ.get('CACHE_LOCATION'),
+            'OPTIONS': {
+                'CLIENT_CLASS': 'django_redis.client.DefaultClient',
         }
     }
+    
 
-    CACHES['production'] = { 
-        'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': os.environ.get('CACHE_LOCATION'),
-        'OPTIONS': {
-            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-        }
-    }
-
-# FIXME this is broken cache key is not being set
-#CACHE_MIDDLEWARE_ALIAS = os.environ.get('CACHE_BACKEND')	
 CACHE_MIDDLEWARE_SECONDS = int(os.environ.get('CACHE_SECONDS'))
 CACHE_MIDDLEWARE_KEY_PREFIX='squac_' + os.environ.get('CACHE_BACKEND')
 
@@ -260,7 +246,7 @@ INVITE_TOKEN_EXPIRY_TIME = 48
 
 
 ADMINS = (
-  ('JC', 'joncon@uw.edu'),
+  ('JC', 'joncon@uw.edu'), ('KM', 'marczk@uw.edu'),
 )
 AWS_DEFAULT_REGION = os.environ.get('AWS_DEFAULT_REGION')
 AWS_SNS_ADMIN_ARN = os.environ.get('AWS_SNS_ADMIN_ARN')
