@@ -234,7 +234,7 @@ if DEBUG:
     }
 # need to do it this way since we don't want to install redis locally
 if not DEBUG:   
-    CACHES['staging'] = { 
+    CACHES['redis'] = { 
         'BACKEND': 'django_redis.cache.RedisCache',
         'LOCATION': os.environ.get('CACHE_LOCATION'),
         'OPTIONS': {
