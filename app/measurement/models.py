@@ -356,6 +356,10 @@ class ArchiveBase(models.Model):
     """An archive-summary of measurements"""
     class Meta:
         abstract = True
+        indexes = [
+            # index in desc order (newest first)
+            models.Index(fields=['-starttime']),
+        ]
 
     channel = models.ForeignKey(Channel, on_delete=models.CASCADE)
     metric = models.ForeignKey(Metric, on_delete=models.CASCADE)
