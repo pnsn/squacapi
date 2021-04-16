@@ -82,7 +82,7 @@ INSTALLED_APPS = [
 
 # The caching middlewares must be first and last
 MIDDLEWARE = [
-    'django.middleware.cache.UpdateCacheMiddleware', #must be first
+    # 'django.middleware.cache.UpdateCacheMiddleware', #must be first
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -93,7 +93,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_cprofile_middleware.middleware.ProfilerMiddleware',
-    'django.middleware.cache.FetchFromCacheMiddleware', #must be last!!
+    # 'django.middleware.cache.FetchFromCacheMiddleware', #must be last!!
 
 ]
 
