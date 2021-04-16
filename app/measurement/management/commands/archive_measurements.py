@@ -23,9 +23,9 @@ class Command(BaseCommand):
     """" Django datetime extractors for dealing with portions of datetimes """
 
     DURATIONS = {
-        'day': lambda count: relativedelta(day=count),
-        'week': lambda count: relativedelta(week=count),
-        'month': lambda count: relativedelta(month=count),
+        'day': lambda count: relativedelta(days=count),
+        'week': lambda count: relativedelta(weeks=count),
+        'month': lambda count: relativedelta(months=count),
     }
     """ functions for generating timesteps of sizes """
 
@@ -41,7 +41,7 @@ class Command(BaseCommand):
                             help='the most recent date to be included in\
                                   the archive (format: mm-dd-yyyy)')
         parser.add_argument('--metric', action='append',
-                            help='name of the metric to be archived',
+                            help='id of the metric to be archived',
                             default=[])
 
     def handle(self, *args, **kwargs):
@@ -59,7 +59,7 @@ class Command(BaseCommand):
         # if specific metrics were selected, filter for them
         if len(metrics) != 0:
             measurements = measurements.filter(
-                metric__name__in=metrics)
+                metric__id__in=metrics)
 
         # get the data to be archived
         archive_data = self.get_archive_data(measurements, archive_type)

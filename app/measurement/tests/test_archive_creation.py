@@ -83,30 +83,39 @@ class TestArchiveCreation(TestCase):
     def tearDown(self):
         self.user.delete()
 
-    # generate list of measurements for single day
-    @given(generate_measurements(TEST_TIME))
-    def test_single_day_archive(self, measurements):
+    @given(data())
+    def test_single_day_archive(self, data):
         """ make sure a a single day's stats are correctly summarized """
-        # create archives of measurements
+        # generate measurements for yesterday and today
+        yesterday = data.draw(TestArchiveCreation.generate_measurements(
+            TestArchiveCreation.TEST_TIME - relativedelta(days=1)))
+        today = data.draw(TestArchiveCreation.generate_measurements(
+            TestArchiveCreation.TEST_TIME))
+
+        # create archives of past 1 day
         out = StringIO()
         period_end = TestArchiveCreation.TEST_TIME + relativedelta(days=1)
-        if len(measurements) > 0:
-            call_command('archive_measurements', 1, 'day',
-                         period_end=period_end,
-                         stdout=out)
+        call_command('archive_measurements', 1, 'day',
+                     period_end=period_end,
+                     stdout=out)
 
-        # Don't create archive if there are no measurements
-        if not measurements:
-            self.assertEqual(len(ArchiveDay.objects.all()), 0)
-            return
+        # check Archive was only created for today
+        self.assertEqual(len(ArchiveDay.objects.all()),
+                         1 if today else 0)
 
-        self.check_queryset_was_archived(measurements)
+        # check the archives have the right statistics, if they exist
+        if yesterday:
+            self.check_queryset_was_not_archived(yesterday)
+        if today:
+            self.check_queryset_was_archived(today)
 
     @given(data())
     def test_multi_day_archive(self, data):
-        """ make sure a a multiple days' stats are correctly summarized """
+        """ make sure multiple days' stats are correctly summarized """
 
-        # generate measurements for yesterday and today
+        # generate measurements for two days ago, yesterday and today
+        two_days = data.draw(TestArchiveCreation.generate_measurements(
+            TestArchiveCreation.TEST_TIME - relativedelta(days=2)))
         yesterday = data.draw(TestArchiveCreation.generate_measurements(
             TestArchiveCreation.TEST_TIME - relativedelta(days=1)))
         today = data.draw(TestArchiveCreation.generate_measurements(
@@ -124,7 +133,9 @@ class TestArchiveCreation(TestCase):
                          sum([1 if day else 0
                               for day in (yesterday, today)]))
 
-        # check the archives have the right staistics, if they exist
+        # check the archives have the right statistics, if they exist
+        if two_days:
+            self.check_queryset_was_not_archived(two_days)
         if yesterday:
             self.check_queryset_was_archived(yesterday)
         if today:
@@ -169,6 +180,16 @@ class TestArchiveCreation(TestCase):
         self.assertEqual(len(measurements), archive.num_samps)
         self.assertEqual(min_start, archive.starttime)
         self.assertEqual(max_end, archive.endtime)
+
+    def check_queryset_was_not_archived(self, measurements):
+        """ checks that the entire given queryset of measurements was
+        not archived """
+        min_start = min([m.starttime for m in measurements])
+        max_end = max([measurement.endtime for measurement in measurements])
+        self.assertFalse(ArchiveDay.objects
+                                   .filter(endtime=max_end,
+                                           starttime=min_start)
+                                   .exists())
 
     def round_to_decimals(self, n, places):
         """
