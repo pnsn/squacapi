@@ -41,6 +41,20 @@ class MeasurementSerializer(serializers.ModelSerializer):
     #     return queryset
 
 
+class AggregatedSerializer(serializers.Serializer):
+    '''simple serializer for aggregated response data'''
+    metric = serializers.IntegerField()
+    channel = serializers.IntegerField()
+    mean = serializers.FloatField()
+    min = serializers.FloatField()
+    max = serializers.FloatField()
+    median = serializers.FloatField()
+    stdev = serializers.FloatField()
+    num_samps = serializers.IntegerField()
+    starttime = serializers.DateTimeField()
+    endtime = serializers.DateTimeField()
+
+
 class MetricSerializer(serializers.HyperlinkedModelSerializer):
 
     url = serializers.HyperlinkedIdentityField(

@@ -19,6 +19,7 @@ router.register('week-archives', views.ArchiveWeekViewSet,
                 basename='archive-week')
 router.register('month-archives', views.ArchiveMonthViewSet,
                 basename='archive-month')
-
+router.register('aggregated', views.AggregatedViewSet,
+                basename='aggregated')
 app_name = "measurement"
 urlpatterns = [path('', include(router.urls))]

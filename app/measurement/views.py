@@ -1,6 +1,10 @@
 from rest_framework import viewsets
+from rest_framework.response import Response
 from django_filters import rest_framework as filters
 from squac.filters import CharInFilter, NumberInFilter
+from measurement.aggregates.percentile import Percentile
+from django.db.models import (Avg, StdDev, Min, Max, Count, FloatField)
+from django.db.models.functions import (Coalesce)
 from squac.mixins import (SetUserMixin, DefaultPermissionsMixin,
                           AdminOrOwnerPermissionMixin)
 from .exceptions import MissingParameterException
@@ -132,9 +136,11 @@ class MetricViewSet(MeasurementBaseViewSet):
         return Metric.objects.all()
 
 
+REQUIRED_MEASUREMENT_PARAMS = ("metric", "starttime", "endtime")
+
+
 class MeasurementViewSet(MeasurementBaseViewSet):
     '''end point for using channel filter'''
-    REQUIRED_PARAMS = ("metric", "starttime", "endtime")
     serializer_class = serializers.MeasurementSerializer
     filter_class = MeasurementFilter
 
@@ -153,7 +159,7 @@ class MeasurementViewSet(MeasurementBaseViewSet):
     def list(self, request, *args, **kwargs):
         '''We want to be carful about large querries so require params'''
         if not all([required_param in request.query_params
-                    for required_param in self.REQUIRED_PARAMS]):
+                    for required_param in REQUIRED_MEASUREMENT_PARAMS]):
             raise MissingParameterException
         return super().list(self, request, *args, **kwargs)
 
@@ -243,3 +249,38 @@ class ArchiveMonthViewSet(ArchiveBaseViewSet):
 
     def get_queryset(self):
         return ArchiveMonth.objects.all()
+
+
+class AggregatedViewSet(DefaultPermissionsMixin, viewsets.ViewSet):
+    ''' calculate aggregates from raw data
+        this is NOT a model viewset so filter_class and serializer_class
+        cannot be used
+    '''
+
+    def list(self, request):
+        if not all([required_param in request.query_params
+                    for required_param in REQUIRED_MEASUREMENT_PARAMS]):
+            raise MissingParameterException
+
+        measurements = Measurement.objects.all()
+        params = request.query_params
+        measurements = measurements.filter(channel=params['channel']).filter(
+            metric=params['metric']).filter(
+            starttime__gte=params['starttime']).filter(
+            starttime__lte=params['endtime'])
+        aggs = measurements.values(
+            'channel', 'metric').annotate(
+                mean=Avg('value'),
+                median=Percentile('value', percentile=0.5),
+                min=Min('value'),
+                max=Max('value'),
+                stdev=Coalesce(StdDev('value', sample=True), 0,
+                               output_field=FloatField()),
+                num_samps=Count('value'),
+                starttime=Min('starttime'),
+                endtime=Max('endtime'),
+
+        )
+        serializer = serializers.AggregatedSerializer(
+            instance=aggs, many=True)
+        return Response(serializer.data)
