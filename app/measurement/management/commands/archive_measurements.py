@@ -8,6 +8,7 @@ from measurement.models import (Measurement, ArchiveHour, ArchiveWeek,
 from measurement.aggregates.percentile import Percentile
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
+import pytz
 
 
 class Command(BaseCommand):
@@ -36,8 +37,11 @@ class Command(BaseCommand):
                             help='The granularity of the desired archive\
                                  (i.e. day, week, month, etc.)')
         parser.add_argument('--period_end',
-                            type=lambda s: datetime.strptime(s, "%m-%d-%Y"),
-                            nargs='?', default=datetime.now(),
+                            type=lambda s: pytz.utc.localize(
+                                datetime.strptime(s, "%m-%d-%Y")),
+                            nargs='?',
+                            default=datetime.now(tz=pytz.utc).replace(
+                                hour=0, minute=0, second=0, microsecond=0),
                             help='the most recent date to be included in\
                                   the archive (format: mm-dd-yyyy)')
         parser.add_argument('--metric', action='append',
@@ -53,8 +57,8 @@ class Command(BaseCommand):
         period_start = period_end - self.DURATIONS[archive_type](period_size)
         # filter down to time range
         measurements = Measurement.objects.filter(
-            starttime__date__lt=period_end) \
-            .filter(starttime__date__gte=period_start)
+            starttime__lt=period_end) \
+            .filter(starttime__gte=period_start)
 
         # if specific metrics were selected, filter for them
         if len(metrics) != 0:
@@ -63,6 +67,7 @@ class Command(BaseCommand):
 
         # get the data to be archived
         archive_data = self.get_archive_data(measurements, archive_type)
+
         # create the archive entries
         if archive_type == 'hour':
             created_archives = ArchiveHour.objects.bulk_create(
