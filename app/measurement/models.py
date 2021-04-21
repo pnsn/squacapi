@@ -118,8 +118,6 @@ class Monitor(MeasurementBase):
         AVERAGE = 'avg', _('Avg')
         MINIMUM = 'min', _('Min')
         MAXIMUM = 'max', _('Max')
-        RECENT = 'recent', _('Recent')
-
     channel_group = models.ForeignKey(
         Group,
         on_delete=models.CASCADE,
