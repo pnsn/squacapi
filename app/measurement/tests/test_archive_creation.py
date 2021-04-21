@@ -95,6 +95,7 @@ class TestArchiveCreation(TestCase):
         # create archives of past 1 day
         out = StringIO()
         period_end = TestArchiveCreation.TEST_TIME + relativedelta(days=1)
+        period_end = period_end.replace(tzinfo=pytz.UTC)
         call_command('archive_measurements', 1, 'day',
                      period_end=period_end,
                      stdout=out)
@@ -124,6 +125,7 @@ class TestArchiveCreation(TestCase):
         # create archives of past 2 days
         out = StringIO()
         period_end = TestArchiveCreation.TEST_TIME + relativedelta(days=1)
+        period_end = period_end.replace(tzinfo=pytz.UTC)
         call_command('archive_measurements', 2, 'day',
                      period_end=period_end,
                      stdout=out)
