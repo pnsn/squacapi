@@ -4,6 +4,7 @@ from squac.mixins import SetUserMixin, DefaultPermissionsMixin, \
     SharedPermissionsMixin
 from dashboard.models import Dashboard, WidgetType, Widget, StatType
 from dashboard import serializers
+from rest_framework.permissions import IsAdminUser
 
 
 class BaseDashboardViewSet(SetUserMixin, DefaultPermissionsMixin,
@@ -40,7 +41,7 @@ class WidgetTypeViewSet(BaseDashboardViewSet):
         return WidgetType.objects.all()
 
 
-class StatTypeViewSet(DefaultPermissionsMixin, viewsets.ReadOnlyModelViewSet):
+class StatTypeViewSet(IsAdminUser, viewsets.ModelViewSet):
     ''' we only want readonly through api'''
     serializer_class = serializers.StatTypeSerializer
 

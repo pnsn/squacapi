@@ -4,6 +4,7 @@ from django.conf import settings
 
 from nslc.models import Group
 from organization.models import Organization
+from django.utils.translation import gettext_lazy as _
 
 
 class DashboardBase(models.Model):
@@ -52,6 +53,13 @@ class StatType(DashboardBase):
 
 
 class Dashboard(DashboardBase):
+    class ArchiveType(models.TextChoices):
+        RAW = 'raw', _('Raw')
+        HOUR = 'hour', _('Hour')
+        DAY = 'day', _('Day')
+        WEEK = 'week', _('Week')
+        MONTH = 'month', _('Month')
+
     '''describes the container the holds widgets'''
     share_all = models.BooleanField(default=False)
     share_org = models.BooleanField(default=False)
@@ -64,6 +72,10 @@ class Dashboard(DashboardBase):
         related_name='dashboards'
     )
     home = models.BooleanField(default=False)
+    archive_type = models.CharField(max_length=8,
+                                    choices=ArchiveType.choices,
+                                    default=ArchiveType.RAW
+                                    )
 
     def save(self, *args, **kwargs):
         if not self.home:
