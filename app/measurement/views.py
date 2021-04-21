@@ -136,9 +136,6 @@ class MetricViewSet(MeasurementBaseViewSet):
         return Metric.objects.all()
 
 
-REQUIRED_MEASUREMENT_PARAMS = ("metric", "starttime", "endtime")
-
-
 class MeasurementViewSet(MeasurementBaseViewSet):
     '''end point for using channel filter'''
     serializer_class = serializers.MeasurementSerializer
@@ -159,7 +156,7 @@ class MeasurementViewSet(MeasurementBaseViewSet):
     def list(self, request, *args, **kwargs):
         '''We want to be carful about large querries so require params'''
         if not all([required_param in request.query_params
-                    for required_param in REQUIRED_MEASUREMENT_PARAMS]):
+                    for required_param in ("metric", "starttime", "endtime")]):
             raise MissingParameterException
         return super().list(self, request, *args, **kwargs)
 
@@ -259,7 +256,8 @@ class AggregatedViewSet(DefaultPermissionsMixin, viewsets.ViewSet):
 
     def list(self, request):
         if not all([required_param in request.query_params
-                    for required_param in REQUIRED_MEASUREMENT_PARAMS]):
+                    for required_param in
+                    ("metric", "starttime", "endtime", "channel")]):
             raise MissingParameterException
 
         measurements = Measurement.objects.all()
