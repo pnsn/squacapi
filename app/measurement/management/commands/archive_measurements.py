@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.db.models import (Avg, StdDev, Min, Max, Count,
                               F, FloatField)
-from django.db.models.functions import (ExtractDay, ExtractWeek, ExtractMonth,
+from django.db.models.functions import (TruncDay, TruncWeek, TruncMonth,
                                         Coalesce)
 from measurement.models import (Measurement, ArchiveHour, ArchiveWeek,
                                 ArchiveDay, ArchiveMonth)
@@ -16,10 +16,10 @@ class Command(BaseCommand):
 
     help = 'Archives Measurements older than the specified age'
 
-    TIME_EXTRACTOR = {
-        'day': ExtractDay,
-        'week': ExtractWeek,
-        'month': ExtractMonth,
+    TIME_TRUNCATOR = {
+        'day': TruncDay,
+        'week': TruncWeek,
+        'month': TruncMonth,
     }
     """" Django datetime extractors for dealing with portions of datetimes """
 
@@ -93,7 +93,7 @@ class Command(BaseCommand):
         # group on metric,channel, and time
         grouped_measurements = qs.annotate(
             # first add day/week/month/year to tuple so we can group on it
-            time=self.TIME_EXTRACTOR[archive_type]('starttime')) \
+            time=self.TIME_TRUNCATOR[archive_type]('starttime')) \
             .values('metric', 'channel', 'time')
 
         # calculate archive stats
