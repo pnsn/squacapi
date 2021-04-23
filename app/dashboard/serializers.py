@@ -86,8 +86,9 @@ class StatTypeSerializer(WidgetSerializer):
     class Meta:
         model = StatType
         fields = (
-            'id', 'type', 'name', 'description'
+            'type', 'name', 'description'
         )
+        read_only_fields = ('id',)
 
 
 class WidgetDetailSerializer(serializers.HyperlinkedModelSerializer):
