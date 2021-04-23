@@ -267,10 +267,9 @@ class AggregatedViewSet(DefaultPermissionsMixin, viewsets.ViewSet):
     '''
 
     def list(self, request):
-        check_measurement_params(request.query_params)
-
-        measurements = Measurement.objects.all()
         params = request.query_params
+        check_measurement_params(params)
+        measurements = Measurement.objects.all()
         try:
             channels = [int(x) for x in params['channel'].split(',')]
             measurements = measurements.filter(channel__in=channels)
