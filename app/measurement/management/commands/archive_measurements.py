@@ -107,11 +107,17 @@ class Command(BaseCommand):
             # add _id suffix to fields so they can be assigned to
             # Archive's fk directly
             metric_id=F('metric'),
-            channel_id=F('channel'))
+            channel_id=F('channel'),
+            p05=Percentile('value', percentile=0.05),
+            p10=Percentile('value', percentile=0.10),
+            p90=Percentile('value', percentile=0.90),
+            p95=Percentile('value', percentile=0.95)
+        )
 
         # select only columns that will be stored in Archive model
         filtered_archive_data = archive_data.values(
             'channel_id', 'metric_id', 'min', 'max', 'mean',
-            'median', 'stdev', 'num_samps', 'starttime', 'endtime')
+            'median', 'stdev', 'p05', 'p10', 'p90', 'p95',
+            'num_samps', 'starttime', 'endtime')
 
         return filtered_archive_data
