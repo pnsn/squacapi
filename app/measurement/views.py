@@ -13,6 +13,20 @@ from .models import (Metric, Measurement, Threshold,
                      ArchiveHour, Monitor, Trigger)
 from measurement import serializers
 
+
+def check_measurement_params(params):
+    '''ensure that each request for measurements/archives and aggs has:
+        * channel or group
+        * metric
+        * starttime
+        * endtime
+    '''
+    if 'channel' not in params and 'group' not in params or \
+            (not all([p in params
+                      for p in ("metric", "starttime", "endtime")])):
+        raise MissingParameterException
+
+
 '''Filters'''
 
 
@@ -155,9 +169,7 @@ class MeasurementViewSet(MeasurementBaseViewSet):
 
     def list(self, request, *args, **kwargs):
         '''We want to be carful about large querries so require params'''
-        if not all([required_param in request.query_params
-                    for required_param in ("metric", "starttime", "endtime")]):
-            raise MissingParameterException
+        check_measurement_params(request.query_params)
         return super().list(self, request, *args, **kwargs)
 
 
@@ -255,14 +267,18 @@ class AggregatedViewSet(DefaultPermissionsMixin, viewsets.ViewSet):
     '''
 
     def list(self, request):
-        if not all([required_param in request.query_params
-                    for required_param in
-                    ("metric", "starttime", "endtime", "channel")]):
-            raise MissingParameterException
+        check_measurement_params(request.query_params)
 
         measurements = Measurement.objects.all()
         params = request.query_params
-        measurements = measurements.filter(channel=params['channel']).filter(
+        try:
+            channels = [int(x) for x in params['channel'].split(',')]
+            measurements = measurements.filter(channel__in=channels)
+        except KeyError:
+            groups = [int(x) for x in params['group'].split(',')]
+            measurements = measurements.filter(
+                channel__group__in=groups)
+        measurements = measurements.filter(
             metric=params['metric']).filter(
             starttime__gte=params['starttime']).filter(
             starttime__lte=params['endtime'])
