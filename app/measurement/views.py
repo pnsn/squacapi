@@ -1,6 +1,10 @@
 from rest_framework import viewsets
+from rest_framework.response import Response
 from django_filters import rest_framework as filters
 from squac.filters import CharInFilter, NumberInFilter
+from measurement.aggregates.percentile import Percentile
+from django.db.models import (Avg, StdDev, Min, Max, Count, FloatField)
+from django.db.models.functions import (Coalesce)
 from squac.mixins import (SetUserMixin, DefaultPermissionsMixin,
                           AdminOrOwnerPermissionMixin)
 from .exceptions import MissingParameterException
@@ -8,6 +12,20 @@ from .models import (Metric, Measurement, Threshold,
                      Alert, ArchiveDay, ArchiveWeek, ArchiveMonth,
                      ArchiveHour, Monitor, Trigger)
 from measurement import serializers
+
+
+def check_measurement_params(params):
+    '''ensure that each request for measurements/archives and aggs has:
+        * channel or group
+        * metric
+        * starttime
+        * endtime
+    '''
+    if 'channel' not in params and 'group' not in params or \
+            (not all([p in params
+                      for p in ("metric", "starttime", "endtime")])):
+        raise MissingParameterException
+
 
 '''Filters'''
 
@@ -134,7 +152,6 @@ class MetricViewSet(MeasurementBaseViewSet):
 
 class MeasurementViewSet(MeasurementBaseViewSet):
     '''end point for using channel filter'''
-    REQUIRED_PARAMS = ("metric", "starttime", "endtime")
     serializer_class = serializers.MeasurementSerializer
     filter_class = MeasurementFilter
 
@@ -152,9 +169,7 @@ class MeasurementViewSet(MeasurementBaseViewSet):
 
     def list(self, request, *args, **kwargs):
         '''We want to be carful about large querries so require params'''
-        if not all([required_param in request.query_params
-                    for required_param in self.REQUIRED_PARAMS]):
-            raise MissingParameterException
+        check_measurement_params(request.query_params)
         return super().list(self, request, *args, **kwargs)
 
 
@@ -243,3 +258,46 @@ class ArchiveMonthViewSet(ArchiveBaseViewSet):
 
     def get_queryset(self):
         return ArchiveMonth.objects.all()
+
+
+class AggregatedViewSet(DefaultPermissionsMixin, viewsets.ViewSet):
+    ''' calculate aggregates from raw data
+        this is NOT a model viewset so filter_class and serializer_class
+        cannot be used
+    '''
+
+    def list(self, request):
+        params = request.query_params
+        check_measurement_params(params)
+        measurements = Measurement.objects.all()
+        try:
+            channels = [int(x) for x in params['channel'].split(',')]
+            measurements = measurements.filter(channel__in=channels)
+        except KeyError:
+            groups = [int(x) for x in params['group'].split(',')]
+            measurements = measurements.filter(
+                channel__group__in=groups)
+        measurements = measurements.filter(
+            metric=params['metric']).filter(
+            starttime__gte=params['starttime']).filter(
+            starttime__lte=params['endtime'])
+        aggs = measurements.values(
+            'channel', 'metric').annotate(
+                mean=Avg('value'),
+                median=Percentile('value', percentile=0.5),
+                min=Min('value'),
+                max=Max('value'),
+                stdev=Coalesce(StdDev('value', sample=True), 0,
+                               output_field=FloatField()),
+                p05=Percentile('value', percentile=0.05),
+                p10=Percentile('value', percentile=0.10),
+                p90=Percentile('value', percentile=0.90),
+                p95=Percentile('value', percentile=0.95),
+                num_samps=Count('value'),
+                starttime=Min('starttime'),
+                endtime=Max('endtime'),
+
+        )
+        serializer = serializers.AggregatedSerializer(
+            instance=aggs, many=True)
+        return Response(serializer.data)

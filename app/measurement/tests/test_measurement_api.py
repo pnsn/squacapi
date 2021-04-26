@@ -8,9 +8,10 @@ from nslc.models import Network, Channel
 from rest_framework.test import APIClient
 from rest_framework import status
 
-from datetime import datetime
+from datetime import datetime, timedelta
 import pytz
-from squac.test_mixins import sample_user
+from squac.test_mixins import sample_user, round_to_decimals
+import numpy as np
 
 
 '''Tests for all measurement models:
@@ -96,12 +97,16 @@ class UnauthenticatedMeasurementApiTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
+DOUBLE_DECIMAL_PLACES = 6
+
+
 class PrivateMeasurementAPITests(TestCase):
     '''For authenticated tests in measuremnt API
 
         Authenticate and make user admin so we are only testing
         routes and methods
     '''
+    DOUBLE_DECIMAL_PLACES = 6
 
     def setUp(self):
         self.client = APIClient()
@@ -296,3 +301,59 @@ class PrivateMeasurementAPITests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
         update_measurements = measurements.all()
         self.assertEqual(len_before_create, len(update_measurements))
+
+    def test_get_aggregate(self):
+        '''create a bunch of measurements then agg them'''
+        values = [1.1, 10, 20.2, 16, 5.0, 2, 200, 10]
+        start = datetime(2021, 5, 5, 0, 0, 0, 0, tzinfo=pytz.UTC)
+
+        for count, value in enumerate(values):
+            starttime = start + timedelta(hours=1)
+            endtime = starttime + timedelta(hours=1)
+            Measurement.objects.create(
+                metric=self.metric,
+                channel=self.chan,
+                value=value,
+                starttime=starttime,
+                endtime=endtime,
+                user=self.user
+            )
+        url = reverse('measurement:aggregated-list')
+        stime, etime = '2021-05-05T00:00:00Z', '2021-05-05T23:59:59Z'
+        url += f'?metric={self.metric.id}&channel={self.chan.id}'
+        url += f'&starttime={stime}&endtime={etime}'
+        res = self.client.get(url)
+        self.assertAlmostEqual(np.mean(values).item(), res.data[0]['mean'])
+        self.assertAlmostEqual(np.median(values).item(), res.data[0]['median'])
+        self.assertAlmostEqual(np.max(values).item(), res.data[0]['max'])
+        self.assertAlmostEqual(np.min(values).item(), res.data[0]['min'])
+        start_str = datetime.strftime(
+            start + timedelta(hours=1), '%Y-%m-%dT%H:%M:%SZ')
+        end_str = datetime.strftime(
+            endtime, '%Y-%m-%dT%H:%M:%SZ')
+
+        self.assertEqual(start_str, res.data[0]['starttime'])
+        self.assertEqual(end_str, res.data[0]['endtime'])
+        self.assertAlmostEqual(
+            np.std(values, ddof=1).item(), res.data[0]['stdev'])
+        self.assertEqual(len(values), res.data[0]['num_samps'])
+        self.assertAlmostEqual(
+            round_to_decimals(np.percentile(values, 5),
+                              self.DOUBLE_DECIMAL_PLACES),
+            round_to_decimals(res.data[0]['p05'],
+                              self.DOUBLE_DECIMAL_PLACES))
+        self.assertAlmostEqual(
+            round_to_decimals(np.percentile(values, 10),
+                              self.DOUBLE_DECIMAL_PLACES),
+            round_to_decimals(res.data[0]['p10'],
+                              self.DOUBLE_DECIMAL_PLACES))
+        self.assertAlmostEqual(
+            round_to_decimals(np.percentile(values, 90),
+                              self.DOUBLE_DECIMAL_PLACES),
+            round_to_decimals(res.data[0]['p90'],
+                              self.DOUBLE_DECIMAL_PLACES))
+        self.assertAlmostEqual(
+            round_to_decimals(np.percentile(values, 95),
+                              self.DOUBLE_DECIMAL_PLACES),
+            round_to_decimals(res.data[0]['p95'],
+                              self.DOUBLE_DECIMAL_PLACES))
