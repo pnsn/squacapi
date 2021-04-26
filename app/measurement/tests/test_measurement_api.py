@@ -10,7 +10,7 @@ from rest_framework import status
 
 from datetime import datetime, timedelta
 import pytz
-from squac.test_mixins import sample_user
+from squac.test_mixins import sample_user, round_to_decimals
 import numpy as np
 
 
@@ -106,6 +106,7 @@ class PrivateMeasurementAPITests(TestCase):
         Authenticate and make user admin so we are only testing
         routes and methods
     '''
+    DOUBLE_DECIMAL_PLACES = 6
 
     def setUp(self):
         self.client = APIClient()
@@ -336,3 +337,23 @@ class PrivateMeasurementAPITests(TestCase):
         self.assertAlmostEqual(
             np.std(values, ddof=1).item(), res.data[0]['stdev'])
         self.assertEqual(len(values), res.data[0]['num_samps'])
+        self.assertAlmostEqual(
+            round_to_decimals(np.percentile(values, 5),
+                              self.DOUBLE_DECIMAL_PLACES),
+            round_to_decimals(res.data[0]['p05'],
+                              self.DOUBLE_DECIMAL_PLACES))
+        self.assertAlmostEqual(
+            round_to_decimals(np.percentile(values, 10),
+                              self.DOUBLE_DECIMAL_PLACES),
+            round_to_decimals(res.data[0]['p10'],
+                              self.DOUBLE_DECIMAL_PLACES))
+        self.assertAlmostEqual(
+            round_to_decimals(np.percentile(values, 90),
+                              self.DOUBLE_DECIMAL_PLACES),
+            round_to_decimals(res.data[0]['p90'],
+                              self.DOUBLE_DECIMAL_PLACES))
+        self.assertAlmostEqual(
+            round_to_decimals(np.percentile(values, 95),
+                              self.DOUBLE_DECIMAL_PLACES),
+            round_to_decimals(res.data[0]['p95'],
+                              self.DOUBLE_DECIMAL_PLACES))
