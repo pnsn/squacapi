@@ -76,7 +76,8 @@ class UnathenticatedMeasurementApiTests(TestCase):
         self.widtype = WidgetType.objects.create(
             name='Test widget type',
             type='Some type',
-            user=self.user
+            user=self.user,
+            use_aggregate=True
         )
         self.stattype = StatType.objects.create(
             name="Average",
