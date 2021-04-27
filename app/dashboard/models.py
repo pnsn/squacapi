@@ -35,6 +35,7 @@ class DashboardBase(models.Model):
 class WidgetType(DashboardBase):
     '''describes the type of widget'''
     type = models.CharField(max_length=255, unique=True)
+    use_aggregate = models.BooleanField(default=False)
 
     class Meta:
         indexes = [
