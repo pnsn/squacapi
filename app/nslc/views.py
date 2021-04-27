@@ -121,9 +121,6 @@ class GroupViewSet(SharedPermissionsMixin, BaseNslcViewSet):
         return queryset
 
     @method_decorator(cache_page(60 * 10))
-    '''consider session data so users don't see
-       each others channel groups
-    '''
     @method_decorator(vary_on_headers('Cookie'))
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
