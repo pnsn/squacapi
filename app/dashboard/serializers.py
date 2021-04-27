@@ -86,7 +86,7 @@ class StatTypeSerializer(WidgetSerializer):
     class Meta:
         model = StatType
         fields = (
-            'type', 'name', 'description'
+            'id', 'type', 'name', 'description'
         )
         read_only_fields = ('id',)
 

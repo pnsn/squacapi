@@ -105,13 +105,13 @@ class AuthenticatedMeasurementFilterTests(TestCase):
         '''test using group param'''
         url = reverse('measurement:aggregated-list')
         stime, etime = '2016-02-01T03:00:00Z', '2020-02-02T05:00:00Z'
-        url += f'?metric=3&channel=4,5,6&starttime={stime}&endtime={etime}'
+        url += f'?metric=3,4,5&channel=4,5,6&starttime={stime}&endtime={etime}'
         res1 = self.client.get(url)
         self.assertEqual(res1.status_code, status.HTTP_200_OK)
 
         # now with group id
         url = reverse('measurement:aggregated-list')
-        url += f'?metric=3&group={self.grp.id}'\
+        url += f'?metric=3,4,5&group={self.grp.id}'\
                f'&starttime={stime}&endtime={etime}'
         res2 = self.client.get(url)
 
