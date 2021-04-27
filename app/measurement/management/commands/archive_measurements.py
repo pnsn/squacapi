@@ -69,8 +69,7 @@ class Command(BaseCommand):
 
         # filter down to time range
         measurements = Measurement.objects.filter(
-            starttime__gte=period_start).filter(
-            starttime__lt=period_end)
+            starttime__gte=period_start, starttime__lt=period_end)
 
         # if specific metrics were selected, filter for them
         if len(metrics) != 0:
@@ -81,8 +80,7 @@ class Command(BaseCommand):
 
         # before adding new archives delete any old ones for these parameters
         archives_to_delete = self.ARCHIVE_TYPE[archive_type].objects.filter(
-            starttime__gte=period_start).filter(
-            starttime__lt=period_end)
+            starttime__gte=period_start, starttime__lt=period_end)
         if len(metrics) != 0:
             archives_to_delete = archives_to_delete.filter(
                 metric_id__in=metrics)
