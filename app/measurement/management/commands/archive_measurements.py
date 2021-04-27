@@ -108,7 +108,7 @@ class Command(BaseCommand):
             .values('metric', 'channel', 'time')
 
         # calculate archive stats
-        archive_data = grouped_measurements.annotate(\
+        archive_data = grouped_measurements.annotate(
             mean=Avg('value'),
             median=Percentile('value', percentile=0.5),
             min=Min('value'),
