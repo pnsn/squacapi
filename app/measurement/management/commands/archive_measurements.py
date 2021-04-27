@@ -1,6 +1,5 @@
 from django.core.management.base import BaseCommand
-from django.db.models import (Avg, StdDev, Min, Max, Count,
-                              F, FloatField)
+from django.db.models import (Avg, StdDev, Min, Max, Count, F, FloatField)
 from django.db.models.functions import (TruncDay, TruncMonth, Coalesce)
 from measurement.models import (Measurement, ArchiveDay, ArchiveMonth)
 from measurement.aggregates.percentile import Percentile
@@ -102,7 +101,6 @@ class Command(BaseCommand):
 
     def get_archive_data(self, qs, archive_type):
         """ returns archives given a queryset """
-
         # group on metric,channel, and time
         grouped_measurements = qs.annotate(
             # first truncate starttime to day/month so we can group on it
@@ -110,9 +108,7 @@ class Command(BaseCommand):
             .values('metric', 'channel', 'time')
 
         # calculate archive stats
-        archive_data = grouped_measurements.annotate(
-            # also annotate type so it can be directly transferred over to
-            # Archive
+        archive_data = grouped_measurements.annotate(\
             mean=Avg('value'),
             median=Percentile('value', percentile=0.5),
             min=Min('value'),
