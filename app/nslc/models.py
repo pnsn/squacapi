@@ -108,3 +108,9 @@ class Group(models.Model):
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        # if share_org is false, share_all must be false
+        if not self.share_org:
+            self.share_all = self.share_org
+        return super(Group, self).save(*args, **kwargs)

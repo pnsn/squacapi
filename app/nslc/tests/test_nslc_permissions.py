@@ -132,6 +132,15 @@ class NslcPermissionTests(TestCase):
             organization=self.not_my_org
 
         )
+        '''edge case where user shares all but not with org'''
+        self.not_my_org_chan_group_share_all_no_org = Group.objects.create(
+            name='not my group share none',
+            share_all=True,
+            share_org=False,
+            user=self.not_me,
+            organization=self.not_my_org
+
+        )
 
     def test_reporter_has_perms(self):
         '''reporters can:
@@ -225,3 +234,11 @@ class NslcPermissionTests(TestCase):
         # viewer
         res = self.me_viewer_client.get(url)
         self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_me_viewer_cannot_view_non_shared_group_list(self):
+        ''' a viewer can view own org's share_org resource'''
+        url = reverse(
+            'nslc:group-list',
+        )
+        res = self.me_viewer_client.get(url)
+        self.assertEqual(len(res.data), 2)
