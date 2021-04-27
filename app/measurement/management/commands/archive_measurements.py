@@ -37,16 +37,16 @@ class Command(BaseCommand):
                             help='number of archives to be created')
         parser.add_argument('archive_type',
                             choices=['day', 'month'],
-                            help='The granularity of the desired archive\
-                                 (i.e. day, month, etc.)')
+                            help=('The granularity of the desired archive '
+                                  '(i.e. day, month, etc.)'))
         parser.add_argument('--period_end',
                             type=lambda s: pytz.utc.localize(
                                 datetime.strptime(s, "%m-%d-%Y")),
                             nargs='?',
                             default=datetime.now(tz=pytz.utc).replace(
                                 hour=0, minute=0, second=0, microsecond=0),
-                            help='the most recent date to be included in\
-                                  the archive (format: mm-dd-yyyy)')
+                            help=('The end of the archiving period, '
+                                  'non-inclusive (format: mm-dd-yyyy)'))
         parser.add_argument('--metric', action='append',
                             help='id of the metric to be archived',
                             default=[])
@@ -58,25 +58,31 @@ class Command(BaseCommand):
         period_end = kwargs['period_end']
         period_size = kwargs['period_size']
         period_start = period_end - self.DURATIONS[archive_type](period_size)
+
+        # if archive_type is month, adjust period start/end to go from 1st day
+        # of the month
+        if archive_type == 'month':
+            period_end = period_end.replace(
+                day=1, hour=0, minute=0, second=0, microsecond=0)
+            period_start = period_start.replace(
+                day=1, hour=0, minute=0, second=0, microsecond=0)
+
         # filter down to time range
-        measurements = (Measurement.objects.filter(
+        measurements = Measurement.objects.filter(
             starttime__gte=period_start).filter(
             starttime__lt=period_end)
-        )
 
         # if specific metrics were selected, filter for them
         if len(metrics) != 0:
-            measurements = measurements.filter(
-                metric__id__in=metrics)
+            measurements = measurements.filter(metric__id__in=metrics)
 
         # get the data to be archived
         archive_data = self.get_archive_data(measurements, archive_type)
 
         # before adding new archives delete any old ones for these parameters
-        archives_to_delete = (self.ARCHIVE_TYPE[archive_type].objects.filter(
+        archives_to_delete = self.ARCHIVE_TYPE[archive_type].objects.filter(
             starttime__gte=period_start).filter(
             starttime__lt=period_end)
-        )
         if len(metrics) != 0:
             archives_to_delete = archives_to_delete.filter(
                 metric_id__in=metrics)
@@ -101,7 +107,7 @@ class Command(BaseCommand):
 
         # group on metric,channel, and time
         grouped_measurements = qs.annotate(
-            # first add day/week/month/year to tuple so we can group on it
+            # first truncate starttime to day/month so we can group on it
             time=self.TIME_TRUNCATOR[archive_type]('starttime')) \
             .values('metric', 'channel', 'time')
 
