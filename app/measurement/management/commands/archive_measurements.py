@@ -1,10 +1,8 @@
 from django.core.management.base import BaseCommand
 from django.db.models import (Avg, StdDev, Min, Max, Count,
                               F, FloatField)
-from django.db.models.functions import (TruncDay, TruncWeek, TruncMonth,
-                                        Coalesce)
-from measurement.models import (Measurement, ArchiveHour, ArchiveWeek,
-                                ArchiveDay, ArchiveMonth)
+from django.db.models.functions import (TruncDay, TruncMonth, Coalesce)
+from measurement.models import (Measurement, ArchiveDay, ArchiveMonth)
 from measurement.aggregates.percentile import Percentile
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
@@ -18,22 +16,18 @@ class Command(BaseCommand):
 
     TIME_TRUNCATOR = {
         'day': TruncDay,
-        'week': TruncWeek,
         'month': TruncMonth,
     }
     """" Django datetime extractors for dealing with portions of datetimes """
 
     DURATIONS = {
         'day': lambda count: relativedelta(days=count),
-        'week': lambda count: relativedelta(weeks=count),
         'month': lambda count: relativedelta(months=count),
     }
     """ functions for generating timesteps of sizes """
 
     ARCHIVE_TYPE = {
-        'hour': ArchiveHour,
         'day': ArchiveDay,
-        'week': ArchiveWeek,
         'month': ArchiveMonth
     }
     """ Types of archive """
@@ -42,8 +36,9 @@ class Command(BaseCommand):
         parser.add_argument('period_size', type=int,
                             help='number of archives to be created')
         parser.add_argument('archive_type',
+                            choices=['day', 'month'],
                             help='The granularity of the desired archive\
-                                 (i.e. day, week, month, etc.)')
+                                 (i.e. day, month, etc.)')
         parser.add_argument('--period_end',
                             type=lambda s: pytz.utc.localize(
                                 datetime.strptime(s, "%m-%d-%Y")),
