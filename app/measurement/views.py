@@ -270,15 +270,19 @@ class AggregatedViewSet(DefaultPermissionsMixin, viewsets.ViewSet):
         params = request.query_params
         check_measurement_params(params)
         measurements = Measurement.objects.all()
+        # determine if this is a list of channels or list of channel groups
         try:
             channels = [int(x) for x in params['channel'].split(',')]
             measurements = measurements.filter(channel__in=channels)
         except KeyError:
+            '''list of channel groups'''
             groups = [int(x) for x in params['group'].split(',')]
             measurements = measurements.filter(
                 channel__group__in=groups)
+
+        metrics = [int(x) for x in params['metric'].split(',')]
+        measurements = measurements.filter(metric__in=metrics)
         measurements = measurements.filter(
-            metric=params['metric']).filter(
             starttime__gte=params['starttime']).filter(
             starttime__lte=params['endtime'])
         aggs = measurements.values(
