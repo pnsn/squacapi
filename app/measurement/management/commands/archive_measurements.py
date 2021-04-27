@@ -30,6 +30,14 @@ class Command(BaseCommand):
     }
     """ functions for generating timesteps of sizes """
 
+    ARCHIVE_TYPE = {
+        'hour': ArchiveHour,
+        'day': ArchiveDay,
+        'week': ArchiveWeek,
+        'month': ArchiveMonth
+    }
+    """ Types of archive """
+
     def add_arguments(self, parser):
         parser.add_argument('period_size', type=int,
                             help='number of archives to be created')
@@ -56,9 +64,10 @@ class Command(BaseCommand):
         period_size = kwargs['period_size']
         period_start = period_end - self.DURATIONS[archive_type](period_size)
         # filter down to time range
-        measurements = Measurement.objects.filter(
-            starttime__lt=period_end) \
-            .filter(starttime__gte=period_start)
+        measurements = (Measurement.objects.filter(
+            starttime__gte=period_start).filter(
+            starttime__lt=period_end)
+        )
 
         # if specific metrics were selected, filter for them
         if len(metrics) != 0:
@@ -68,24 +77,29 @@ class Command(BaseCommand):
         # get the data to be archived
         archive_data = self.get_archive_data(measurements, archive_type)
 
+        # before adding new archives delete any old ones for these parameters
+        archives_to_delete = (self.ARCHIVE_TYPE[archive_type].objects.filter(
+            starttime__gte=period_start).filter(
+            starttime__lt=period_end)
+        )
+        if len(metrics) != 0:
+            archives_to_delete = archives_to_delete.filter(
+                metric_id__in=metrics)
+        deleted_archives = archives_to_delete.delete()
+
         # create the archive entries
-        if archive_type == 'hour':
-            created_archives = ArchiveHour.objects.bulk_create(
-                [ArchiveHour(**archive) for archive in archive_data])
-        elif archive_type == 'day':
-            created_archives = ArchiveDay.objects.bulk_create(
-                [ArchiveDay(**archive) for archive in archive_data])
-        elif archive_type == 'week':
-            created_archives = ArchiveWeek.objects.bulk_create(
-                [ArchiveWeek(**archive) for archive in archive_data])
-        elif archive_type == 'month':
-            created_archives = ArchiveMonth.objects.bulk_create(
-                [ArchiveMonth(**archive) for archive in archive_data])
+        created_archives = self.ARCHIVE_TYPE[archive_type].objects.bulk_create(
+            [self.ARCHIVE_TYPE[archive_type](**archive)
+                for archive in archive_data])
 
         # report back to user
-        self.stdout.write(f"Created {len(created_archives)} entries \
-            for each {archive_type} from {format(period_start, '%m-%d-%Y')} \
-            to {format(period_end, '%m-%d-%Y')}")
+        self.stdout.write(
+            f"Deleted {deleted_archives[0]} and "
+            f"created {len(created_archives)} "
+            f"{archive_type} archives "
+            f"from {format(period_start, '%m-%d-%Y')} "
+            f"to {format(period_end, '%m-%d-%Y')}"
+        )
 
     def get_archive_data(self, qs, archive_type):
         """ returns archives given a queryset """
