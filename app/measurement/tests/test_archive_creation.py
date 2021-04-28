@@ -13,7 +13,7 @@ from hypothesis.strategies import (lists, datetimes, just, deferred, integers,
                                    data)
 from hypothesis.extra.django import TestCase, from_model
 
-from measurement.models import Metric, Measurement, ArchiveDay
+from measurement.models import Metric, Measurement, ArchiveDay, ArchiveMonth
 from nslc.models import Network, Channel
 from squac.test_mixins import sample_user, round_to_decimals
 
@@ -27,7 +27,12 @@ class TestArchiveCreation(TestCase):
     TEST_TIME = datetime(2019, 5, 5)
     DOUBLE_DECIMAL_PLACES = 6
 
-    def generate_measurements(day):
+    ARCHIVE_TYPE = {
+        'day': ArchiveDay,
+        'month': ArchiveMonth
+    }
+
+    def generate_measurements(self, day):
         return lists(from_model(Measurement,
                                 # deferred so that select happens only after
                                 # they are guaranteed to exist (created in
@@ -87,14 +92,15 @@ class TestArchiveCreation(TestCase):
     def test_single_day_archive(self, data):
         """ make sure a a single day's stats are correctly summarized """
         # generate measurements for yesterday and today
-        yesterday = data.draw(TestArchiveCreation.generate_measurements(
-            TestArchiveCreation.TEST_TIME - relativedelta(days=1)))
-        today = data.draw(TestArchiveCreation.generate_measurements(
-            TestArchiveCreation.TEST_TIME))
+        yesterday = data.draw(self.generate_measurements(
+            self.TEST_TIME - relativedelta(days=1)))
+        today = data.draw(self.generate_measurements(
+            self.TEST_TIME))
 
         # create archives of past 1 day
         out = StringIO()
-        period_end = TestArchiveCreation.TEST_TIME + relativedelta(days=1)
+        period_end = self.TEST_TIME + relativedelta(days=1)
+        period_end = period_end.replace(tzinfo=pytz.UTC)
         call_command('archive_measurements', 1, 'day',
                      period_end=period_end,
                      stdout=out)
@@ -105,25 +111,26 @@ class TestArchiveCreation(TestCase):
 
         # check the archives have the right statistics, if they exist
         if yesterday:
-            self.check_queryset_was_not_archived(yesterday)
+            self.check_queryset_was_not_archived(yesterday, 'day')
         if today:
-            self.check_queryset_was_archived(today)
+            self.check_queryset_was_archived(today, 'day')
 
     @given(data())
     def test_multi_day_archive(self, data):
         """ make sure multiple days' stats are correctly summarized """
 
         # generate measurements for two days ago, yesterday and today
-        two_days = data.draw(TestArchiveCreation.generate_measurements(
-            TestArchiveCreation.TEST_TIME - relativedelta(days=2)))
-        yesterday = data.draw(TestArchiveCreation.generate_measurements(
-            TestArchiveCreation.TEST_TIME - relativedelta(days=1)))
-        today = data.draw(TestArchiveCreation.generate_measurements(
-            TestArchiveCreation.TEST_TIME))
+        two_days = data.draw(self.generate_measurements(
+            self.TEST_TIME - relativedelta(days=2)))
+        yesterday = data.draw(self.generate_measurements(
+            self.TEST_TIME - relativedelta(days=1)))
+        today = data.draw(self.generate_measurements(
+            self.TEST_TIME))
 
         # create archives of past 2 days
         out = StringIO()
-        period_end = TestArchiveCreation.TEST_TIME + relativedelta(days=1)
+        period_end = self.TEST_TIME + relativedelta(days=1)
+        period_end = period_end.replace(tzinfo=pytz.UTC)
         call_command('archive_measurements', 2, 'day',
                      period_end=period_end,
                      stdout=out)
@@ -135,13 +142,88 @@ class TestArchiveCreation(TestCase):
 
         # check the archives have the right statistics, if they exist
         if two_days:
-            self.check_queryset_was_not_archived(two_days)
+            self.check_queryset_was_not_archived(two_days, 'day')
         if yesterday:
-            self.check_queryset_was_archived(yesterday)
+            self.check_queryset_was_archived(yesterday, 'day')
         if today:
-            self.check_queryset_was_archived(today)
+            self.check_queryset_was_archived(today, 'day')
 
-    def check_queryset_was_archived(self, measurements):
+    @given(data())
+    def test_archive_overwrite(self, data):
+        """
+        make sure when archive command is called multiple times for a given
+        interval it will delete previous archives
+        """
+        test_time = datetime(2005, 6, 7)
+
+        # generate measurements for a day
+        day_data = data.draw(self.generate_measurements(test_time))
+
+        # create archives for day
+        out = StringIO()
+        period_end = test_time + relativedelta(days=1)
+        period_end = period_end.replace(tzinfo=pytz.UTC)
+        call_command('archive_measurements', 1, 'day',
+                     period_end=period_end,
+                     stdout=out)
+
+        # get number of archives
+        n_archives = ArchiveDay.objects.filter(
+            starttime__gte=period_end - relativedelta(days=1)).filter(
+            starttime__lt=period_end).count()
+
+        # call archive again
+        call_command('archive_measurements', 1, 'day',
+                     period_end=period_end,
+                     stdout=out)
+
+        # check that the number of archives didn't change
+        n_archives2 = ArchiveDay.objects.filter(
+            starttime__gte=period_end - relativedelta(days=1)).filter(
+            starttime__lt=period_end).count()
+
+        if day_data:
+            self.assertTrue(n_archives > 0)
+        self.assertEqual(n_archives, n_archives2)
+
+    @given(data())
+    def test_month_archive(self, data):
+        """ make sure month archive starts on the 1st and doesn't go into
+        current month
+        """
+        test_time = datetime(2005, 6, 7)
+
+        # generate measurements for a day
+        this_month = data.draw(self.generate_measurements(
+            test_time))
+        last_month = data.draw(self.generate_measurements(
+            test_time - relativedelta(months=1)))
+        last_month_day1 = data.draw(self.generate_measurements(
+            test_time - relativedelta(months=1, day=1)))
+        last_month_end = data.draw(self.generate_measurements(
+            test_time - relativedelta(months=1, day=28)))
+
+        all_month = last_month + last_month_day1 + last_month_end
+
+        # create month archive
+        out = StringIO()
+        period_end = test_time
+        period_end = period_end.replace(tzinfo=pytz.UTC)
+        call_command('archive_measurements', 1, 'month',
+                     period_end=period_end,
+                     stdout=out)
+
+        # check the correct number of archives were created
+        self.assertEqual(len(ArchiveMonth.objects.all()),
+                         1 if all_month else 0)
+
+        # check the archives have the right statistics, if they exist
+        if all_month:
+            self.check_queryset_was_archived(all_month, 'month')
+        if this_month:
+            self.check_queryset_was_not_archived(this_month, 'month')
+
+    def check_queryset_was_archived(self, measurements, archive_type):
         """ checks that the entire given queryset of measurements was
         successfully archived """
         # refresh values from db for consistency with query
@@ -149,7 +231,8 @@ class TestArchiveCreation(TestCase):
                             measurements]
         min_start = min([m.starttime for m in measurements])
         max_end = max([measurement.endtime for measurement in measurements])
-        archive = ArchiveDay.objects.get(endtime=max_end, starttime=min_start)
+        archive = self.ARCHIVE_TYPE[archive_type].objects.get(
+            endtime=max_end, starttime=min_start)
         # Assert created archive has correct statistics
         self.assertAlmostEqual(min(measurement_data), archive.min)
         self.assertAlmostEqual(max(measurement_data), archive.max)
@@ -180,12 +263,10 @@ class TestArchiveCreation(TestCase):
         self.assertEqual(min_start, archive.starttime)
         self.assertEqual(max_end, archive.endtime)
 
-    def check_queryset_was_not_archived(self, measurements):
+    def check_queryset_was_not_archived(self, measurements, archive_type):
         """ checks that the entire given queryset of measurements was
         not archived """
         min_start = min([m.starttime for m in measurements])
         max_end = max([measurement.endtime for measurement in measurements])
-        self.assertFalse(ArchiveDay.objects
-                                   .filter(endtime=max_end,
-                                           starttime=min_start)
-                                   .exists())
+        self.assertFalse(self.ARCHIVE_TYPE[archive_type].objects.filter(
+            endtime=max_end, starttime=min_start).exists())

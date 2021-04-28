@@ -1,13 +1,11 @@
 from django.core.management.base import BaseCommand
-from django.db.models import (Avg, StdDev, Min, Max, Count,
-                              F, FloatField)
-from django.db.models.functions import (ExtractDay, ExtractWeek, ExtractMonth,
-                                        Coalesce)
-from measurement.models import (Measurement, ArchiveHour, ArchiveWeek,
-                                ArchiveDay, ArchiveMonth)
+from django.db.models import (Avg, StdDev, Min, Max, Count, F, FloatField)
+from django.db.models.functions import (TruncDay, TruncMonth, Coalesce)
+from measurement.models import (Measurement, ArchiveDay, ArchiveMonth)
 from measurement.aggregates.percentile import Percentile
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
+import pytz
 
 
 class Command(BaseCommand):
@@ -15,31 +13,39 @@ class Command(BaseCommand):
 
     help = 'Archives Measurements older than the specified age'
 
-    TIME_EXTRACTOR = {
-        'day': ExtractDay,
-        'week': ExtractWeek,
-        'month': ExtractMonth,
+    TIME_TRUNCATOR = {
+        'day': TruncDay,
+        'month': TruncMonth,
     }
     """" Django datetime extractors for dealing with portions of datetimes """
 
     DURATIONS = {
         'day': lambda count: relativedelta(days=count),
-        'week': lambda count: relativedelta(weeks=count),
         'month': lambda count: relativedelta(months=count),
     }
     """ functions for generating timesteps of sizes """
+
+    ARCHIVE_TYPE = {
+        'day': ArchiveDay,
+        'month': ArchiveMonth
+    }
+    """ Types of archive """
 
     def add_arguments(self, parser):
         parser.add_argument('period_size', type=int,
                             help='number of archives to be created')
         parser.add_argument('archive_type',
-                            help='The granularity of the desired archive\
-                                 (i.e. day, week, month, etc.)')
+                            choices=['day', 'month'],
+                            help=('The granularity of the desired archive '
+                                  '(i.e. day, month, etc.)'))
         parser.add_argument('--period_end',
-                            type=lambda s: datetime.strptime(s, "%m-%d-%Y"),
-                            nargs='?', default=datetime.now(),
-                            help='the most recent date to be included in\
-                                  the archive (format: mm-dd-yyyy)')
+                            type=lambda s: pytz.utc.localize(
+                                datetime.strptime(s, "%m-%d-%Y")),
+                            nargs='?',
+                            default=datetime.now(tz=pytz.utc).replace(
+                                hour=0, minute=0, second=0, microsecond=0),
+                            help=('The end of the archiving period, '
+                                  'non-inclusive (format: mm-dd-yyyy)'))
         parser.add_argument('--metric', action='append',
                             help='id of the metric to be archived',
                             default=[])
@@ -51,50 +57,58 @@ class Command(BaseCommand):
         period_end = kwargs['period_end']
         period_size = kwargs['period_size']
         period_start = period_end - self.DURATIONS[archive_type](period_size)
+
+        # if archive_type is month, adjust period start/end to go from 1st day
+        # of the month
+        if archive_type == 'month':
+            period_end = period_end.replace(
+                day=1, hour=0, minute=0, second=0, microsecond=0)
+            period_start = period_start.replace(
+                day=1, hour=0, minute=0, second=0, microsecond=0)
+
         # filter down to time range
         measurements = Measurement.objects.filter(
-            starttime__date__lt=period_end) \
-            .filter(starttime__date__gte=period_start)
+            starttime__gte=period_start, starttime__lt=period_end)
 
         # if specific metrics were selected, filter for them
         if len(metrics) != 0:
-            measurements = measurements.filter(
-                metric__id__in=metrics)
+            measurements = measurements.filter(metric__id__in=metrics)
 
         # get the data to be archived
         archive_data = self.get_archive_data(measurements, archive_type)
+
+        # before adding new archives delete any old ones for these parameters
+        archives_to_delete = self.ARCHIVE_TYPE[archive_type].objects.filter(
+            starttime__gte=period_start, starttime__lt=period_end)
+        if len(metrics) != 0:
+            archives_to_delete = archives_to_delete.filter(
+                metric_id__in=metrics)
+        deleted_archives = archives_to_delete.delete()
+
         # create the archive entries
-        if archive_type == 'hour':
-            created_archives = ArchiveHour.objects.bulk_create(
-                [ArchiveHour(**archive) for archive in archive_data])
-        elif archive_type == 'day':
-            created_archives = ArchiveDay.objects.bulk_create(
-                [ArchiveDay(**archive) for archive in archive_data])
-        elif archive_type == 'week':
-            created_archives = ArchiveWeek.objects.bulk_create(
-                [ArchiveWeek(**archive) for archive in archive_data])
-        elif archive_type == 'month':
-            created_archives = ArchiveMonth.objects.bulk_create(
-                [ArchiveMonth(**archive) for archive in archive_data])
+        created_archives = self.ARCHIVE_TYPE[archive_type].objects.bulk_create(
+            [self.ARCHIVE_TYPE[archive_type](**archive)
+                for archive in archive_data])
 
         # report back to user
-        self.stdout.write(f"Created {len(created_archives)} entries \
-            for each {archive_type} from {format(period_start, '%m-%d-%Y')} \
-            to {format(period_end, '%m-%d-%Y')}")
+        self.stdout.write(
+            f"Deleted {deleted_archives[0]} and "
+            f"created {len(created_archives)} "
+            f"{archive_type} archives "
+            f"from {format(period_start, '%m-%d-%Y')} "
+            f"to {format(period_end, '%m-%d-%Y')}"
+        )
 
     def get_archive_data(self, qs, archive_type):
         """ returns archives given a queryset """
-
         # group on metric,channel, and time
         grouped_measurements = qs.annotate(
-            # first add day/week/month/year to tuple so we can group on it
-            time=self.TIME_EXTRACTOR[archive_type]('starttime')) \
+            # first truncate starttime to day/month so we can group on it
+            time=self.TIME_TRUNCATOR[archive_type]('starttime')) \
             .values('metric', 'channel', 'time')
 
         # calculate archive stats
         archive_data = grouped_measurements.annotate(
-            # also annotate type so it can be directly transferred over to
-            # Archive
             mean=Avg('value'),
             median=Percentile('value', percentile=0.5),
             min=Min('value'),
