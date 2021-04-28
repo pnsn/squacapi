@@ -232,7 +232,7 @@ if DEBUG:
         }
 }
 # need to do it this way since we don't want to install redis locally
-if not DEBUG and ENABLE_CACHE:   
+if not DEBUG and ENABLE_CACHE == 'True':   
     CACHES['default'] = { 
         'BACKEND': 'django_redis.cache.RedisCache',
         'LOCATION': os.environ.get('CACHE_LOCATION'),
