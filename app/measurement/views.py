@@ -285,7 +285,7 @@ class AggregatedViewSet(DefaultPermissionsMixin, viewsets.ViewSet):
         measurements = measurements.filter(metric__in=metrics)
         measurements = measurements.filter(
             starttime__gte=params['starttime']).filter(
-            starttime__lte=params['endtime']).order_by('-starttime')
+            starttime__lt=params['endtime']).order_by('-starttime')
         aggs = measurements.values(
             'channel', 'metric').annotate(
                 mean=Avg('value'),
