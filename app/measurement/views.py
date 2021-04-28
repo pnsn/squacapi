@@ -3,7 +3,8 @@ from rest_framework.response import Response
 from django_filters import rest_framework as filters
 from squac.filters import CharInFilter, NumberInFilter
 from measurement.aggregates.percentile import Percentile
-from django.db.models import (Avg, StdDev, Min, Max, Count, FloatField)
+from django.db.models import (Avg, StdDev, Min, Max, Count, FloatField,
+                              Subquery)
 from django.db.models.functions import (Coalesce)
 from squac.mixins import (SetUserMixin, DefaultPermissionsMixin,
                           AdminOrOwnerPermissionMixin)
@@ -238,7 +239,7 @@ class AggregatedViewSet(DefaultPermissionsMixin, viewsets.ViewSet):
         measurements = measurements.filter(metric__in=metrics)
         measurements = measurements.filter(
             starttime__gte=params['starttime']).filter(
-            starttime__lte=params['endtime'])
+            starttime__lt=params['endtime']).order_by('-starttime')
         aggs = measurements.values(
             'channel', 'metric').annotate(
                 mean=Avg('value'),
@@ -254,6 +255,7 @@ class AggregatedViewSet(DefaultPermissionsMixin, viewsets.ViewSet):
                 num_samps=Count('value'),
                 starttime=Min('starttime'),
                 endtime=Max('endtime'),
+                latest=Subquery(measurements.values('value')[:1])
 
         )
         serializer = serializers.AggregatedSerializer(
