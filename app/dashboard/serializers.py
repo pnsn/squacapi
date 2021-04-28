@@ -57,7 +57,7 @@ class WidgetTypeSerializer(serializers.HyperlinkedModelSerializer):
         model = WidgetType
         fields = (
             'id', 'name', 'type', 'description', 'created_at', 'updated_at',
-            'user_id'
+            'user_id', 'use_aggregate'
         )
         read_only_fields = ('id',)
 
