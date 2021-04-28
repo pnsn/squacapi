@@ -1,5 +1,7 @@
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_headers
+
 from django.conf import settings
 from rest_framework import viewsets
 from rest_framework.decorators import api_view
@@ -118,7 +120,7 @@ class GroupViewSet(SharedPermissionsMixin, BaseNslcViewSet):
             queryset.filter(organization=org_id, share_org=True)
         return queryset
 
-    # we probably don't want to cache these too long
     @method_decorator(cache_page(60 * 10))
+    @method_decorator(vary_on_headers('Cookie'))
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
