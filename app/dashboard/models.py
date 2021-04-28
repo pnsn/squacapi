@@ -61,6 +61,18 @@ class Dashboard(DashboardBase):
         WEEK = 'week', _('Week')
         MONTH = 'month', _('Month')
 
+    class ArchiveStat(models.TextChoices):
+        MEAN = 'mean', _('Mean')
+        MEDIAN = 'median', _('Median')
+        STDEV = 'stdev', _('Standard Deviation')
+        MIN = 'min', _('Min')
+        MAX = 'max', _('Max')
+        P05 = 'p05', _('5th Percentile')
+        P10 = 'p10', _('10th Percentile')
+        P90 = 'p90', _('90th Percentile')
+        P95 = 'p95', _('95th Percentile')
+        NUM_SAMPS = 'num_samps', _('Number of Samples')
+
     '''describes the container the holds widgets'''
     share_all = models.BooleanField(default=False)
     share_org = models.BooleanField(default=False)
@@ -76,6 +88,10 @@ class Dashboard(DashboardBase):
     archive_type = models.CharField(max_length=8,
                                     choices=ArchiveType.choices,
                                     default=ArchiveType.RAW
+                                    )
+    archive_stat = models.CharField(max_length=16,
+                                    choices=ArchiveStat.choices,
+                                    default=ArchiveStat.MEAN
                                     )
 
     def save(self, *args, **kwargs):
