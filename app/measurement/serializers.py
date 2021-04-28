@@ -57,6 +57,7 @@ class AggregatedSerializer(serializers.Serializer):
     num_samps = serializers.IntegerField()
     starttime = serializers.DateTimeField()
     endtime = serializers.DateTimeField()
+    latest = serializers.FloatField()
 
 
 class MetricSerializer(serializers.HyperlinkedModelSerializer):
