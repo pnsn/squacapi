@@ -74,9 +74,13 @@ class AlertFilter(filters.FilterSet):
 
 
 class ArchiveBaseFilter(filters.FilterSet):
-    """filters archives by metric, channel, starttime, endtime"""
+    """filters archives by metric, channel, starttime, endtime (starttime)"""
     starttime = filters.CharFilter(field_name='starttime', lookup_expr='gte')
-    endtime = filters.CharFilter(field_name='endtime', lookup_expr='lte')
+
+    ''' Note although param is called endtime, it uses starttime, which is
+        the the only field with an index
+    '''
+    endtime = filters.CharFilter(field_name='starttime', lookup_expr='lt')
 
 
 class ArchiveHourFilter(ArchiveBaseFilter):
@@ -129,13 +133,8 @@ class ArchiveBaseViewSet(DefaultPermissionsMixin,
         model
     """
 
-    REQUIRED_PARAMS = ("metric", "channel", "starttime", "endtime")
-
     def list(self, request, *args, **kwargs):
-        if not all([required_param in request.query_params
-           for required_param in self.REQUIRED_PARAMS]):
-            raise MissingParameterException
-
+        check_measurement_params(request.query_params)
         return super().list(self, request, *args, **kwargs)
 
 
