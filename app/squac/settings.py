@@ -20,6 +20,9 @@ SECRET_KEY = os.environ.get('SQUAC_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('SQUAC_DEBUG_MODE') == 'True'
+
+CACHE_ENABLED = os.environ.get('SQUAC_CACHE_ENABLED') == 'True'
+
 try:
     ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS_LIST').split(',')
 except AttributeError:
@@ -224,15 +227,14 @@ FIXTURE_DIRS = (
 LOGIN_URL = 'rest_framework:login'
 LOGOUT_URL = 'rest_framework:logout'
 
-
 if DEBUG:
     CACHES = { 
         'default': { 
             'BACKEND': 'django.core.cache.backends.dummy.DummyCache'
         }
-}
+    }
 # need to do it this way since we don't want to install redis locally
-if not DEBUG and ENABLE_CACHE == 'True':   
+elif CACHE_ENABLED:  
     CACHES['default'] = { 
         'BACKEND': 'django_redis.cache.RedisCache',
         'LOCATION': os.environ.get('CACHE_LOCATION'),
