@@ -1,4 +1,5 @@
 from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django_filters import rest_framework as filters
 from squac.filters import CharInFilter, NumberInFilter
@@ -215,7 +216,7 @@ class ArchiveMonthViewSet(ArchiveBaseViewSet):
         return ArchiveMonth.objects.all()
 
 
-class AggregatedViewSet(DefaultPermissionsMixin, viewsets.ViewSet):
+class AggregatedViewSet(IsAuthenticated, viewsets.ViewSet):
     ''' calculate aggregates from raw data
         this is NOT a model viewset so filter_class and serializer_class
         cannot be used
