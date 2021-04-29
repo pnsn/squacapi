@@ -227,9 +227,14 @@ FIXTURE_DIRS = (
 LOGIN_URL = 'rest_framework:login'
 LOGOUT_URL = 'rest_framework:logout'
 
-
+if DEBUG:
+    CACHES = { 
+        'default': { 
+            'BACKEND': 'django.core.cache.backends.dummy.DummyCache'
+        }
+    }
 # need to do it this way since we don't want to install redis locally
-if CACHE_ENABLED and not DEBUG:   
+elif CACHE_ENABLED:  
     CACHES['default'] = { 
         'BACKEND': 'django_redis.cache.RedisCache',
         'LOCATION': os.environ.get('CACHE_LOCATION'),
