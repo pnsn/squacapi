@@ -134,8 +134,6 @@ class MeasurementPermissionTests(TestCase):
         )
         self.grp = Group.objects.create(
             name='Test group',
-            share_all=False,
-            share_org=False,
             user=self.reporter,
             organization=self.organization
         )

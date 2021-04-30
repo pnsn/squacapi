@@ -94,8 +94,6 @@ class PrivateAlarmAPITests(TestCase):
         # self.chan3 = self.getTestChannel('CH3')
         self.grp = Group.objects.create(
             name='Test group',
-            share_all=True,
-            share_org=True,
             user=self.user,
             organization=self.organization,
         )
@@ -592,3 +590,18 @@ class PrivateAlarmAPITests(TestCase):
         # Verify results are reverse sorted by timestamps
         timestamps = [alert['timestamp'] for alert in res.data]
         self.assertTrue(sorted(timestamps, reverse=True) == timestamps)
+
+    def test_trigger_with_zero_vals(self):
+        trigger_test = Trigger.objects.create(
+            monitor=self.monitor,
+            minval=0,
+            maxval=None,
+            level=Trigger.Level.ONE,
+            user=self.user
+        )
+
+        channel_value = {}
+        channel_value[trigger_test.monitor.stat] = -1
+        self.assertTrue(trigger_test.is_breaching(channel_value))
+        channel_value[trigger_test.monitor.stat] = 1
+        self.assertFalse(trigger_test.is_breaching(channel_value))

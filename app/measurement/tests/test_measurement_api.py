@@ -304,11 +304,12 @@ class PrivateMeasurementAPITests(TestCase):
 
     def test_get_aggregate(self):
         '''create a bunch of measurements then agg them'''
-        values = [1.1, 10, 20.2, 16, 5.0, 2, 200, 10]
+        values = [1.1, 2, 20.2, 16, 5.0, 2, 200, 10]
         start = datetime(2021, 5, 5, 0, 0, 0, 0, tzinfo=pytz.UTC)
+        starttime = start
 
         for count, value in enumerate(values):
-            starttime = start + timedelta(hours=1)
+            starttime = starttime + timedelta(hours=1)
             endtime = starttime + timedelta(hours=1)
             Measurement.objects.create(
                 metric=self.metric,
@@ -323,6 +324,7 @@ class PrivateMeasurementAPITests(TestCase):
         url += f'?metric={self.metric.id}&channel={self.chan.id}'
         url += f'&starttime={stime}&endtime={etime}'
         res = self.client.get(url)
+
         self.assertAlmostEqual(np.mean(values).item(), res.data[0]['mean'])
         self.assertAlmostEqual(np.median(values).item(), res.data[0]['median'])
         self.assertAlmostEqual(np.max(values).item(), res.data[0]['max'])
@@ -357,3 +359,4 @@ class PrivateMeasurementAPITests(TestCase):
                               self.DOUBLE_DECIMAL_PLACES),
             round_to_decimals(res.data[0]['p95'],
                               self.DOUBLE_DECIMAL_PLACES))
+        self.assertEqual(res.data[0]['latest'], 10)

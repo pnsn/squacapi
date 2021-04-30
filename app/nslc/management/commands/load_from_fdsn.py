@@ -247,4 +247,3 @@ class Command(BaseCommand):
                         )
                     except KeyError as e:
                         print(f'Key error occured: {e}')
-        print('Loading finished')

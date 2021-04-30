@@ -38,8 +38,6 @@ class PublicDashboardFilterTests(TestCase):
             dashboard = Dashboard.objects.get(id=d.id)
             widgets = dashboard.widgets.all()
             self.assertEqual(len(widgets), len(res.data))
-            for dict in res.data:
-                self.assertEqual(dict['dashboard']['id'], d.id)
 
     def test_threshold_filter(self):
         url = reverse('measurement:threshold-list')

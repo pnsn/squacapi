@@ -1,9 +1,11 @@
 from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django_filters import rest_framework as filters
 from squac.filters import CharInFilter, NumberInFilter
 from measurement.aggregates.percentile import Percentile
-from django.db.models import (Avg, StdDev, Min, Max, Count, FloatField)
+from django.db.models import (Avg, StdDev, Min, Max, Count, FloatField,
+                              Subquery)
 from django.db.models.functions import (Coalesce)
 from squac.mixins import (SetUserMixin, DefaultPermissionsMixin,
                           AdminOrOwnerPermissionMixin)
@@ -49,7 +51,7 @@ class MeasurementFilter(filters.FilterSet):
     ''' Note although param is called endtime, it uses starttime, which is
         the the only field with an index
     '''
-    endtime = filters.CharFilter(field_name='starttime', lookup_expr='lte')
+    endtime = filters.CharFilter(field_name='starttime', lookup_expr='lt')
     metric = NumberInFilter(field_name='metric')
     channel = NumberInFilter(field_name='channel')
     group = NumberInFilter(field_name='channel__group')
@@ -73,40 +75,6 @@ class AlertFilter(filters.FilterSet):
         fields = ('trigger', 'in_alarm')
 
 
-class ArchiveBaseFilter(filters.FilterSet):
-    """filters archives by metric, channel, starttime, endtime"""
-    starttime = filters.CharFilter(field_name='starttime', lookup_expr='gte')
-    endtime = filters.CharFilter(field_name='endtime', lookup_expr='lte')
-
-
-class ArchiveHourFilter(ArchiveBaseFilter):
-
-    class Meta:
-        model = ArchiveHour
-        fields = ('metric', 'channel')
-
-
-class ArchiveDayFilter(ArchiveBaseFilter):
-
-    class Meta:
-        model = ArchiveDay
-        fields = ('metric', 'channel')
-
-
-class ArchiveWeekFilter(ArchiveBaseFilter):
-
-    class Meta:
-        model = ArchiveWeek
-        fields = ('metric', 'channel')
-
-
-class ArchiveMonthFilter(ArchiveBaseFilter):
-
-    class Meta:
-        model = ArchiveMonth
-        fields = ('metric', 'channel')
-
-
 '''Base Viewsets'''
 
 
@@ -128,14 +96,10 @@ class ArchiveBaseViewSet(DefaultPermissionsMixin,
         since there is not a user set on archive, all permissions will be
         model
     """
-
-    REQUIRED_PARAMS = ("metric", "channel", "starttime", "endtime")
+    filter_class = MeasurementFilter
 
     def list(self, request, *args, **kwargs):
-        if not all([required_param in request.query_params
-           for required_param in self.REQUIRED_PARAMS]):
-            raise MissingParameterException
-
+        check_measurement_params(request.query_params)
         return super().list(self, request, *args, **kwargs)
 
 
@@ -225,8 +189,6 @@ class AlertViewSet(MonitorBaseViewSet):
 
 
 class ArchiveHourViewSet(ArchiveBaseViewSet):
-
-    filter_class = ArchiveHourFilter
     serializer_class = serializers.ArchiveHourSerializer
 
     def get_queryset(self):
@@ -234,8 +196,6 @@ class ArchiveHourViewSet(ArchiveBaseViewSet):
 
 
 class ArchiveDayViewSet(ArchiveBaseViewSet):
-
-    filter_class = ArchiveDayFilter
     serializer_class = serializers.ArchiveDaySerializer
 
     def get_queryset(self):
@@ -243,8 +203,6 @@ class ArchiveDayViewSet(ArchiveBaseViewSet):
 
 
 class ArchiveWeekViewSet(ArchiveBaseViewSet):
-
-    filter_class = ArchiveWeekFilter
     serializer_class = serializers.ArchiveWeekSerializer
 
     def get_queryset(self):
@@ -252,15 +210,13 @@ class ArchiveWeekViewSet(ArchiveBaseViewSet):
 
 
 class ArchiveMonthViewSet(ArchiveBaseViewSet):
-
-    filter_class = ArchiveMonthFilter
     serializer_class = serializers.ArchiveMonthSerializer
 
     def get_queryset(self):
         return ArchiveMonth.objects.all()
 
 
-class AggregatedViewSet(DefaultPermissionsMixin, viewsets.ViewSet):
+class AggregatedViewSet(IsAuthenticated, viewsets.ViewSet):
     ''' calculate aggregates from raw data
         this is NOT a model viewset so filter_class and serializer_class
         cannot be used
@@ -284,7 +240,7 @@ class AggregatedViewSet(DefaultPermissionsMixin, viewsets.ViewSet):
         measurements = measurements.filter(metric__in=metrics)
         measurements = measurements.filter(
             starttime__gte=params['starttime']).filter(
-            starttime__lte=params['endtime'])
+            starttime__lt=params['endtime']).order_by('-starttime')
         aggs = measurements.values(
             'channel', 'metric').annotate(
                 mean=Avg('value'),
@@ -300,6 +256,7 @@ class AggregatedViewSet(DefaultPermissionsMixin, viewsets.ViewSet):
                 num_samps=Count('value'),
                 starttime=Min('starttime'),
                 endtime=Max('endtime'),
+                latest=Subquery(measurements.values('value')[:1])
 
         )
         serializer = serializers.AggregatedSerializer(

@@ -94,8 +94,6 @@ class DashboardPermissionTests(TestCase):
         # we're not tesing chan group so mark share all
         self.grp = Group.objects.create(
             name='Test group',
-            share_all=True,
-            share_org=True,
             user=self.reporter,
             organization=self.my_org
         )
