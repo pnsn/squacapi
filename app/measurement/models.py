@@ -238,12 +238,11 @@ class Trigger(MeasurementBase):
         '''
         val = channel_value[self.monitor.stat]
         # check three cases: only minval, only maxval, both min and max
-        if not self.minval and not self.maxval:
-            print('minval or maxval should be defined!')
+        if self.minval is None and self.maxval is None:
             return False
-        elif self.minval and not self.maxval:
+        elif self.minval is not None and self.maxval is None:
             return val < self.minval
-        elif not self.minval and self.maxval:
+        elif self.minval is None and self.maxval is not None:
             return val > self.maxval
         else:
             inside_band = (val > self.minval and val < self.maxval)
