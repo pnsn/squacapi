@@ -94,8 +94,6 @@ class PrivateAlarmAPITests(TestCase):
         # self.chan3 = self.getTestChannel('CH3')
         self.grp = Group.objects.create(
             name='Test group',
-            share_all=True,
-            share_org=True,
             user=self.user,
             organization=self.organization,
         )

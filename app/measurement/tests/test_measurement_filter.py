@@ -33,7 +33,6 @@ class AuthenticatedMeasurementFilterTests(TestCase):
 
         self.grp = Group.objects.create(
             name='Test group',
-            share_all=True,
             organization=self.organization,
             user=self.user
         )

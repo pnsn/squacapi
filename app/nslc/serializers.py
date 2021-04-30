@@ -26,8 +26,8 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Group
         fields = (
-            'name', 'id', 'url', 'description', 'channels', 'share_all',
-            'share_org', 'created_at', 'updated_at', 'user_id', 'organization'
+            'name', 'id', 'url', 'description', 'channels',
+            'created_at', 'updated_at', 'user_id', 'organization'
         )
         read_only_fields = ('id',)
         ref_name = "NslcGroup"
@@ -61,8 +61,8 @@ class GroupDetailSerializer(GroupSerializer):
     class Meta:
         model = Group
         fields = (
-            'name', 'id', 'url', 'description', 'channels', 'share_all',
-            'share_org', 'created_at', 'updated_at', 'user_id', 'organization'
+            'name', 'id', 'url', 'description', 'channels',
+            'created_at', 'updated_at', 'user_id', 'organization'
         )
         read_only_fields = ('id',)
 
