@@ -47,8 +47,6 @@ class UnAuthenticatedNslcApiTests(TestCase):
         )
         self.grp = Group.objects.create(
             name='Test group',
-            share_all=True,
-            share_org=True,
             organization=self.organization,
             user=self.user)
         self.grp.channels.add(self.chan)
@@ -103,8 +101,6 @@ class PrivateNslcAPITests(TestCase):
         )
         self.grp = Group.objects.create(
             name='Test group',
-            share_all=True,
-            share_org=True,
             user=self.user,
             organization=self.organization
         )
@@ -177,8 +173,6 @@ class PrivateNslcAPITests(TestCase):
         payload = {
             'name': 'Test group',
             'description': 'A test',
-            'share_all': True,
-            'share_org': True,
             'organization': self.organization.id,
             'channels': [self.chan.id]
         }
@@ -188,8 +182,7 @@ class PrivateNslcAPITests(TestCase):
         group = Group.objects.get(name='UW-All')
         payload = {
             'name': 'UW-All-partial-update',
-            'channels': [self.chan.id],
-            'share_all': True
+            'channels': [self.chan.id]
         }
         self.assertTrue(self.user.is_staff)
         url = reverse('nslc:group-detail', args=[group.id])

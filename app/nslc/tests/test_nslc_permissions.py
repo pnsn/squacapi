@@ -1,12 +1,10 @@
 from django.test import TestCase
-from django.urls import reverse
 from django.contrib.auth.models import Group as UserGroup, Permission
 from django.contrib.contenttypes.models import ContentType
-from rest_framework import status
 from rest_framework.test import APIClient
 from datetime import datetime
 import pytz
-from nslc.models import Network, Channel, Group
+from nslc.models import Network, Channel
 from organization.models import Organization
 from squac.test_mixins import sample_user
 
@@ -91,57 +89,6 @@ class NslcPermissionTests(TestCase):
         self.me_reporter.organization = self.my_org
         self.me_viewer.organization = self.my_org
 
-        # create several chan groups
-        self.my_org_chan_grp_share_org = Group.objects.create(
-            name='my org share_org',
-            share_all=False,
-            share_org=True,
-            user=self.me_reporter,
-            organization=self.my_org
-        )
-        self.my_org_chan_group_share_none = Group.objects.create(
-            name='my org share none',
-            share_all=False,
-            share_org=False,
-            user=self.me_reporter,
-            organization=self.my_org
-
-        )
-        self.not_my_org_chan_group_share_all = Group.objects.create(
-            name='not my org, share_all',
-            share_all=True,
-            share_org=True,
-            user=self.not_me,
-            organization=self.not_my_org
-
-        )
-        self.not_my_org_chan_group_share_org = Group.objects.create(
-            name='not my org share_org',
-            share_all=False,
-            share_org=True,
-            user=self.not_me,
-            organization=self.not_my_org
-
-        )
-
-        self.not_my_org_chan_group_share_none = Group.objects.create(
-            name='not my group share none',
-            share_all=False,
-            share_org=False,
-            user=self.not_me,
-            organization=self.not_my_org
-
-        )
-        '''edge case where user shares all but not with org'''
-        self.not_my_org_chan_group_share_all_no_org = Group.objects.create(
-            name='not my group share none',
-            share_all=True,
-            share_org=False,
-            user=self.not_me,
-            organization=self.not_my_org
-
-        )
-
     def test_reporter_has_perms(self):
         '''reporters can:
 
@@ -181,64 +128,3 @@ class NslcPermissionTests(TestCase):
         self.assertFalse(self.me_viewer.has_perm('nslc.delete_group'))
 
     # # #### groups tests ####
-    def test_me_viewer_can_view_my_org_share_org(self):
-        ''' a viewer can view own org's share_org resource'''
-        url = reverse(
-            'nslc:group-detail',
-            kwargs={'pk': self.my_org_chan_grp_share_org.id}
-        )
-        # viewer
-        res = self.me_viewer_client.get(url)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-
-    def test_me_viewer_cannot_view_my_org_share_none(self):
-        self.my_org_chan_group_share_none.id
-        ''' a viewer can view own org's share_org resource'''
-        url = reverse(
-            'nslc:group-detail',
-            kwargs={'pk': self.my_org_chan_group_share_none.id}
-        )
-        # viewer
-        res = self.me_viewer_client.get(url)
-        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
-
-    def test_me_viewer_can_view_not_my_org_share_all(self):
-        self.not_my_org_chan_group_share_all.id
-        ''' a viewer can view own org's share_org resource'''
-        url = reverse(
-            'nslc:group-detail',
-            kwargs={'pk': self.not_my_org_chan_group_share_all.id}
-        )
-        # viewer
-        res = self.me_viewer_client.get(url)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-
-    def test_me_viewer_cannot_view_not_my_org_share_org(self):
-        self.not_my_org_chan_group_share_all.id
-        ''' a viewer can view own org's share_org resource'''
-        url = reverse(
-            'nslc:group-detail',
-            kwargs={'pk': self.not_my_org_chan_group_share_org.id}
-        )
-        # viewer
-        res = self.me_viewer_client.get(url)
-        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
-
-    def test_me_viewer_cannot_view_not_my_org_share_none(self):
-        self.not_my_org_chan_group_share_all.id
-        ''' a viewer can view own org's share_org resource'''
-        url = reverse(
-            'nslc:group-detail',
-            kwargs={'pk': self.not_my_org_chan_group_share_none.id}
-        )
-        # viewer
-        res = self.me_viewer_client.get(url)
-        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
-
-    def test_me_viewer_cannot_view_non_shared_group_list(self):
-        ''' a viewer can view own org's share_org resource'''
-        url = reverse(
-            'nslc:group-list',
-        )
-        res = self.me_viewer_client.get(url)
-        self.assertEqual(len(res.data), 2)

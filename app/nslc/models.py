@@ -90,8 +90,6 @@ class Group(models.Model):
     channels = models.ManyToManyField('Channel')
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=255, blank=True, default='')
-    share_all = models.BooleanField(default=False)
-    share_org = models.BooleanField(default=False)
     organization = models.ForeignKey(
         Organization,
         on_delete=models.CASCADE,
@@ -100,17 +98,5 @@ class Group(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    class Meta:
-        indexes = [
-            models.Index(fields=['share_all']),
-            models.Index(fields=['share_org'])
-        ]
-
     def __str__(self):
         return self.name
-
-    def save(self, *args, **kwargs):
-        # if share_org is false, share_all must be false
-        if not self.share_org:
-            self.share_all = self.share_org
-        return super(Group, self).save(*args, **kwargs)

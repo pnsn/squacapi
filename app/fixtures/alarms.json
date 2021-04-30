@@ -201,8 +201,6 @@
         ],
         "name": "grp1",
         "description": "Group 1",
-        "share_all": false,
-        "share_org": false,
         "created_at": "2019-08-28T23:27:28.691Z",
         "updated_at": "2019-08-28T23:27:28.691Z",
         "channels": [
@@ -222,8 +220,6 @@
         ],
         "name": "grp2",
         "description": "Group 2",
-        "share_all": false,
-        "share_org": false,
         "created_at": "2019-08-28T23:27:28.691Z",
         "updated_at": "2019-08-28T23:27:28.691Z",
         "channels": [
@@ -242,8 +238,6 @@
         ],
         "name": "grp3",
         "description": "Group 3",
-        "share_all": false,
-        "share_org": false,
         "created_at": "2019-08-28T23:27:28.691Z",
         "updated_at": "2019-08-28T23:27:28.691Z",
         "channels": [],
