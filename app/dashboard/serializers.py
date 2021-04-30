@@ -93,7 +93,9 @@ class StatTypeSerializer(WidgetSerializer):
 
 class WidgetDetailSerializer(serializers.HyperlinkedModelSerializer):
     '''Detail and list view'''
-    dashboard = DashboardSerializer(read_only=True)
+    dashboard = serializers.PrimaryKeyRelatedField(
+        queryset=Dashboard.objects.all()
+    )
     widgettype = WidgetTypeSerializer(read_only=True)
     metrics = MetricSerializer(many=True, read_only=True)
     stattype = StatTypeSerializer(read_only=True)

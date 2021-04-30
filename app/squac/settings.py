@@ -257,7 +257,8 @@ INVITE_TOKEN_EXPIRY_TIME = 48
 
 
 ADMINS = (
-  ('JC', 'joncon@uw.edu'),
+  ('JC', 'joncon@uw.edu'),('KM', 'marczk@uw.edu '), ('AH','ahutko@uw.edu '),
+  ('CU', 'ulbergc@uw.edu ')
 )
 AWS_DEFAULT_REGION = os.environ.get('AWS_DEFAULT_REGION')
 AWS_SNS_ADMIN_ARN = os.environ.get('AWS_SNS_ADMIN_ARN')
