@@ -21,6 +21,9 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from . import views
 
+'''use drf json response for errors rather than default django html'''
+handler500 = 'rest_framework.exceptions.server_error'
+handler400 = 'rest_framework.exceptions.bad_request'
 
 schema_view = get_schema_view(
     openapi.Info(
