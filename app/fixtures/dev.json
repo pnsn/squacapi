@@ -2448,9 +2448,9 @@
     "description": "Test 1",
     "unit": "integer",
     "url": "",
+    "reference_url": "pnsn.org",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
     "sample_rate": 3600
   }
 },
@@ -2468,7 +2468,7 @@
     "url": "",
     "default_minval": 2.0,
     "default_maxval": 15.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2486,7 +2486,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2504,7 +2504,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2522,7 +2522,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2540,7 +2540,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2558,7 +2558,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2576,7 +2576,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2594,7 +2594,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2612,7 +2612,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2630,7 +2630,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2648,7 +2648,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2666,7 +2666,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2684,7 +2684,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2702,7 +2702,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2720,7 +2720,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2738,7 +2738,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2756,7 +2756,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2774,7 +2774,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2792,7 +2792,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2810,7 +2810,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2828,7 +2828,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2846,7 +2846,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2864,7 +2864,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2882,7 +2882,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2900,7 +2900,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2918,7 +2918,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2936,7 +2936,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2954,7 +2954,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2972,7 +2972,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2990,7 +2990,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -3008,7 +3008,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -3026,7 +3026,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
