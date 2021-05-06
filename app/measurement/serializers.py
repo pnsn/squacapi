@@ -48,6 +48,8 @@ class AggregatedSerializer(serializers.Serializer):
     mean = serializers.FloatField()
     min = serializers.FloatField()
     max = serializers.FloatField()
+    minabs = serializers.FloatField()
+    maxabs = serializers.FloatField()
     median = serializers.FloatField()
     stdev = serializers.FloatField()
     p05 = serializers.FloatField()
@@ -155,6 +157,8 @@ class ArchiveBaseSerializer(serializers.HyperlinkedModelSerializer):
         queryset=Channel.objects.all())
     metric = serializers.PrimaryKeyRelatedField(
         queryset=Metric.objects.all())
+    minabs = serializers.ReadOnlyField()
+    maxabs = serializers.ReadOnlyField()
 
 
 class ArchiveHourSerializer(ArchiveBaseSerializer):
