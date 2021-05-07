@@ -75,11 +75,47 @@ class NslcFilterTests(TestCase):
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         channel_count = 0
-        for dict in res.data:
-            if dict['class_name'] == 'channel':
+        for d in res.data:
+            if d['class_name'] == 'channel':
                 channel_count += 1
-                self.assertEqual(dict['code'][2], 'z')
+                self.assertEqual(d['code'][2], 'z')
         self.assertEqual(channel_count, 2)
+
+    def test_loc_search_filter(self):
+        url = reverse('nslc:channel-list')
+        url += '?loc_search=-.'
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        channel_count = 0
+        for d in res.data:
+            if d['class_name'] == 'channel':
+                channel_count += 1
+                self.assertEqual(d['loc'][0], '-')
+        self.assertEqual(channel_count, 8)
+
+    def test_net_search_filter(self):
+        url = reverse('nslc:channel-list')
+        url += '?net_search=u.'
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        channel_count = 0
+        for d in res.data:
+            if d['class_name'] == 'channel':
+                channel_count += 1
+                self.assertEqual(d['network'][0], 'u')
+        self.assertEqual(channel_count, 10)
+
+    def test_sta_search_filter(self):
+        url = reverse('nslc:channel-list')
+        url += '?sta_search=d.'
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        channel_count = 0
+        for d in res.data:
+            if d['class_name'] == 'channel':
+                channel_count += 1
+                self.assertEqual(d['station_code'][0], 'd')
+        self.assertEqual(channel_count, 3)
 
     def test_bad_channel_request(self):
         url = reverse('nslc:channel-list')
