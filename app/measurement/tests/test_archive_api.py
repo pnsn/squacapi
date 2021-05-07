@@ -158,7 +158,7 @@ class ArchiveApiTests(TestCase):
         self.archive1 = ArchiveDay.objects.create(
             channel=self.chan1,
             metric=self.metric,
-            min=0, max=0, mean=0, median=0, stdev=0, num_samps=1,
+            min=-2, max=1, mean=0, median=0, stdev=0, num_samps=1,
             p05=0, p10=0, p90=0, p95=0,
             starttime=datetime(2019, 5, 5, 0, tzinfo=pytz.UTC),
             endtime=datetime(2019, 5, 6, 0, tzinfo=pytz.UTC)
@@ -167,7 +167,7 @@ class ArchiveApiTests(TestCase):
         self.archive2 = ArchiveDay.objects.create(
             channel=self.chan2,
             metric=self.metric,
-            min=0, max=0, mean=0, median=0, stdev=0, num_samps=1,
+            min=0, max=3, mean=0, median=0, stdev=0, num_samps=1,
             p05=0, p10=0, p90=0, p95=0,
             starttime=datetime(2019, 5, 5, tzinfo=pytz.UTC),
             endtime=datetime(2019, 5, 6, tzinfo=pytz.UTC)
@@ -191,6 +191,11 @@ class ArchiveApiTests(TestCase):
             'measurement:archive-day-detail',
             kwargs={'pk': self.archive1.id}
         ) in res.data[0]["id"])
+        # also check for calculated properties
+        self.assertEqual(res.data[0]["minabs"], min(abs(self.archive1.min),
+                                                    abs(self.archive1.max)))
+        self.assertEqual(res.data[0]["maxabs"], max(abs(self.archive1.min),
+                                                    abs(self.archive1.max)))
 
     def test_get_multiple_archives(self):
         '''ensure requesting by channels and by group

@@ -376,6 +376,14 @@ class ArchiveBase(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    @property
+    def minabs(self):
+        return min(abs(self.min), abs(self.max))
+
+    @property
+    def maxabs(self):
+        return max(abs(self.min), abs(self.max))
+
     def __str__(self):
         return (f"Archive of Metric: {str(self.metric)} "
                 f"Channel: {str(self.channel)} "

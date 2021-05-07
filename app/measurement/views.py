@@ -6,7 +6,7 @@ from squac.filters import CharInFilter, NumberInFilter
 from measurement.aggregates.percentile import Percentile
 from django.db.models import (Avg, StdDev, Min, Max, Count, FloatField,
                               Subquery)
-from django.db.models.functions import (Coalesce)
+from django.db.models.functions import (Coalesce, Abs, Least, Greatest)
 from squac.mixins import (SetUserMixin, DefaultPermissionsMixin,
                           AdminOrOwnerPermissionMixin)
 from .exceptions import MissingParameterException
@@ -247,6 +247,8 @@ class AggregatedViewSet(IsAuthenticated, viewsets.ViewSet):
                 median=Percentile('value', percentile=0.5),
                 min=Min('value'),
                 max=Max('value'),
+                minabs=Least(Abs(Min('value')), Abs(Max('value'))),
+                maxabs=Greatest(Abs(Min('value')), Abs(Max('value'))),
                 stdev=Coalesce(StdDev('value', sample=True), 0,
                                output_field=FloatField()),
                 p05=Percentile('value', percentile=0.05),

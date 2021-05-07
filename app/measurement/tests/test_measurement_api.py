@@ -329,6 +329,12 @@ class PrivateMeasurementAPITests(TestCase):
         self.assertAlmostEqual(np.median(values).item(), res.data[0]['median'])
         self.assertAlmostEqual(np.max(values).item(), res.data[0]['max'])
         self.assertAlmostEqual(np.min(values).item(), res.data[0]['min'])
+        self.assertAlmostEqual(min(np.abs(np.min(values)),
+                                   np.abs(np.max(values))).item(),
+                               res.data[0]['minabs'])
+        self.assertAlmostEqual(max(np.abs(np.min(values)),
+                                   np.abs(np.max(values))).item(),
+                               res.data[0]['maxabs'])
         start_str = datetime.strftime(
             start + timedelta(hours=1), '%Y-%m-%dT%H:%M:%SZ')
         end_str = datetime.strftime(
