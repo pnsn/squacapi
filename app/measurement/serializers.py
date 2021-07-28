@@ -41,6 +41,27 @@ class MeasurementSerializer(serializers.ModelSerializer):
     #     return queryset
 
 
+class AggregatedSerializer(serializers.Serializer):
+    '''simple serializer for aggregated response data'''
+    metric = serializers.IntegerField()
+    channel = serializers.IntegerField()
+    mean = serializers.FloatField()
+    min = serializers.FloatField()
+    max = serializers.FloatField()
+    minabs = serializers.FloatField()
+    maxabs = serializers.FloatField()
+    median = serializers.FloatField()
+    stdev = serializers.FloatField()
+    p05 = serializers.FloatField()
+    p10 = serializers.FloatField()
+    p90 = serializers.FloatField()
+    p95 = serializers.FloatField()
+    num_samps = serializers.IntegerField()
+    starttime = serializers.DateTimeField()
+    endtime = serializers.DateTimeField()
+    latest = serializers.FloatField()
+
+
 class MetricSerializer(serializers.HyperlinkedModelSerializer):
 
     url = serializers.HyperlinkedIdentityField(
@@ -136,6 +157,8 @@ class ArchiveBaseSerializer(serializers.HyperlinkedModelSerializer):
         queryset=Channel.objects.all())
     metric = serializers.PrimaryKeyRelatedField(
         queryset=Metric.objects.all())
+    minabs = serializers.ReadOnlyField()
+    maxabs = serializers.ReadOnlyField()
 
 
 class ArchiveHourSerializer(ArchiveBaseSerializer):

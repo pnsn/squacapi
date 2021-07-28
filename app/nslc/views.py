@@ -1,5 +1,7 @@
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_headers
+
 from django.conf import settings
 from rest_framework import viewsets
 from rest_framework.decorators import api_view
@@ -7,8 +9,7 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from django_filters import rest_framework as filters
 from squac.filters import CharInFilter
-from squac.mixins import SetUserMixin, DefaultPermissionsMixin, \
-    SharedPermissionsMixin
+from squac.mixins import SetUserMixin, DefaultPermissionsMixin
 from .models import Network, Channel, Group
 from nslc.serializers import NetworkSerializer, ChannelSerializer, \
     GroupSerializer, GroupDetailSerializer
@@ -34,10 +35,15 @@ class NetworkFilter(filters.FilterSet):
 
 class ChannelFilter(filters.FilterSet):
     network = CharInFilter(field_name='network__code')
+    net_search = filters.CharFilter(field_name='network__code',
+                                    lookup_expr='iregex')
     channel = CharInFilter(field_name='code', lookup_expr='in')
     chan_search = filters.CharFilter(field_name='code', lookup_expr='iregex')
     station = CharInFilter(field_name='station_code', lookup_expr='in')
+    sta_search = filters.CharFilter(field_name='station_code',
+                                    lookup_expr='iregex')
     location = filters.CharFilter(field_name='loc')
+    loc_search = filters.CharFilter(field_name='loc', lookup_expr='iregex')
     startafter = filters.CharFilter(field_name='starttime', lookup_expr='gte')
     startbefore = filters.CharFilter(field_name='starttime', lookup_expr='lte')
     endafter = filters.CharFilter(field_name='endtime', lookup_expr='gte')
@@ -97,7 +103,7 @@ class ChannelViewSet(BaseNslcViewSet):
         return self.serializer_class.setup_eager_loading(q)
 
 
-class GroupViewSet(SharedPermissionsMixin, BaseNslcViewSet):
+class GroupViewSet(BaseNslcViewSet):
     filter_class = GroupFilter
     serializer_class = GroupSerializer
 
@@ -108,17 +114,9 @@ class GroupViewSet(SharedPermissionsMixin, BaseNslcViewSet):
 
     def get_queryset(self):
         queryset = Group.objects.all()
-        if self.request.user.is_staff:
-            return queryset
-        '''view public and own resources'''
-        org_id = self.request.user.organization.id
-        queryset = \
-            queryset.filter(user=self.request.user) |\
-            queryset.filter(share_all=True) |\
-            queryset.filter(organization=org_id, share_org=True)
         return queryset
 
-    # we probably don't want to cache these too long
     @method_decorator(cache_page(60 * 10))
+    @method_decorator(vary_on_headers('Cookie'))
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)

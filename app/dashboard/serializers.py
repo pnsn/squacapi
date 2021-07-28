@@ -46,7 +46,7 @@ class DashboardSerializer(serializers.HyperlinkedModelSerializer):
         fields = (
             'id', 'name', 'description', 'created_at', 'updated_at',
             'user_id', 'share_all', 'share_org', 'window_seconds', 'starttime',
-            'endtime', 'organization', 'home'
+            'endtime', 'organization', 'home', 'archive_type'
         )
         read_only_fields = ('id',)
 
@@ -57,7 +57,7 @@ class WidgetTypeSerializer(serializers.HyperlinkedModelSerializer):
         model = WidgetType
         fields = (
             'id', 'name', 'type', 'description', 'created_at', 'updated_at',
-            'user_id'
+            'user_id', 'use_aggregate'
         )
         read_only_fields = ('id',)
 
@@ -76,7 +76,7 @@ class DashboardDetailSerializer(DashboardSerializer):
         fields = (
             'id', 'description', 'name', 'widgets', 'created_at',
             'updated_at', 'user_id', 'share_all', 'share_org', 'starttime',
-            'endtime', 'organization', 'window_seconds', 'home'
+            'endtime', 'organization', 'window_seconds', 'home', 'archive_type'
         )
         read_only_fields = ('id',)
 
@@ -88,11 +88,14 @@ class StatTypeSerializer(WidgetSerializer):
         fields = (
             'id', 'type', 'name', 'description'
         )
+        read_only_fields = ('id',)
 
 
 class WidgetDetailSerializer(serializers.HyperlinkedModelSerializer):
     '''Detail and list view'''
-    dashboard = DashboardSerializer(read_only=True)
+    dashboard = serializers.PrimaryKeyRelatedField(
+        queryset=Dashboard.objects.all()
+    )
     widgettype = WidgetTypeSerializer(read_only=True)
     metrics = MetricSerializer(many=True, read_only=True)
     stattype = StatTypeSerializer(read_only=True)

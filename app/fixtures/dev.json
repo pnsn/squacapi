@@ -2196,8 +2196,6 @@
     "user": 1,
     "name": "grp1",
     "description": "Group 1",
-    "share_all": false,
-    "share_org": false,
     "organization": 1,
     "created_at": "2019-08-28T23:27:28.691Z",
     "updated_at": "2019-08-28T23:27:28.691Z",
@@ -2215,8 +2213,6 @@
     "user": 1,
     "name": "grp2",
     "description": "Group 2",
-    "share_all": false,
-    "share_org": false,
     "organization": 1,
     "created_at": "2019-08-28T23:27:28.691Z",
     "updated_at": "2019-08-28T23:27:28.691Z",
@@ -2233,8 +2229,6 @@
     "user": 1,
     "name": "grp3",
     "description": "Group 3",
-    "share_all": false,
-    "share_org": false,
     "organization": 1,
     "created_at": "2019-08-28T23:27:28.691Z",
     "updated_at": "2019-08-28T23:27:28.691Z",
@@ -2248,8 +2242,6 @@
     "user": 1,
     "name": "NV-All",
     "description": "All NV channels",
-    "share_all": false,
-    "share_org": false,
     "organization": 1,
     "created_at": "2019-08-28T23:27:28.715Z",
     "updated_at": "2019-08-28T23:27:28.715Z",
@@ -2263,8 +2255,6 @@
     "user": 1,
     "name": "IU-All",
     "description": "All IU channels",
-    "share_all": false,
-    "share_org": false,
     "organization": 1,
     "created_at": "2019-08-28T23:27:28.717Z",
     "updated_at": "2019-08-28T23:27:28.717Z",
@@ -2278,8 +2268,6 @@
     "user": 1,
     "name": "NC-All",
     "description": "All NC channels",
-    "share_all": false,
-    "share_org": false,
     "organization": 1,
     "created_at": "2019-08-28T23:27:28.720Z",
     "updated_at": "2019-08-28T23:27:28.720Z",
@@ -2293,8 +2281,6 @@
     "user": 1,
     "name": "OO-All",
     "description": "All OO channels",
-    "share_all": false,
-    "share_org": false,
     "organization": 1,
     "created_at": "2019-08-28T23:27:28.722Z",
     "updated_at": "2019-08-28T23:27:28.722Z",
@@ -2308,8 +2294,6 @@
     "user": 1,
     "name": "NN-All",
     "description": "All NN channels",
-    "share_all": false,
-    "share_org": false,
     "organization": 1,
     "created_at": "2019-08-28T23:27:28.725Z",
     "updated_at": "2019-08-28T23:27:28.725Z",
@@ -2323,8 +2307,6 @@
     "user": 1,
     "name": "CI-All",
     "description": "All CI channels",
-    "share_all": false,
-    "share_org": false,
     "organization": 1,
     "created_at": "2019-08-28T23:27:28.727Z",
     "updated_at": "2019-08-28T23:27:28.727Z",
@@ -2338,8 +2320,6 @@
     "user": 1,
     "name": "MB-All",
     "description": "All MB channels",
-    "share_all": false,
-    "share_org": false,
     "organization": 1,
     "created_at": "2019-08-28T23:27:28.729Z",
     "updated_at": "2019-08-28T23:27:28.729Z",
@@ -2353,8 +2333,6 @@
     "user": 1,
     "name": "CN-All",
     "description": "All CN channels",
-    "share_all": false,
-    "share_org": false,
     "organization": 1,
     "created_at": "2019-08-28T23:27:28.732Z",
     "updated_at": "2019-08-28T23:27:28.732Z",
@@ -2368,8 +2346,6 @@
     "user": 1,
     "name": "BK-All",
     "description": "All BK channels",
-    "share_all": false,
-    "share_org": false,
     "organization": 1,
     "created_at": "2019-08-28T23:27:28.734Z",
     "updated_at": "2019-08-28T23:27:28.734Z",
@@ -2383,8 +2359,6 @@
     "user": 1,
     "name": "NP-All",
     "description": "All NP channels",
-    "share_all": false,
-    "share_org": false,
     "organization": 1,
     "created_at": "2019-08-28T23:27:28.736Z",
     "updated_at": "2019-08-28T23:27:28.736Z",
@@ -2398,8 +2372,6 @@
     "user": 1,
     "name": "TA-All",
     "description": "All TA channels",
-    "share_all": false,
-    "share_org": false,
     "organization": 1,
     "created_at": "2019-08-28T23:27:28.738Z",
     "updated_at": "2019-08-28T23:27:28.738Z",
@@ -2413,8 +2385,6 @@
     "user": 1,
     "name": "CC-All",
     "description": "All CC channels",
-    "share_all": false,
-    "share_org": false,
     "organization": 1,
     "created_at": "2019-08-28T23:27:28.741Z",
     "updated_at": "2019-08-28T23:27:28.741Z",
@@ -2428,8 +2398,6 @@
     "user": 1,
     "name": "PB-All",
     "description": "All PB channels",
-    "share_all": false,
-    "share_org": false,
     "organization": 1,
     "created_at": "2019-08-28T23:27:28.744Z",
     "updated_at": "2019-08-28T23:27:28.744Z",
@@ -2443,8 +2411,6 @@
     "user": 1,
     "name": "UO-All",
     "description": "All UO channels",
-    "share_all": false,
-    "share_org": false,
     "organization": 1,
     "created_at": "2019-08-28T23:27:28.747Z",
     "updated_at": "2019-08-28T23:27:28.747Z",
@@ -2464,8 +2430,6 @@
     "user": 1,
     "name": "HW-All",
     "description": "All HW channels",
-    "share_all": false,
-    "share_org": false,
     "organization": 1,
     "created_at": "2019-08-28T23:27:28.765Z",
     "updated_at": "2019-08-28T23:27:28.765Z",
@@ -2484,9 +2448,9 @@
     "description": "Test 1",
     "unit": "integer",
     "url": "",
+    "reference_url": "pnsn.org",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
     "sample_rate": 3600
   }
 },
@@ -2504,7 +2468,7 @@
     "url": "",
     "default_minval": 2.0,
     "default_maxval": 15.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2522,7 +2486,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2540,7 +2504,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2558,7 +2522,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2576,7 +2540,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2594,7 +2558,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2612,7 +2576,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2630,7 +2594,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2648,7 +2612,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2666,7 +2630,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2684,7 +2648,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2702,7 +2666,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2720,7 +2684,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2738,7 +2702,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2756,7 +2720,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2774,7 +2738,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2792,7 +2756,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2810,7 +2774,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2828,7 +2792,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2846,7 +2810,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2864,7 +2828,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2882,7 +2846,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2900,7 +2864,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2918,7 +2882,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2936,7 +2900,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2954,7 +2918,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2972,7 +2936,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -2990,7 +2954,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -3008,7 +2972,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -3026,7 +2990,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -3044,7 +3008,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },
@@ -3062,7 +3026,7 @@
     "url": "",
     "default_minval": 1.0,
     "default_maxval": 10.0,
-    "reference_url": "",
+    "reference_url": "pnsn.org",
     "sample_rate": 3600
   }
 },

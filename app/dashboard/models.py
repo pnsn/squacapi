@@ -4,6 +4,7 @@ from django.conf import settings
 
 from nslc.models import Group
 from organization.models import Organization
+from django.utils.translation import gettext_lazy as _
 
 
 class DashboardBase(models.Model):
@@ -34,6 +35,7 @@ class DashboardBase(models.Model):
 class WidgetType(DashboardBase):
     '''describes the type of widget'''
     type = models.CharField(max_length=255, unique=True)
+    use_aggregate = models.BooleanField(default=False)
 
     class Meta:
         indexes = [
@@ -52,6 +54,25 @@ class StatType(DashboardBase):
 
 
 class Dashboard(DashboardBase):
+    class ArchiveType(models.TextChoices):
+        RAW = 'raw', _('Raw')
+        HOUR = 'hour', _('Hour')
+        DAY = 'day', _('Day')
+        WEEK = 'week', _('Week')
+        MONTH = 'month', _('Month')
+
+    class ArchiveStat(models.TextChoices):
+        MEAN = 'mean', _('Mean')
+        MEDIAN = 'median', _('Median')
+        STDEV = 'stdev', _('Standard Deviation')
+        MIN = 'min', _('Min')
+        MAX = 'max', _('Max')
+        P05 = 'p05', _('5th Percentile')
+        P10 = 'p10', _('10th Percentile')
+        P90 = 'p90', _('90th Percentile')
+        P95 = 'p95', _('95th Percentile')
+        NUM_SAMPS = 'num_samps', _('Number of Samples')
+
     '''describes the container the holds widgets'''
     share_all = models.BooleanField(default=False)
     share_org = models.BooleanField(default=False)
@@ -64,6 +85,14 @@ class Dashboard(DashboardBase):
         related_name='dashboards'
     )
     home = models.BooleanField(default=False)
+    archive_type = models.CharField(max_length=8,
+                                    choices=ArchiveType.choices,
+                                    default=ArchiveType.RAW
+                                    )
+    archive_stat = models.CharField(max_length=16,
+                                    choices=ArchiveStat.choices,
+                                    default=ArchiveStat.MEAN
+                                    )
 
     def save(self, *args, **kwargs):
         if not self.home:

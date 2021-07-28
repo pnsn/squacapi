@@ -33,7 +33,6 @@ class AuthenticatedMeasurementFilterTests(TestCase):
 
         self.grp = Group.objects.create(
             name='Test group',
-            share_all=True,
             organization=self.organization,
             user=self.user
         )
@@ -100,3 +99,20 @@ class AuthenticatedMeasurementFilterTests(TestCase):
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data), 2)
+
+    def test_aggregated_filter_with_group(self):
+        '''test using group param'''
+        url = reverse('measurement:aggregated-list')
+        stime, etime = '2016-02-01T03:00:00Z', '2020-02-02T05:00:00Z'
+        url += f'?metric=3,4,5&channel=4,5,6&starttime={stime}&endtime={etime}'
+        res1 = self.client.get(url)
+        self.assertEqual(res1.status_code, status.HTTP_200_OK)
+
+        # now with group id
+        url = reverse('measurement:aggregated-list')
+        url += f'?metric=3,4,5&group={self.grp.id}'\
+               f'&starttime={stime}&endtime={etime}'
+        res2 = self.client.get(url)
+
+        self.assertEqual(res2.status_code, status.HTTP_200_OK)
+        self.assertEqual(res2.data, res1.data)

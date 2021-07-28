@@ -1,6 +1,8 @@
 from organization.models import Organization
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group as UserGroup, Permission
+from math import floor, log10
+
 
 import secrets
 
@@ -42,3 +44,16 @@ def create_group(name, permissions):
         perm = Permission.objects.get(codename=p)
         group.permissions.add(perm)
     return group
+
+
+def round_to_decimals(n, places):
+    """
+    returns `n` rounded to `places` total decimal digits
+    (fractional and whole)
+    """
+    try:
+        digits = floor(log10(abs(n))) + 1
+        rounded = round(n, places - digits)
+        return rounded
+    except (OverflowError, ValueError):
+        return n

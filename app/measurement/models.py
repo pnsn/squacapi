@@ -118,7 +118,6 @@ class Monitor(MeasurementBase):
         AVERAGE = 'avg', _('Avg')
         MINIMUM = 'min', _('Min')
         MAXIMUM = 'max', _('Max')
-
     channel_group = models.ForeignKey(
         Group,
         on_delete=models.CASCADE,
@@ -239,12 +238,11 @@ class Trigger(MeasurementBase):
         '''
         val = channel_value[self.monitor.stat]
         # check three cases: only minval, only maxval, both min and max
-        if not self.minval and not self.maxval:
-            print('minval or maxval should be defined!')
+        if self.minval is None and self.maxval is None:
             return False
-        elif self.minval and not self.maxval:
+        elif self.minval is not None and self.maxval is None:
             return val < self.minval
-        elif not self.minval and self.maxval:
+        elif self.minval is None and self.maxval is not None:
             return val > self.maxval
         else:
             inside_band = (val > self.minval and val < self.maxval)
@@ -369,10 +367,22 @@ class ArchiveBase(models.Model):
     median = models.FloatField()
     stdev = models.FloatField()
     num_samps = models.IntegerField()
+    p05 = models.FloatField()
+    p10 = models.FloatField()
+    p90 = models.FloatField()
+    p95 = models.FloatField()
     starttime = models.DateTimeField(auto_now=False)
     endtime = models.DateTimeField(auto_now=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    @property
+    def minabs(self):
+        return min(abs(self.min), abs(self.max))
+
+    @property
+    def maxabs(self):
+        return max(abs(self.min), abs(self.max))
 
     def __str__(self):
         return (f"Archive of Metric: {str(self.metric)} "

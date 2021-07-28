@@ -61,8 +61,6 @@ class UnathenticatedMeasurementApiTests(TestCase):
         )
         self.grp = Group.objects.create(
             name='Test group',
-            share_all=True,
-            share_org=True,
             user=self.user,
             organization=self.organization
         )
@@ -76,7 +74,8 @@ class UnathenticatedMeasurementApiTests(TestCase):
         self.widtype = WidgetType.objects.create(
             name='Test widget type',
             type='Some type',
-            user=self.user
+            user=self.user,
+            use_aggregate=True
         )
         self.stattype = StatType.objects.create(
             name="Average",
@@ -162,8 +161,6 @@ class PrivateMeasurementAPITests(TestCase):
         )
         self.grp = Group.objects.create(
             name='Sample group',
-            share_all=True,
-            share_org=True,
             user=self.user,
             organization=self.organization
         )

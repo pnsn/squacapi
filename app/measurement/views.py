@@ -1,6 +1,12 @@
 from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 from django_filters import rest_framework as filters
 from squac.filters import CharInFilter, NumberInFilter
+from measurement.aggregates.percentile import Percentile
+from django.db.models import (Avg, StdDev, Min, Max, Count, FloatField,
+                              Subquery)
+from django.db.models.functions import (Coalesce, Abs, Least, Greatest)
 from squac.mixins import (SetUserMixin, DefaultPermissionsMixin,
                           AdminOrOwnerPermissionMixin)
 from .exceptions import MissingParameterException
@@ -8,6 +14,20 @@ from .models import (Metric, Measurement, Threshold,
                      Alert, ArchiveDay, ArchiveWeek, ArchiveMonth,
                      ArchiveHour, Monitor, Trigger)
 from measurement import serializers
+
+
+def check_measurement_params(params):
+    '''ensure that each request for measurements/archives and aggs has:
+        * channel or group
+        * metric
+        * starttime
+        * endtime
+    '''
+    if 'channel' not in params and 'group' not in params or \
+            (not all([p in params
+                      for p in ("metric", "starttime", "endtime")])):
+        raise MissingParameterException
+
 
 '''Filters'''
 
@@ -31,7 +51,7 @@ class MeasurementFilter(filters.FilterSet):
     ''' Note although param is called endtime, it uses starttime, which is
         the the only field with an index
     '''
-    endtime = filters.CharFilter(field_name='starttime', lookup_expr='lte')
+    endtime = filters.CharFilter(field_name='starttime', lookup_expr='lt')
     metric = NumberInFilter(field_name='metric')
     channel = NumberInFilter(field_name='channel')
     group = NumberInFilter(field_name='channel__group')
@@ -55,40 +75,6 @@ class AlertFilter(filters.FilterSet):
         fields = ('trigger', 'in_alarm')
 
 
-class ArchiveBaseFilter(filters.FilterSet):
-    """filters archives by metric, channel, starttime, endtime"""
-    starttime = filters.CharFilter(field_name='starttime', lookup_expr='gte')
-    endtime = filters.CharFilter(field_name='endtime', lookup_expr='lte')
-
-
-class ArchiveHourFilter(ArchiveBaseFilter):
-
-    class Meta:
-        model = ArchiveHour
-        fields = ('metric', 'channel')
-
-
-class ArchiveDayFilter(ArchiveBaseFilter):
-
-    class Meta:
-        model = ArchiveDay
-        fields = ('metric', 'channel')
-
-
-class ArchiveWeekFilter(ArchiveBaseFilter):
-
-    class Meta:
-        model = ArchiveWeek
-        fields = ('metric', 'channel')
-
-
-class ArchiveMonthFilter(ArchiveBaseFilter):
-
-    class Meta:
-        model = ArchiveMonth
-        fields = ('metric', 'channel')
-
-
 '''Base Viewsets'''
 
 
@@ -110,14 +96,10 @@ class ArchiveBaseViewSet(DefaultPermissionsMixin,
         since there is not a user set on archive, all permissions will be
         model
     """
-
-    REQUIRED_PARAMS = ("metric", "channel", "starttime", "endtime")
+    filter_class = MeasurementFilter
 
     def list(self, request, *args, **kwargs):
-        if not all([required_param in request.query_params
-           for required_param in self.REQUIRED_PARAMS]):
-            raise MissingParameterException
-
+        check_measurement_params(request.query_params)
         return super().list(self, request, *args, **kwargs)
 
 
@@ -134,7 +116,6 @@ class MetricViewSet(MeasurementBaseViewSet):
 
 class MeasurementViewSet(MeasurementBaseViewSet):
     '''end point for using channel filter'''
-    REQUIRED_PARAMS = ("metric", "starttime", "endtime")
     serializer_class = serializers.MeasurementSerializer
     filter_class = MeasurementFilter
 
@@ -152,9 +133,7 @@ class MeasurementViewSet(MeasurementBaseViewSet):
 
     def list(self, request, *args, **kwargs):
         '''We want to be carful about large querries so require params'''
-        if not all([required_param in request.query_params
-                    for required_param in self.REQUIRED_PARAMS]):
-            raise MissingParameterException
+        check_measurement_params(request.query_params)
         return super().list(self, request, *args, **kwargs)
 
 
@@ -210,8 +189,6 @@ class AlertViewSet(MonitorBaseViewSet):
 
 
 class ArchiveHourViewSet(ArchiveBaseViewSet):
-
-    filter_class = ArchiveHourFilter
     serializer_class = serializers.ArchiveHourSerializer
 
     def get_queryset(self):
@@ -219,8 +196,6 @@ class ArchiveHourViewSet(ArchiveBaseViewSet):
 
 
 class ArchiveDayViewSet(ArchiveBaseViewSet):
-
-    filter_class = ArchiveDayFilter
     serializer_class = serializers.ArchiveDaySerializer
 
     def get_queryset(self):
@@ -228,8 +203,6 @@ class ArchiveDayViewSet(ArchiveBaseViewSet):
 
 
 class ArchiveWeekViewSet(ArchiveBaseViewSet):
-
-    filter_class = ArchiveWeekFilter
     serializer_class = serializers.ArchiveWeekSerializer
 
     def get_queryset(self):
@@ -237,9 +210,57 @@ class ArchiveWeekViewSet(ArchiveBaseViewSet):
 
 
 class ArchiveMonthViewSet(ArchiveBaseViewSet):
-
-    filter_class = ArchiveMonthFilter
     serializer_class = serializers.ArchiveMonthSerializer
 
     def get_queryset(self):
         return ArchiveMonth.objects.all()
+
+
+class AggregatedViewSet(IsAuthenticated, viewsets.ViewSet):
+    ''' calculate aggregates from raw data
+        this is NOT a model viewset so filter_class and serializer_class
+        cannot be used
+    '''
+
+    def list(self, request):
+        params = request.query_params
+        check_measurement_params(params)
+        measurements = Measurement.objects.all()
+        # determine if this is a list of channels or list of channel groups
+        try:
+            channels = [int(x) for x in params['channel'].split(',')]
+            measurements = measurements.filter(channel__in=channels)
+        except KeyError:
+            '''list of channel groups'''
+            groups = [int(x) for x in params['group'].split(',')]
+            measurements = measurements.filter(
+                channel__group__in=groups)
+
+        metrics = [int(x) for x in params['metric'].split(',')]
+        measurements = measurements.filter(metric__in=metrics)
+        measurements = measurements.filter(
+            starttime__gte=params['starttime']).filter(
+            starttime__lt=params['endtime']).order_by('-starttime')
+        aggs = measurements.values(
+            'channel', 'metric').annotate(
+                mean=Avg('value'),
+                median=Percentile('value', percentile=0.5),
+                min=Min('value'),
+                max=Max('value'),
+                minabs=Least(Abs(Min('value')), Abs(Max('value'))),
+                maxabs=Greatest(Abs(Min('value')), Abs(Max('value'))),
+                stdev=Coalesce(StdDev('value', sample=True), 0,
+                               output_field=FloatField()),
+                p05=Percentile('value', percentile=0.05),
+                p10=Percentile('value', percentile=0.10),
+                p90=Percentile('value', percentile=0.90),
+                p95=Percentile('value', percentile=0.95),
+                num_samps=Count('value'),
+                starttime=Min('starttime'),
+                endtime=Max('endtime'),
+                latest=Subquery(measurements.values('value')[:1])
+
+        )
+        serializer = serializers.AggregatedSerializer(
+            instance=aggs, many=True)
+        return Response(serializer.data)

@@ -20,6 +20,9 @@ SECRET_KEY = os.environ.get('SQUAC_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('SQUAC_DEBUG_MODE') == 'True'
+
+CACHE_ENABLED = os.environ.get('SQUAC_CACHE_ENABLED') == 'True'
+
 try:
     ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS_LIST').split(',')
 except AttributeError:
@@ -77,12 +80,13 @@ INSTALLED_APPS = [
     'organization',
     'invite',
     'django_crontab',
-    
+    'aws_xray_sdk.ext.django'
 ]
 
 # The caching middlewares must be first and last
 MIDDLEWARE = [
-    'django.middleware.cache.UpdateCacheMiddleware', #must be first
+    # 'django.middleware.cache.UpdateCacheMiddleware', #must be first
+    'aws_xray_sdk.ext.django.middleware.XRayMiddleware', #also must be first
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -93,7 +97,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_cprofile_middleware.middleware.ProfilerMiddleware',
-    'django.middleware.cache.FetchFromCacheMiddleware', #must be last!!
+    # 'django.middleware.cache.FetchFromCacheMiddleware', #must be last!!
 
 ]
 
@@ -224,15 +228,14 @@ FIXTURE_DIRS = (
 LOGIN_URL = 'rest_framework:login'
 LOGOUT_URL = 'rest_framework:logout'
 
-
-
-CACHES = { 
-    'default': { 
-        'BACKEND': 'django.core.cache.backends.dummy.DummyCache'
+if DEBUG:
+    CACHES = { 
+        'default': { 
+            'BACKEND': 'django.core.cache.backends.dummy.DummyCache'
+        }
     }
-}
 # need to do it this way since we don't want to install redis locally
-if not DEBUG:   
+elif CACHE_ENABLED:  
     CACHES['default'] = { 
         'BACKEND': 'django_redis.cache.RedisCache',
         'LOCATION': os.environ.get('CACHE_LOCATION'),
@@ -255,13 +258,26 @@ INVITE_TOKEN_EXPIRY_TIME = 48
 
 
 ADMINS = (
-  ('JC', 'joncon@uw.edu'),
+  ('KM', 'marczk@uw.edu '), ('AH','ahutko@uw.edu '),
+  ('CU', 'ulbergc@uw.edu ')
 )
 AWS_DEFAULT_REGION = os.environ.get('AWS_DEFAULT_REGION')
 AWS_SNS_ADMIN_ARN = os.environ.get('AWS_SNS_ADMIN_ARN')
 SQUAC_MEASUREMENTS_BUCKET = os.environ.get('SQUAC_MEASUREMENTS_BUCKET')
 
 MANAGERS = ADMINS
+
+XRAY_RECORDER = {
+    'AWS_XRAY_DAEMON_ADDRESS': '127.0.0.1:2000',
+    'AUTO_INSTRUMENT': False,  # If turned on built-in database queries and template rendering will be recorded as subsegments
+    'AWS_XRAY_CONTEXT_MISSING': 'LOG_ERROR',
+    'PLUGINS': (),
+    'SAMPLING': True,
+    'SAMPLING_RULES': None,
+    'AWS_XRAY_TRACING_NAME': 'SQUAC', # the segment name for segments generated from incoming requests
+    'DYNAMIC_NAMING': None, # defines a pattern that host names should match
+    'STREAMING_THRESHOLD': None, # defines when a segment starts to stream out its children subsegments
+}
 
 LOGGING = {
     'version': 1,
