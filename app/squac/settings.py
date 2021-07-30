@@ -269,7 +269,7 @@ MANAGERS = ADMINS
 
 XRAY_RECORDER = {
     'AWS_XRAY_DAEMON_ADDRESS': '127.0.0.1:2000',
-    'AUTO_INSTRUMENT': False,  # If turned on built-in database queries and template rendering will be recorded as subsegments
+    'AUTO_INSTRUMENT': True,  # If turned on built-in database queries and template rendering will be recorded as subsegments
     'AWS_XRAY_CONTEXT_MISSING': 'LOG_ERROR',
     'PLUGINS': (),
     'SAMPLING': True,
