@@ -4,10 +4,6 @@ dest=/var/www/releases/$DEPLOYMENT_GROUP_NAME/$DEPLOYMENT_ID
 mv /var/www/releases/tmp $dest
 aws s3 cp s3://squacapi-config/bash/$DEPLOYMENT_GROUP_NAME.env  $dest/app/.env
 
-#install daemon
-curl https://s3.us-west-2.amazonaws.com/aws-xray-assets.us-west-2/xray-daemon/aws-xray-daemon-3.x.rpm -o /home/ec2-user/xray.rpm
-yum install -y /home/ec2-user/xray.rpm
-
 echo after s3 call
 echo `ls $dest/app/.env `
 
