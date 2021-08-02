@@ -7,6 +7,7 @@ from django.core.management import call_command
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import pytz
+import random
 
 from hypothesis import given
 from hypothesis.strategies import (lists, datetimes, just, deferred, integers,
@@ -33,6 +34,7 @@ class TestArchiveCreation(TestCase):
     }
 
     def generate_measurements(self, day):
+        """Generate measurements using Hypothesis"""
         return lists(from_model(Measurement,
                                 # deferred so that select happens only after
                                 # they are guaranteed to exist (created in
@@ -54,6 +56,23 @@ class TestArchiveCreation(TestCase):
                                     max_value=day + relativedelta(hours=23),
                                     timezones=just(pytz.UTC))))
 
+    def make_measurements(self, start_time, metric, n_metrics=10):
+        """Generate measurements without using Hypothesis"""
+        channel_id = Channel.objects.first()
+        user_id = get_user_model().objects.first()
+        measurements = []
+        for i in range(n_metrics):
+            tmp = Measurement.objects.create(
+                metric=metric,
+                channel=channel_id,
+                value=random.randrange(-(10**8), 10**8),
+                starttime=start_time,
+                endtime=start_time + relativedelta(seconds=10 * i),
+                user=user_id
+            )
+            measurements.append(tmp)
+        return measurements
+
     def setUp(self):
         timezone.now()
         self.user = sample_user()
@@ -63,6 +82,14 @@ class TestArchiveCreation(TestCase):
             unit='meter',
             default_minval=1,
             default_maxval=10.0,
+            user=self.user
+        )
+        self.metric2 = Metric.objects.create(
+            name='Metric test 2',
+            code='124',
+            unit='meter',
+            default_minval=2,
+            default_maxval=12.0,
             user=self.user
         )
         self.net = Network.objects.create(
@@ -149,10 +176,10 @@ class TestArchiveCreation(TestCase):
             self.check_queryset_was_archived(today, 'day')
 
     @given(data())
-    def test_archive_overwrite(self, data):
+    def test_archive_redundant(self, data):
         """
         make sure when archive command is called multiple times for a given
-        interval it will delete previous archives
+        interval it will not create duplicate archives
         """
         test_time = datetime(2005, 6, 7)
 
@@ -185,6 +212,57 @@ class TestArchiveCreation(TestCase):
         if day_data:
             self.assertTrue(n_archives > 0)
         self.assertEqual(n_archives, n_archives2)
+
+    def test_archive_overwrite_feature(self):
+        """test the --no-overwrite/--overwrite option for archiving"""
+        def getArchiveId(starttime, endtime, metric):
+            """Return id of matching archive, for easy testing"""
+            archive = ArchiveDay.objects.filter(starttime__gte=starttime,
+                                                endtime__lt=endtime,
+                                                metric=metric)
+            if archive:
+                return archive.first().id
+            else:
+                return None
+
+        test_time = datetime(2003, 4, 5, tzinfo=pytz.UTC)
+        period_end = test_time + relativedelta(days=1)
+        out = StringIO()
+
+        # Create and archive measurements
+        m1 = self.make_measurements(test_time, self.metric)
+        call_command('archive_measurements', 1, 'day',
+                     period_end=period_end,
+                     stdout=out)
+
+        # Confirm measurements were archived and get archive id
+        a1_1 = getArchiveId(test_time, period_end, self.metric)
+        self.check_queryset_was_archived(m1, 'day')
+
+        # Archive new measurements with --no-overwrite. Previous archives
+        # should remain
+        m2 = self.make_measurements(test_time, self.metric2)
+        call_command('archive_measurements', 1, 'day', '--no-overwrite',
+                     period_end=period_end,
+                     stdout=out)
+
+        a1_2 = getArchiveId(test_time, period_end, self.metric)
+        a2_2 = getArchiveId(test_time, period_end, self.metric2)
+        self.check_queryset_was_archived(m1, 'day')
+        self.check_queryset_was_archived(m2, 'day')
+        self.assertEqual(a1_1, a1_2)
+
+        # Now overwrite and see if ids change
+        call_command('archive_measurements', 1, 'day', '--overwrite',
+                     period_end=period_end,
+                     stdout=out)
+
+        a1_3 = getArchiveId(test_time, period_end, self.metric)
+        a2_3 = getArchiveId(test_time, period_end, self.metric2)
+        self.check_queryset_was_archived(m1, 'day')
+        self.check_queryset_was_archived(m2, 'day')
+        self.assertNotEqual(a1_2, a1_3)
+        self.assertNotEqual(a2_2, a2_3)
 
     @given(data())
     def test_month_archive(self, data):
@@ -226,13 +304,14 @@ class TestArchiveCreation(TestCase):
     def check_queryset_was_archived(self, measurements, archive_type):
         """ checks that the entire given queryset of measurements was
         successfully archived """
+        test_metric = measurements[0].metric
         # refresh values from db for consistency with query
         measurement_data = [Measurement.objects.get(id=m.id).value for m in
                             measurements]
         min_start = min([m.starttime for m in measurements])
         max_end = max([measurement.endtime for measurement in measurements])
         archive = self.ARCHIVE_TYPE[archive_type].objects.get(
-            endtime=max_end, starttime=min_start)
+            endtime=max_end, starttime=min_start, metric=test_metric)
         # Assert created archive has correct statistics
         self.assertAlmostEqual(min(measurement_data), archive.min)
         self.assertAlmostEqual(max(measurement_data), archive.max)
@@ -266,7 +345,8 @@ class TestArchiveCreation(TestCase):
     def check_queryset_was_not_archived(self, measurements, archive_type):
         """ checks that the entire given queryset of measurements was
         not archived """
+        test_metric = measurements[0].metric
         min_start = min([m.starttime for m in measurements])
         max_end = max([measurement.endtime for measurement in measurements])
         self.assertFalse(self.ARCHIVE_TYPE[archive_type].objects.filter(
-            endtime=max_end, starttime=min_start).exists())
+            endtime=max_end, starttime=min_start, metric=test_metric).exists())

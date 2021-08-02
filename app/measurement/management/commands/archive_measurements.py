@@ -1,6 +1,8 @@
 from django.core.management.base import BaseCommand
-from django.db.models import (Avg, StdDev, Min, Max, Count, F, FloatField)
-from django.db.models.functions import (TruncDay, TruncMonth, Coalesce)
+from django.db.models import (Avg, StdDev, Min, Max, Count, F, FloatField,
+                              Value as V)
+from django.db.models.functions import (TruncDay, TruncMonth, Coalesce,
+                                        Concat)
 from measurement.models import (Measurement, ArchiveDay, ArchiveMonth)
 from measurement.aggregates.percentile import Percentile
 from datetime import datetime
@@ -49,11 +51,16 @@ class Command(BaseCommand):
         parser.add_argument('--metric', action='append',
                             help='id of the metric to be archived',
                             default=[])
+        parser.add_argument('--no-overwrite', dest='overwrite',
+                            action='store_false')
+        parser.add_argument('--overwrite', dest='overwrite',
+                            action='store_true')
 
     def handle(self, *args, **kwargs):
         # extract args
         archive_type = kwargs['archive_type']
         metrics = kwargs['metric']
+        overwrite = kwargs['overwrite']
         period_end = kwargs['period_end']
         period_size = kwargs['period_size']
         period_start = period_end - self.DURATIONS[archive_type](period_size)
@@ -74,15 +81,35 @@ class Command(BaseCommand):
         if len(metrics) != 0:
             measurements = measurements.filter(metric__id__in=metrics)
 
+        # if 'overwrite' is False, don't bother creating ArchiveDays that
+        # already exist by excluding all measurements already covered. This
+        # assumes it is for a single time period
+        if not overwrite:
+            archive_key = (
+                self.ARCHIVE_TYPE[archive_type].objects
+                .filter(starttime__gte=period_start, starttime__lt=period_end)
+                .annotate(m_c=Concat('metric_id', V(' '), 'channel_id'))
+                .values('m_c')
+            )
+            measurements = measurements.annotate(
+                m_c=Concat('metric_id', V(' '), 'channel_id')).exclude(
+                m_c__in=archive_key)
+
         # get the data to be archived
         archive_data = self.get_archive_data(measurements, archive_type)
 
         # before adding new archives delete any old ones for these parameters
-        archives_to_delete = self.ARCHIVE_TYPE[archive_type].objects.filter(
-            starttime__gte=period_start, starttime__lt=period_end)
-        if len(metrics) != 0:
-            archives_to_delete = archives_to_delete.filter(
-                metric_id__in=metrics)
+        if overwrite:
+            archives_to_delete = (
+                self.ARCHIVE_TYPE[archive_type].objects.filter(
+                    starttime__gte=period_start, starttime__lt=period_end)
+            )
+            if len(metrics) != 0:
+                archives_to_delete = archives_to_delete.filter(
+                    metric_id__in=metrics)
+        else:
+            archives_to_delete = self.ARCHIVE_TYPE[archive_type].objects.none()
+
         deleted_archives = archives_to_delete.delete()
 
         # create the archive entries
