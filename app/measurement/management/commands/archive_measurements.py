@@ -73,7 +73,7 @@ class Command(BaseCommand):
             period_start = period_start.replace(
                 day=1, hour=0, minute=0, second=0, microsecond=0)
 
-        # filter down to time range
+        # filter measurements down to time range
         measurements = Measurement.objects.filter(
             starttime__gte=period_start, starttime__lt=period_end)
 
@@ -81,35 +81,34 @@ class Command(BaseCommand):
         if len(metrics) != 0:
             measurements = measurements.filter(metric__id__in=metrics)
 
-        # if 'overwrite' is False, don't bother creating ArchiveDays that
-        # already exist by excluding all measurements already covered. This
-        # assumes it is for a single time period
-        if not overwrite:
-            archive_key = (
-                self.ARCHIVE_TYPE[archive_type].objects
-                .filter(starttime__gte=period_start, starttime__lt=period_end)
-                .annotate(m_c=Concat('metric_id', V(' '), 'channel_id'))
-                .values('m_c')
-            )
-            measurements = measurements.annotate(
-                m_c=Concat('metric_id', V(' '), 'channel_id')).exclude(
-                m_c__in=archive_key)
+        # get archives for same time period, to compare with measurements
+        archives = self.ARCHIVE_TYPE[archive_type].objects.filter(
+            starttime__gte=period_start, starttime__lt=period_end)
 
-        # get the data to be archived
-        archive_data = self.get_archive_data(measurements, archive_type)
-
-        # before adding new archives delete any old ones for these parameters
+        # if overwriting archives, designate old ones to delete. Otherwise,
+        # check to make sure we are only writing new ones
         if overwrite:
-            archives_to_delete = (
-                self.ARCHIVE_TYPE[archive_type].objects.filter(
-                    starttime__gte=period_start, starttime__lt=period_end)
-            )
+            archives_to_ignore = 0
+            archives_to_delete = archives
             if len(metrics) != 0:
                 archives_to_delete = archives_to_delete.filter(
                     metric_id__in=metrics)
         else:
+            # exclude measurements that already have archives. This only works
+            # correctly for a single time period
+            archive_key = archives.annotate(
+                m_c=Concat('metric_id', V(' '), 'channel_id')).values('m_c')
+            measurements = measurements.annotate(
+                m_c=Concat('metric_id', V(' '), 'channel_id')).exclude(
+                m_c__in=archive_key)
+            # make sure we don't delete any old archives
             archives_to_delete = self.ARCHIVE_TYPE[archive_type].objects.none()
+            archives_to_ignore = len(archive_key)
 
+        # get the data to be archived
+        archive_data = self.get_archive_data(measurements, archive_type)
+
+        # delete old archives
         deleted_archives = archives_to_delete.delete()
 
         # create the archive entries
@@ -119,7 +118,8 @@ class Command(BaseCommand):
 
         # report back to user
         self.stdout.write(
-            f"Deleted {deleted_archives[0]} and "
+            f"Deleted {deleted_archives[0]}, "
+            f"ignored {archives_to_ignore}, and "
             f"created {len(created_archives)} "
             f"{archive_type} archives "
             f"from {format(period_start, '%m-%d-%Y')} "
