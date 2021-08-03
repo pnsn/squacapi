@@ -229,7 +229,7 @@ class Command(BaseCommand):
                         channels[nslc_code] = {'start': start_datetime,
                                                'end': end_datetime}
                     try:
-                        # Get or create the channel using data
+                        # Update or create the channel using data
                         Channel.objects.update_or_create(
                             network=Network.objects.get(code=net.lower()),
                             station_code=sta.lower(),
