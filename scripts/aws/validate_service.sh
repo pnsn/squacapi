@@ -21,6 +21,7 @@ done
 
 if [[ $i -eq 5 ]]; then
   echo "Validate service failed after 5 attempts"
+  exit 1
 fi
 
 
