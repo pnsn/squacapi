@@ -25,5 +25,5 @@ hooks:
       runas: root
   ValidateService:
     - location: scripts/aws/validate_service.sh     
-      timeout: 600
+      timeout: 3600
       runas: root
