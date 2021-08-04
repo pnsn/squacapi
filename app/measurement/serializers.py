@@ -2,10 +2,22 @@ from rest_framework import serializers
 from .models import (Metric, Measurement, Threshold,
                      Alert, ArchiveHour, ArchiveDay, ArchiveWeek, Monitor,
                      Trigger, ArchiveMonth)
+from django.db import IntegrityError
+from rest_framework.exceptions import ValidationError
 from dashboard.models import Widget
 from nslc.models import Channel, Group
 from nslc.serializers import GroupSerializer
 
+class BulkCreateListSerializer(serializers.ListSerializer):
+    def create(self, validated_data):
+        result = [self.child.create(attrs) for attrs in validated_data]
+
+        try:
+            self.child.Meta.model.objects.bulk_create(result)
+        except IntegrityError as e:
+            raise ValidationError(e)
+
+        return result
 
 class MeasurementSerializer(serializers.ModelSerializer):
     metric = serializers.PrimaryKeyRelatedField(
@@ -22,18 +34,25 @@ class MeasurementSerializer(serializers.ModelSerializer):
             'created_at', 'user_id'
         )
         read_only_fields = ('id',)
+        list_serializer_class = BulkCreateListSerializer
 
     def create(self, validated_data):
-        measurement, created = Measurement.objects.update_or_create(
-            metric=validated_data.get('metric', None),
-            channel=validated_data.get('channel', None),
-            starttime=validated_data.get('starttime', None),
-            defaults={
-                'value': validated_data.get('value', None),
-                'endtime': validated_data.get('endtime', None),
-                'user': validated_data.get('user', None)
-            })
-        return measurement
+        instance = Measurement(**validated_data)
+
+        if isinstance(self._kwargs["data"], dict):
+            instance.save()
+
+        return instance
+        # measurement, created = Measurement.objects.update_or_create(
+        #     metric=validated_data.get('metric', None),
+        #     channel=validated_data.get('channel', None),
+        #     starttime=validated_data.get('starttime', None),
+        #     defaults={
+        #         'value': validated_data.get('value', None),
+        #         'endtime': validated_data.get('endtime', None),
+        #         'user': validated_data.get('user', None)
+        #     })
+        # return measurement
 
     # @staticmethod
     # def setup_eager_loading(queryset):

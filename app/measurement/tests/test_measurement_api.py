@@ -271,6 +271,31 @@ class PrivateMeasurementAPITests(TestCase):
         update_measurements = measurements.all()
         self.assertEqual(len_before_create + 2, len(update_measurements))
 
+
+    def test_create_measurement_list_serializer(self):
+        url = reverse('measurement:measurement-list')
+        measurements = Measurement.objects.all()
+        len_before_create = len(measurements)
+        payload = [{
+                'metric': self.metric.id,
+                'channel': self.chan.id,
+                'value': 47.0,
+                'starttime': datetime(
+                    2019, 1, 5, 8, 8, 7, x, tzinfo=pytz.UTC),
+                'endtime': datetime(
+                    2019, 1, 5, 9, 8, 7, 127325, tzinfo=pytz.UTC)
+                } for x in range(10)]
+        
+        res = self.client.post(
+            url,
+            payload,
+            format="json"
+        )
+        
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        update_measurements = measurements.all()
+        self.assertEqual(len(update_measurements),len_before_create + 10)
+
     def test_create_multiple_measurements_with_error(self):
         ''' test a bulk upload with bad param in one object'''
         url = reverse('measurement:measurement-list')
