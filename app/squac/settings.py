@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     'django_filters',
     'rest_framework',
     'rest_framework.authtoken',
+    'bulk_update_or_create',
     'gmailapi_backend',
     'corsheaders',
     'debug_toolbar',
