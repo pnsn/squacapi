@@ -15,13 +15,13 @@ import pytz
 from squac.test_mixins import sample_user
 
 
-'''Tests for all measurement models:
+'''Tests for all dashboard models:
 to run only these tests:
  ./mg.sh "test dashboard && flake8"
 '''
 
 
-class UnathenticatedMeasurementApiTests(TestCase):
+class UnathenticatedDashboardApiTests(TestCase):
     '''Test the dashboard api (public)'''
     def setUp(self):
         self.user = sample_user()
@@ -118,7 +118,7 @@ class UnathenticatedMeasurementApiTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
-class PrivateMeasurementAPITests(TestCase):
+class PrivateDashboardAPITests(TestCase):
     '''For authenticated tests in dashboard API'''
 
     fixtures = ['core_user.json', 'base.json']
