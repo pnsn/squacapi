@@ -37,7 +37,8 @@ class MeasurementSerializer(serializers.ModelSerializer):
             'created_at', 'user_id'
         )
         read_only_fields = ('id',)
-        
+        list_serializer_class = BulkMeasurementListSerializer
+
     def create(self, validated_data):
         measurement, created = Measurement.objects.update_or_create(
             metric=validated_data.get('metric', None),
