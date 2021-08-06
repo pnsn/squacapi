@@ -5,19 +5,19 @@ from .models import (Metric, Measurement, Threshold,
 from dashboard.models import Widget
 from nslc.models import Channel, Group
 from nslc.serializers import GroupSerializer
-from django.db import IntegrityError
+from django.db import IntegrityError, reset_queries, connection
 from rest_framework.exceptions import ValidationError
 
 
 class BulkMeasurementListSerializer(serializers.ListSerializer):
     '''serializer for bulk creating or updating measurements'''
-    
+
     def create(self, validated_data):
         result = [Measurement(**item) for item in validated_data]
         Measurement.objects.bulk_update_or_create(
-                result, 
-                ['value', 'endtime', 'user'], 
-                match_field=['metric', 'channel', 'starttime'])
+            result,
+            ['value', 'endtime', 'user'],
+            match_field=['metric', 'channel', 'starttime'])
         return result
 
 

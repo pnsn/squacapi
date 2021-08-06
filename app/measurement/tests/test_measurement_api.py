@@ -241,7 +241,7 @@ class PrivateMeasurementAPITests(TestCase):
         self.assertEqual(res_update.data['value'], 49)
 
     def test_bulk_create_measurement_list_serializer(self):
-        len_to_add = 1000
+        len_to_add = 3
         url = reverse('measurement:measurement-list')
         measurements = Measurement.objects.all()
         len_before_create = len(measurements)
