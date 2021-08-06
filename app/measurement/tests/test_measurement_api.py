@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 import pytz
 from squac.test_mixins import sample_user, round_to_decimals
 import numpy as np
-from django.db import connection
+
 
 '''Tests for all measurement models:
     *
@@ -263,7 +263,8 @@ class PrivateMeasurementAPITests(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         update_measurements = measurements.all()
-        self.assertEqual(len(update_measurements), len_before_create + len_to_add)
+        self.assertEqual(len(update_measurements),
+                         len_before_create + len_to_add)
 
     def test_bulk_update_measurement_list_serializer(self):
         len_to_add = 3
@@ -287,7 +288,8 @@ class PrivateMeasurementAPITests(TestCase):
         )
         self.assertEqual(res1.status_code, status.HTTP_201_CREATED)
         after_create_measurements = measurements.all()
-        self.assertEqual(len(after_create_measurements), len_before_create + len_to_add)
+        self.assertEqual(len(after_create_measurements),
+                         len_before_create + len_to_add)
 
         payload2 = [{
             'metric': self.metric.id,
@@ -320,7 +322,7 @@ class PrivateMeasurementAPITests(TestCase):
             'channel': self.chan.id,
             'value': 8,
             'starttime': datetime(
-                    2019, 1, 5, 8, 8, 7, x, tzinfo=pytz.UTC),
+                2019, 1, 5, 8, 8, 7, x, tzinfo=pytz.UTC),
             'endtime': datetime(
                 2019, 1, 5, 9, 8, 7, 127325, tzinfo=pytz.UTC)
         } for x in range(len_to_add)]
@@ -333,7 +335,8 @@ class PrivateMeasurementAPITests(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         after_create_measurements = measurements.all()
-        self.assertEqual(len(after_create_measurements), len_before_create + len_to_add)
+        self.assertEqual(len(after_create_measurements),
+                         len_before_create + len_to_add)
 
         payload2 = [{
             'metric': self.metric.id,
@@ -343,7 +346,7 @@ class PrivateMeasurementAPITests(TestCase):
                     2019, 1, 5, 8, 8, 7, x, tzinfo=pytz.UTC),
             'endtime': datetime(
                 2019, 1, 5, 9, 8, 7, 127325, tzinfo=pytz.UTC)
-        } for x in range(len_to_add*2)]
+        } for x in range(len_to_add * 2)]
 
         res2 = self.client.post(
             url,

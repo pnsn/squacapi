@@ -23,6 +23,7 @@ to run only these tests:
 
 class UnathenticatedDashboardApiTests(TestCase):
     '''Test the dashboard api (public)'''
+
     def setUp(self):
         self.user = sample_user()
         self.client = APIClient()

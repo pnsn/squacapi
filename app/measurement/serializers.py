@@ -5,8 +5,6 @@ from .models import (Metric, Measurement, Threshold,
 from dashboard.models import Widget
 from nslc.models import Channel, Group
 from nslc.serializers import GroupSerializer
-from django.db import IntegrityError, reset_queries, connection
-from rest_framework.exceptions import ValidationError
 
 
 class BulkMeasurementListSerializer(serializers.ListSerializer):

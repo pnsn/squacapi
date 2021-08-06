@@ -11,6 +11,7 @@ import pytz
 
 from bulk_update_or_create import BulkUpdateOrCreateQuerySet
 
+
 class MeasurementBase(models.Model):
     '''Base class for all measurement models'''
     created_at = models.DateTimeField(auto_now_add=True)
