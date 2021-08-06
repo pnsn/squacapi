@@ -7,7 +7,6 @@ env variables config
 import requests
 from requests.exceptions import RequestException, MissingSchema
 import os
-from squac.cronjobs import CRONJOBS
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -21,12 +20,13 @@ SECRET_KEY = os.environ.get('SQUAC_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('SQUAC_DEBUG_MODE') == 'True'
 
+
 CACHE_ENABLED = os.environ.get('SQUAC_CACHE_ENABLED') == 'True'
 
 try:
     ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS_LIST').split(',')
 except AttributeError:
-    ALLOWED_HOSTS = ['localhost','127.0.0.1']
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 # add EC2 ip to allow heath checks
 try:
@@ -40,6 +40,7 @@ except RequestException or MissingSchema:
 INTERNAL_IPS = [
     'localhost',
     '10.0.2.2',
+    '128.95.16.34'
 ]
 
 # tricks to have debug toolbar when developing with docker
@@ -87,7 +88,7 @@ INSTALLED_APPS = [
 # The caching middlewares must be first and last
 MIDDLEWARE = [
     # 'django.middleware.cache.UpdateCacheMiddleware', #must be first
-    'aws_xray_sdk.ext.django.middleware.XRayMiddleware', #also must be first
+    'aws_xray_sdk.ext.django.middleware.XRayMiddleware',  # also must be first
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -104,19 +105,19 @@ MIDDLEWARE = [
 
 
 CORS_ORIGIN_WHITELIST = [
-     'http://localhost:4200',
-     'https://squac.pnsn.org',
-     'https://staging-squac.pnsn.org'
- ]
+    'http://localhost:4200',
+    'https://squac.pnsn.org',
+    'https://staging-squac.pnsn.org'
+]
 
 REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': (
         'django_filters.rest_framework.DjangoFilterBackend',
     ),
-     'DEFAULT_AUTHENTICATION_CLASSES': (
-         'rest_framework.authentication.TokenAuthentication',
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication'
-     )
+    )
 }
 
 SWAGGER_SETTINGS = {
@@ -181,8 +182,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-
-
 # Internationalization
 # https://docs.djangoproject.com/en/dev/topics/i18n/
 
@@ -210,7 +209,7 @@ LOGIN_REDIRECT_URL = "/"
 EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND')
 EMAIL_HOST = os.environ.get('SQUAC_EMAIL_HOST')
 EMAIL_PORT = os.environ.get('SQUAC_EMAIL_PORT')
-EMAIL_NO_REPLY=os.environ.get('EMAIL_NO_REPLY')
+EMAIL_NO_REPLY = os.environ.get('EMAIL_NO_REPLY')
 
 EMAIL_NO_REPLY = os.environ.get('EMAIL_NO_REPLY')
 EMAIL_ADMIN = os.environ.get('EMAIL_ADMIN')
@@ -222,22 +221,22 @@ GMAIL_API_REFRESH_TOKEN = os.environ.get('GMAIL_API_REFRESH_TOKEN')
 
 # Fixture directories
 FIXTURE_DIRS = (
-   BASE_DIR + '/fixtures/',
+    BASE_DIR + '/fixtures/',
 )
 
-#point login and logout to drf routes
+# point login and logout to drf routes
 LOGIN_URL = 'rest_framework:login'
 LOGOUT_URL = 'rest_framework:logout'
 
 if DEBUG:
-    CACHES = { 
-        'default': { 
+    CACHES = {
+        'default': {
             'BACKEND': 'django.core.cache.backends.dummy.DummyCache'
         }
     }
 # need to do it this way since we don't want to install redis locally
-elif CACHE_ENABLED:  
-    CACHES['default'] = { 
+elif CACHE_ENABLED:
+    CACHES['default'] = {
         'BACKEND': 'django_redis.cache.RedisCache',
         'LOCATION': os.environ.get('CACHE_LOCATION'),
         'OPTIONS': {
@@ -246,21 +245,21 @@ elif CACHE_ENABLED:
     }
 
 # FIXME this is broken cache key is not being set
-#CACHE_MIDDLEWARE_ALIAS = os.environ.get('CACHE_BACKEND')	
+# CACHE_MIDDLEWARE_ALIAS = os.environ.get('CACHE_BACKEND')
 CACHE_MIDDLEWARE_SECONDS = int(os.environ.get('CACHE_SECONDS'))
-CACHE_MIDDLEWARE_KEY_PREFIX='squac_' + os.environ.get('CACHE_BACKEND')
+CACHE_MIDDLEWARE_KEY_PREFIX = 'squac_' + os.environ.get('CACHE_BACKEND')
 # this is where we specify the CACHES key from above
 SESSION_CACHE_ALIAS = os.environ.get('CACHE_KEY')
 
-NSLC_DEFAULT_CACHE=60 * 60 * 6
+NSLC_DEFAULT_CACHE = 60 * 60 * 6
 
 # number of hours to expire invite token
 INVITE_TOKEN_EXPIRY_TIME = 48
 
 
 ADMINS = (
-  ('KM', 'marczk@uw.edu '), ('AH','ahutko@uw.edu '),
-  ('CU', 'ulbergc@uw.edu ')
+    ('KM', 'marczk@uw.edu '), ('AH', 'ahutko@uw.edu '),
+    ('CU', 'ulbergc@uw.edu ')
 )
 AWS_DEFAULT_REGION = os.environ.get('AWS_DEFAULT_REGION')
 AWS_SNS_ADMIN_ARN = os.environ.get('AWS_SNS_ADMIN_ARN')
@@ -270,14 +269,18 @@ MANAGERS = ADMINS
 
 XRAY_RECORDER = {
     'AWS_XRAY_DAEMON_ADDRESS': '127.0.0.1:2000',
-    'AUTO_INSTRUMENT': True,  # If turned on built-in database queries and template rendering will be recorded as subsegments
+    # If turned on built-in database queries and template rendering
+    # will be recorded as subsegments
+    'AUTO_INSTRUMENT': True,
     'AWS_XRAY_CONTEXT_MISSING': 'LOG_ERROR',
     'PLUGINS': (),
     'SAMPLING': True,
     'SAMPLING_RULES': None,
-    'AWS_XRAY_TRACING_NAME': 'SQUAC', # the segment name for segments generated from incoming requests
-    'DYNAMIC_NAMING': None, # defines a pattern that host names should match
-    'STREAMING_THRESHOLD': None, # defines when a segment starts to stream out its children subsegments
+    # the segment name for segments generated from incoming requests
+    'AWS_XRAY_TRACING_NAME': 'SQUAC',
+    'DYNAMIC_NAMING': None,  # defines a pattern that host names should match
+    # defines when a segment starts to stream out its children subsegments
+    'STREAMING_THRESHOLD': None,
 }
 
 LOGGING = {
@@ -293,7 +296,7 @@ LOGGING = {
             'style': '{',
         },
     },
-     'filters': {
+    'filters': {
         'require_debug_false': {
             '()': 'django.utils.log.RequireDebugFalse',
         },
@@ -314,7 +317,7 @@ LOGGING = {
             'class': 'django.utils.log.AdminEmailHandler'
         },
     },
-   
+
     'root': {
         'handlers': ['console'],
         'level': 'WARNING',
