@@ -9,6 +9,8 @@ from nslc.models import Channel, Group
 from datetime import datetime, timedelta
 import pytz
 
+from bulk_update_or_create import BulkUpdateOrCreateQuerySet
+
 
 class MeasurementBase(models.Model):
     '''Base class for all measurement models'''
@@ -51,6 +53,7 @@ class Metric(MeasurementBase):
 
 class Measurement(MeasurementBase):
     '''describes the observable metrics'''
+    objects = BulkUpdateOrCreateQuerySet.as_manager()
     metric = models.ForeignKey(
         Metric,
         on_delete=models.CASCADE,

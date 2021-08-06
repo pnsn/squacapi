@@ -237,39 +237,127 @@ class PrivateMeasurementAPITests(TestCase):
         }
         res_update = self.client.post(url, payload)
         self.assertEqual(res_update.status_code, status.HTTP_201_CREATED)
-
         self.assertEqual(res.data['id'], res_update.data['id'])
         self.assertEqual(res_update.data['value'], 49)
 
-    def test_create_multiple_measurements(self):
+    def test_bulk_create_measurement_list_serializer(self):
+        len_to_add = 3
         url = reverse('measurement:measurement-list')
         measurements = Measurement.objects.all()
         len_before_create = len(measurements)
+        payload = [{
+            'metric': self.metric.id,
+            'channel': self.chan.id,
+            'value': 47.0,
+            'starttime': datetime(
+                2019, 1, 5, 8, 8, 7, x, tzinfo=pytz.UTC),
+            'endtime': datetime(
+                2019, 1, 5, 9, 8, 7, 127325, tzinfo=pytz.UTC)
+        } for x in range(len_to_add)]
 
-        payload = [
-            {
-                'metric': self.metric.id,
-                'channel': self.chan.id,
-                'value': 47.0,
-                'starttime': datetime(
-                    2019, 1, 5, 8, 8, 7, 127325, tzinfo=pytz.UTC),
-                'endtime': datetime(
-                    2019, 1, 5, 9, 8, 7, 127325, tzinfo=pytz.UTC)
-            },
-            {
-                'metric': self.metric.id,
-                'channel': self.chan.id,
-                'value': 10.0,
-                'starttime': datetime(
-                    2019, 3, 5, 8, 8, 7, 127325, tzinfo=pytz.UTC),
-                'endtime': datetime(
-                    2019, 3, 5, 9, 8, 7, 127325, tzinfo=pytz.UTC)
-            }
-        ]
-        res = self.client.post(url, payload, format='json')
+        res = self.client.post(
+            url,
+            payload,
+            format="json"
+        )
+
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         update_measurements = measurements.all()
-        self.assertEqual(len_before_create + 2, len(update_measurements))
+        self.assertEqual(len(update_measurements),
+                         len_before_create + len_to_add)
+
+    def test_bulk_update_measurement_list_serializer(self):
+        len_to_add = 3
+        url = reverse('measurement:measurement-list')
+        measurements = Measurement.objects.all()
+        len_before_create = len(measurements)
+        payload1 = [{
+            'metric': self.metric.id,
+            'channel': self.chan.id,
+            'value': 47.0,
+            'starttime': datetime(
+                    2019, 1, 5, 8, 8, 7, x, tzinfo=pytz.UTC),
+            'endtime': datetime(
+                2019, 1, 5, 9, 8, 7, 127325, tzinfo=pytz.UTC)
+        } for x in range(len_to_add)]
+
+        res1 = self.client.post(
+            url,
+            payload1,
+            format="json"
+        )
+        self.assertEqual(res1.status_code, status.HTTP_201_CREATED)
+        after_create_measurements = measurements.all()
+        self.assertEqual(len(after_create_measurements),
+                         len_before_create + len_to_add)
+
+        payload2 = [{
+            'metric': self.metric.id,
+            'channel': self.chan.id,
+            'value': 8,
+            'starttime': datetime(
+                    2019, 1, 5, 8, 8, 7, x, tzinfo=pytz.UTC),
+            'endtime': datetime(
+                2019, 1, 5, 9, 8, 7, 127325, tzinfo=pytz.UTC)
+        } for x in range(3)]
+
+        res2 = self.client.post(
+            url,
+            payload2,
+            format="json"
+        )
+
+        self.assertEqual(res2.status_code, status.HTTP_201_CREATED)
+        after_update_measurements = measurements.all()
+        self.assertEqual(len(after_create_measurements),
+                         len(after_update_measurements))
+
+    def test_bulk_create_or_update_measurement(self):
+        len_to_add = 3
+        url = reverse('measurement:measurement-list')
+        measurements = Measurement.objects.all()
+        len_before_create = len(measurements)
+        payload = [{
+            'metric': self.metric.id,
+            'channel': self.chan.id,
+            'value': 8,
+            'starttime': datetime(
+                2019, 1, 5, 8, 8, 7, x, tzinfo=pytz.UTC),
+            'endtime': datetime(
+                2019, 1, 5, 9, 8, 7, 127325, tzinfo=pytz.UTC)
+        } for x in range(len_to_add)]
+
+        res = self.client.post(
+            url,
+            payload,
+            format="json"
+        )
+
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        after_create_measurements = measurements.all()
+        self.assertEqual(len(after_create_measurements),
+                         len_before_create + len_to_add)
+
+        payload2 = [{
+            'metric': self.metric.id,
+            'channel': self.chan.id,
+            'value': 8,
+            'starttime': datetime(
+                    2019, 1, 5, 8, 8, 7, x, tzinfo=pytz.UTC),
+            'endtime': datetime(
+                2019, 1, 5, 9, 8, 7, 127325, tzinfo=pytz.UTC)
+        } for x in range(len_to_add * 2)]
+
+        res2 = self.client.post(
+            url,
+            payload2,
+            format="json"
+        )
+
+        self.assertEqual(res2.status_code, status.HTTP_201_CREATED)
+        after_update_measurements = measurements.all()
+        self.assertEqual(len(after_create_measurements) + len_to_add,
+                         len(after_update_measurements))
 
     def test_create_multiple_measurements_with_error(self):
         ''' test a bulk upload with bad param in one object'''
