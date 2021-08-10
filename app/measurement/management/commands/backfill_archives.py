@@ -70,8 +70,8 @@ class Command(BaseCommand):
         while current_time <= end_time:
             call_command('archive_measurements',
                          archive_type,
-                         f'--period_end={current_time.strftime("%m-%d-%Y")}',
                          overwrite,
+                         f'--period_end={current_time.strftime("%m-%d-%Y")}',
                          stdout=self.stdout)
 
             current_time = current_time + self.DURATIONS[archive_type]
