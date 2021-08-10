@@ -160,7 +160,7 @@ class TestArchiveCreation(TestCase):
         period_start = period_start.replace(tzinfo=pytz.UTC)
         period_end = self.TEST_TIME + relativedelta(days=1)
         period_end = period_end.replace(tzinfo=pytz.UTC)
-        call_command('backfill_archives', 'day',
+        call_command('backfill_archives', 'day', '--overwrite',
                      start_time=period_start,
                      end_time=period_end,
                      stdout=out)

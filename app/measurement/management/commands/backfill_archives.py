@@ -46,23 +46,32 @@ class Command(BaseCommand):
                 hour=0, minute=0, second=0, microsecond=0),
             help="When to stop calling backup (inclusive, format: MM-DD-YYYY)"
         )
+        parser.add_argument('--no-overwrite', dest='overwrite',
+                            action='store_false')
+        parser.add_argument('--overwrite', dest='overwrite',
+                            action='store_true')
 
     def handle(self, *args, **kwargs):
         '''method called by manager'''
         archive_type = kwargs['archive_type']
         current_time = kwargs['start_time']
         end_time = kwargs['end_time']
+        if kwargs['overwrite']:
+            overwrite = '--overwrite'
+        else:
+            overwrite = '--no-overwrite'
 
         self.stdout.write(
             f'Calling archive_measurement for each {archive_type} from'
             f' {current_time.strftime("%m-%d-%Y")} to'
-            f' {end_time.strftime("%m-%d-%Y")}'
+            f' {end_time.strftime("%m-%d-%Y")} with {overwrite}'
         )
 
         while current_time <= end_time:
             call_command('archive_measurements',
                          archive_type,
                          f'--period_end={current_time.strftime("%m-%d-%Y")}',
+                         overwrite,
                          stdout=self.stdout)
 
             current_time = current_time + self.DURATIONS[archive_type]
