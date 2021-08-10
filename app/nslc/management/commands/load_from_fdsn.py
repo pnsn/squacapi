@@ -193,6 +193,7 @@ class Command(BaseCommand):
                     stations[sta_code] = sta_name
 
         channel_url = self.build_url(options, 'channel')
+        channels = {}
         with requests.Session() as s:
             download = s.get(channel_url)
             decoded_content = download.content.decode('utf-8')
@@ -206,6 +207,7 @@ class Command(BaseCommand):
                     net, sta, loc, cha, lat, lon, elev, *rem = row
                     depth, azimuth, dip, sensor_descr, scale, *rem = rem
                     freq, units, rate, start, end = rem
+                    nslc_code = f'{net}.{sta}.{loc}.{cha}'.lower()
                     start_datetime = pytz.utc.localize(
                         datetime.strptime(start, '%Y-%m-%dT%H:%M:%S')
                     )
@@ -217,9 +219,17 @@ class Command(BaseCommand):
                         # If end time is null set to 2599 dummy date
                         end_datetime = datetime(
                             year=2599, month=12, day=31, tzinfo=pytz.UTC)
-                    # print(f'{net}: {sta} {cha}')
+
+                    if nslc_code in channels:
+                        if start_datetime < channels[nslc_code]['start']:
+                            channels[nslc_code]['start'] = start_datetime
+                        if end_datetime > channels[nslc_code]['end']:
+                            channels[nslc_code]['end'] = end_datetime
+                    else:
+                        channels[nslc_code] = {'start': start_datetime,
+                                               'end': end_datetime}
                     try:
-                        # Get or create the channel using data
+                        # Update or create the channel using data
                         Channel.objects.update_or_create(
                             network=Network.objects.get(code=net.lower()),
                             station_code=sta.lower(),
@@ -240,8 +250,8 @@ class Command(BaseCommand):
                                 'scale_units': units,
                                 'sample_rate': 0.0 if not rate else float(
                                     rate),
-                                'starttime': start_datetime,
-                                'endtime': end_datetime,
+                                'starttime': channels[nslc_code]['start'],
+                                'endtime': channels[nslc_code]['end'],
                                 'user': user,
                             }
                         )
