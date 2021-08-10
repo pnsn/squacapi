@@ -33,7 +33,8 @@ class Command(BaseCommand):
             '--start_time',
             type=lambda s: pytz.utc.localize(datetime.strptime(s, "%m-%d-%Y")),
             nargs='?',
-            default=datetime.now(tz=pytz.utc).replace(
+            default=(
+                datetime.now(tz=pytz.utc) - relativedelta(days=3)).replace(
                 hour=0, minute=0, second=0, microsecond=0),
             help="When to start calling backup (inclusive, format: MM-DD-YYYY)"
         )
@@ -52,14 +53,16 @@ class Command(BaseCommand):
         current_time = kwargs['start_time']
         end_time = kwargs['end_time']
 
-        print(f'Calling archive_measurement for each {archive_type} from'
-              f' {current_time.strftime("%m-%d-%Y")} to'
-              f' {end_time.strftime("%m-%d-%Y")}')
+        self.stdout.write(
+            f'Calling archive_measurement for each {archive_type} from'
+            f' {current_time.strftime("%m-%d-%Y")} to'
+            f' {end_time.strftime("%m-%d-%Y")}'
+        )
 
         while current_time <= end_time:
             call_command('archive_measurements',
-                         '1',
                          archive_type,
-                         f'--period_end={current_time.strftime("%m-%d-%Y")}')
+                         f'--period_end={current_time.strftime("%m-%d-%Y")}',
+                         stdout=self.stdout)
 
             current_time = current_time + self.DURATIONS[archive_type]

@@ -13,7 +13,7 @@ import pytz
 class Command(BaseCommand):
     """ Command for creating archive entries"""
 
-    help = 'Archives Measurements older than the specified age'
+    help = 'Archives Measurements for the given time period'
 
     TIME_TRUNCATOR = {
         'day': TruncDay,
@@ -34,8 +34,6 @@ class Command(BaseCommand):
     """ Types of archive """
 
     def add_arguments(self, parser):
-        parser.add_argument('period_size', type=int,
-                            help='number of archives to be created')
         parser.add_argument('archive_type',
                             choices=['day', 'month'],
                             help=('The granularity of the desired archive '
@@ -62,7 +60,9 @@ class Command(BaseCommand):
         metrics = kwargs['metric']
         overwrite = kwargs['overwrite']
         period_end = kwargs['period_end']
-        period_size = kwargs['period_size']
+        # in order to make archives for longer periods use backfill_archives,
+        # which calls this command
+        period_size = 1
         period_start = period_end - self.DURATIONS[archive_type](period_size)
 
         # if archive_type is month, adjust period start/end to go from 1st day
@@ -88,7 +88,7 @@ class Command(BaseCommand):
         # if overwriting archives, designate old ones to delete. Otherwise,
         # check to make sure we are only writing new ones
         if overwrite:
-            archives_to_ignore = 0
+            n_archives_to_ignore = 0
             archives_to_delete = archives
             if len(metrics) != 0:
                 archives_to_delete = archives_to_delete.filter(
@@ -103,7 +103,7 @@ class Command(BaseCommand):
                 m_c__in=archive_key)
             # make sure we don't delete any old archives
             archives_to_delete = self.ARCHIVE_TYPE[archive_type].objects.none()
-            archives_to_ignore = len(archive_key)
+            n_archives_to_ignore = len(archive_key)
 
         # get the data to be archived
         archive_data = self.get_archive_data(measurements, archive_type)
@@ -119,7 +119,7 @@ class Command(BaseCommand):
         # report back to user
         self.stdout.write(
             f"Deleted {deleted_archives[0]}, "
-            f"ignored {archives_to_ignore}, and "
+            f"ignored {n_archives_to_ignore}, and "
             f"created {len(created_archives)} "
             f"{archive_type} archives "
             f"from {format(period_start, '%m-%d-%Y')} "

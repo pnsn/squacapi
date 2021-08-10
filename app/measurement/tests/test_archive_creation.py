@@ -128,7 +128,7 @@ class TestArchiveCreation(TestCase):
         out = StringIO()
         period_end = self.TEST_TIME + relativedelta(days=1)
         period_end = period_end.replace(tzinfo=pytz.UTC)
-        call_command('archive_measurements', 1, 'day',
+        call_command('archive_measurements', 'day',
                      period_end=period_end,
                      stdout=out)
 
@@ -156,10 +156,13 @@ class TestArchiveCreation(TestCase):
 
         # create archives of past 2 days
         out = StringIO()
+        period_start = self.TEST_TIME + relativedelta(days=0)
+        period_start = period_start.replace(tzinfo=pytz.UTC)
         period_end = self.TEST_TIME + relativedelta(days=1)
         period_end = period_end.replace(tzinfo=pytz.UTC)
-        call_command('archive_measurements', 2, 'day',
-                     period_end=period_end,
+        call_command('backfill_archives', 'day',
+                     start_time=period_start,
+                     end_time=period_end,
                      stdout=out)
 
         # check the correct number of archives were created
@@ -190,7 +193,7 @@ class TestArchiveCreation(TestCase):
         out = StringIO()
         period_end = test_time + relativedelta(days=1)
         period_end = period_end.replace(tzinfo=pytz.UTC)
-        call_command('archive_measurements', 1, 'day',
+        call_command('archive_measurements', 'day',
                      period_end=period_end,
                      stdout=out)
 
@@ -200,7 +203,7 @@ class TestArchiveCreation(TestCase):
             starttime__lt=period_end).count()
 
         # call archive again
-        call_command('archive_measurements', 1, 'day',
+        call_command('archive_measurements', 'day',
                      period_end=period_end,
                      stdout=out)
 
@@ -231,7 +234,7 @@ class TestArchiveCreation(TestCase):
 
         # Create and archive measurements
         m1 = self.make_measurements(test_time, self.metric)
-        call_command('archive_measurements', 1, 'day',
+        call_command('archive_measurements', 'day',
                      period_end=period_end,
                      stdout=out)
 
@@ -242,7 +245,7 @@ class TestArchiveCreation(TestCase):
         # Archive new measurements with --no-overwrite. Previous archives
         # should remain
         m2 = self.make_measurements(test_time, self.metric2)
-        call_command('archive_measurements', 1, 'day', '--no-overwrite',
+        call_command('archive_measurements', 'day', '--no-overwrite',
                      period_end=period_end,
                      stdout=out)
 
@@ -253,7 +256,7 @@ class TestArchiveCreation(TestCase):
         self.assertEqual(a1_1, a1_2)
 
         # Now overwrite and see if ids change
-        call_command('archive_measurements', 1, 'day', '--overwrite',
+        call_command('archive_measurements', 'day', '--overwrite',
                      period_end=period_end,
                      stdout=out)
 
@@ -287,7 +290,7 @@ class TestArchiveCreation(TestCase):
         out = StringIO()
         period_end = test_time
         period_end = period_end.replace(tzinfo=pytz.UTC)
-        call_command('archive_measurements', 1, 'month',
+        call_command('archive_measurements', 'month',
                      period_end=period_end,
                      stdout=out)
 
