@@ -34,7 +34,7 @@ class Command(BaseCommand):
             type=lambda s: pytz.utc.localize(datetime.strptime(s, "%m-%d-%Y")),
             nargs='?',
             default=(
-                datetime.now(tz=pytz.utc) - relativedelta(days=3)).replace(
+                datetime.now(tz=pytz.utc) - relativedelta(days=0)).replace(
                 hour=0, minute=0, second=0, microsecond=0),
             help="When to start calling backup (inclusive, format: MM-DD-YYYY)"
         )
