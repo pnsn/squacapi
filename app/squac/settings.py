@@ -87,7 +87,7 @@ INSTALLED_APPS = [
 
 # The caching middlewares must be first and last
 MIDDLEWARE = [
-    # 'django.middleware.cache.UpdateCacheMiddleware', #must be first
+    'django.middleware.cache.UpdateCacheMiddleware',  # must be first
     'aws_xray_sdk.ext.django.middleware.XRayMiddleware',  # also must be first
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'corsheaders.middleware.CorsMiddleware',
@@ -99,7 +99,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_cprofile_middleware.middleware.ProfilerMiddleware',
-    # 'django.middleware.cache.FetchFromCacheMiddleware', #must be last!!
+    'django.middleware.cache.FetchFromCacheMiddleware',  # must be last!!
 
 ]
 
@@ -241,11 +241,13 @@ elif CACHE_ENABLED:
         'LOCATION': os.environ.get('CACHE_LOCATION'),
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-        }
+        },
+        'TIMEOUT': int(os.environ.get('CACHE_SECONDS')),
+        'KEY_PREFIX': 'squac_' + os.environ.get('CACHE_BACKEND')
     }
 
 # FIXME this is broken cache key is not being set
-# CACHE_MIDDLEWARE_ALIAS = os.environ.get('CACHE_BACKEND')
+CACHE_MIDDLEWARE_ALIAS = os.environ.get('CACHE_BACKEND')
 CACHE_MIDDLEWARE_SECONDS = int(os.environ.get('CACHE_SECONDS'))
 CACHE_MIDDLEWARE_KEY_PREFIX = 'squac_' + os.environ.get('CACHE_BACKEND')
 # this is where we specify the CACHES key from above
