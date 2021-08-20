@@ -41,10 +41,6 @@ class UserBaseSerializer(serializers.ModelSerializer):
         read_only_fields = ('is_staff', 'id')
         extra_kwargs = {'password': {'write_only': True, 'min_length': 5}}
 
-    @silk_profile(name='User Base serializer to representation')
-    def to_respresentation(self, instance):
-        return super().to_representation(instance)
-
     def create(self, validated_data):
         '''Create a new user with an encrypted password set groups'''
         groups = validated_data.pop('groups', [])
@@ -66,6 +62,12 @@ class UserBaseSerializer(serializers.ModelSerializer):
             user.save()
         return user
 
+    @staticmethod
+    def setup_eager_loading(queryset):
+        queryset = queryset.prefetch_related(
+            'groups').select_related('organization')
+        return queryset
+
 
 class UserWriteSerializer(UserBaseSerializer):
     groups = serializers.PrimaryKeyRelatedField(
@@ -83,6 +85,10 @@ class UserReadSerializer(UserBaseSerializer):
     organization = serializers.PrimaryKeyRelatedField(
         queryset=Organization.objects.all()
     )
+
+    @silk_profile(name='User read serializer to representation')
+    def to_representation(self, instance):
+        return super().to_representation(instance)
 
 
 class UserMeSerializer(UserBaseSerializer):

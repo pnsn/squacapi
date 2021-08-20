@@ -87,13 +87,11 @@ INSTALLED_APPS = [
     'organization',
     'invite',
     'django_crontab',
-    'aws_xray_sdk.ext.django',
 ]
 
 # The caching middlewares must be first and last
 MIDDLEWARE = [
     # 'django.middleware.cache.UpdateCacheMiddleware',  # must be first
-    'aws_xray_sdk.ext.django.middleware.XRayMiddleware',  # also must be first
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'silk.middleware.SilkyMiddleware',
     'corsheaders.middleware.CorsMiddleware',
@@ -275,22 +273,6 @@ AWS_SNS_ADMIN_ARN = os.environ.get('AWS_SNS_ADMIN_ARN')
 SQUAC_MEASUREMENTS_BUCKET = os.environ.get('SQUAC_MEASUREMENTS_BUCKET')
 
 MANAGERS = ADMINS
-
-XRAY_RECORDER = {
-    'AWS_XRAY_DAEMON_ADDRESS': '127.0.0.1:2000',
-    # If turned on built-in database queries and template rendering
-    # will be recorded as subsegments
-    'AUTO_INSTRUMENT': True,
-    'AWS_XRAY_CONTEXT_MISSING': 'LOG_ERROR',
-    'PLUGINS': (),
-    'SAMPLING': True,
-    'SAMPLING_RULES': None,
-    # the segment name for segments generated from incoming requests
-    'AWS_XRAY_TRACING_NAME': 'SQUAC',
-    'DYNAMIC_NAMING': None,  # defines a pattern that host names should match
-    # defines when a segment starts to stream out its children subsegments
-    'STREAMING_THRESHOLD': None,
-}
 
 LOGGING = {
     'version': 1,
