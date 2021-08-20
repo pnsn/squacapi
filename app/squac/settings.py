@@ -85,7 +85,7 @@ INSTALLED_APPS = [
     'organization',
     'invite',
     'django_crontab',
-    'aws_xray_sdk.ext.django'
+    'aws_xray_sdk.ext.django',
 ]
 
 # The caching middlewares must be first and last
@@ -103,8 +103,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_cprofile_middleware.middleware.ProfilerMiddleware',
-    # 'django.middleware.cache.FetchFromCacheMiddleware',  # must be last!!
-
+    'django.middleware.cache.FetchFromCacheMiddleware',  # must be last!!
 ]
 
 

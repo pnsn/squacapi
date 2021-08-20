@@ -16,6 +16,7 @@ from .models import (Metric, Measurement, Threshold,
                      Alert, ArchiveDay, ArchiveWeek, ArchiveMonth,
                      ArchiveHour, Monitor, Trigger)
 from measurement import serializers
+from silk.profiling.profiler import silk_profile
 
 
 def check_measurement_params(params):
@@ -137,6 +138,7 @@ class MeasurementViewSet(MeasurementBaseViewSet):
     def get_queryset(self):
         return Measurement.objects.all().order_by('channel', 'metric')
 
+    @silk_profile(name='GET Measurements')
     def list(self, request, *args, **kwargs):
         '''We want to be carful about large queries so require params'''
         check_measurement_params(request.query_params)
