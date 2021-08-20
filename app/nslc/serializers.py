@@ -36,6 +36,11 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
     def to_respresentation(self, instance):
         return super().to_representation(instance)
 
+    @staticmethod
+    def setup_eager_loading(queryset):
+        queryset = queryset.prefetch_related('channels', 'organization')
+        return queryset
+
 
 class ChannelSerializer(serializers.HyperlinkedModelSerializer):
     network = serializers.PrimaryKeyRelatedField(

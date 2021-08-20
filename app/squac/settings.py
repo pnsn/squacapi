@@ -59,6 +59,8 @@ SILKY_PYTHON_PROFILER = True
 SILKY_META = True
 SILKY_AUTHENTICATION = True  # User must login
 SILKY_AUTHORISATION = True
+SILKY_PYTHON_PROFILER_BINARY = True
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',

@@ -91,7 +91,7 @@ class NetworkViewSet(BaseNslcViewSet):
 
     def get_queryset(self):
         q = Network.objects.all()
-        return self.serializer_class.setup_eager_loading(q)
+        return q
 
 
 class ChannelViewSet(BaseNslcViewSet):
