@@ -75,7 +75,7 @@ INSTALLED_APPS = [
     'bulk_update_or_create',
     'gmailapi_backend',
     'corsheaders',
-    'debug_toolbar',
+    # 'debug_toolbar',
     'drf_yasg',
     'core',
     'user',
