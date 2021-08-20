@@ -1,5 +1,7 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from rest_framework.response import Response
 from django_filters import rest_framework as filters
 from squac.filters import CharInFilter, NumberInFilter
@@ -112,6 +114,10 @@ class MetricViewSet(MeasurementBaseViewSet):
 
     def get_queryset(self):
         return Metric.objects.all()
+
+    @method_decorator(cache_page(60 * 10))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
 
 
 class MeasurementViewSet(MeasurementBaseViewSet):
