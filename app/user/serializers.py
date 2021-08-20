@@ -5,6 +5,7 @@ from rest_framework import serializers
 from organization.models import Organization
 from core.models import Contact, Notification
 # from measurement.models import Contact
+from silk.profiling.profiler import silk_profile
 
 
 class GroupSerializer(serializers.ModelSerializer):
@@ -39,6 +40,10 @@ class UserBaseSerializer(serializers.ModelSerializer):
                   'is_active')
         read_only_fields = ('is_staff', 'id')
         extra_kwargs = {'password': {'write_only': True, 'min_length': 5}}
+
+    @silk_profile(name='User Base serializer to representation')
+    def to_respresentation(self, instance):
+        return super().to_representation(instance)
 
     def create(self, validated_data):
         '''Create a new user with an encrypted password set groups'''

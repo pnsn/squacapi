@@ -19,6 +19,7 @@ from measurement import serializers
 from silk.profiling.profiler import silk_profile
 
 
+@silk_profile(name='Check measurement params')
 def check_measurement_params(params):
     '''ensure that each request for measurements/archives and aggs has:
         * channel or group
