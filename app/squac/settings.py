@@ -56,6 +56,10 @@ DEBUG_TOOLBAR_CONFIG = {
     'SHOW_TEMPLATE_CONTEXT': True,
 }
 
+SILKY_PYTHON_PROFILER = True
+SILKY_META = True
+SILKY_AUTHENTICATION = True  # User must login
+SILKY_AUTHORISATION = True
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -82,7 +86,8 @@ INSTALLED_APPS = [
     'organization',
     'invite',
     'django_crontab',
-    'aws_xray_sdk.ext.django'
+    'aws_xray_sdk.ext.django',
+    'silk'
 ]
 
 # The caching middlewares must be first and last
@@ -90,6 +95,7 @@ MIDDLEWARE = [
     # 'django.middleware.cache.UpdateCacheMiddleware',  # must be first
     'aws_xray_sdk.ext.django.middleware.XRayMiddleware',  # also must be first
     'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'silk.middleware.SilkyMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
