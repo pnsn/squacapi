@@ -86,8 +86,7 @@ INSTALLED_APPS = [
     'organization',
     'invite',
     'django_crontab',
-    'aws_xray_sdk.ext.django',
-    'silk'
+    'aws_xray_sdk.ext.django'
 ]
 
 # The caching middlewares must be first and last
@@ -240,6 +239,8 @@ if DEBUG:
             'BACKEND': 'django.core.cache.backends.dummy.DummyCache'
         }
     }
+    INSTALLED_APPS.append('silk')
+
 # need to do it this way since we don't want to install redis locally
 elif CACHE_ENABLED:
     CACHES['default'] = {
