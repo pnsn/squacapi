@@ -116,6 +116,7 @@ class MetricViewSet(MeasurementBaseViewSet):
     def get_queryset(self):
         return Metric.objects.all()
 
+    @silk_profile(name='Dispatch metrics')
     @method_decorator(cache_page(60 * 10))
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
