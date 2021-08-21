@@ -5,7 +5,7 @@ from .models import (Metric, Measurement, Threshold,
 from dashboard.models import Widget
 from nslc.models import Channel, Group
 from nslc.serializers import GroupSerializer
-from silk.profiling.profiler import silk_profile
+# from silk.profiling.profiler import silk_profile
 
 
 class BulkMeasurementListSerializer(serializers.ListSerializer):
@@ -38,7 +38,7 @@ class MeasurementSerializer(serializers.ModelSerializer):
         read_only_fields = ('id',)
         list_serializer_class = BulkMeasurementListSerializer
 
-    @silk_profile(name='Measurements serializer create')
+    # @silk_profile(name='Measurements serializer create')
     def create(self, validated_data):
         measurement, created = Measurement.objects.update_or_create(
             metric=validated_data.get('metric', None),

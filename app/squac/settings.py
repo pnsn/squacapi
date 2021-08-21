@@ -19,6 +19,7 @@ SECRET_KEY = os.environ.get('SQUAC_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('SQUAC_DEBUG_MODE') == 'True'
+DEBUG = True
 
 CACHE_ENABLED = os.environ.get('SQUAC_CACHE_ENABLED') == 'True'
 
@@ -38,6 +39,7 @@ except RequestException or MissingSchema:
 # For debug toolbar
 INTERNAL_IPS = [
     'localhost',
+    '127.0.0.1',
     '10.0.2.2',
     '128.95.16.34'
 ]
@@ -52,6 +54,7 @@ DEBUG_TOOLBAR_CONFIG = {
     'DISABLE_PANELS': [
         'debug_toolbar.panels.redirects.RedirectsPanel',
     ],
+    # 'SHOW_TOOLBAR_CALLBACK': lambda _request: DEBUG,
     'SHOW_TEMPLATE_CONTEXT': True,
 }
 
@@ -77,7 +80,7 @@ INSTALLED_APPS = [
     'bulk_update_or_create',
     'gmailapi_backend',
     'corsheaders',
-    # 'debug_toolbar',
+    'debug_toolbar',
     'drf_yasg',
     'core',
     'user',
@@ -103,7 +106,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_cprofile_middleware.middleware.ProfilerMiddleware',
-    'django.middleware.cache.FetchFromCacheMiddleware',  # must be last!!
+    # 'django.middleware.cache.FetchFromCacheMiddleware',  # must be last!!
 ]
 
 

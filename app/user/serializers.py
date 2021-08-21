@@ -5,7 +5,7 @@ from rest_framework import serializers
 from organization.models import Organization
 from core.models import Contact, Notification
 # from measurement.models import Contact
-from silk.profiling.profiler import silk_profile
+# from silk.profiling.profiler import silk_profile
 
 
 class GroupSerializer(serializers.ModelSerializer):
@@ -86,7 +86,7 @@ class UserReadSerializer(UserBaseSerializer):
         queryset=Organization.objects.all()
     )
 
-    @silk_profile(name='User read serializer to representation')
+    # @silk_profile(name='User read serializer to representation')
     def to_representation(self, instance):
         return super().to_representation(instance)
 

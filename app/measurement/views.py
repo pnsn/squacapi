@@ -16,10 +16,10 @@ from .models import (Metric, Measurement, Threshold,
                      Alert, ArchiveDay, ArchiveWeek, ArchiveMonth,
                      ArchiveHour, Monitor, Trigger)
 from measurement import serializers
-from silk.profiling.profiler import silk_profile
+# from silk.profiling.profiler import silk_profile
 
 
-@silk_profile(name='Check measurement params')
+# @silk_profile(name='Check measurement params')
 def check_measurement_params(params):
     '''ensure that each request for measurements/archives and aggs has:
         * channel or group
@@ -117,7 +117,7 @@ class MetricViewSet(MeasurementBaseViewSet):
     def get_queryset(self):
         return Metric.objects.all()
 
-    @silk_profile(name='Dispatch metrics')
+    # @silk_profile(name='Dispatch metrics')
     @method_decorator(cache_page(60 * 10))
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
@@ -140,7 +140,7 @@ class MeasurementViewSet(MeasurementBaseViewSet):
     def get_queryset(self):
         return Measurement.objects.all().order_by('channel', 'metric')
 
-    @silk_profile(name='GET Measurements')
+    # @silk_profile(name='GET Measurements')
     def list(self, request, *args, **kwargs):
         '''We want to be carful about large queries so require params'''
         check_measurement_params(request.query_params)

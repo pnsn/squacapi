@@ -5,7 +5,7 @@ from squac.mixins import SetUserMixin, DefaultPermissionsMixin, \
 from dashboard.models import Dashboard, WidgetType, Widget, StatType
 from dashboard import serializers
 from rest_framework.permissions import IsAdminUser
-from silk.profiling.profiler import silk_profile
+# from silk.profiling.profiler import silk_profile
 
 
 class BaseDashboardViewSet(SetUserMixin, DefaultPermissionsMixin,
@@ -21,7 +21,7 @@ class DashboardViewSet(SharedPermissionsMixin, BaseDashboardViewSet):
             return serializers.DashboardDetailSerializer
         return self.serializer_class
 
-    @silk_profile(name='Dashbaard get queryset')
+    # @silk_profile(name='Dashbaard get queryset')
     def get_queryset(self):
         queryset = Dashboard.objects.all()
         if self.request.user.is_staff:

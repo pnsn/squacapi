@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import Network, Channel, Group
 from organization.models import Organization
-from silk.profiling.profiler import silk_profile
+# from silk.profiling.profiler import silk_profile
 
 # to dump data from db into fixtures
 # ./mg.sh "dumpdata nslc" > app/nslc/fixtures/nslc_tests.json
@@ -32,7 +32,7 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
         read_only_fields = ('id',)
         ref_name = "NslcGroup"
 
-    @silk_profile(name='Group serializer to representation')
+    # @silk_profile(name='Group serializer to representation')
     def to_respresentation(self, instance):
         return super().to_representation(instance)
 
@@ -62,7 +62,7 @@ class ChannelSerializer(serializers.HyperlinkedModelSerializer):
         queryset = queryset.prefetch_related('network')
         return queryset
 
-    @silk_profile(name='Channel serializer to representation')
+    # @silk_profile(name='Channel serializer to representation')
     def to_respresentation(self, instance):
         return super().to_representation(instance)
 
