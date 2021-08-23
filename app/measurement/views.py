@@ -138,7 +138,7 @@ class MeasurementViewSet(MeasurementBaseViewSet):
         return Measurement.objects.all().order_by('channel', 'metric')
 
     def list(self, request, *args, **kwargs):
-        '''We want to be carful about large queries so require params'''
+        '''We want to be careful about large queries so require params'''
         check_measurement_params(request.query_params)
         return super().list(self, request, *args, **kwargs)
 
