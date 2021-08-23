@@ -21,7 +21,7 @@ to run only these tests:
 '''
 
 
-class UnathenticatedDashboardApiTests(TestCase):
+class UnauthenticatedDashboardApiTests(TestCase):
     '''Test the dashboard api (public)'''
 
     def setUp(self):

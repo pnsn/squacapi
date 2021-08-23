@@ -35,7 +35,7 @@ class UnAuthenticatedNotificationApiTests(TestCase):
             contact=self.contact
         )
 
-    def test_notification_unathorized(self):
+    def test_notification_unauthorized(self):
         '''test if unauth user can read or write to notification'''
         url = reverse(
             'user:notification-detail', kwargs={'pk': self.notification.id})

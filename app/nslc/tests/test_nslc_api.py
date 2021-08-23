@@ -51,7 +51,7 @@ class UnAuthenticatedNslcApiTests(TestCase):
             user=self.user)
         self.grp.channels.add(self.chan)
 
-    def test_network_unathorized(self):
+    def test_network_unauthorized(self):
         '''test if unauth user can read or write to network'''
         url = reverse('nslc:network-detail', kwargs={'pk': self.net.code})
         res = self.client.get(url)
@@ -63,7 +63,7 @@ class UnAuthenticatedNslcApiTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_channel_unauthorized(self):
-        '''check that unathenticated user can't read or write to channels'''
+        '''check that unauthenticated user can't read or write to channels'''
         url = reverse('nslc:channel-detail', kwargs={'pk': self.chan.id})
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
@@ -131,7 +131,6 @@ class PrivateNslcAPITests(TestCase):
         self.assertEqual(str(self.chan), "UW:RCM:--:EHZ")
 
     def test_create_channel(self):
-
         '''Test that a channel can be created'''
 
         url = reverse('nslc:channel-list')
