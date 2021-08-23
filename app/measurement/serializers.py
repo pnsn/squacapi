@@ -7,7 +7,20 @@ from nslc.models import Channel, Group
 from nslc.serializers import GroupSerializer
 
 
+class BulkMeasurementListSerializer(serializers.ListSerializer):
+    '''serializer for bulk creating or updating measurements'''
+
+    def create(self, validated_data):
+        result = [Measurement(**item) for item in validated_data]
+        Measurement.objects.bulk_update_or_create(
+            result,
+            ['value', 'endtime', 'user'],
+            match_field=['metric', 'channel', 'starttime'])
+        return result
+
+
 class MeasurementSerializer(serializers.ModelSerializer):
+    '''serializer for measurements'''
     metric = serializers.PrimaryKeyRelatedField(
         queryset=Metric.objects.all()
     )
@@ -22,6 +35,7 @@ class MeasurementSerializer(serializers.ModelSerializer):
             'created_at', 'user_id'
         )
         read_only_fields = ('id',)
+        list_serializer_class = BulkMeasurementListSerializer
 
     def create(self, validated_data):
         measurement, created = Measurement.objects.update_or_create(
