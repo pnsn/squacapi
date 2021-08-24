@@ -19,20 +19,13 @@ class BulkMeasurementListSerializer(serializers.ListSerializer):
         return result
 
 
-class CustomPrimaryKeyRelatedField(serializers.PrimaryKeyRelatedField):
-    '''Override default pk field to enable efficient validation'''
-
-    def to_internal_value(self, data):
-        return data
-
-
 class MeasurementSerializer(serializers.ModelSerializer):
     '''serializer for measurements'''
-    channel = CustomPrimaryKeyRelatedField(
+    channel = serializers.PrimaryKeyRelatedField(
         queryset=Channel.objects.all()
     )
 
-    metric = CustomPrimaryKeyRelatedField(
+    metric = serializers.PrimaryKeyRelatedField(
         queryset=Metric.objects.all()
     )
 
@@ -44,11 +37,6 @@ class MeasurementSerializer(serializers.ModelSerializer):
         )
         read_only_fields = ('id',)
         list_serializer_class = BulkMeasurementListSerializer
-
-    def __init__(self, *args, **kwargs):
-        self.channels = Channel.objects.all()
-        self.metrics = Metric.objects.all()
-        super().__init__(*args, **kwargs)
 
     def create(self, validated_data):
         measurement, created = Measurement.objects.update_or_create(
@@ -66,21 +54,6 @@ class MeasurementSerializer(serializers.ModelSerializer):
     def setup_eager_loading(queryset):
         queryset = queryset.select_related('channel', 'metric')
         return queryset
-
-    # This is an attempt to reduce queries, might be a bad idea
-    def validate_metric(self, value):
-        try:
-            metric = next(item for item in self.metrics if item.id == value)
-            return metric
-        except StopIteration:
-            raise serializers.ValidationError('Metric not found')
-
-    def validate_channel(self, value):
-        try:
-            channel = next(item for item in self.channels if item.id == value)
-            return channel
-        except StopIteration:
-            raise serializers.ValidationError('Channel not found')
 
 
 class AggregatedSerializer(serializers.Serializer):

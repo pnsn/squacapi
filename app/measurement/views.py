@@ -133,7 +133,6 @@ class MeasurementViewSet(MeasurementBaseViewSet):
     def list(self, request, *args, **kwargs):
         '''We want to be careful about large queries so require params'''
         check_measurement_params(request.query_params)
-        print("MEASUREMENT LIST")
         return super().list(self, request, *args, **kwargs)
 
     def create(self, request, *args, **kwargs):
