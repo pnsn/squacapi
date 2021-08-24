@@ -5,6 +5,7 @@ from rest_framework import serializers
 from organization.models import Organization
 from core.models import Contact, Notification
 # from measurement.models import Contact
+# from silk.profiling.profiler import silk_profile
 
 
 class GroupSerializer(serializers.ModelSerializer):
@@ -61,6 +62,12 @@ class UserBaseSerializer(serializers.ModelSerializer):
             user.save()
         return user
 
+    @staticmethod
+    def setup_eager_loading(queryset):
+        queryset = queryset.prefetch_related(
+            'groups').select_related('organization')
+        return queryset
+
 
 class UserWriteSerializer(UserBaseSerializer):
     groups = serializers.PrimaryKeyRelatedField(
@@ -78,6 +85,10 @@ class UserReadSerializer(UserBaseSerializer):
     organization = serializers.PrimaryKeyRelatedField(
         queryset=Organization.objects.all()
     )
+
+    # @silk_profile(name='User read serializer to representation')
+    def to_representation(self, instance):
+        return super().to_representation(instance)
 
 
 class UserMeSerializer(UserBaseSerializer):

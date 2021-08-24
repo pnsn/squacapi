@@ -5,6 +5,7 @@ from rest_framework import generics, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.settings import api_settings
+# from silk.profiling.profiler import silk_profile
 
 from user.serializers import UserWriteSerializer, UserMeSerializer, \
     AuthTokenSerializer, UserGroupSerializer, NotificationSerializer, \
@@ -35,6 +36,7 @@ class ManageUserView(generics.RetrieveUpdateAPIView):
     serializer_class = UserMeSerializer
     permission_classes = (IsAuthenticated,)
 
+    # @silk_profile(name='Manage user view')
     def get_object(self):
         return self.request.user
 

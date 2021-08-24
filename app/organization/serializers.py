@@ -14,3 +14,9 @@ class OrganizationSerializer(serializers.ModelSerializer):
             'created_at', 'updated_at', 'users'
         )
         read_only_fields = ('id',)
+
+    @staticmethod
+    def setup_eager_loading(queryset):
+        queryset = queryset.prefetch_related(
+            'users', 'users__groups')
+        return queryset

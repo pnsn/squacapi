@@ -16,6 +16,7 @@ from .models import (Metric, Measurement, Threshold,
                      Alert, ArchiveDay, ArchiveWeek, ArchiveMonth,
                      ArchiveHour, Monitor, Trigger)
 from measurement import serializers
+from silk.profiling.profiler import silk_profile
 
 
 def check_measurement_params(params):
@@ -115,6 +116,7 @@ class MetricViewSet(MeasurementBaseViewSet):
     def get_queryset(self):
         return Metric.objects.all()
 
+    # @silk_profile(name='Dispatch metrics')
     @method_decorator(cache_page(60 * 10))
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
@@ -130,6 +132,7 @@ class MeasurementViewSet(MeasurementBaseViewSet):
         return self.serializer_class.setup_eager_loading(q)
         # return
 
+    @silk_profile(name='GET Measurements')
     def list(self, request, *args, **kwargs):
         '''We want to be careful about large queries so require params'''
         check_measurement_params(request.query_params)
