@@ -1,4 +1,4 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
@@ -138,18 +138,15 @@ class MeasurementViewSet(MeasurementBaseViewSet):
 
     def create(self, request, *args, **kwargs):
         '''Create single or bulk measurements'''
-        print("MEASURMENT CREATE")
         many = isinstance(request.data, list)
-        print("MEASURMENT CREATE 1")
         serializer = self.get_serializer(data=request.data, many=many)
-        print("MEASURMENT CREATE 2")
-        serializer.is_valid(raise_exception=True)
-        print("MEASURMENT CREATE 3")
-        self.perform_create(serializer)
-        print("MEASURMENT CREATE 4")
-        headers = self.get_success_headers(serializer.data)
-        print("MEASURMENT CREATE 5")
-        return Response(serializer.data, headers=headers)
+        if serializer.is_valid(raise_exception=True):
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data,
+                            status=status.HTTP_201_CREATED,
+                            headers=headers)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ThresholdViewSet(MonitorBaseViewSet):

@@ -15,7 +15,6 @@ class QueryCountDebugMiddleware(MiddlewareMixin):
 
     def process_response(self, request, response):
         total_time = 0
-        print(len(connection.queries))
         for query in connection.queries:
             query_time = query.get('time')
             if query_time is None:

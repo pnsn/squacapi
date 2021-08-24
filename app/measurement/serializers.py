@@ -25,7 +25,6 @@ class CustomPrimaryKeyRelatedField(serializers.PrimaryKeyRelatedField):
     '''Override default pk field to enable efficient validation'''
 
     def to_internal_value(self, data):
-        print("TO INTERVAL VALUE")
         return data
 
 
@@ -75,7 +74,6 @@ class MeasurementSerializer(serializers.ModelSerializer):
         return queryset
 
     def validate_metric(self, value):
-        print("VALIDATE METRIC")
         try:
             metric = next(item for item in self.metrics if item.id == value)
             return metric
