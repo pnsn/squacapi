@@ -24,6 +24,7 @@ class BulkMeasurementListSerializer(serializers.ListSerializer):
 
 class MeasurementSerializer(serializers.ModelSerializer):
     '''serializer for measurements'''
+
     metric = serializers.IntegerField(required=True, source="metric_id")
     channel = serializers.IntegerField(required=True, source="channel_id")
 
@@ -60,15 +61,15 @@ class MeasurementSerializer(serializers.ModelSerializer):
         queryset = queryset.select_related('channel', 'metric')
         return queryset
 
-    def validate_metric(self, value):
-        if value not in self.metrics:
-            raise serializers.ValidationError('No metric found')
-        return value
+    # def validate_metric(self, value):
+    #     if value not in self.metrics:
+    #         raise serializers.ValidationError('No metric found')
+    #     return value
 
-    def validate_channel(self, value):
-        if value not in self.channels:
-            raise serializers.ValidationError('No channel found')
-        return value
+    # def validate_channel(self, value):
+    #     if value not in self.channels:
+    #         raise serializers.ValidationError('No channel found')
+    #     return value
 
 
 class AggregatedSerializer(serializers.Serializer):
