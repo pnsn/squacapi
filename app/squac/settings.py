@@ -95,7 +95,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     # 'django.middleware.cache.UpdateCacheMiddleware',  # must be first
     'squac.middleware.QueryCountDebugMiddleware',
-    'aws_xray_sdk.ext.django.middleware.XRayMiddleware',  # also must be first
+    # 'aws_xray_sdk.ext.django.middleware.XRayMiddleware',  # also must be first
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'silk.middleware.SilkyMiddleware',
     'corsheaders.middleware.CorsMiddleware',
