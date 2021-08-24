@@ -259,7 +259,7 @@ class PrivateAlarmAPITests(TestCase):
         q = monitor.agg_measurements(endtime=endtime)
 
         # check number of channels returned
-        self.assertEqual(len(q), monitor.channel_group.channels.count())
+        self.assertEqual(len(q), 3)
 
         # check measurements for each channel
         self.assertEqual(q.get(channel=1)['count'], 3)
@@ -276,16 +276,13 @@ class PrivateAlarmAPITests(TestCase):
         q = monitor.agg_measurements(endtime=endtime)
 
         # check number of channels returned
-        # (should be 3 even tho only 2 have data)
-        self.assertEqual(len(q), monitor.channel_group.channels.count())
+        self.assertEqual(len(q), 2)
 
         # check number of measurements per channel
         self.assertEqual(q.get(channel=1)['count'], 2)
         self.assertEqual(q.get(channel=1)['sum'], 25)
         self.assertEqual(q.get(channel=2)['count'], 1)
         self.assertEqual(q.get(channel=2)['sum'], 14)
-        self.assertEqual(q.get(channel=3)['count'], 0)
-        self.assertEqual(q.get(channel=3)['sum'], None)
 
     def test_agg_measurements_out_of_time_period(self):
         monitor = Monitor.objects.get(pk=2)
@@ -294,15 +291,7 @@ class PrivateAlarmAPITests(TestCase):
         q = monitor.agg_measurements(endtime=endtime)
 
         # check number of channels returned
-        self.assertEqual(len(q), monitor.channel_group.channels.count())
-
-        # check number of measurements per channel
-        self.assertEqual(q.get(channel=1)['count'], 0)
-        self.assertEqual(q.get(channel=1)['sum'], None)
-        self.assertEqual(q.get(channel=2)['count'], 0)
-        self.assertEqual(q.get(channel=2)['sum'], None)
-        self.assertEqual(q.get(channel=3)['count'], 0)
-        self.assertEqual(q.get(channel=3)['sum'], None)
+        self.assertEqual(len(q), 0)
 
     def test_agg_measurements_empty_channel_group(self):
         monitor = Monitor.objects.get(pk=3)
@@ -311,7 +300,7 @@ class PrivateAlarmAPITests(TestCase):
         q = monitor.agg_measurements(endtime=endtime)
 
         # check number of channels returned
-        self.assertEqual(len(q), monitor.channel_group.channels.count())
+        self.assertEqual(len(q), 0)
 
     def check_is_breaching(self, monitor_id, trigger_id, expected):
         monitor = Monitor.objects.get(pk=monitor_id)
@@ -357,7 +346,10 @@ class PrivateAlarmAPITests(TestCase):
 
         q = monitor.agg_measurements(endtime=endtime)
         trigger = Trigger.objects.get(pk=trigger_id)
-        self.assertEqual(trigger.in_alarm_state(q), expected)
+        if expected:
+            self.assertTrue(trigger.in_alarm_state(q))
+        else:
+            self.assertFalse(trigger.in_alarm_state(q))
 
     def test_in_alarm_state(self):
         self.check_in_alarm_state(1, 1, True)

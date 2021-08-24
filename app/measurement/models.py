@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import Avg, Count, Max, Min, Sum, Q, F
+from django.db.models import Avg, Count, Max, Min, Sum
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
@@ -168,19 +168,19 @@ class Monitor(MeasurementBase):
         group = self.channel_group
         metric = self.metric
 
-        # Get a filter for only measurements for the correct time
+        # Get a QuerySet containing only measurements for the correct time
         # period and metric for this alarm
-        filt = Q(measurements__starttime__range=(starttime, endtime),
-                 measurements__metric=metric)
+        q = metric.measurements.filter(starttime__range=(starttime, endtime),
+                                       channel__in=group.channels.all())
+
+        # Add extra filter for value__gt and/or value__lt?
 
         # Now calculate the aggregate values for each channel
-        q = group.channels.values(channel=F('id')).annotate(
-            count=Count('measurements__value', filter=filt),
-            sum=Sum('measurements__value', filter=filt),
-            avg=Avg('measurements__value', filter=filt),
-            max=Max('measurements__value', filter=filt),
-            min=Min('measurements__value', filter=filt),
-        )
+        q = q.values('channel').annotate(count=Count('value'),
+                                         sum=Sum('value'),
+                                         avg=Avg('value'),
+                                         max=Max('value'),
+                                         min=Min('value'))
 
         return q
 
@@ -240,11 +240,6 @@ class Trigger(MeasurementBase):
         this Trigger
         '''
         val = channel_value[self.monitor.stat]
-        # if val is None that means there were zero measurements for this
-        # metric during the given time period
-        if val is None:
-            return False
-
         # check three cases: only minval, only maxval, both min and max
         if self.minval is None and self.maxval is None:
             return False
