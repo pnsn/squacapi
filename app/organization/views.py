@@ -103,4 +103,6 @@ class OrganizationUserViewSet(OrganizationBase):
         if isinstance(kwargs.get('data', {}), list):
             print("many!!!")
             kwargs['many'] = True
-        return super(OrganizationUserViewSet, self).get_serializer(*args, **kwargs)
+        return super(
+            OrganizationUserViewSet,
+            self).get_serializer(*args, **kwargs)
