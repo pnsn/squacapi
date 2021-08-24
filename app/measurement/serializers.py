@@ -71,19 +71,20 @@ class MeasurementSerializer(serializers.ModelSerializer):
         queryset = queryset.select_related('channel', 'metric')
         return queryset
 
+    # This is an attempt to reduce queries, might be a bad idea
     def validate_metric(self, value):
         try:
             metric = next(item for item in self.metrics if item.id == value)
             return metric
         except StopIteration:
-            raise serializers.ValidationError('No metric')
+            raise serializers.ValidationError('Metric not found')
 
     def validate_channel(self, value):
         try:
             channel = next(item for item in self.channels if item.id == value)
             return channel
         except StopIteration:
-            raise serializers.ValidationError('No channel')
+            raise serializers.ValidationError('Channel not found')
 
 
 class AggregatedSerializer(serializers.Serializer):
