@@ -1,5 +1,3 @@
-from django.db.models.query import Prefetch
-from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import serializers
 from .models import (Metric, Measurement, Threshold,
                      Alert, ArchiveHour, ArchiveDay, ArchiveWeek, Monitor,
