@@ -12,7 +12,7 @@ from squac.mixins import SetUserMixin, DefaultPermissionsMixin
 from .models import Network, Channel, Group
 from nslc.serializers import NetworkSerializer, ChannelSerializer, \
     GroupSerializer, GroupDetailSerializer
-# from silk.profiling.profiler import silk_profile
+from silk.profiling.profiler import silk_profile
 
 """Filter classes used for view filtering"""
 
@@ -79,7 +79,7 @@ def api_root(request, format=None):
 class BaseNslcViewSet(SetUserMixin, DefaultPermissionsMixin,
                       viewsets.ModelViewSet):
 
-    # @silk_profile(name='Base NSLC View dispatch')
+    @silk_profile(name='Base NSLC View dispatch')
     @method_decorator(cache_page(settings.NSLC_DEFAULT_CACHE))
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
@@ -118,6 +118,6 @@ class GroupViewSet(BaseNslcViewSet):
 
     @method_decorator(cache_page(60 * 10))
     @method_decorator(vary_on_headers('Cookie'))
-    # @silk_profile(name='Group View dispatch')
+    @silk_profile(name='Group View dispatch')
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)

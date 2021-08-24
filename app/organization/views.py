@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 from user.serializers import UserReadSerializer, UserWriteSerializer
 import secrets
-# from silk.profiling.profiler import silk_profile
+from silk.profiling.profiler import silk_profile
 
 
 class OrganizationUserFilter(filters.FilterSet):
@@ -31,7 +31,7 @@ class OrganizationViewSet(OrganizationBase):
     filter_class = OrganizationFilter
     serializer_class = OrganizationSerializer
 
-    # @silk_profile(name='orgview set get queryset')
+    @silk_profile(name='orgview set get queryset')
     def get_queryset(self):
         q = Organization.objects.all()
         return self.serializer_class.setup_eager_loading(q)
@@ -41,13 +41,13 @@ class OrganizationUserViewSet(OrganizationBase):
     filter_class = OrganizationUserFilter
     serializer_class = UserWriteSerializer
 
-    # @silk_profile(name='orguser viewset get queryset')
+    @silk_profile(name='orguser viewset get queryset')
     def get_queryset(self):
         # return get_user_model().objects.all()
         q = get_user_model().objects.all()
         return self.serializer_class.setup_eager_loading(q)
 
-    # @silk_profile(name='orguser viewset list')
+    @silk_profile(name='orguser viewset list')
     def list(self, request, *args, **kwargs):
         return super().list(self, request, *args, **kwargs)
 
@@ -88,19 +88,18 @@ class OrganizationUserViewSet(OrganizationBase):
             serializer.save()
             return Response(serializer.data, status=201)
 
-    # @silk_profile(name='orguser viewset get serializer class')
+    @silk_profile(name='orguser viewset get serializer class')
     def get_serializer_class(self):
         if self.action == 'retrieve':
             return UserReadSerializer
         return self.serializer_class
 
-    # @silk_profile(name='orguser viewset get serializer')
+    @silk_profile(name='orguser viewset get serializer')
     def get_serializer(self, *args, **kwargs):
         """Allow bulk update
 
         if an array is passed, set serializer to many
         """
-        print("in get serializer!!!")
         if isinstance(kwargs.get('data', {}), list):
             print("many!!!")
             kwargs['many'] = True
