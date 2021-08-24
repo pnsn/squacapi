@@ -20,10 +20,6 @@ SECRET_KEY = os.environ.get('SQUAC_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('SQUAC_DEBUG_MODE') == 'True'
-<<<<<<< HEAD
-=======
-DEBUG = True
->>>>>>> silk
 
 CACHE_ENABLED = os.environ.get('SQUAC_CACHE_ENABLED') == 'True'
 
@@ -43,13 +39,8 @@ except RequestException or MissingSchema:
 # For debug toolbar
 INTERNAL_IPS = [
     'localhost',
-<<<<<<< HEAD
-    '10.0.2.2'
-=======
     '127.0.0.1',
-    '10.0.2.2',
-    '128.95.16.34'
->>>>>>> silk
+    '10.0.2.2'
 ]
 
 # tricks to have debug toolbar when developing with docker
@@ -103,11 +94,8 @@ INSTALLED_APPS = [
 # The caching middlewares must be first and last
 MIDDLEWARE = [
     # 'django.middleware.cache.UpdateCacheMiddleware',  # must be first
-<<<<<<< HEAD
     'squac.middleware.QueryCountDebugMiddleware',
     'aws_xray_sdk.ext.django.middleware.XRayMiddleware',  # also must be first
-=======
->>>>>>> silk
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'silk.middleware.SilkyMiddleware',
     'corsheaders.middleware.CorsMiddleware',
