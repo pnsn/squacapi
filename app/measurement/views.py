@@ -125,24 +125,31 @@ class MeasurementViewSet(MeasurementBaseViewSet):
     serializer_class = serializers.MeasurementSerializer
     filter_class = MeasurementFilter
 
-    def get_serializer(self, *args, **kwargs):
-        """Allow bulk update
-
-        if an array is passed, set serializer to many
-        """
-        if isinstance(kwargs.get('data', {}), list):
-            kwargs['many'] = True
-        return super(MeasurementViewSet, self).get_serializer(*args, **kwargs)
-
     def get_queryset(self):
-        print("get_queryset measurements")
-        q = Measurement.objects.all().order_by('channel', 'metric')
+        q = Measurement.objects.all()
         return self.serializer_class.setup_eager_loading(q)
+        # return
 
     def list(self, request, *args, **kwargs):
         '''We want to be careful about large queries so require params'''
         check_measurement_params(request.query_params)
+        print("MEASUREMENT LIST")
         return super().list(self, request, *args, **kwargs)
+
+    def create(self, request, *args, **kwargs):
+        '''Create single or bulk measurements'''
+        print("MEASURMENT CREATE")
+        many = isinstance(request.data, list)
+        print("MEASURMENT CREATE 1")
+        serializer = self.get_serializer(data=request.data, many=many)
+        print("MEASURMENT CREATE 2")
+        serializer.is_valid(raise_exception=True)
+        print("MEASURMENT CREATE 3")
+        self.perform_create(serializer)
+        print("MEASURMENT CREATE 4")
+        headers = self.get_success_headers(serializer.data)
+        print("MEASURMENT CREATE 5")
+        return Response(serializer.data, headers=headers)
 
 
 class ThresholdViewSet(MonitorBaseViewSet):

@@ -1,3 +1,4 @@
+from django.db.models.query import Prefetch
 from rest_framework import serializers
 from .models import (Metric, Measurement, Threshold,
                      Alert, ArchiveHour, ArchiveDay, ArchiveWeek, Monitor,
@@ -11,6 +12,8 @@ class BulkMeasurementListSerializer(serializers.ListSerializer):
     '''serializer for bulk creating or updating measurements'''
 
     def create(self, validated_data):
+        print("BULK MEASUREMENTS")
+        print(len(validated_data))
         result = [Measurement(**item) for item in validated_data]
         Measurement.objects.bulk_update_or_create(
             result,
@@ -21,12 +24,8 @@ class BulkMeasurementListSerializer(serializers.ListSerializer):
 
 class MeasurementSerializer(serializers.ModelSerializer):
     '''serializer for measurements'''
-    metric = serializers.PrimaryKeyRelatedField(
-        queryset=Metric.objects.all()
-    )
-    channel = serializers.PrimaryKeyRelatedField(
-        queryset=Channel.objects.all()
-    )
+    metric = serializers.IntegerField(required=True, source="metric_id")
+    channel = serializers.IntegerField(required=True, source="channel_id")
 
     class Meta:
         model = Measurement
@@ -37,7 +36,14 @@ class MeasurementSerializer(serializers.ModelSerializer):
         read_only_fields = ('id',)
         list_serializer_class = BulkMeasurementListSerializer
 
+    def __init__(self, *args, **kwargs):
+        self.channels = Channel.objects.all().values_list('id', flat=True)
+        self.metrics = Metric.objects.all().values_list('id', flat=True)
+        super().__init__(*args, **kwargs)
+
     def create(self, validated_data):
+        print("normal create")
+        print(validated_data)
         measurement, created = Measurement.objects.update_or_create(
             metric=validated_data.get('metric', None),
             channel=validated_data.get('channel', None),
@@ -53,6 +59,16 @@ class MeasurementSerializer(serializers.ModelSerializer):
     def setup_eager_loading(queryset):
         queryset = queryset.select_related('channel', 'metric')
         return queryset
+
+    def validate_metric(self, value):
+        if value not in self.metrics:
+            raise serializers.ValidationError('No metric found')
+        return value
+
+    def validate_channel(self, value):
+        if value not in self.channels:
+            raise serializers.ValidationError('No channel found')
+        return value
 
 
 class AggregatedSerializer(serializers.Serializer):

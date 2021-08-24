@@ -87,6 +87,7 @@ INSTALLED_APPS = [
 # The caching middlewares must be first and last
 MIDDLEWARE = [
     # 'django.middleware.cache.UpdateCacheMiddleware',  # must be first
+    'squac.middleware.QueryCountDebugMiddleware',
     'aws_xray_sdk.ext.django.middleware.XRayMiddleware',  # also must be first
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'corsheaders.middleware.CorsMiddleware',
@@ -307,7 +308,7 @@ LOGGING = {
     },
     'handlers': {
         'console': {
-            'level': 'INFO',
+            'level': 'DEBUG',
             'filters': ['require_debug_true'],
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
@@ -327,12 +328,27 @@ LOGGING = {
         'django': {
             'handlers': ['console'],
             'propagate': False,
-            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+            'level': 'INFO',
         },
         'django.request': {
             'handlers': ['mail_admins'],
             'level': 'ERROR',
             'propagate': False,
-        }
+        },
+        'django.template': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'django.db.backends': {
+            'level': 'DEBUG',
+            'handlers': ['console'],
+            'propagate': False,
+        },
+        'squac.middleware': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
     }
 }
