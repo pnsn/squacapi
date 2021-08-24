@@ -1,4 +1,5 @@
 from django.db.models.query import Prefetch
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import serializers
 from .models import (Metric, Measurement, Threshold,
                      Alert, ArchiveHour, ArchiveDay, ArchiveWeek, Monitor,
@@ -12,8 +13,6 @@ class BulkMeasurementListSerializer(serializers.ListSerializer):
     '''serializer for bulk creating or updating measurements'''
 
     def create(self, validated_data):
-        print("BULK MEASUREMENTS")
-        print(len(validated_data))
         result = [Measurement(**item) for item in validated_data]
         Measurement.objects.bulk_update_or_create(
             result,
@@ -22,11 +21,27 @@ class BulkMeasurementListSerializer(serializers.ListSerializer):
         return result
 
 
+class CustomPrimaryKeyRelatedField(serializers.PrimaryKeyRelatedField):
+    '''Override default pk field to enable efficient validation'''
+
+    def to_internal_value(self, data):
+        print("TO INTERVAL VALUE")
+        return data
+
+
 class MeasurementSerializer(serializers.ModelSerializer):
     '''serializer for measurements'''
+    # metric = serializers.PrimaryKeyRelatedField(
+    #     queryset=Metric.objects.all()
+    # )
+    channel = CustomPrimaryKeyRelatedField(
+        queryset=Channel.objects.all()
+    )
 
-    metric = serializers.IntegerField(required=True, source="metric_id")
-    channel = serializers.IntegerField(required=True, source="channel_id")
+    metric = CustomPrimaryKeyRelatedField(
+        queryset=Metric.objects.all()
+    )
+    # channel = serializers.IntegerField(required=True)
 
     class Meta:
         model = Measurement
@@ -38,13 +53,11 @@ class MeasurementSerializer(serializers.ModelSerializer):
         list_serializer_class = BulkMeasurementListSerializer
 
     def __init__(self, *args, **kwargs):
-        self.channels = Channel.objects.all().values_list('id', flat=True)
-        self.metrics = Metric.objects.all().values_list('id', flat=True)
+        self.channels = Channel.objects.all()
+        self.metrics = Metric.objects.all()
         super().__init__(*args, **kwargs)
 
     def create(self, validated_data):
-        print("normal create")
-        print(validated_data)
         measurement, created = Measurement.objects.update_or_create(
             metric=validated_data.get('metric', None),
             channel=validated_data.get('channel', None),
@@ -61,15 +74,20 @@ class MeasurementSerializer(serializers.ModelSerializer):
         queryset = queryset.select_related('channel', 'metric')
         return queryset
 
-    # def validate_metric(self, value):
-    #     if value not in self.metrics:
-    #         raise serializers.ValidationError('No metric found')
-    #     return value
+    def validate_metric(self, value):
+        print("VALIDATE METRIC")
+        try:
+            metric = next(item for item in self.metrics if item.id == value)
+            return metric
+        except StopIteration:
+            raise serializers.ValidationError('No metric')
 
-    # def validate_channel(self, value):
-    #     if value not in self.channels:
-    #         raise serializers.ValidationError('No channel found')
-    #     return value
+    def validate_channel(self, value):
+        try:
+            channel = next(item for item in self.channels if item.id == value)
+            return channel
+        except StopIteration:
+            raise serializers.ValidationError('No channel')
 
 
 class AggregatedSerializer(serializers.Serializer):
