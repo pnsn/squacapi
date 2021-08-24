@@ -28,9 +28,6 @@ class CustomPrimaryKeyRelatedField(serializers.PrimaryKeyRelatedField):
 
 class MeasurementSerializer(serializers.ModelSerializer):
     '''serializer for measurements'''
-    # metric = serializers.PrimaryKeyRelatedField(
-    #     queryset=Metric.objects.all()
-    # )
     channel = CustomPrimaryKeyRelatedField(
         queryset=Channel.objects.all()
     )
@@ -38,7 +35,6 @@ class MeasurementSerializer(serializers.ModelSerializer):
     metric = CustomPrimaryKeyRelatedField(
         queryset=Metric.objects.all()
     )
-    # channel = serializers.IntegerField(required=True)
 
     class Meta:
         model = Measurement
