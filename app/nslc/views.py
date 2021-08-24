@@ -80,7 +80,7 @@ class BaseNslcViewSet(SetUserMixin, DefaultPermissionsMixin,
                       viewsets.ModelViewSet):
 
     @silk_profile(name='Base NSLC View dispatch')
-    @method_decorator(cache_page(settings.NSLC_DEFAULT_CACHE))
+    @cache_page(settings.NSLC_DEFAULT_CACHE)
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
@@ -116,7 +116,7 @@ class GroupViewSet(BaseNslcViewSet):
         queryset = Group.objects.all()
         return queryset
 
-    @method_decorator(cache_page(60 * 10))
+    @cache_page(60 * 10)
     @method_decorator(vary_on_headers('Cookie'))
     @silk_profile(name='Group View dispatch')
     def dispatch(self, request, *args, **kwargs):
