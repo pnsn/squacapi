@@ -1,5 +1,6 @@
 from django.db import models
-from django.db.models import Avg, Count, Max, Min, Sum
+from django.db.models import (Avg, Count, Max, Min, Sum, F, Value,
+                              IntegerField, FloatField)
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
@@ -170,26 +171,47 @@ class Monitor(MeasurementBase):
 
         # Get a QuerySet containing only measurements for the correct time
         # period and metric for this alarm
-        q = metric.measurements.filter(starttime__range=(starttime, endtime),
-                                       channel__in=group.channels.all())
-
-        # Add extra filter for value__gt and/or value__lt?
+        q_data = metric.measurements.filter(
+            starttime__range=(starttime, endtime),
+            channel__in=group.channels.all()
+        )
 
         # Now calculate the aggregate values for each channel
-        q = q.values('channel').annotate(count=Count('value'),
-                                         sum=Sum('value'),
-                                         avg=Avg('value'),
-                                         max=Max('value'),
-                                         min=Min('value'))
+        q_data = q_data.values('channel').annotate(
+            count=Count('value'),
+            sum=Sum('value'),
+            avg=Avg('value'),
+            max=Max('value'),
+            min=Min('value')
+        )
 
-        return q
+        # Get default values if there are no measurements
+        q_default = group.channels.values(channel=F('id')).annotate(
+            count=Value(0, output_field=IntegerField()),
+            sum=Value(None, output_field=FloatField()),
+            avg=Value(None, output_field=FloatField()),
+            max=Value(None, output_field=FloatField()),
+            min=Value(None, output_field=FloatField())
+        )
+
+        # Combine querysets in case of zero measurements. Kludgy but
+        # shouldn't strain the db as much?
+        q_dict = {obj['channel']: obj for obj in q_data}
+        q_list = []
+        for chan_default in q_default:
+            if chan_default['channel'] not in q_dict:
+                q_list.append(chan_default)
+            else:
+                q_list.append(q_dict[chan_default['channel']])
+
+        return q_list
 
     def evaluate_alarm(self, endtime=datetime.now(tz=pytz.UTC)):
         '''
         Higher-level function that determines alarm state and calls other
         functions to create alerts if necessary
         '''
-        # Get aggregate values for each channel. Returns a QuerySet
+        # Get aggregate values for each channel. Returns a list(QuerySet)
         channel_values = self.agg_measurements(endtime)
 
         # Get Triggers for this alarm. Returns a QuerySet
@@ -240,6 +262,11 @@ class Trigger(MeasurementBase):
         this Trigger
         '''
         val = channel_value[self.monitor.stat]
+        # if val is None that means there were zero measurements for this
+        # metric during the given time period
+        if val is None:
+            return False
+
         # check three cases: only minval, only maxval, both min and max
         if self.minval is None and self.maxval is None:
             return False
@@ -254,7 +281,7 @@ class Trigger(MeasurementBase):
         # Shouldn't ever get here, but return False anyway
         return False
 
-    # channel_values is QuerySet
+    # channel_values is a list of dicts
     def get_breaching_channels(self, channel_values):
         '''Return all channels that are breaching this Trigger'''
         breaching_channels = []
@@ -264,7 +291,7 @@ class Trigger(MeasurementBase):
 
         return breaching_channels
 
-    # channel_values is QuerySet
+    # channel_values is a list of dicts
     def in_alarm_state(self, channel_values):
         '''
         Determine if Trigger is breaching for input aggregate channel

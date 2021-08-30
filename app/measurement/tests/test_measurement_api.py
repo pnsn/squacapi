@@ -299,7 +299,7 @@ class PrivateMeasurementAPITests(TestCase):
                     2019, 1, 5, 8, 8, 7, x, tzinfo=pytz.UTC),
             'endtime': datetime(
                 2019, 1, 5, 9, 8, 7, 127325, tzinfo=pytz.UTC)
-        } for x in range(3)]
+        } for x in range(len_to_add)]
 
         res2 = self.client.post(
             url,

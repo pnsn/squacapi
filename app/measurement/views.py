@@ -1,5 +1,7 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from rest_framework.response import Response
 from django_filters import rest_framework as filters
 from squac.filters import CharInFilter, NumberInFilter
@@ -113,6 +115,10 @@ class MetricViewSet(MeasurementBaseViewSet):
     def get_queryset(self):
         return Metric.objects.all()
 
+    @method_decorator(cache_page(60 * 10))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
 
 class MeasurementViewSet(MeasurementBaseViewSet):
     '''end point for using channel filter'''
@@ -132,7 +138,7 @@ class MeasurementViewSet(MeasurementBaseViewSet):
         return Measurement.objects.all().order_by('channel', 'metric')
 
     def list(self, request, *args, **kwargs):
-        '''We want to be carful about large queries so require params'''
+        '''We want to be careful about large queries so require params'''
         check_measurement_params(request.query_params)
         return super().list(self, request, *args, **kwargs)
 

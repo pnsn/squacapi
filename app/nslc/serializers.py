@@ -50,7 +50,7 @@ class ChannelSerializer(serializers.HyperlinkedModelSerializer):
 
     @staticmethod
     def setup_eager_loading(queryset):
-        queryset = queryset.select_related('network')
+        queryset = queryset.prefetch_related('network')
         return queryset
 
 
