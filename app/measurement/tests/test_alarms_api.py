@@ -256,82 +256,97 @@ class PrivateAlarmAPITests(TestCase):
         monitor = Monitor.objects.get(pk=1)
         endtime = datetime(2018, 2, 1, 4, 30, 0, 0, tzinfo=pytz.UTC)
 
-        q = monitor.agg_measurements(endtime=endtime)
+        q_list = monitor.agg_measurements(endtime=endtime)
 
         # check number of channels returned
-        self.assertEqual(len(q), 3)
+        self.assertEqual(len(q_list), monitor.channel_group.channels.count())
 
         # check measurements for each channel
-        self.assertEqual(q.get(channel=1)['count'], 3)
-        self.assertEqual(q.get(channel=1)['sum'], 6)
-        self.assertEqual(q.get(channel=2)['count'], 2)
-        self.assertEqual(q.get(channel=2)['sum'], 11)
-        self.assertEqual(q.get(channel=3)['count'], 1)
-        self.assertEqual(q.get(channel=3)['sum'], 8)
+        expected = {}
+        expected[1] = {'count': 3, 'sum': 6}
+        expected[2] = {'count': 2, 'sum': 11}
+        expected[3] = {'count': 1, 'sum': 8}
+
+        for res in q_list:
+            self.assertEqual(res['count'], expected[res['channel']]['count'])
+            self.assertEqual(res['sum'], expected[res['channel']]['sum'])
 
     def test_agg_measurements_missing_channel(self):
         monitor = Monitor.objects.get(pk=2)
         endtime = datetime(2018, 2, 1, 4, 30, 0, 0, tzinfo=pytz.UTC)
 
-        q = monitor.agg_measurements(endtime=endtime)
+        q_list = monitor.agg_measurements(endtime=endtime)
 
         # check number of channels returned
-        self.assertEqual(len(q), 2)
+        # (should be 3 even tho only 2 have data)
+        self.assertEqual(len(q_list), monitor.channel_group.channels.count())
 
-        # check number of measurements per channel
-        self.assertEqual(q.get(channel=1)['count'], 2)
-        self.assertEqual(q.get(channel=1)['sum'], 25)
-        self.assertEqual(q.get(channel=2)['count'], 1)
-        self.assertEqual(q.get(channel=2)['sum'], 14)
+        # check measurements for each channel
+        expected = {}
+        expected[1] = {'count': 2, 'sum': 25}
+        expected[2] = {'count': 1, 'sum': 14}
+        expected[3] = {'count': 0, 'sum': None}
+
+        for res in q_list:
+            self.assertEqual(res['count'], expected[res['channel']]['count'])
+            self.assertEqual(res['sum'], expected[res['channel']]['sum'])
 
     def test_agg_measurements_out_of_time_period(self):
         monitor = Monitor.objects.get(pk=2)
         endtime = datetime(2018, 2, 1, 1, 30, 0, 0, tzinfo=pytz.UTC)
 
-        q = monitor.agg_measurements(endtime=endtime)
+        q_list = monitor.agg_measurements(endtime=endtime)
 
         # check number of channels returned
-        self.assertEqual(len(q), 0)
+        self.assertEqual(len(q_list), monitor.channel_group.channels.count())
+
+        # check measurements for each  channel
+        expected = {}
+        expected[1] = {'count': 0, 'sum': None}
+        expected[2] = {'count': 0, 'sum': None}
+        expected[3] = {'count': 0, 'sum': None}
+
+        for res in q_list:
+            self.assertEqual(res['count'], expected[res['channel']]['count'])
+            self.assertEqual(res['sum'], expected[res['channel']]['sum'])
 
     def test_agg_measurements_empty_channel_group(self):
         monitor = Monitor.objects.get(pk=3)
         endtime = datetime(2018, 2, 1, 4, 30, 0, 0, tzinfo=pytz.UTC)
 
-        q = monitor.agg_measurements(endtime=endtime)
+        q_list = monitor.agg_measurements(endtime=endtime)
 
         # check number of channels returned
-        self.assertEqual(len(q), 0)
+        self.assertEqual(len(q_list), monitor.channel_group.channels.count())
 
     def check_is_breaching(self, monitor_id, trigger_id, expected):
         monitor = Monitor.objects.get(pk=monitor_id)
         endtime = datetime(2018, 2, 1, 4, 30, 0, 0, tzinfo=pytz.UTC)
 
-        q = monitor.agg_measurements(endtime=endtime)
+        q_list = monitor.agg_measurements(endtime=endtime)
         trigger = Trigger.objects.get(pk=trigger_id)
 
-        chan_id = 1
-        for result in expected:
-            if result:
-                self.assertTrue(trigger.is_breaching(q.get(channel=chan_id)))
-            else:
-                self.assertFalse(trigger.is_breaching(q.get(channel=chan_id)))
-            chan_id += 1
+        # q_list should have a result for each channel, so loop over it
+        self.assertEqual(len(expected), len(q_list))
+        for res in q_list:
+            self.assertEqual(trigger.is_breaching(res),
+                             expected[res['channel']])
 
     def test_is_breaching(self):
-        self.check_is_breaching(1, 1, [True, True, False])
-        self.check_is_breaching(1, 2, [True, True, True])
-        self.check_is_breaching(1, 3, [False, False, True])
-        self.check_is_breaching(1, 4, [True, True, False])
+        self.check_is_breaching(1, 1, {1: True, 2: True, 3: False})
+        self.check_is_breaching(1, 2, {1: True, 2: True, 3: True})
+        self.check_is_breaching(1, 3, {1: False, 2: False, 3: True})
+        self.check_is_breaching(1, 4, {1: True, 2: True, 3: False})
 
     def check_get_breaching_channels(self, monitor_id, trigger_id,
                                      expected):
         monitor = Monitor.objects.get(pk=monitor_id)
         endtime = datetime(2018, 2, 1, 4, 30, 0, 0, tzinfo=pytz.UTC)
 
-        q = monitor.agg_measurements(endtime=endtime)
+        q_list = monitor.agg_measurements(endtime=endtime)
         trigger = Trigger.objects.get(pk=trigger_id)
 
-        res = trigger.get_breaching_channels(q)
+        res = trigger.get_breaching_channels(q_list)
         self.assertCountEqual(res, expected)
 
     def test_get_breaching_channels(self):
@@ -344,12 +359,9 @@ class PrivateAlarmAPITests(TestCase):
         monitor = Monitor.objects.get(pk=monitor_id)
         endtime = datetime(2018, 2, 1, 4, 30, 0, 0, tzinfo=pytz.UTC)
 
-        q = monitor.agg_measurements(endtime=endtime)
+        q_list = monitor.agg_measurements(endtime=endtime)
         trigger = Trigger.objects.get(pk=trigger_id)
-        if expected:
-            self.assertTrue(trigger.in_alarm_state(q))
-        else:
-            self.assertFalse(trigger.in_alarm_state(q))
+        self.assertEqual(trigger.in_alarm_state(q_list), expected)
 
     def test_in_alarm_state(self):
         self.check_in_alarm_state(1, 1, True)
