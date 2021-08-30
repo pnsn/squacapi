@@ -21,6 +21,7 @@ SECRET_KEY = os.environ.get('SQUAC_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('SQUAC_DEBUG_MODE') == 'True'
 
+
 CACHE_ENABLED = os.environ.get('SQUAC_CACHE_ENABLED') == 'True'
 
 try:
