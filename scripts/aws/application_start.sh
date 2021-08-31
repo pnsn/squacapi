@@ -10,7 +10,7 @@ export SYMLINK=/var/www/$DEPLOYMENT_GROUP_NAME
 
 # track the previous link
 export PREVIOUS_RELEASE=`readlink -f $SYMLINK`
-echo $PREVIOUS_RELEASE > $CURRENT_RELEASE/previous_release.txt
+
 rm -f $SYMLINK
 ln -s $CURRENT_RELEASE $SYMLINK
 
