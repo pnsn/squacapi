@@ -7,7 +7,7 @@ env variables config
 import requests
 from requests.exceptions import RequestException, MissingSchema
 import os
-from squac.cronjobs import CRONJOBS
+# from squac.cronjobs import CRONJOBS
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
