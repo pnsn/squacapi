@@ -1,12 +1,15 @@
 language: python
 python:
-- '3.6'
+  - "3.6"
 services:
-- docker
+  - docker
 before_script:
-- pip install docker-compose
+  - pip install docker-compose
 script:
-- docker-compose run app sh -c "python manage.py test && flake8"
+  - docker-compose run app sh -c "python manage.py test && flake8"
+branches:
+  except:
+    - awsautoscale
 deploy:
   - provider: codedeploy
     secret_access_key: $AWS_SECRET_ACCESS_KEY
@@ -17,7 +20,7 @@ deploy:
     region: us-west-2
     on:
       branch: staging
-  
+
   - provider: codedeploy
     secret_access_key: $AWS_SECRET_ACCESS_KEY
     access_key_id: $AWS_ACCESS_KEY_ID
