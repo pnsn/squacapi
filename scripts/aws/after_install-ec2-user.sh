@@ -2,6 +2,7 @@
 
 dest=/var/www/releases/$DEPLOYMENT_GROUP_NAME/$DEPLOYMENT_ID
 mv /var/www/releases/tmp $dest
+cd $dest
 aws s3 cp s3://squacapi-config/bash/$DEPLOYMENT_GROUP_NAME.env  $dest/app/.env
 
 echo after s3 call
