@@ -1,4 +1,6 @@
 #!/bin/bash
+set -ex
+set -o pipefail
 
 dest=/var/www/releases/$DEPLOYMENT_GROUP_NAME/$DEPLOYMENT_ID
 mkdir -p $dest
