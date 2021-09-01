@@ -1,6 +1,4 @@
 #!/bin/bash
-set -e
-set -o pipefail
 
 dest=/var/www/releases/$DEPLOYMENT_GROUP_NAME/$DEPLOYMENT_ID
 mkdir -p $dest
@@ -25,7 +23,7 @@ echo "ater remove"
 mkvirtualenv $DEPLOYMENT_GROUP_NAME 2>&1
 echo "make virtual environment"
 workon $DEPLOYMENT_GROUP_NAME 2>&1
-
+echo "working on"
 # if staging, bootstrap
 if [ $DEPLOYMENT_GROUP_NAME == 'staging-squacapi' ]; then
     python $dest/app/manage.py bootstrap_db --days=7
