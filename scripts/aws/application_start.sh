@@ -13,10 +13,10 @@ export PREVIOUS_RELEASE=`readlink -f $SYMLINK`
 rm -f $SYMLINK
 ln -s $CURRENT_RELEASE $SYMLINK
 
-GUNICORN_SERVICE=gunicorn-production
+GUNICORN_SERVICE=gunicorn-testing
 
-if [ $DEPLOYMENT_GROUP_NAME == 'staging-squacapi' ]; then
-    GUNICORN_SERVICE=gunicorn-staging
+if [ $DEPLOYMENT_GROUP_NAME == 'squacapi' ]; then
+    GUNICORN_SERVICE=gunicorn-production
 fi
 
 systemctl daemon-reload
