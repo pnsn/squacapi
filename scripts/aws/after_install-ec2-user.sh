@@ -1,5 +1,5 @@
 #!/bin/bash
-set -ex
+set -e
 set -o pipefail
 
 dest=/var/www/releases/$DEPLOYMENT_GROUP_NAME/$DEPLOYMENT_ID
