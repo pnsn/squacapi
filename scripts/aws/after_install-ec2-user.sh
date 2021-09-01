@@ -16,7 +16,7 @@ source $dest/app/.env
 echo dest=$dest
 
 # delete virtualenv so packages are consistent
-rmvirtualenv $DEPLOYMENT_GROUP_NAME
+# rmvirtualenv $DEPLOYMENT_GROUP_NAME
 mkvirtualenv $DEPLOYMENT_GROUP_NAME 2>&1
 workon $DEPLOYMENT_GROUP_NAME 2>&1
 
