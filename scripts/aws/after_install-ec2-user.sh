@@ -14,9 +14,9 @@ echo `ls $dest/app/.env `
 
 source $dest/app/.env
 echo dest=$dest
-
+source /usr/local/bin/virtualenvwrapper.sh
 # delete virtualenv so packages are consistent
-# rmvirtualenv $DEPLOYMENT_GROUP_NAME
+rmvirtualenv $DEPLOYMENT_GROUP_NAME
 mkvirtualenv $DEPLOYMENT_GROUP_NAME 2>&1
 workon $DEPLOYMENT_GROUP_NAME 2>&1
 
