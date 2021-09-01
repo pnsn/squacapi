@@ -22,13 +22,9 @@ source $dest/app/.env
 echo dest=$dest
 
 # delete virtualenv so packages are consistent
-echo "REMOVE VIRTUAL ENV"
 rmvirtualenv $DEPLOYMENT_GROUP_NAME
-echo "MAKE VIRTUAL ENV"
 mkvirtualenv $DEPLOYMENT_GROUP_NAME 2>&1
-echo "MADE VIRTUAL ENV"
 workon $DEPLOYMENT_GROUP_NAME 2>&1
-echo "DID WORKON VIRTUAL ENV"
 
 # if staging, bootstrap
 if [ $DEPLOYMENT_GROUP_NAME == 'staging-squacapi' ]; then
