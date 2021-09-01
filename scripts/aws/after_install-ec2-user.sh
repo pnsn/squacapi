@@ -18,6 +18,7 @@ source /usr/local/bin/virtualenvwrapper.sh
 source $dest/app/.env
 echo dest=$dest
 export PATH=$PATH:/usr/local/bin
+export VIRTUALENVWRAPPER_ENV_BIN_DIR=bin
 
 # delete virtualenv so packages are consistent
 echo "REMOVE VIRTUAL ENV"
