@@ -19,7 +19,7 @@ source /usr/local/bin/virtualenvwrapper.sh
 export VIRTUALENVWRAPPER_ENV_BIN_DIR=bin
 
 echo dest=$dest
-cd $dest
+# cd $dest
 # delete virtualenv so packages are consistent
 rmvirtualenv $DEPLOYMENT_GROUP_NAME
 mkvirtualenv $DEPLOYMENT_GROUP_NAME 2>&1
