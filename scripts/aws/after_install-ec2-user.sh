@@ -12,14 +12,14 @@ echo after s3 call
 echo `ls $dest/app/.env `
 
 # virtual env vars
-export WORKON_HOME=/var/.virtualenvs
-export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
-export VIRTUALENVWRAPPER_VIRTUALENV=/usr/local/bin/virtualenv
-source /usr/local/bin/virtualenvwrapper.sh
-export VIRTUALENVWRAPPER_ENV_BIN_DIR=bin
+echo $WORKON_HOME
+# export WORKON_HOME=/var/.virtualenvs
+# export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
+# export VIRTUALENVWRAPPER_VIRTUALENV=/usr/local/bin/virtualenv
+# source /usr/local/bin/virtualenvwrapper.sh
+# export VIRTUALENVWRAPPER_ENV_BIN_DIR=bin
 
 echo dest=$dest
-source /usr/local/bin/virtualenvwrapper.sh
 cd $dest
 # delete virtualenv so packages are consistent
 rmvirtualenv $DEPLOYMENT_GROUP_NAME
