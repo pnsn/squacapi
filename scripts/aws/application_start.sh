@@ -5,6 +5,8 @@ set -o pipefail
 
 export CURRENT_RELEASE=/var/www/releases/$DEPLOYMENT_GROUP_NAME/$DEPLOYMENT_ID
 export SYMLINK=/var/www/$DEPLOYMENT_GROUP_NAME
+
+cd $CURRENT_RELEASE
 # save previous pointer then repoint symlink
 
 # track the previous link
