@@ -235,14 +235,16 @@ if DEBUG:
     }
 # need to do it this way since we don't want to install redis locally
 elif CACHE_ENABLED:
-    CACHES['default'] = {
-        'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': os.environ.get('CACHE_LOCATION'),
-        'OPTIONS': {
-            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-        },
-        'TIMEOUT': int(os.environ.get('CACHE_SECONDS')),
-        'KEY_PREFIX': 'squac_' + os.environ.get('CACHE_BACKEND')
+    CACHES = {
+        'default': {
+            'BACKEND': 'django_redis.cache.RedisCache',
+            'LOCATION': os.environ.get('CACHE_LOCATION'),
+            'OPTIONS': {
+                'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            },
+            'TIMEOUT': int(os.environ.get('CACHE_SECONDS')),
+            'KEY_PREFIX': 'squac_' + os.environ.get('CACHE_BACKEND')
+        }
     }
 
 # FIXME this is broken cache key is not being set
