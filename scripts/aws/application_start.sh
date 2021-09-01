@@ -21,8 +21,8 @@ if [ $DEPLOYMENT_GROUP_NAME == 'staging-squacapi' ]; then
 fi
 
 systemctl daemon-reload
-PYTHONPATH=$SYMLINK service $GUNICORN_SERVICE restart || exit 1
-
+PYTHONPATH=$CURRENT_RELEASE service $GUNICORN_SERVICE restart || exit 1
+# restart nginx
 #only keep 5 versions
 cd  /var/www/releases/$DEPLOYMENT_GROUP_NAME && ls -A1t | tail -n +5 | xargs rm -rf
 
