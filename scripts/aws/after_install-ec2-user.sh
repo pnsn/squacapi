@@ -24,6 +24,7 @@ export WORKON_HOME=/var/.virtualenvs
 export PROJECT_HOME=$dest
 export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
 export VIRTUALENVWRAPPER_VIRTUALENV=/usr/local/bin/virtualenv
+export PATH=/usr/local/bin:$PATH
 source /usr/local/bin/virtualenvwrapper.sh
 export VIRTUALENVWRAPPER_ENV_BIN_DIR=bin
 
