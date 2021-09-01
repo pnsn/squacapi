@@ -11,14 +11,23 @@ echo after s3 call
 echo `ls $dest/app/.env `
 
 # virtual env vars
+# export WORKON_HOME=/var/.virtualenvs
+# export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
+# export VIRTUALENVWRAPPER_VIRTUALENV=/usr/local/bin/virtualenv
+# source /usr/local/bin/virtualenvwrapper.sh
+# source $dest/app/.env
+# echo dest=$dest
+# export PATH=$PATH:/usr/local/bin
+# export VIRTUALENVWRAPPER_ENV_BIN_DIR=/usr/local/bin
+
 export WORKON_HOME=/var/.virtualenvs
+export PROJECT_HOME=$dest
 export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
-cd $dest
+export VIRTUALENVWRAPPER_VIRTUALENV=/usr/local/bin/virtualenv
 source /usr/local/bin/virtualenvwrapper.sh
-source $dest/app/.env
-echo dest=$dest
-export PATH=$PATH:/usr/local/bin
-export VIRTUALENVWRAPPER_ENV_BIN_DIR=bin
+export VIRTUALENVWRAPPER_ENV_BIN_DIR=usr/local/bin
+
+cd $dest
 
 # delete virtualenv so packages are consistent
 echo "REMOVE VIRTUAL ENV"
