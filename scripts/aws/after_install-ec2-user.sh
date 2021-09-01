@@ -14,10 +14,10 @@ echo `ls $dest/app/.env `
 export WORKON_HOME=/var/.virtualenvs
 export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
 export VIRTUALENVWRAPPER_VIRTUALENV=/usr/local/bin/virtualenv
+cd $dest
 source /usr/local/bin/virtualenvwrapper.sh
 export VIRTUALENVWRAPPER_ENV_BIN_DIR=bin
 
-cd $dest
 source $dest/app/.env
 echo dest=$dest
 
