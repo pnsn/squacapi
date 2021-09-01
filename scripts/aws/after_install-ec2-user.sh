@@ -11,8 +11,8 @@ echo after s3 call
 echo `ls $dest/app/.env `
 
 # virtual env vars
-export WORKON_HOME=/var/.virtualenvs
-export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
+# export WORKON_HOME=/var/.virtualenvs
+# export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
 cd $dest
 echo "before  VIRTUAL ENV"
 source /usr/local/bin/virtualenvwrapper.sh
