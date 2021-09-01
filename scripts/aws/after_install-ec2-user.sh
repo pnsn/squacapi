@@ -22,7 +22,9 @@ echo dest=$dest
 # cd $dest
 # delete virtualenv so packages are consistent
 rmvirtualenv $DEPLOYMENT_GROUP_NAME
+echo "ater remove"
 mkvirtualenv $DEPLOYMENT_GROUP_NAME 2>&1
+echo "make virtual environment"
 workon $DEPLOYMENT_GROUP_NAME 2>&1
 
 # if staging, bootstrap
