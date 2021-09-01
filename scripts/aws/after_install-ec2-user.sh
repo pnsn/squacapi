@@ -14,10 +14,12 @@ echo `ls $dest/app/.env `
 export WORKON_HOME=/var/.virtualenvs
 export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
 cd $dest
+echo "before  VIRTUAL ENV"
 source /usr/local/bin/virtualenvwrapper.sh
+echo "right after VIRTUAL ENV"
 source $dest/app/.env
 echo dest=$dest
-export PATH=$PATH:/usr/local/bin
+# export PATH=$PATH:/usr/local/bin
 
 # delete virtualenv so packages are consistent
 echo "REMOVE VIRTUAL ENV"
