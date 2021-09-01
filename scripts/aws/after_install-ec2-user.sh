@@ -16,20 +16,18 @@ source /usr/local/bin/virtualenvwrapper.sh
 export VIRTUALENVWRAPPER_ENV_BIN_DIR=bin
 
 echo dest=$dest
-# cd $dest
+cd $dest
+
 # delete virtualenv so packages are consistent
 rmvirtualenv $DEPLOYMENT_GROUP_NAME
-echo "ater remove"
 mkvirtualenv $DEPLOYMENT_GROUP_NAME 2>&1
-echo "make virtual environment"
 workon $DEPLOYMENT_GROUP_NAME 2>&1
-echo "working on"
+
 # if staging, bootstrap
 if [ $DEPLOYMENT_GROUP_NAME == 'staging-squacapi' ]; then
     python $dest/app/manage.py bootstrap_db --days=7
 fi
 
-echo "PIP INSTLL"
 # both staging and prod use production.txt
 pip3 install  -r $dest/requirements/production.txt
 python $dest/app/manage.py migrate
