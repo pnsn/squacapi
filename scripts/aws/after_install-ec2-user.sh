@@ -12,12 +12,11 @@ echo after s3 call
 echo `ls $dest/app/.env `
 
 # virtual env vars
-echo $WORKON_HOME
-# export WORKON_HOME=/var/.virtualenvs
-# export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
-# export VIRTUALENVWRAPPER_VIRTUALENV=/usr/local/bin/virtualenv
-# source /usr/local/bin/virtualenvwrapper.sh
-# export VIRTUALENVWRAPPER_ENV_BIN_DIR=bin
+export WORKON_HOME=/var/.virtualenvs
+export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
+export VIRTUALENVWRAPPER_VIRTUALENV=/usr/local/bin/virtualenv
+source /usr/local/bin/virtualenvwrapper.sh
+export VIRTUALENVWRAPPER_ENV_BIN_DIR=bin
 
 echo dest=$dest
 cd $dest
