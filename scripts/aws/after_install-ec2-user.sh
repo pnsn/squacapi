@@ -2,7 +2,7 @@
 
 dest=$APP_ROOT/releases/$DEPLOYMENT_GROUP_NAME/$DEPLOYMENT_ID
 mkdir -p $dest
-mv $APP_ROOT/releases/tmp/* $dest
+mv $APP_ROOT/tmp/* $dest
 aws s3 cp s3://squacapi-config/bash/squacapi-$DEPLOYMENT_GROUP_NAME.env  $dest/app/.env
 source $dest/app/.env
 
