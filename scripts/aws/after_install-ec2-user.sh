@@ -2,7 +2,13 @@
 APP_ROOT=/var/www/$APPLICATION_NAME
 dest=$APP_ROOT/releases/$DEPLOYMENT_GROUP_NAME/$DEPLOYMENT_ID
 mkdir -p $dest
+
+# Move app out of tmp and into destination
 mv $APP_ROOT/tmp/* $dest
+# Remove tmp folder
+rm -rf $APP_ROOT/tmp
+
+# Copy environment file
 aws s3 cp s3://squacapi-config/bash/squacapi-$DEPLOYMENT_GROUP_NAME.env  $dest/app/.env
 source $dest/app/.env
 
@@ -28,7 +34,7 @@ if [ $DEPLOYMENT_GROUP_NAME == 'staging' ]; then
     python $dest/app/manage.py bootstrap_db --days=7
 fi
 
-# both staging and prod use production.txt
+# All groups use production.txt
 pip3 install  -r $dest/requirements/production.txt
 python $dest/app/manage.py migrate
 
@@ -38,7 +44,7 @@ if [ $DEPLOYMENT_GROUP_NAME == 'production' ]; then
     python $dest/app/manage.py crontab add
 fi
 
-# static root most be overridden or it will be added to where current symlink points(previous)
+# static root must be overridden or it will be added to where current symlink points(previous)
 SQUACAPI_STATIC_ROOT=$dest/static python $dest/app/manage.py collectstatic --noinput
 deactivate
 

@@ -25,7 +25,3 @@ systemctl restart nginx
 
 # Only keep 5 versions
 cd  $APP_ROOT/releases/$DEPLOYMENT_GROUP_NAME && ls -A1t | tail -n +5 | xargs rm -rf
-
-# Remove tmp folder
-rm -rf $APP_ROOT/tmp
-
