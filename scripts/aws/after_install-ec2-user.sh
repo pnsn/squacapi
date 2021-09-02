@@ -1,5 +1,5 @@
 #!/bin/bash
-APP_ROOT=/var/www/$APPLICATION_NAME
+APP_ROOT=/var/www/squacapi
 dest=$APP_ROOT/releases/$DEPLOYMENT_GROUP_NAME/$DEPLOYMENT_ID
 mkdir -p $dest
 
