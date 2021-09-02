@@ -2,6 +2,7 @@
 set -e
 set -o pipefail
 
+APP_ROOT=/var/www/$APPLICATION_NAME
 # install nginx conf files
 aws s3 cp s3://squacapi-config/nginx/squacapi-$DEPLOYMENT_GROUP_NAME.conf  /etc/nginx/conf.d/
 

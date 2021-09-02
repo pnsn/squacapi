@@ -4,7 +4,7 @@ set -e
 set -o pipefail
 
 # Home base for the app
-export APP_ROOT=/var/www/squacapi
+APP_ROOT=/var/www/$APPLICATION_NAME
 
 # Make tmp folder for codedeploy to place app
 mkdir -p $APP_ROOT/tmp
