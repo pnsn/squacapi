@@ -4,9 +4,7 @@ dest=$APP_ROOT/releases/$DEPLOYMENT_GROUP_NAME/$DEPLOYMENT_ID
 mkdir -p $dest
 
 # Move app out of tmp and into destination
-mv $APP_ROOT/tmp/* $dest
-# Remove tmp folder
-rm -rf $APP_ROOT/tmp
+mv $APP_ROOT/releases/tmp/* $dest
 
 # Copy environment file
 aws s3 cp s3://squacapi-config/bash/squacapi-$DEPLOYMENT_GROUP_NAME.env  $dest/app/.env
