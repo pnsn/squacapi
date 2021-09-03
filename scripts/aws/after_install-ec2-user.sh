@@ -1,9 +1,10 @@
 #!/bin/bash
 APP_ROOT=/var/www/squacapi
 dest=$APP_ROOT/releases/$DEPLOYMENT_GROUP_NAME/$DEPLOYMENT_ID
+mkdir -p $dest
 
 # Move app out of tmp and into destination
-mv $APP_ROOT/releases/tmp $dest
+mv $APP_ROOT/releases/tmp/* $dest
 
 # Copy environment file
 aws s3 cp s3://squacapi-config/bash/squacapi-$DEPLOYMENT_GROUP_NAME.env  $dest/app/.env
