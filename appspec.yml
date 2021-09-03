@@ -2,7 +2,7 @@ version: 0.0
 os: linux
 files:
   - source: /
-    destination: "/var/www/squacapi/releases/tmp"
+    destination: /var/www/squacapi/releases/tmp
 hooks:
   ApplicationStop:
     - location: scripts/aws/application_stop.sh
