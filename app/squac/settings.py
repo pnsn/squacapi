@@ -7,7 +7,7 @@ env variables config
 import requests
 from requests.exceptions import RequestException, MissingSchema
 import os
-from squac.cronjobs import CRONJOBS
+# from squac.cronjobs import CRONJOBS
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -87,7 +87,7 @@ INSTALLED_APPS = [
 # The caching middlewares must be first and last
 MIDDLEWARE = [
     # 'django.middleware.cache.UpdateCacheMiddleware',  # must be first
-    'aws_xray_sdk.ext.django.middleware.XRayMiddleware',  # also must be first
+    # 'aws_xray_sdk.ext.django.middleware.XRayMiddleware',  # also must be first
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -235,14 +235,16 @@ if DEBUG:
     }
 # need to do it this way since we don't want to install redis locally
 elif CACHE_ENABLED:
-    CACHES['default'] = {
-        'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': os.environ.get('CACHE_LOCATION'),
-        'OPTIONS': {
-            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-        },
-        'TIMEOUT': int(os.environ.get('CACHE_SECONDS')),
-        'KEY_PREFIX': 'squac_' + os.environ.get('CACHE_BACKEND')
+    CACHES = {
+        'default': {
+            'BACKEND': 'django_redis.cache.RedisCache',
+            'LOCATION': os.environ.get('CACHE_LOCATION'),
+            'OPTIONS': {
+                'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            },
+            'TIMEOUT': int(os.environ.get('CACHE_SECONDS')),
+            'KEY_PREFIX': 'squac_' + os.environ.get('CACHE_BACKEND')
+        }
     }
 
 # FIXME this is broken cache key is not being set

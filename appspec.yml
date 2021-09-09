@@ -2,10 +2,10 @@ version: 0.0
 os: linux
 files:
   - source: /
-    destination: "/var/www/releases/tmp"
+    destination: /var/www/squacapi/releases/tmp
 hooks:
   ApplicationStop:
-    - location: scripts/aws/application_stop.sh    
+    - location: scripts/aws/application_stop.sh
       timeout: 100
       runas: ec2-user
   BeforeInstall:
@@ -13,17 +13,17 @@ hooks:
       timeout: 600
       runas: root
   AfterInstall:
-    - location: scripts/aws/after_install-root.sh     
+    - location: scripts/aws/after_install-root.sh
       timeout: 600
       runas: root
-    - location: scripts/aws/after_install-ec2-user.sh     
+    - location: scripts/aws/after_install-ec2-user.sh
       timeout: 600
       runas: ec2-user
   ApplicationStart:
-    - location: scripts/aws/application_start.sh     
+    - location: scripts/aws/application_start.sh
       timeout: 300
       runas: root
   ValidateService:
-    - location: scripts/aws/validate_service.sh     
+    - location: scripts/aws/validate_service.sh
       timeout: 300
       runas: root

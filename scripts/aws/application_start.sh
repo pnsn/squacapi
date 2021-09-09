@@ -1,31 +1,27 @@
 #!/bin/bash
 
-set -e
+set -ex
 set -o pipefail
 
+APP_ROOT=/var/www/squacapi
+CURRENT_RELEASE=$APP_ROOT/releases/$DEPLOYMENT_GROUP_NAME/$DEPLOYMENT_ID
+SYMLINK=$APP_ROOT/$DEPLOYMENT_GROUP_NAME
 
-export CURRENT_RELEASE=/var/www/releases/$DEPLOYMENT_GROUP_NAME/$DEPLOYMENT_ID
-export SYMLINK=/var/www/$DEPLOYMENT_GROUP_NAME
-# save previous pointer then repoint symlink
+cd $CURRENT_RELEASE
 
-# track the previous link
-export PREVIOUS_RELEASE=`readlink -f $SYMLINK`
-echo $PREVIOUS_RELEASE > $CURRENT_RELEASE/previous_release.txt
 rm -f $SYMLINK
 ln -s $CURRENT_RELEASE $SYMLINK
 
-GUNICORN_SERVICE=gunicorn-production
+GUNICORN_SERVICE=gunicorn-$DEPLOYMENT_GROUP_NAME
 
-if [ $DEPLOYMENT_GROUP_NAME == 'staging-squacapi' ]; then
-    GUNICORN_SERVICE=gunicorn-staging
-fi
-
+# Restart gunicorn 
 systemctl daemon-reload
-PYTHONPATH=$SYMLINK service $GUNICORN_SERVICE restart || exit 1
+systemctl enable $GUNICORN_SERVICE.socket
+systemctl restart $GUNICORN_SERVICE.socket $GUNICORN_SERVICE.service
 
-#only keep 5 versions
-cd  /var/www/releases/$DEPLOYMENT_GROUP_NAME && ls -A1t | tail -n +5 | xargs rm -rf
+# Check if valid and restart nginx
+nginx -t
+systemctl restart nginx
 
-
-
-
+# Only keep 5 versions
+cd  $APP_ROOT/releases/$DEPLOYMENT_GROUP_NAME && ls -A1t | tail -n +5 | xargs rm -rf
