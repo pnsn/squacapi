@@ -14,14 +14,17 @@ ln -s $CURRENT_RELEASE $SYMLINK
 
 GUNICORN_SERVICE=gunicorn-$DEPLOYMENT_GROUP_NAME
 
-# Restart gunicorn 
-systemctl daemon-reload
-systemctl enable $GUNICORN_SERVICE.socket
-systemctl restart $GUNICORN_SERVICE.socket $GUNICORN_SERVICE.service
+#don't bother to serve on jobs instance
+if [ $DEPLOYMENT_GROUP_NAME != 'jobs' ]; then
+  # Restart gunicorn 
+  systemctl daemon-reload
+  systemctl enable $GUNICORN_SERVICE.socket
+  systemctl restart $GUNICORN_SERVICE.socket $GUNICORN_SERVICE.service
 
-# Check if valid and restart nginx
-nginx -t
-systemctl restart nginx
+  # Check if valid and restart nginx
+  nginx -t
+  systemctl restart nginx
+fi
 
 # Only keep 5 versions
 cd  $APP_ROOT/releases/$DEPLOYMENT_GROUP_NAME && ls -A1t | tail -n +5 | xargs rm -rf

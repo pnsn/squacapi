@@ -27,3 +27,13 @@ deploy:
     region: us-west-2
     on:
       branch: production
+
+  - provider: codedeploy
+    secret_access_key: $AWS_SECRET_ACCESS_KEY
+    access_key_id: $AWS_ACCESS_KEY_ID
+    revision_type: github
+    application: squacapi
+    deployment_group: jobs
+    region: us-west-2
+    on:
+      branch: production
