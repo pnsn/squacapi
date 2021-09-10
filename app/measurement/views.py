@@ -115,7 +115,7 @@ class MetricViewSet(MeasurementBaseViewSet):
     def get_queryset(self):
         return Metric.objects.all()
 
-    @method_decorator(cache_page(60 * 10), key_prefix="MetricView")
+    @method_decorator(cache_page(60 * 10, key_prefix="MetricView"))
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
