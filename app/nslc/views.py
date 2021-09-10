@@ -79,9 +79,7 @@ def api_root(request, format=None):
 class BaseNslcViewSet(SetUserMixin, DefaultPermissionsMixin,
                       viewsets.ModelViewSet):
 
-    @method_decorator(cache_page(settings.NSLC_DEFAULT_CACHE))
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
+    pass
 
 
 class NetworkViewSet(BaseNslcViewSet):
@@ -92,6 +90,10 @@ class NetworkViewSet(BaseNslcViewSet):
         q = Network.objects.all()
         return self.serializer_class.setup_eager_loading(q)
 
+    @method_decorator(cache_page(settings.NSLC_DEFAULT_CACHE), key_prefix="NetworkView")
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
 
 class ChannelViewSet(BaseNslcViewSet):
     filter_class = ChannelFilter
@@ -100,6 +102,10 @@ class ChannelViewSet(BaseNslcViewSet):
     def get_queryset(self):
         q = Channel.objects.all()
         return self.serializer_class.setup_eager_loading(q)
+
+    @method_decorator(cache_page(settings.NSLC_DEFAULT_CACHE), key_prefix="ChannelView")
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
 
 
 class GroupViewSet(BaseNslcViewSet):
@@ -115,7 +121,7 @@ class GroupViewSet(BaseNslcViewSet):
         queryset = Group.objects.all()
         return queryset
 
-    @method_decorator(cache_page(60 * 10))
+    @method_decorator(cache_page(60 * 10), key_prefix="GroupView")
     @method_decorator(vary_on_headers('Cookie'))
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
