@@ -123,7 +123,7 @@ class GroupViewSet(BaseNslcViewSet):
         queryset = Group.objects.all()
         return queryset
 
-    @method_decorator(cache_page(60 * 10), key_prefix="GroupView")
+    @method_decorator(cache_page(60 * 10, key_prefix="GroupView"))
     @method_decorator(vary_on_headers('Cookie'))
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
