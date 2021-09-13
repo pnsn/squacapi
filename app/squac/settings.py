@@ -30,7 +30,7 @@ except AttributeError:
 
 # add EC2 ip to allow heath checks
 try:
-    EC2_IP = requests.get(os.environ.get('META_DATA_IP_URL')).text
+    EC2_IP = requests.get('http://checkip.amazonaws.com').text
     ALLOWED_HOSTS.append(EC2_IP)
 except RequestException or MissingSchema:
     pass
