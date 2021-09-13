@@ -105,7 +105,7 @@ class ChannelViewSet(BaseNslcViewSet):
         return self.serializer_class.setup_eager_loading(q)
 
     @method_decorator(cache_page(settings.NSLC_DEFAULT_CACHE,
-                                 key_prefix="Channel"))
+                                 key_prefix="ChannelView"))
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
