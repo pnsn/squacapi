@@ -364,10 +364,19 @@ class PrivateAlarmAPITests(TestCase):
         self.assertEqual(trigger.in_alarm_state(q_list), expected)
 
     def test_in_alarm_state(self):
-        self.check_in_alarm_state(1, 1, True)
-        self.check_in_alarm_state(1, 2, True)
-        self.check_in_alarm_state(1, 3, False)
-        self.check_in_alarm_state(1, 4, True)
+        monitor_id = 1
+        self.check_in_alarm_state(monitor_id, 1, True)
+        self.check_in_alarm_state(monitor_id, 2, True)
+        self.check_in_alarm_state(monitor_id, 3, False)
+        self.check_in_alarm_state(monitor_id, 4, True)
+        # Now change reverse_monitor and verify reverse results
+        monitor = Monitor.objects.get(pk=monitor_id)
+        monitor.reverse_monitor = not monitor.reverse_monitor
+        monitor.save()
+        self.check_in_alarm_state(monitor_id, 1, False)
+        self.check_in_alarm_state(monitor_id, 2, False)
+        self.check_in_alarm_state(monitor_id, 3, True)
+        self.check_in_alarm_state(monitor_id, 4, False)
 
     def test_get_latest_alert(self):
         trigger = Trigger.objects.get(pk=3)
