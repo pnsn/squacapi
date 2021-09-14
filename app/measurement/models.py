@@ -221,9 +221,6 @@ class Monitor(MeasurementBase):
         # Evaluate whether each Trigger is breaching
         for trigger in triggers:
             in_alarm = trigger.in_alarm_state(channel_values)
-            if self.reverse_monitor:
-                in_alarm = not in_alarm
-                
             trigger.evaluate_alert(in_alarm)
 
     def __str__(self):
@@ -302,7 +299,10 @@ class Trigger(MeasurementBase):
         values
         '''
         breaching_channels = self.get_breaching_channels(channel_values)
-        return len(breaching_channels) >= self.monitor.num_channels
+        if self.monitor.reverse_monitor:
+            return len(breaching_channels) < self.monitor.num_channels
+        else:
+            return len(breaching_channels) >= self.monitor.num_channels
 
     def get_latest_alert(self):
         '''Return the most recent alert for this Trigger'''
