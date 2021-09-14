@@ -143,6 +143,7 @@ class Monitor(MeasurementBase):
                             default=Stat.SUM
                             )
     name = models.CharField(max_length=255, default='')
+    reverse_monitor = models.BooleanField(default=False)
 
     def calc_interval_seconds(self):
         '''Return the number of seconds in the alarm interval'''
@@ -220,6 +221,9 @@ class Monitor(MeasurementBase):
         # Evaluate whether each Trigger is breaching
         for trigger in triggers:
             in_alarm = trigger.in_alarm_state(channel_values)
+            if self.reverse_monitor:
+                in_alarm = not in_alarm
+                
             trigger.evaluate_alert(in_alarm)
 
     def __str__(self):
