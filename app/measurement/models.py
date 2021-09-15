@@ -143,6 +143,7 @@ class Monitor(MeasurementBase):
                             default=Stat.SUM
                             )
     name = models.CharField(max_length=255, default='')
+    invert_monitor = models.BooleanField(default=False)
 
     def calc_interval_seconds(self):
         '''Return the number of seconds in the alarm interval'''
@@ -298,7 +299,10 @@ class Trigger(MeasurementBase):
         values
         '''
         breaching_channels = self.get_breaching_channels(channel_values)
-        return len(breaching_channels) >= self.monitor.num_channels
+        if self.monitor.invert_monitor:
+            return len(breaching_channels) < self.monitor.num_channels
+        else:
+            return len(breaching_channels) >= self.monitor.num_channels
 
     def get_latest_alert(self):
         '''Return the most recent alert for this Trigger'''
