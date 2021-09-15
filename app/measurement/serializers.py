@@ -127,7 +127,7 @@ class MonitorSerializer(serializers.HyperlinkedModelSerializer):
         model = Monitor
         fields = (
             'id', 'url', 'channel_group', 'metric', 'interval_type',
-            'interval_count', 'num_channels', 'stat', 'reverse_monitor',
+            'interval_count', 'num_channels', 'stat', 'invert_monitor',
             'name', 'created_at', 'updated_at', 'user_id'
         )
         read_only_fields = ('id',)
@@ -227,7 +227,7 @@ class MonitorDetailSerializer(serializers.HyperlinkedModelSerializer):
         model = Monitor
         fields = (
             'id', 'url', 'channel_group', 'metric', 'interval_type',
-            'interval_count', 'num_channels', 'stat', 'reverse_monitor',
+            'interval_count', 'num_channels', 'stat', 'invert_monitor',
             'name', 'created_at', 'updated_at', 'user_id', 'triggers'
         )
         read_only_fields = ('id',)
