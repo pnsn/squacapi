@@ -35,6 +35,11 @@ try:
 except RequestException or MissingSchema:
     pass
 
+try:
+    EC2_IP = requests.get(os.environ.get('META_DATA_IP_URL')).text
+    ALLOWED_HOSTS.append(EC2_IP)
+except RequestException or MissingSchema:
+    pass
 
 # For debug toolbar
 INTERNAL_IPS = [
