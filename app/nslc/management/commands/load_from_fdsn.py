@@ -130,9 +130,11 @@ class Command(BaseCommand):
 
     '''Django command to check network and channel tables with FDSN service'''
     def handle(self, *args, **options):
+        # &net=AK,AV,AZ,BC,BK,CC,CE,CI,CN,ET,HV,IU,IW,MB,NC,NN,NP,NV,OK,OO,PB,PR,SN,TX,UM,UO,US,UU,UW
         ALLOWED_NETWORKS = [
-            "AZ", "BC", "BK", "CC", "CE", "CI", "CN", "IU", "IW", "MB", "NC",
-            "NN", "NP", "NV", "OO", "PB", "SN", "UO", "US", "UW"
+            "AK", "AV", "AZ", "BC", "BK", "CC", "CE", "CI", "CN", "ET", "HV",
+            "IU", "IW", "MB", "NC", "NN", "NP", "NV", "OK", "OO", "PB", "PR",
+            "SN", "TX", "UM", "UO", "US", "UU", "UW"
         ]
         options["net"] = ','.join(ALLOWED_NETWORKS)
         LOADER_EMAIL = os.environ.get('LOADER_EMAIL')
