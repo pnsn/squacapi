@@ -32,7 +32,7 @@ $:docker-compose run --rm app sh -c "LOADER_EMAIL=email@pnsn.org \
 
  text response from fdsn has following schema:
  Network | Station | Location | Channel | Latitude | Longitude |
- Elevation | Depth | Azimuth | Dip | SensorDescription | Scale |
+ Elevation | Depth | Azimuth | Dip | SensfrDescription | Scale |
  ScaleFreq | ScaleUnits | SampleRate | StartTime | EndTime
 """
 import csv
@@ -93,7 +93,7 @@ class Command(BaseCommand):
         )
         parser.add_argument(
             '--maxlon',
-            default=-113,
+            default=-62,
             help="Right latitude for search box, -62 default"
         )
         parser.add_argument(
