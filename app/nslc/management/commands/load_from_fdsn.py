@@ -10,7 +10,7 @@ Command run without any options will give default URL
         &loc=*
         &minlat=12.
         &maxlat=72.
-        &minlon=-179.99
+        &minlon=-183.
         &maxlon=-62.
         &starttime=2019-01-01
         &format=text
@@ -26,7 +26,7 @@ $:docker-compose run --rm app sh -c "LOADER_EMAIL=email@pnsn.org \
                     --loc=*
                     --minlat=12.
                     --maxlat=72.
-                    --minlon=-179.99
+                    --minlon=-183.
                     --maxlon=-62.
                     --starttime='YYYY-mm-dd'"
 
@@ -88,8 +88,8 @@ class Command(BaseCommand):
         )
         parser.add_argument(
             '--minlon',
-            default=-179.99,
-            help="Left latitude for search box, -179.99 default"
+            default=-183.,
+            help="Left latitude for search box, -183. default"
         )
         parser.add_argument(
             '--maxlon',
