@@ -130,7 +130,6 @@ class Command(BaseCommand):
 
     '''Django command to check network and channel tables with FDSN service'''
     def handle(self, *args, **options):
-        # &net=AK,AV,AZ,BC,BK,CC,CE,CI,CN,ET,HV,IU,IW,MB,NC,NN,NP,NV,OK,OO,PB,PR,SN,TX,UM,UO,US,UU,UW
         ALLOWED_NETWORKS = [
             "AK", "AV", "AZ", "BC", "BK", "CC", "CE", "CI", "CN", "ET", "HV",
             "IU", "IW", "MB", "NC", "NN", "NP", "NV", "OK", "OO", "PB", "PR",
