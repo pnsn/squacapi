@@ -32,7 +32,7 @@ $:docker-compose run --rm app sh -c "LOADER_EMAIL=email@pnsn.org \
 
  text response from fdsn has following schema:
  Network | Station | Location | Channel | Latitude | Longitude |
- Elevation | Depth | Azimuth | Dip | SensfrDescription | Scale |
+ Elevation | Depth | Azimuth | Dip | SensorDescription | Scale |
  ScaleFreq | ScaleUnits | SampleRate | StartTime | EndTime
 """
 import csv
