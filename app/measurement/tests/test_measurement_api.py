@@ -394,10 +394,9 @@ class PrivateMeasurementAPITests(TestCase):
         '''create a bunch of measurements then agg them'''
         values = [1.1, 2, 20.2, 16, 5.0, 2, 200, 10]
         start = datetime(2021, 5, 5, 0, 0, 0, 0, tzinfo=pytz.UTC)
-        starttime = start
 
         for count, value in enumerate(values):
-            starttime = starttime + timedelta(hours=1)
+            starttime = start + timedelta(hours=count)
             endtime = starttime + timedelta(hours=1)
             Measurement.objects.create(
                 metric=self.metric,
@@ -407,50 +406,78 @@ class PrivateMeasurementAPITests(TestCase):
                 endtime=endtime,
                 user=self.user
             )
+
+        # add another measurement from a different metric to test the
+        # 'latest' field
+        metric2 = Metric.objects.create(
+            name='Metric test 2',
+            code='456',
+            unit='meter',
+            default_minval=1,
+            default_maxval=10.0,
+            user=self.user,
+            reference_url='pnsn.org'
+        )
+        Measurement.objects.create(
+            metric=metric2,
+            channel=self.chan,
+            value=3.14,
+            starttime=start + timedelta(hours=20),
+            endtime=start + timedelta(hours=20),
+            user=self.user
+        )
+
         url = reverse('measurement:aggregated-list')
         stime, etime = '2021-05-05T00:00:00Z', '2021-05-05T23:59:59Z'
-        url += f'?metric={self.metric.id}&channel={self.chan.id}'
+        url += f'?metric={self.metric.id},{metric2.id}&channel={self.chan.id}'
         url += f'&starttime={stime}&endtime={etime}'
         res = self.client.get(url)
 
-        self.assertAlmostEqual(np.mean(values).item(), res.data[0]['mean'])
-        self.assertAlmostEqual(np.median(values).item(), res.data[0]['median'])
-        self.assertAlmostEqual(np.max(values).item(), res.data[0]['max'])
-        self.assertAlmostEqual(np.min(values).item(), res.data[0]['min'])
+        # Find result for the primary metric, channel
+        i = 0
+        for count, data in enumerate(res.data):
+            if all([data['metric'] == self.metric.id,
+                    data['channel'] == self.chan.id]):
+                i = count
+
+        self.assertAlmostEqual(np.mean(values).item(), res.data[i]['mean'])
+        self.assertAlmostEqual(np.median(values).item(), res.data[i]['median'])
+        self.assertAlmostEqual(np.max(values).item(), res.data[i]['max'])
+        self.assertAlmostEqual(np.min(values).item(), res.data[i]['min'])
         self.assertAlmostEqual(min(np.abs(np.min(values)),
                                    np.abs(np.max(values))).item(),
-                               res.data[0]['minabs'])
+                               res.data[i]['minabs'])
         self.assertAlmostEqual(max(np.abs(np.min(values)),
                                    np.abs(np.max(values))).item(),
-                               res.data[0]['maxabs'])
+                               res.data[i]['maxabs'])
         start_str = datetime.strftime(
-            start + timedelta(hours=1), '%Y-%m-%dT%H:%M:%SZ')
+            start + timedelta(hours=0), '%Y-%m-%dT%H:%M:%SZ')
         end_str = datetime.strftime(
             endtime, '%Y-%m-%dT%H:%M:%SZ')
 
-        self.assertEqual(start_str, res.data[0]['starttime'])
-        self.assertEqual(end_str, res.data[0]['endtime'])
+        self.assertEqual(start_str, res.data[i]['starttime'])
+        self.assertEqual(end_str, res.data[i]['endtime'])
         self.assertAlmostEqual(
-            np.std(values, ddof=1).item(), res.data[0]['stdev'])
-        self.assertEqual(len(values), res.data[0]['num_samps'])
+            np.std(values, ddof=1).item(), res.data[i]['stdev'])
+        self.assertEqual(len(values), res.data[i]['num_samps'])
         self.assertAlmostEqual(
             round_to_decimals(np.percentile(values, 5),
                               self.DOUBLE_DECIMAL_PLACES),
-            round_to_decimals(res.data[0]['p05'],
+            round_to_decimals(res.data[i]['p05'],
                               self.DOUBLE_DECIMAL_PLACES))
         self.assertAlmostEqual(
             round_to_decimals(np.percentile(values, 10),
                               self.DOUBLE_DECIMAL_PLACES),
-            round_to_decimals(res.data[0]['p10'],
+            round_to_decimals(res.data[i]['p10'],
                               self.DOUBLE_DECIMAL_PLACES))
         self.assertAlmostEqual(
             round_to_decimals(np.percentile(values, 90),
                               self.DOUBLE_DECIMAL_PLACES),
-            round_to_decimals(res.data[0]['p90'],
+            round_to_decimals(res.data[i]['p90'],
                               self.DOUBLE_DECIMAL_PLACES))
         self.assertAlmostEqual(
             round_to_decimals(np.percentile(values, 95),
                               self.DOUBLE_DECIMAL_PLACES),
-            round_to_decimals(res.data[0]['p95'],
+            round_to_decimals(res.data[i]['p95'],
                               self.DOUBLE_DECIMAL_PLACES))
-        self.assertEqual(res.data[0]['latest'], 10)
+        self.assertEqual(res.data[i]['latest'], 10)
