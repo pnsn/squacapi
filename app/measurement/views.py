@@ -6,8 +6,7 @@ from rest_framework.response import Response
 from django_filters import rest_framework as filters
 from squac.filters import CharInFilter, NumberInFilter
 from measurement.aggregates.percentile import Percentile
-from django.db.models import (Avg, StdDev, Min, Max, Count, FloatField,
-                              Subquery, OuterRef)
+from django.db.models import Avg, StdDev, Min, Max, Count, FloatField
 from django.db.models.functions import (Coalesce, Abs, Least, Greatest)
 from squac.mixins import (SetUserMixin, DefaultPermissionsMixin,
                           AdminOrOwnerPermissionMixin)
@@ -247,9 +246,6 @@ class AggregatedViewSet(IsAuthenticated, viewsets.ViewSet):
         measurements = measurements.filter(
             starttime__gte=params['starttime']).filter(
             starttime__lt=params['endtime'])
-        latest = measurements.filter(
-            metric=OuterRef('metric')).filter(
-            channel=OuterRef('channel')).order_by('-starttime')
         aggs = measurements.values(
             'channel', 'metric').annotate(
                 mean=Avg('value'),
@@ -266,10 +262,27 @@ class AggregatedViewSet(IsAuthenticated, viewsets.ViewSet):
                 p95=Percentile('value', percentile=0.95),
                 num_samps=Count('value'),
                 starttime=Min('starttime'),
-                endtime=Max('endtime'),
-                latest=Subquery(latest.values('value')[:1])
-
+                endtime=Max('endtime')
         )
+
+        # Get the latest value for each channel-metric
+        # The first empty order_by() clears any previous orderings
+        latest = measurements.order_by().order_by(
+            'channel', 'metric', '-starttime').distinct(
+            'channel', 'metric').values(
+            'channel', 'metric', 'value')
+
+        # Convert to dict with (channel, metric) key for easy lookup
+        latest_dict = {(obj['channel'], obj['metric']): obj['value']
+                       for obj in latest}
+
+        # Add in the latest measurement for each channel-metric to aggs. Do
+        # this separately since using a subquery was taxing the db too much.
+        aggs_list = list(aggs)
+        for obj in aggs_list:
+            key = (obj['channel'], obj['metric'])
+            obj['latest'] = latest_dict.get(key, None)
+
         serializer = serializers.AggregatedSerializer(
-            instance=aggs, many=True)
+            instance=aggs_list, many=True)
         return Response(serializer.data)
