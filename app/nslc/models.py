@@ -25,6 +25,7 @@ class Nslc(models.Model):
         ]
 
     '''force lowercase on code to provide for consistent url slug lookups'''
+
     def clean(self):
         self.code = self.code.lower()
 
@@ -41,6 +42,7 @@ class Network(Nslc):
 
 class Channel(Nslc):
     code = models.CharField(max_length=3)
+    name = models.CharField(max_length=255, blank=True)
     station_code = models.CharField(max_length=5)
     station_name = models.CharField(max_length=255, blank=True)
     sample_rate = models.FloatField(null=True, blank=True)
