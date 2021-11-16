@@ -318,20 +318,13 @@ class Trigger(MeasurementBase):
         '''Return the most recent alert for this Trigger'''
         return self.alerts.order_by('timestamp').last()
 
-    def get_alert_message(self, in_alarm):
-        if in_alarm:
-            msg = 'Trigger in alert for ' + str(self)
-        else:
-            msg = 'Trigger out of alert for ' + str(self)
-        return msg
-
-    def create_alert(self, in_alarm):
-        msg = self.get_alert_message(in_alarm)
+    def create_alert(self, in_alarm, breaching_channels=[]):
         new_alert = Alert(trigger=self,
                           timestamp=datetime.now(tz=pytz.UTC),
-                          message=msg,
+                          message="",
                           in_alarm=in_alarm,
-                          user=self.user)
+                          user=self.user,
+                          breaching_channels=breaching_channels)
         new_alert.save()
         new_alert.create_alert_notifications()
         return new_alert
@@ -347,12 +340,12 @@ class Trigger(MeasurementBase):
             # In alarm state, does alert exist yet? If not, create a new one.
             # Exist means the most recent one has in_alarm = True
             if not alert or not alert.in_alarm:
-                return self.create_alert(in_alarm)
+                return self.create_alert(in_alarm, breaching_channels)
         else:
             # Not in alarm state, is there an alert to cancel?
             # If so, create new one saying in_alarm = False
             if alert and alert.in_alarm:
-                return self.create_alert(in_alarm)
+                return self.create_alert(in_alarm, breaching_channels)
 
         return alert
 
@@ -382,6 +375,16 @@ class Alert(MeasurementBase):
 
         for notification in notifications:
             notification.send(self)
+
+    def get_email_message(self):
+        msg = ''
+        if self.in_alarm:
+            msg += 'Trigger in alert for ' + str(self.trigger)
+        else:
+            msg += 'Trigger out of alert for ' + str(self.trigger)
+
+        msg += '\nBreaching channels: ' + str(self.breaching_channels)
+        return msg
 
     class Meta:
         indexes = [
