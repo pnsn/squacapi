@@ -347,7 +347,7 @@ class PrivateAlarmAPITests(TestCase):
         trigger = Trigger.objects.get(pk=trigger_id)
 
         res = trigger.get_breaching_channels(q_list)
-        self.assertCountEqual(res, expected)
+        self.assertEqual(len(res), len(expected))
 
     def test_get_breaching_channels(self):
         self.check_get_breaching_channels(1, 1, [1, 2])
@@ -361,7 +361,7 @@ class PrivateAlarmAPITests(TestCase):
 
         q_list = monitor.agg_measurements(endtime=endtime)
         trigger = Trigger.objects.get(pk=trigger_id)
-        self.assertEqual(trigger.in_alarm_state(q_list), expected)
+        self.assertEqual(trigger.in_alarm_state(q_list)[0], expected)
 
     def test_in_alarm_state(self):
         monitor_id = 1

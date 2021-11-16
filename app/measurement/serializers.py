@@ -160,7 +160,7 @@ class AlertSerializer(serializers.HyperlinkedModelSerializer):
         model = Alert
         fields = (
             'id', 'url', 'trigger', 'timestamp', 'message', 'in_alarm',
-            'created_at', 'updated_at', 'user_id'
+            'breaching_channels', 'created_at', 'updated_at', 'user_id'
         )
         read_only_fields = ('id',)
 
@@ -243,6 +243,6 @@ class AlertDetailSerializer(serializers.HyperlinkedModelSerializer):
         model = Alert
         fields = (
             'id', 'url', 'trigger', 'timestamp', 'message', 'in_alarm',
-            'created_at', 'updated_at', 'user_id'
+            'breaching_channels', 'created_at', 'updated_at', 'user_id'
         )
         read_only_fields = ('id',)
