@@ -295,8 +295,11 @@ class Trigger(MeasurementBase):
                     continue
 
                 value = channel_value[self.monitor.stat]
-                breaching_channels.append({'channel': str(channel[0]),
-                                           self.monitor.stat: value})
+                breaching_channels.append({
+                    'channel': str(channel[0]),
+                    'channel_id': channel_value['channel'],
+                    self.monitor.stat: value
+                })
 
         return breaching_channels
 
@@ -383,7 +386,11 @@ class Alert(MeasurementBase):
         else:
             msg += 'Trigger out of alert for ' + str(self.trigger)
 
-        msg += '\nBreaching channels: ' + str(self.breaching_channels)
+        breaching_out = []
+        if self.breaching_channels:
+            breaching_out = [{k: v for k, v in d.items() if k != 'channel_id'}
+                             for d in self.breaching_channels]
+        msg += '\nBreaching channels: ' + str(breaching_out)
         return msg
 
     class Meta:

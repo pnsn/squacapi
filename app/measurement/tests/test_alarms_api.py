@@ -643,4 +643,6 @@ class PrivateAlarmAPITests(TestCase):
             user=trigger.user,
             breaching_channels=breaching_channels
         )
-        self.assertTrue(str(breaching_channels) in alert.get_email_message())
+        breaching_out = [{k: v for k, v in a.items() if k != 'channel_id'}
+                         for a in breaching_channels]
+        self.assertTrue(str(breaching_out) in alert.get_email_message())
