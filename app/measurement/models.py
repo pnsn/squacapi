@@ -220,8 +220,9 @@ class Monitor(MeasurementBase):
 
         # Evaluate whether each Trigger is breaching
         for trigger in triggers:
-            in_alarm = trigger.in_alarm_state(channel_values)
-            trigger.evaluate_alert(in_alarm)
+            in_alarm, breaching_channels = (
+                trigger.in_alarm_state(channel_values))
+            trigger.evaluate_alert(in_alarm, breaching_channels)
 
     def __str__(self):
         if not self.name:
@@ -288,7 +289,17 @@ class Trigger(MeasurementBase):
         breaching_channels = []
         for channel_value in channel_values:
             if self.is_breaching(channel_value):
-                breaching_channels.append(channel_value['channel'])
+                channel = Channel.objects.filter(id=channel_value['channel'])
+                # Should just be one channel in the filter queryset
+                if len(channel) != 1:
+                    continue
+
+                value = channel_value[self.monitor.stat]
+                breaching_channels.append({
+                    'channel': str(channel[0]),
+                    'channel_id': channel_value['channel'],
+                    self.monitor.stat: value
+                })
 
         return breaching_channels
 
@@ -300,33 +311,28 @@ class Trigger(MeasurementBase):
         '''
         breaching_channels = self.get_breaching_channels(channel_values)
         if self.monitor.invert_monitor:
-            return len(breaching_channels) < self.monitor.num_channels
+            return (len(breaching_channels) < self.monitor.num_channels,
+                    breaching_channels)
         else:
-            return len(breaching_channels) >= self.monitor.num_channels
+            return (len(breaching_channels) >= self.monitor.num_channels,
+                    breaching_channels)
 
     def get_latest_alert(self):
         '''Return the most recent alert for this Trigger'''
         return self.alerts.order_by('timestamp').last()
 
-    def get_alert_message(self, in_alarm):
-        if in_alarm:
-            msg = 'Trigger in alert for ' + str(self)
-        else:
-            msg = 'Trigger out of alert for ' + str(self)
-        return msg
-
-    def create_alert(self, in_alarm):
-        msg = self.get_alert_message(in_alarm)
+    def create_alert(self, in_alarm, breaching_channels=[]):
         new_alert = Alert(trigger=self,
                           timestamp=datetime.now(tz=pytz.UTC),
-                          message=msg,
+                          message="",
                           in_alarm=in_alarm,
-                          user=self.user)
+                          user=self.user,
+                          breaching_channels=breaching_channels)
         new_alert.save()
         new_alert.create_alert_notifications()
         return new_alert
 
-    def evaluate_alert(self, in_alarm):
+    def evaluate_alert(self, in_alarm, breaching_channels=[]):
         '''
         Determine what to do with alerts given that this Trigger is in
         or out of spec
@@ -337,12 +343,12 @@ class Trigger(MeasurementBase):
             # In alarm state, does alert exist yet? If not, create a new one.
             # Exist means the most recent one has in_alarm = True
             if not alert or not alert.in_alarm:
-                return self.create_alert(in_alarm)
+                return self.create_alert(in_alarm, breaching_channels)
         else:
             # Not in alarm state, is there an alert to cancel?
             # If so, create new one saying in_alarm = False
             if alert and alert.in_alarm:
-                return self.create_alert(in_alarm)
+                return self.create_alert(in_alarm, breaching_channels)
 
         return alert
 
@@ -364,6 +370,7 @@ class Alert(MeasurementBase):
     timestamp = models.DateTimeField()
     message = models.CharField(max_length=255)
     in_alarm = models.BooleanField(default=True)
+    breaching_channels = models.JSONField(null=True)
 
     def create_alert_notifications(self):
         level = self.trigger.level
@@ -371,6 +378,20 @@ class Alert(MeasurementBase):
 
         for notification in notifications:
             notification.send(self)
+
+    def get_email_message(self):
+        msg = ''
+        if self.in_alarm:
+            msg += 'Trigger in alert for ' + str(self.trigger)
+        else:
+            msg += 'Trigger out of alert for ' + str(self.trigger)
+
+        breaching_out = []
+        if self.breaching_channels:
+            breaching_out = [{k: v for k, v in d.items() if k != 'channel_id'}
+                             for d in self.breaching_channels]
+        msg += '\nBreaching channels: ' + str(breaching_out)
+        return msg
 
     class Meta:
         indexes = [

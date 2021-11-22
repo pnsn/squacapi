@@ -184,7 +184,7 @@ class Notification(models.Model):
         subject = (f"SQUAC alert for '{alert.trigger.monitor}', "
                    f"level {alert.trigger.level}"
                    )
-        message = alert.message
+        message = alert.get_email_message()
         send_mail(subject,
                   message,
                   settings.EMAIL_NO_REPLY,

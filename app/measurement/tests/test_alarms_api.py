@@ -347,7 +347,7 @@ class PrivateAlarmAPITests(TestCase):
         trigger = Trigger.objects.get(pk=trigger_id)
 
         res = trigger.get_breaching_channels(q_list)
-        self.assertCountEqual(res, expected)
+        self.assertEqual(len(res), len(expected))
 
     def test_get_breaching_channels(self):
         self.check_get_breaching_channels(1, 1, [1, 2])
@@ -361,7 +361,7 @@ class PrivateAlarmAPITests(TestCase):
 
         q_list = monitor.agg_measurements(endtime=endtime)
         trigger = Trigger.objects.get(pk=trigger_id)
-        self.assertEqual(trigger.in_alarm_state(q_list), expected)
+        self.assertEqual(trigger.in_alarm_state(q_list)[0], expected)
 
     def test_in_alarm_state(self):
         monitor_id = 1
@@ -540,7 +540,7 @@ class PrivateAlarmAPITests(TestCase):
         self.notification.send_email(self.alert)
 
         self.assertEqual(len(mail.outbox), 1)
-        self.assertTrue(self.alert.message in mail.outbox[0].body)
+        self.assertTrue(self.alert.get_email_message() in mail.outbox[0].body)
         self.assertTrue(self.notification.contact.email_value
                         in mail.outbox[0].recipients())
 
@@ -626,3 +626,23 @@ class PrivateAlarmAPITests(TestCase):
         self.assertTrue(trigger_test.is_breaching(channel_value))
         channel_value[trigger_test.monitor.stat] = 1
         self.assertFalse(trigger_test.is_breaching(channel_value))
+
+    def test_alert_get_email_message(self):
+        monitor = Monitor.objects.get(pk=1)
+        endtime = datetime(2018, 2, 1, 4, 30, 0, 0, tzinfo=pytz.UTC)
+
+        q_list = monitor.agg_measurements(endtime=endtime)
+        trigger = Trigger.objects.get(pk=2)
+
+        breaching_channels = trigger.get_breaching_channels(q_list)
+        alert = Alert.objects.create(
+            trigger=trigger,
+            timestamp=datetime(1975, 1, 1, tzinfo=pytz.UTC),
+            message='',
+            in_alarm=True,
+            user=trigger.user,
+            breaching_channels=breaching_channels
+        )
+        breaching_out = [{k: v for k, v in a.items() if k != 'channel_id'}
+                         for a in breaching_channels]
+        self.assertTrue(str(breaching_out) in alert.get_email_message())
