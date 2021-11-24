@@ -351,9 +351,13 @@ class Trigger(MeasurementBase):
                 return (len(breaching_channels) >= self.monitor.num_channels,
                         breaching_channels)
 
-    def get_latest_alert(self):
-        '''Return the most recent alert for this Trigger'''
-        return self.alerts.order_by('timestamp').last()
+    def get_latest_alert(self, reftime=datetime.now(tz=pytz.UTC)):
+        '''
+        Return the most recent alert for this Trigger relative to the
+        given time
+        '''
+        return self.alerts.filter(timestamp__lt=reftime
+                                  ).order_by('timestamp').last()
 
     def create_alert(self, in_alarm, breaching_channels=[]):
         new_alert = Alert(trigger=self,
