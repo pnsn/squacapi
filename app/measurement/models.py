@@ -341,8 +341,12 @@ class Trigger(MeasurementBase):
         breaching_channels = self.get_breaching_channels(channel_values)
         if self.monitor.alert_for_single:
             # Case for alert_for_channel_join or alert_for_channel_dropout
-
-            return True, breaching_channels
+            joined, dropped_out = self.get_breaching_change(breaching_channels)
+            if self.monitor.alert_for_channel_join and joined:
+                return True, breaching_channels
+            if self.monitor.alert_for_channel_dropout and dropped_out:
+                return True, breaching_channels
+            return False, breaching_channels
         else:
             if self.monitor.invert_monitor:
                 return (len(breaching_channels) < self.monitor.num_channels,
