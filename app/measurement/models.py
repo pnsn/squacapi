@@ -144,6 +144,15 @@ class Monitor(MeasurementBase):
                             )
     name = models.CharField(max_length=255, default='')
     invert_monitor = models.BooleanField(default=False)
+    # Either (or both) of the alert_for_channel... options would make
+    # num_channels and invert_monitor irrelevant. Now only alert if any channel
+    # joins or drops out of the breaching_channels list for a trigger/alert
+    alert_for_channel_join = models.BooleanField(default=False)
+    alert_for_channel_dropout = models.BooleanField(default=False)
+
+    @property
+    def alert_for_single(self):
+        return self.alert_for_channel_join or self.alert_for_channel_dropout
 
     def calc_interval_seconds(self):
         '''Return the number of seconds in the alarm interval'''
@@ -303,6 +312,26 @@ class Trigger(MeasurementBase):
 
         return breaching_channels
 
+    def get_breaching_change(self, breaching_channels):
+        breaching_joined = []
+        breaching_dropped_out = []
+        alert = self.get_latest_alert()
+        if alert:
+            set_previous = {x['channel_id'] for x in alert.breaching_channels}
+            set_current = {x['channel_id'] for x in breaching_channels}
+            curr_not_in_prev = set_current - set_previous
+            prev_not_in_curr = set_previous - set_current
+            for chan in breaching_channels:
+                if chan['channel_id'] in curr_not_in_prev:
+                    breaching_joined.append(chan)
+                if chan['channel_id'] in prev_not_in_curr:
+                    breaching_dropped_out.append(chan)
+        else:
+            # Case where there was no previous alert
+            breaching_joined = breaching_channels
+
+        return breaching_joined, breaching_dropped_out
+
     # channel_values is a list of dicts
     def in_alarm_state(self, channel_values):
         '''
@@ -310,12 +339,17 @@ class Trigger(MeasurementBase):
         values
         '''
         breaching_channels = self.get_breaching_channels(channel_values)
-        if self.monitor.invert_monitor:
-            return (len(breaching_channels) < self.monitor.num_channels,
-                    breaching_channels)
+        if self.monitor.alert_for_single:
+            # Case for alert_for_channel_join or alert_for_channel_dropout
+
+            return True, breaching_channels
         else:
-            return (len(breaching_channels) >= self.monitor.num_channels,
-                    breaching_channels)
+            if self.monitor.invert_monitor:
+                return (len(breaching_channels) < self.monitor.num_channels,
+                        breaching_channels)
+            else:
+                return (len(breaching_channels) >= self.monitor.num_channels,
+                        breaching_channels)
 
     def get_latest_alert(self):
         '''Return the most recent alert for this Trigger'''
