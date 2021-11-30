@@ -8,6 +8,7 @@ from dashboard.models import Widget
 from nslc.models import Channel, Group
 
 from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
 import pytz
 
 from bulk_update_or_create import BulkUpdateOrCreateQuerySet
@@ -207,10 +208,12 @@ class Monitor(MeasurementBase):
 
         return q_list
 
-    def evaluate_alarm(self, endtime=datetime.now(tz=pytz.UTC)):
+    def evaluate_alarm(self, endtime=(datetime.now(tz=pytz.UTC) -
+                       relativedelta(minute=0, second=0, microsecond=0))):
         '''
         Higher-level function that determines alarm state and calls other
-        functions to create alerts if necessary
+        functions to create alerts if necessary. Default is to start on the
+        hour regardless of when it is called (truncate down).
         '''
         # Get aggregate values for each channel. Returns a list(QuerySet)
         channel_values = self.agg_measurements(endtime)
