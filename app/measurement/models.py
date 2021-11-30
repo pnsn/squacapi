@@ -208,8 +208,8 @@ class Monitor(MeasurementBase):
 
         return q_list
 
-    def evaluate_alarm(self, endtime=(datetime.now(tz=pytz.UTC) -
-                       relativedelta(minute=0, second=0, microsecond=0))):
+    def evaluate_alarm(self, endtime=datetime.now(tz=pytz.UTC) - relativedelta(
+                       minute=0, second=0, microsecond=0)):
         '''
         Higher-level function that determines alarm state and calls other
         functions to create alerts if necessary. Default is to start on the
