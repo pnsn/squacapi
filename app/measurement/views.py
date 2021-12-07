@@ -71,6 +71,12 @@ class TriggerFilter(filters.FilterSet):
 
 
 class AlertFilter(filters.FilterSet):
+    """filters alert by trigger, in_alarm, timestamp"""
+    timestamp_gte = filters.CharFilter(field_name='timestamp',
+                                       lookup_expr='gte')
+    timestamp_lt = filters.CharFilter(field_name='timestamp',
+                                      lookup_expr='lt')
+
     class Meta:
         model = Alert
         fields = ('trigger', 'in_alarm')
