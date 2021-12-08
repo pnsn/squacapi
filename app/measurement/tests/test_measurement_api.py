@@ -481,3 +481,32 @@ class PrivateMeasurementAPITests(TestCase):
             round_to_decimals(res.data[i]['p95'],
                               self.DOUBLE_DECIMAL_PLACES))
         self.assertEqual(res.data[i]['latest'], 10)
+
+    def test_get_sorted_measurement(self):
+        # Add two measurements out of (reverse) timestamp order
+        Measurement.objects.create(
+            metric=self.metric,
+            channel=self.chan,
+            value=3.0,
+            starttime=datetime(2016, 1, 1, 1, 0, 0, 0, tzinfo=pytz.UTC),
+            endtime=datetime(2016, 1, 1, 1, 10, 0, 0, tzinfo=pytz.UTC),
+            user=self.user
+        )
+        Measurement.objects.create(
+            metric=self.metric,
+            channel=self.chan,
+            value=4.0,
+            starttime=datetime(2016, 1, 1, 0, 0, 0, 0, tzinfo=pytz.UTC),
+            endtime=datetime(2016, 1, 1, 0, 10, 0, 0, tzinfo=pytz.UTC),
+            user=self.user
+        )
+
+        url = reverse('measurement:measurement-list')
+        stime, etime = '2016-01-01T00:00:00Z', '2016-01-01T23:59:59Z'
+        url += f'?metric={self.metric.id}&channel={self.chan.id}'
+        url += f'&starttime={stime}&endtime={etime}'
+        res = self.client.get(url)
+
+        # Verify results are sorted by starttimes
+        starttimes = [m['starttime'] for m in res.data]
+        self.assertTrue(sorted(starttimes, reverse=False) == starttimes)

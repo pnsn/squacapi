@@ -71,6 +71,12 @@ class TriggerFilter(filters.FilterSet):
 
 
 class AlertFilter(filters.FilterSet):
+    """filters alert by trigger, in_alarm, timestamp"""
+    timestamp_gte = filters.CharFilter(field_name='timestamp',
+                                       lookup_expr='gte')
+    timestamp_lt = filters.CharFilter(field_name='timestamp',
+                                      lookup_expr='lt')
+
     class Meta:
         model = Alert
         fields = ('trigger', 'in_alarm')
@@ -134,7 +140,7 @@ class MeasurementViewSet(MeasurementBaseViewSet):
         return super(MeasurementViewSet, self).get_serializer(*args, **kwargs)
 
     def get_queryset(self):
-        return Measurement.objects.all().order_by('channel', 'metric')
+        return Measurement.objects.all().order_by('starttime')
 
     def list(self, request, *args, **kwargs):
         '''We want to be careful about large queries so require params'''

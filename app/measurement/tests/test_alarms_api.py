@@ -646,3 +646,23 @@ class PrivateAlarmAPITests(TestCase):
         breaching_out = [{k: v for k, v in a.items() if k != 'channel_id'}
                          for a in breaching_channels]
         self.assertTrue(str(breaching_out) in alert.get_email_message())
+
+    def test_alert_filter(self):
+        '''Test filtering alerts'''
+        url = reverse('measurement:alert-list')
+
+        stime, etime = '2018-02-01T03:00:00Z', '2018-02-01T04:15:00Z'
+        url1 = url + f'?timestamp_gte={stime}&timestamp_lt={etime}'
+        res = self.client.get(url1)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data), 2)
+
+        url2 = url + '?trigger=3'
+        res = self.client.get(url2)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data), 3)
+
+        url3 = url + '?trigger=3&in_alarm=True'
+        res = self.client.get(url3)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data), 1)
