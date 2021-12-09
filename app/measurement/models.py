@@ -231,7 +231,7 @@ class Monitor(MeasurementBase):
         for trigger in triggers:
             in_alarm, breaching_channels = (
                 trigger.in_alarm_state(channel_values))
-            trigger.evaluate_alert(in_alarm, breaching_channels)
+            trigger.evaluate_alert(in_alarm, breaching_channels, endtime)
 
     def __str__(self):
         if not self.name:
@@ -368,9 +368,12 @@ class Trigger(MeasurementBase):
         return self.alerts.filter(timestamp__lt=reftime
                                   ).order_by('timestamp').last()
 
-    def create_alert(self, in_alarm, breaching_channels=[]):
+    def create_alert(self,
+                     in_alarm,
+                     breaching_channels=[],
+                     timestamp=datetime.now(tz=pytz.UTC)):
         new_alert = Alert(trigger=self,
-                          timestamp=datetime.now(tz=pytz.UTC),
+                          timestamp=timestamp,
                           message="",
                           in_alarm=in_alarm,
                           user=self.user,
@@ -379,30 +382,33 @@ class Trigger(MeasurementBase):
         new_alert.create_alert_notifications()
         return new_alert
 
-    def evaluate_alert(self, in_alarm, breaching_channels=[]):
+    def evaluate_alert(self,
+                       in_alarm,
+                       breaching_channels=[],
+                       reftime=datetime.now(tz=pytz.UTC)):
         '''
         Determine what to do with alerts given that this Trigger is in
         or out of spec
         '''
         if self.monitor.alert_for_single:
             # Special treatment for this case. It could alert because of a
-            # single channel being added or removed from breaching_channels 
+            # single channel being added or removed from breaching_channels
             if in_alarm:
-                return self.create_alert(in_alarm, breaching_channels)
+                return self.create_alert(in_alarm, breaching_channels, reftime)
 
         # "Normal" case for the rest of the method
-        alert = self.get_latest_alert()
+        alert = self.get_latest_alert(reftime)
 
         if in_alarm:
             # In alarm state, does alert exist yet? If not, create a new one.
             # Exist means the most recent one has in_alarm = True
             if not alert or not alert.in_alarm:
-                return self.create_alert(in_alarm, breaching_channels)
+                return self.create_alert(in_alarm, breaching_channels, reftime)
         else:
             # Not in alarm state, is there an alert to cancel?
             # If so, create new one saying in_alarm = False
             if alert and alert.in_alarm:
-                return self.create_alert(in_alarm, breaching_channels)
+                return self.create_alert(in_alarm, breaching_channels, reftime)
 
         return alert
 
@@ -445,7 +451,8 @@ class Alert(MeasurementBase):
             return ''
         str_out = '\n[\n'
         for channel in channels:
-            str_out += self.get_printable_channel(channel, include_stat) + ',\n'
+            str_out += self.get_printable_channel(channel, include_stat)
+            str_out += ',\n'
 
         return str_out + ']'
 
@@ -459,7 +466,8 @@ class Alert(MeasurementBase):
                 added_out = self.get_printable_channels(added)
                 msg += '\nNew channels in alert: ' + str(added_out)
             if self.trigger.monitor.alert_for_channel_removed and removed:
-                removed_out = self.get_printable_channels(removed, include_stat=False)
+                removed_out = self.get_printable_channels(removed,
+                                                          include_stat=False)
                 msg += '\nNew channels out of alert: ' + str(removed_out)
         else:
             if self.in_alarm:
