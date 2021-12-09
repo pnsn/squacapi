@@ -230,7 +230,7 @@ class Monitor(MeasurementBase):
         # Evaluate whether each Trigger is breaching
         for trigger in triggers:
             in_alarm, breaching_channels = (
-                trigger.in_alarm_state(channel_values))
+                trigger.in_alarm_state(channel_values, endtime))
             trigger.evaluate_alert(in_alarm, breaching_channels, endtime)
 
     def __str__(self):
@@ -338,7 +338,9 @@ class Trigger(MeasurementBase):
         return added, removed
 
     # channel_values is a list of dicts
-    def in_alarm_state(self, channel_values):
+    def in_alarm_state(self,
+                       channel_values,
+                       reftime=datetime.now(tz=pytz.UTC)):
         '''
         Determine if Trigger is breaching for input aggregate channel
         values
@@ -346,7 +348,8 @@ class Trigger(MeasurementBase):
         breaching_channels = self.get_breaching_channels(channel_values)
         if self.monitor.alert_for_single:
             # Case alert_for_channel_added or alert_for_channel_removed
-            added, removed = self.get_breaching_change(breaching_channels)
+            added, removed = self.get_breaching_change(
+                breaching_channels, reftime)
             if self.monitor.alert_for_channel_added and added:
                 return True, breaching_channels
             if self.monitor.alert_for_channel_removed and removed:
@@ -365,7 +368,7 @@ class Trigger(MeasurementBase):
         Return the most recent alert for this Trigger relative to the
         given time
         '''
-        return self.alerts.filter(timestamp__lt=reftime
+        return self.alerts.filter(timestamp__lte=reftime
                                   ).order_by('timestamp').last()
 
     def create_alert(self,
