@@ -646,3 +646,144 @@ class PrivateAlarmAPITests(TestCase):
         breaching_out = [{k: v for k, v in a.items() if k != 'channel_id'}
                          for a in breaching_channels]
         self.assertTrue(str(breaching_out) in alert.get_email_message())
+
+    def get_breaching_change_helper(self,
+                                    previous_breaching,
+                                    new_breaching,
+                                    expected_added,
+                                    expected_removed):
+        trigger = Trigger.objects.create(
+            monitor=self.monitor,
+            minval=1,
+            maxval=10,
+            level=Trigger.Level.ONE,
+            user=self.user
+        )
+        # Create an alert to compare to
+        timestamp = datetime.now(tz=pytz.UTC)
+        if previous_breaching:
+            new_alert = Alert(
+                trigger=trigger,
+                timestamp=timestamp,
+                message="",
+                in_alarm=True,
+                user=self.user,
+                breaching_channels=previous_breaching)
+            new_alert.save()
+
+        added, removed = trigger.get_breaching_change(new_breaching, timestamp)
+        self.assertEqual(set(expected_added),
+                         set([x['channel_id'] for x in added]))
+        self.assertEqual(set(expected_removed),
+                         set([x['channel_id'] for x in removed]))
+
+    def test_get_breaching_change_new(self):
+        new = [{'avg': 2.0, 'channel': 'UW:STA1:--:HNN', 'channel_id': 1}]
+        self.get_breaching_change_helper([], new, [1], [])
+
+    def test_get_breaching_change_no_change(self):
+        old = [{'avg': 2.0, 'channel': 'UW:STA1:--:HNN', 'channel_id': 1}]
+        new = [{'avg': 2.0, 'channel': 'UW:STA1:--:HNN', 'channel_id': 1}]
+        self.get_breaching_change_helper(old, new, [], [])
+
+    def test_get_breaching_change_added(self):
+        old = [{'avg': 2.0, 'channel': 'UW:STA1:--:HNN', 'channel_id': 1}]
+        new = [{'avg': 2.0, 'channel': 'UW:STA1:--:HNN', 'channel_id': 1},
+               {'avg': 8.0, 'channel': 'UW:STA3:--:HNN', 'channel_id': 3}]
+        self.get_breaching_change_helper(old, new, [3], [])
+
+    def test_get_breaching_change_removed(self):
+        old = [{'avg': 2.0, 'channel': 'UW:STA1:--:HNN', 'channel_id': 1},
+               {'avg': 5.5, 'channel': 'UW:STA2:--:HNN', 'channel_id': 2}]
+        new = [{'avg': 2.0, 'channel': 'UW:STA1:--:HNN', 'channel_id': 1}]
+        self.get_breaching_change_helper(old, new, [], [2])
+
+    def test_get_breaching_change_both(self):
+        old = [{'avg': 2.0, 'channel': 'UW:STA1:--:HNN', 'channel_id': 1},
+               {'avg': 5.5, 'channel': 'UW:STA2:--:HNN', 'channel_id': 2}]
+        new = [{'avg': 2.0, 'channel': 'UW:STA1:--:HNN', 'channel_id': 1},
+               {'avg': 5.5, 'channel': 'UW:STA4:--:HNN', 'channel_id': 4}]
+        self.get_breaching_change_helper(old, new, [4], [2])
+
+    def in_alarm_state_helper(self,
+                              previous_breaching,
+                              new_channel_values,
+                              expected_in_alarm,
+                              expected_breaching):
+        monitor = Monitor.objects.create(
+            channel_group=self.grp,
+            metric=self.metric,
+            interval_type=Monitor.IntervalType.HOUR,
+            interval_count=2,
+            num_channels=5,
+            stat=Monitor.Stat.AVERAGE,
+            user=self.user,
+            alert_for_channel_added=True,
+            alert_for_channel_removed=True
+        )
+        trigger = Trigger.objects.create(
+            monitor=monitor,
+            minval=1,
+            maxval=10,
+            level=Trigger.Level.ONE,
+            user=self.user
+        )
+        # Create an alert to compare to
+        timestamp = datetime.now(tz=pytz.UTC)
+        if previous_breaching:
+            new_alert = Alert(
+                trigger=trigger,
+                timestamp=timestamp,
+                message="",
+                in_alarm=True,
+                user=self.user,
+                breaching_channels=previous_breaching)
+            new_alert.save()
+
+        in_alarm, breaching_channels = (
+            trigger.in_alarm_state(new_channel_values, timestamp))
+        self.assertEqual(expected_in_alarm, in_alarm)
+        self.assertEqual(set(expected_breaching),
+                         set([x['channel_id'] for x in breaching_channels]))
+
+    def test_in_alarm_state_single_new(self):
+        old_breaching = []
+        new_values = [{'avg': 2.0, 'channel': 1}]
+        self.in_alarm_state_helper(old_breaching,
+                                   new_values,
+                                   True,
+                                   [x['channel'] for x in new_values])
+
+    def test_in_alarm_state_single_no_change(self):
+        old_breaching = [
+            {'avg': 2.0, 'channel': 'UW:STA1:--:HNN', 'channel_id': 1}]
+        new_values = [{'avg': 2.0, 'channel': 1}]
+        self.in_alarm_state_helper(old_breaching,
+                                   new_values,
+                                   False,
+                                   [x['channel'] for x in new_values])
+
+    def test_in_alarm_state_single_both(self):
+        old_breaching = [
+            {'avg': 2.0, 'channel': 'UW:STA1:--:HNN', 'channel_id': 1},
+            {'avg': 5.5, 'channel': 'UW:STA2:--:HNN', 'channel_id': 2}]
+        new_values = [{'avg': 2.0, 'channel': 1},
+                      {'avg': 5.5, 'channel': 4}]
+        self.in_alarm_state_helper(old_breaching,
+                                   new_values,
+                                   True,
+                                   [x['channel'] for x in new_values])
+
+    def test_get_printable_channel(self):
+        chan = {'avg': 2.0, 'channel': 'UW:STA1:--:HNN', 'channel_id': 1}
+        ret = self.alert.get_printable_channel(chan)
+        self.assertTrue('channel_id' not in ret)
+        ret2 = self.alert.get_printable_channel(chan, include_stat=False)
+        self.assertTrue('avg' not in ret2)
+
+    def test_get_printable_channels(self):
+        chans = [{'avg': 2.0, 'channel': 'UW:STA1:--:HNN', 'channel_id': 1},
+                 {'avg': 5.5, 'channel': 'UW:STA2:--:HNN', 'channel_id': 2}]
+        chan_str = self.alert.get_printable_channel(chans[0])
+        ret = self.alert.get_printable_channels(chans)
+        self.assertTrue(chan_str in ret)
