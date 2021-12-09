@@ -384,6 +384,13 @@ class Trigger(MeasurementBase):
         Determine what to do with alerts given that this Trigger is in
         or out of spec
         '''
+        if self.monitor.alert_for_single:
+            # Special treatment for this case. It could alert because of a
+            # single channel being added or removed from breaching_channels 
+            if in_alarm:
+                return self.create_alert(in_alarm, breaching_channels)
+
+        # "Normal" case for the rest of the method
         alert = self.get_latest_alert()
 
         if in_alarm:
@@ -426,18 +433,42 @@ class Alert(MeasurementBase):
         for notification in notifications:
             notification.send(self)
 
+    def get_printable_channel(self, channel, include_stat=True):
+        no_include = ['channel_id']
+        if not include_stat:
+            no_include += ([x[0] for x in Monitor.Stat.choices])
+
+        return str({k: v for k, v in channel.items() if k not in no_include})
+
+    def get_printable_channels(self, channels, include_stat=True):
+        if not channels:
+            return ''
+        str_out = '\n[\n'
+        for channel in channels:
+            str_out += self.get_printable_channel(channel, include_stat) + ',\n'
+
+        return str_out + ']'
+
     def get_email_message(self):
         msg = ''
-        if self.in_alarm:
-            msg += 'Trigger in alert for ' + str(self.trigger)
+        if self.trigger.monitor.alert_for_single:
+            msg += 'Trigger alert for ' + str(self.trigger)
+            added, removed = self.trigger.get_breaching_change(
+                self.breaching_channels, self.timestamp)
+            if self.trigger.monitor.alert_for_channel_added and added:
+                added_out = self.get_printable_channels(added)
+                msg += '\nNew channels in alert: ' + str(added_out)
+            if self.trigger.monitor.alert_for_channel_removed and removed:
+                removed_out = self.get_printable_channels(removed, include_stat=False)
+                msg += '\nNew channels out of alert: ' + str(removed_out)
         else:
-            msg += 'Trigger out of alert for ' + str(self.trigger)
+            if self.in_alarm:
+                msg += 'Trigger in alert for ' + str(self.trigger)
+            else:
+                msg += 'Trigger out of alert for ' + str(self.trigger)
 
-        breaching_out = []
-        if self.breaching_channels:
-            breaching_out = [{k: v for k, v in d.items() if k != 'channel_id'}
-                             for d in self.breaching_channels]
-        msg += '\nBreaching channels: ' + str(breaching_out)
+        breaching_out = self.get_printable_channels(self.breaching_channels)
+        msg += '\nAll breaching channels: ' + str(breaching_out)
         return msg
 
     class Meta:
