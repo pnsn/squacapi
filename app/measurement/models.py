@@ -138,7 +138,6 @@ class Monitor(MeasurementBase):
                                      default=IntervalType.HOUR
                                      )
     interval_count = models.IntegerField()
-    num_channels = models.IntegerField()
     stat = models.CharField(max_length=8,
                             choices=Stat.choices,
                             default=Stat.SUM
@@ -232,7 +231,6 @@ class Monitor(MeasurementBase):
             return (f"{str(self.channel_group)}, "
                     f"{str(self.metric)}, "
                     f"{self.interval_count} {self.interval_type}, "
-                    f"{self.num_channels} chan, "
                     f"{self.stat}"
                     )
         else:
@@ -259,6 +257,7 @@ class Trigger(MeasurementBase):
     level = models.IntegerField(choices=Level.choices,
                                 default=Level.ONE
                                 )
+    num_channels = models.IntegerField(blank=True, null=True)
 
     # channel_value is dict
     def is_breaching(self, channel_value):
@@ -314,10 +313,10 @@ class Trigger(MeasurementBase):
         '''
         breaching_channels = self.get_breaching_channels(channel_values)
         if self.monitor.invert_monitor:
-            return (len(breaching_channels) < self.monitor.num_channels,
+            return (len(breaching_channels) < self.num_channels,
                     breaching_channels)
         else:
-            return (len(breaching_channels) >= self.monitor.num_channels,
+            return (len(breaching_channels) >= self.num_channels,
                     breaching_channels)
 
     def get_latest_alert(self):

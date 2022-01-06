@@ -551,7 +551,6 @@
         "metric": 1, 
         "interval_type": "hour", 
         "interval_count": 2, 
-        "num_channels": 2, 
         "stat": "avg"
     }
 },
@@ -568,7 +567,6 @@
         "metric": 2, 
         "interval_type": "hour", 
         "interval_count": 2, 
-        "num_channels": 2, 
         "stat": "avg"
     }
 },
@@ -585,7 +583,6 @@
         "metric": 2, 
         "interval_type": "hour", 
         "interval_count": 2, 
-        "num_channels": 2, 
         "stat": "avg"
     }
 },
@@ -602,6 +599,7 @@
         "minval": 6, 
         "maxval": null, 
         "band_inclusive": false, 
+        "num_channels": 2, 
         "level": 2
     }
 },
@@ -618,6 +616,7 @@
         "minval": null, 
         "maxval": 1, 
         "band_inclusive": false, 
+        "num_channels": 2, 
         "level": 2
     }
 },
@@ -634,6 +633,7 @@
         "minval": 1, 
         "maxval": 6, 
         "band_inclusive": false, 
+        "num_channels": 2, 
         "level": 2
     }
 },
@@ -650,6 +650,7 @@
         "minval": 1, 
         "maxval": 6, 
         "band_inclusive": true, 
+        "num_channels": 2, 
         "level": 2
     }
 },
@@ -666,6 +667,7 @@
         "minval": 4, 
         "maxval": 6, 
         "band_inclusive": true, 
+        "num_channels": 2, 
         "level": 2
     }
 },
@@ -682,6 +684,7 @@
         "minval": 4, 
         "maxval": 6, 
         "band_inclusive": true, 
+        "num_channels": 2, 
         "level": 2
     }
 },

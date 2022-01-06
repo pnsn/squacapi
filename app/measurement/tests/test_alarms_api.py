@@ -62,7 +62,6 @@ class PrivateAlarmAPITests(TestCase):
             metric=self.metric,
             interval_type=interval_type,
             interval_count=interval_count,
-            num_channels=5,
             stat=Monitor.Stat.SUM,
             user=self.user
         )
@@ -112,7 +111,6 @@ class PrivateAlarmAPITests(TestCase):
             metric=self.metric,
             interval_type=Monitor.IntervalType.DAY,
             interval_count=1,
-            num_channels=5,
             stat=Monitor.Stat.SUM,
             user=self.user
         )
@@ -120,6 +118,7 @@ class PrivateAlarmAPITests(TestCase):
             monitor=self.monitor,
             minval=2,
             maxval=5,
+            num_channels=5,
             level=Trigger.Level.ONE,
             user=self.user
         )
@@ -166,7 +165,6 @@ class PrivateAlarmAPITests(TestCase):
             'metric': self.metric.id,
             'interval_type': Monitor.IntervalType.MINUTE,
             'interval_count': 5,
-            'num_channels': 3,
             'stat': Monitor.Stat.SUM,
             'user': self.user
         }
@@ -196,6 +194,7 @@ class PrivateAlarmAPITests(TestCase):
             'monitor': self.monitor.id,
             'minval': 15,
             'maxval': 20,
+            'num_channels': 3,
             'level': Trigger.Level.TWO,
             'user': self.user
         }
@@ -617,6 +616,7 @@ class PrivateAlarmAPITests(TestCase):
             monitor=self.monitor,
             minval=0,
             maxval=None,
+            num_channels=5,
             level=Trigger.Level.ONE,
             user=self.user
         )
