@@ -368,10 +368,12 @@ class PrivateAlarmAPITests(TestCase):
         self.check_in_alarm_state(monitor_id, 2, True)
         self.check_in_alarm_state(monitor_id, 3, False)
         self.check_in_alarm_state(monitor_id, 4, True)
-        # Now change invert_monitor and verify reverse results
+        # Now change invert_trigger and verify reverse results
         monitor = Monitor.objects.get(pk=monitor_id)
-        monitor.invert_monitor = not monitor.invert_monitor
-        monitor.save()
+        for trigger in monitor.triggers.all():
+            trigger.invert_trigger = not trigger.invert_trigger
+            trigger.save()
+
         self.check_in_alarm_state(monitor_id, 1, False)
         self.check_in_alarm_state(monitor_id, 2, False)
         self.check_in_alarm_state(monitor_id, 3, True)

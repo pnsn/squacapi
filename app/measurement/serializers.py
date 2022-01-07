@@ -127,8 +127,8 @@ class MonitorSerializer(serializers.HyperlinkedModelSerializer):
         model = Monitor
         fields = (
             'id', 'url', 'channel_group', 'metric', 'interval_type',
-            'interval_count', 'stat', 'invert_monitor',
-            'name', 'created_at', 'updated_at', 'user_id'
+            'interval_count', 'stat', 'name', 'created_at', 'updated_at',
+            'user_id'
         )
         read_only_fields = ('id',)
 
@@ -144,7 +144,8 @@ class TriggerSerializer(serializers.HyperlinkedModelSerializer):
         model = Trigger
         fields = (
             'id', 'url', 'monitor', 'minval', 'maxval', 'band_inclusive',
-            'level', 'num_channels', 'created_at', 'updated_at', 'user_id'
+            'level', 'num_channels', 'invert_trigger', 'created_at',
+            'updated_at', 'user_id'
         )
         read_only_fields = ('id',)
 
@@ -227,8 +228,8 @@ class MonitorDetailSerializer(serializers.HyperlinkedModelSerializer):
         model = Monitor
         fields = (
             'id', 'url', 'channel_group', 'metric', 'interval_type',
-            'interval_count', 'stat', 'invert_monitor',
-            'name', 'created_at', 'updated_at', 'user_id', 'triggers'
+            'interval_count', 'stat', 'name', 'created_at', 'updated_at',
+            'user_id', 'triggers'
         )
         read_only_fields = ('id',)
 
