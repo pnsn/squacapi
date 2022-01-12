@@ -245,6 +245,21 @@ class Trigger(MeasurementBase):
         TWO = 2
         THREE = 3
 
+    class ValueOperator(models.TextChoices):
+        OUTSIDE_OF = 'outsideof', _('Outside of')
+        WITHIN = 'within', _('Within')
+        EQUAL_TO = '==', _('Equal to')
+        LESS_THAN = '<', _('Less than')
+        LESS_THAN_OR_EQUAL = '<=', _('Less than or equal to')
+        GREATER_THAN = '>', _('Greater than')
+        GREATER_THAN_OR_EQUAL = '>=', _('Greater than or equal to')
+
+    class NumChannelsOperator(models.TextChoices):
+        ANY = 'any', _('Any')
+        EQUAL_TO = '==', _('Equal to')
+        LESS_THAN = '<', _('Less than')
+        GREATER_THAN = '>', _('Greater than')
+
     monitor = models.ForeignKey(
         Monitor,
         on_delete=models.CASCADE,
@@ -253,10 +268,18 @@ class Trigger(MeasurementBase):
     minval = models.FloatField(blank=True, null=True)
     maxval = models.FloatField(blank=True, null=True)
     band_inclusive = models.BooleanField(default=True)
+    value_operator = models.CharField(
+        max_length=16,
+        choices=ValueOperator.choices,
+        default=ValueOperator.GREATER_THAN)
     level = models.IntegerField(choices=Level.choices,
                                 default=Level.ONE
                                 )
     num_channels = models.IntegerField(blank=True, null=True)
+    num_channels_operator = models.CharField(
+        max_length=16,
+        choices=NumChannelsOperator.choices,
+        default=NumChannelsOperator.LESS_THAN)
     invert_trigger = models.BooleanField(default=False)
 
     # channel_value is dict
