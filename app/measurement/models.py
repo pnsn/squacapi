@@ -287,6 +287,13 @@ class Trigger(MeasurementBase):
     )
     invert_trigger = models.BooleanField(default=False)
 
+    @property
+    def value(self):
+        if self.minval is not None:
+            return self.minval
+        else:
+            return self.maxval
+
     # channel_value is dict
     def is_breaching(self, channel_value):
         '''
