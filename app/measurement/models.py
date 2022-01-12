@@ -133,15 +133,17 @@ class Monitor(MeasurementBase):
         on_delete=models.CASCADE,
         related_name='monitors'
     )
-    interval_type = models.CharField(max_length=8,
-                                     choices=IntervalType.choices,
-                                     default=IntervalType.HOUR
-                                     )
+    interval_type = models.CharField(
+        max_length=8,
+        choices=IntervalType.choices,
+        default=IntervalType.HOUR
+    )
     interval_count = models.IntegerField()
-    stat = models.CharField(max_length=8,
-                            choices=Stat.choices,
-                            default=Stat.SUM
-                            )
+    stat = models.CharField(
+        max_length=8,
+        choices=Stat.choices,
+        default=Stat.SUM
+    )
     name = models.CharField(max_length=255, default='')
 
     def calc_interval_seconds(self):
@@ -271,15 +273,18 @@ class Trigger(MeasurementBase):
     value_operator = models.CharField(
         max_length=16,
         choices=ValueOperator.choices,
-        default=ValueOperator.GREATER_THAN)
-    level = models.IntegerField(choices=Level.choices,
-                                default=Level.ONE
-                                )
+        default=ValueOperator.GREATER_THAN
+    )
+    level = models.IntegerField(
+        choices=Level.choices,
+        default=Level.ONE
+    )
     num_channels = models.IntegerField(blank=True, null=True)
     num_channels_operator = models.CharField(
         max_length=16,
         choices=NumChannelsOperator.choices,
-        default=NumChannelsOperator.LESS_THAN)
+        default=NumChannelsOperator.LESS_THAN
+    )
     invert_trigger = models.BooleanField(default=False)
 
     # channel_value is dict
