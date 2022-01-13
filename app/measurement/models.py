@@ -225,8 +225,8 @@ class Monitor(MeasurementBase):
         # Evaluate whether each Trigger is breaching
         for trigger in triggers:
             in_alarm, breaching_channels = (
-                trigger.in_alarm_state(channel_values))
-            trigger.evaluate_alert(in_alarm, breaching_channels)
+                trigger.in_alarm_state(channel_values, endtime))
+            trigger.evaluate_alert(in_alarm, breaching_channels, endtime)
 
     def __str__(self):
         if not self.name:
@@ -350,7 +350,9 @@ class Trigger(MeasurementBase):
         return breaching_channels
 
     # channel_values is a list of dicts
-    def in_alarm_state(self, channel_values):
+    def in_alarm_state(self,
+                       channel_values,
+                       reftime=datetime.now(tz=pytz.UTC)):
         '''
         Determine if Trigger is breaching for input aggregate channel
         values
@@ -364,13 +366,17 @@ class Trigger(MeasurementBase):
             return (op(len(breaching_channels), self.num_channels),
                     breaching_channels)
 
-    def get_latest_alert(self):
+    def get_latest_alert(self, reftime=datetime.now(tz=pytz.UTC)):
         '''Return the most recent alert for this Trigger'''
-        return self.alerts.order_by('timestamp').last()
+        return self.alerts.filter(
+            timestamp__lte=reftime).order_by('timestamp').last()
 
-    def create_alert(self, in_alarm, breaching_channels=[]):
+    def create_alert(self,
+                     in_alarm,
+                     breaching_channels=[],
+                     timestamp=datetime.now(tz=pytz.UTC)):
         new_alert = Alert(trigger=self,
-                          timestamp=datetime.now(tz=pytz.UTC),
+                          timestamp=timestamp,
                           message="",
                           in_alarm=in_alarm,
                           user=self.user,
@@ -379,7 +385,10 @@ class Trigger(MeasurementBase):
         new_alert.create_alert_notifications()
         return new_alert
 
-    def evaluate_alert(self, in_alarm, breaching_channels=[]):
+    def evaluate_alert(self,
+                       in_alarm,
+                       breaching_channels=[],
+                       reftime=datetime.now(tz=pytz.UTC)):
         '''
         Determine what to do with alerts given that this Trigger is in
         or out of spec
@@ -390,12 +399,12 @@ class Trigger(MeasurementBase):
             # In alarm state, does alert exist yet? If not, create a new one.
             # Exist means the most recent one has in_alarm = True
             if not alert or not alert.in_alarm:
-                return self.create_alert(in_alarm, breaching_channels)
+                return self.create_alert(in_alarm, breaching_channels, reftime)
         else:
             # Not in alarm state, is there an alert to cancel?
             # If so, create new one saying in_alarm = False
             if alert and alert.in_alarm:
-                return self.create_alert(in_alarm, breaching_channels)
+                return self.create_alert(in_alarm, breaching_channels, reftime)
 
         return alert
 

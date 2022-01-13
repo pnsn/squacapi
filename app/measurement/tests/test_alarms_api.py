@@ -437,7 +437,7 @@ class PrivateAlarmAPITests(TestCase):
     def test_evaluate_alarm(self):
         '''This is more like an integration test at the moment'''
         monitor = Monitor.objects.get(pk=1)
-        endtime = datetime(2018, 2, 1, 4, 30, 0, 0, tzinfo=pytz.UTC)
+        endtime = datetime(2018, 2, 1, 4, 35, 0, 0, tzinfo=pytz.UTC)
 
         all_alerts = Alert.objects.all()
         self.assertEqual(len(all_alerts), 6)
