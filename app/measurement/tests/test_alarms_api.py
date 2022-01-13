@@ -117,7 +117,7 @@ class PrivateAlarmAPITests(TestCase):
         self.trigger = Trigger.objects.create(
             monitor=self.monitor,
             val1=2,
-            maxval=5,
+            val2=5,
             value_operator=Trigger.ValueOperator.WITHIN,
             num_channels=5,
             level=Trigger.Level.ONE,
@@ -194,7 +194,7 @@ class PrivateAlarmAPITests(TestCase):
         payload = {
             'monitor': self.monitor.id,
             'val1': 15,
-            'maxval': 20,
+            'val2': 20,
             'num_channels': 3,
             'level': Trigger.Level.TWO,
             'user': self.user
@@ -620,7 +620,7 @@ class PrivateAlarmAPITests(TestCase):
         trigger_test = Trigger.objects.create(
             monitor=self.monitor,
             val1=0,
-            maxval=None,
+            val2=None,
             value_operator=Trigger.ValueOperator.LESS_THAN,
             num_channels=5,
             level=Trigger.Level.ONE,

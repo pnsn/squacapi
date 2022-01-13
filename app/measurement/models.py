@@ -276,8 +276,16 @@ class Trigger(MeasurementBase):
         on_delete=models.CASCADE,
         related_name='triggers'
     )
+    ''' 
+    val1 is required. It acts as minval when value_operator is OUTSIDE_OF
+    or WITHIN. Otherwise it is used for single value comparisons.
+     '''
     val1 = models.FloatField()
-    maxval = models.FloatField(blank=True, null=True)
+    '''
+    val2 is optional. It is used as maxval when value_operator is OUTSIDE_OF
+    or WITHIN. Otherwise it is ignored.
+    '''
+    val2 = models.FloatField(blank=True, null=True)
     value_operator = models.CharField(
         max_length=16,
         choices=ValueOperator.choices,
@@ -306,12 +314,10 @@ class Trigger(MeasurementBase):
         if val is None:
             return False
 
-        if self.value is None:
-            return False
-        elif self.value_operator == self.ValueOperator.OUTSIDE_OF:
-            return val < self.val1 or val > self.maxval
+        if self.value_operator == self.ValueOperator.OUTSIDE_OF:
+            return val < self.val1 or val > self.val2
         elif self.value_operator == self.ValueOperator.WITHIN:
-            return val > self.val1 and val < self.maxval
+            return val > self.val1 and val < self.val2
         else:
             return self.OPERATOR[self.value_operator](val, self.val1)
 
@@ -388,7 +394,7 @@ class Trigger(MeasurementBase):
     def __str__(self):
         return (f"Monitor: {str(self.monitor)}, "
                 f"Min: {self.val1}, "
-                f"Max: {self.maxval}, "
+                f"Max: {self.val2}, "
                 f"Level: {self.level}"
                 )
 

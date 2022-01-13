@@ -597,7 +597,7 @@
         ], 
         "monitor": 1, 
         "val1": 6, 
-        "maxval": null, 
+        "val2": null, 
         "value_operator": "<",
         "num_channels": 1, 
         "level": 2
@@ -614,7 +614,7 @@
         ], 
         "monitor": 1, 
         "val1": 1, 
-        "maxval": 1, 
+        "val2": null, 
         "value_operator": ">",
         "num_channels": 2, 
         "level": 2
@@ -631,7 +631,7 @@
         ], 
         "monitor": 1, 
         "val1": 1, 
-        "maxval": 6, 
+        "val2": 6, 
         "value_operator": "outsideof",
         "num_channels": 2, 
         "level": 2
@@ -648,7 +648,7 @@
         ], 
         "monitor": 1, 
         "val1": 1, 
-        "maxval": 6, 
+        "val2": 6, 
         "value_operator": "within",
         "num_channels": 1, 
         "level": 2
@@ -665,7 +665,7 @@
         ], 
         "monitor": 1, 
         "val1": 4, 
-        "maxval": 6, 
+        "val2": 6, 
         "value_operator": "within",
         "num_channels": 2, 
         "level": 2
@@ -682,7 +682,7 @@
         ], 
         "monitor": 2, 
         "val1": 4, 
-        "maxval": 6, 
+        "val2": 6, 
         "value_operator": "within",
         "num_channels": 2, 
         "level": 2
