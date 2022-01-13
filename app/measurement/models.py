@@ -350,6 +350,31 @@ class Trigger(MeasurementBase):
 
         return breaching_channels
 
+    def get_breaching_change(self,
+                             breaching_channels,
+                             reftime=datetime.now(tz=pytz.UTC)):
+        '''
+        Return channels that were added or removed from the previous
+        breaching_channels list
+        '''
+        added = []
+        removed = []
+        alert = self.get_latest_alert(reftime)
+        if alert:
+            previous_ids = {x['channel_id'] for x in alert.breaching_channels}
+            current_ids = {x['channel_id'] for x in breaching_channels}
+            for chan in breaching_channels:
+                if chan['channel_id'] not in previous_ids:
+                    added.append(chan)
+            for chan in alert.breaching_channels:
+                if chan['channel_id'] not in current_ids:
+                    removed.append(chan)
+        else:
+            # Case where there was no previous alert
+            added = breaching_channels
+
+        return added, removed
+
     # channel_values is a list of dicts
     def in_alarm_state(self,
                        channel_values,
