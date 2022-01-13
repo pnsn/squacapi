@@ -291,7 +291,7 @@ class Trigger(MeasurementBase):
     num_channels_operator = models.CharField(
         max_length=16,
         choices=NumChannelsOperator.choices,
-        default=NumChannelsOperator.LESS_THAN
+        default=NumChannelsOperator.GREATER_THAN
     )
     invert_trigger = models.BooleanField(default=False)
 
@@ -350,11 +350,12 @@ class Trigger(MeasurementBase):
         values
         '''
         breaching_channels = self.get_breaching_channels(channel_values)
-        if self.invert_trigger:
-            return (len(breaching_channels) < self.num_channels,
-                    breaching_channels)
+        if self.num_channels_operator == self.NumChannelsOperator.ANY:
+            # Placeholder before adding more logic
+            return False, breaching_channels
         else:
-            return (len(breaching_channels) >= self.num_channels,
+            op = self.OPERATOR[self.num_channels_operator]
+            return (op(len(breaching_channels), self.num_channels),
                     breaching_channels)
 
     def get_latest_alert(self):

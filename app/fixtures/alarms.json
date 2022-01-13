@@ -599,7 +599,7 @@
         "minval": 6, 
         "maxval": null, 
         "value_operator": "<",
-        "num_channels": 2, 
+        "num_channels": 1, 
         "level": 2
     }
 },
@@ -650,7 +650,7 @@
         "minval": 1, 
         "maxval": 6, 
         "value_operator": "within",
-        "num_channels": 2, 
+        "num_channels": 1, 
         "level": 2
     }
 },
