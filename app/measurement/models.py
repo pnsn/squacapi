@@ -293,7 +293,6 @@ class Trigger(MeasurementBase):
         choices=NumChannelsOperator.choices,
         default=NumChannelsOperator.GREATER_THAN
     )
-    invert_trigger = models.BooleanField(default=False)
 
     @property
     def value(self):
