@@ -143,7 +143,7 @@ class TriggerSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Trigger
         fields = (
-            'id', 'url', 'monitor', 'minval', 'maxval', 'value_operator',
+            'id', 'url', 'monitor', 'val1', 'maxval', 'value_operator',
             'level', 'num_channels', 'num_channels_operator',
             'created_at', 'updated_at', 'user_id'
         )

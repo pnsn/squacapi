@@ -276,7 +276,7 @@ class Trigger(MeasurementBase):
         on_delete=models.CASCADE,
         related_name='triggers'
     )
-    minval = models.FloatField(blank=True, null=True)
+    val1 = models.FloatField()
     maxval = models.FloatField(blank=True, null=True)
     value_operator = models.CharField(
         max_length=16,
@@ -294,13 +294,6 @@ class Trigger(MeasurementBase):
         default=NumChannelsOperator.GREATER_THAN
     )
 
-    @property
-    def value(self):
-        if self.minval is not None:
-            return self.minval
-        else:
-            return self.maxval
-
     # channel_value is dict
     def is_breaching(self, channel_value):
         '''
@@ -316,11 +309,11 @@ class Trigger(MeasurementBase):
         if self.value is None:
             return False
         elif self.value_operator == self.ValueOperator.OUTSIDE_OF:
-            return val < self.minval or val > self.maxval
+            return val < self.val1 or val > self.maxval
         elif self.value_operator == self.ValueOperator.WITHIN:
-            return val > self.minval and val < self.maxval
+            return val > self.val1 and val < self.maxval
         else:
-            return self.OPERATOR[self.value_operator](val, self.value)
+            return self.OPERATOR[self.value_operator](val, self.val1)
 
     # channel_values is a list of dicts
     def get_breaching_channels(self, channel_values):
@@ -394,7 +387,7 @@ class Trigger(MeasurementBase):
 
     def __str__(self):
         return (f"Monitor: {str(self.monitor)}, "
-                f"Min: {self.minval}, "
+                f"Min: {self.val1}, "
                 f"Max: {self.maxval}, "
                 f"Level: {self.level}"
                 )

@@ -596,7 +596,7 @@
             "loader@pnsn.org"
         ], 
         "monitor": 1, 
-        "minval": 6, 
+        "val1": 6, 
         "maxval": null, 
         "value_operator": "<",
         "num_channels": 1, 
@@ -613,7 +613,7 @@
             "loader@pnsn.org"
         ], 
         "monitor": 1, 
-        "minval": null, 
+        "val1": 1, 
         "maxval": 1, 
         "value_operator": ">",
         "num_channels": 2, 
@@ -630,7 +630,7 @@
             "loader@pnsn.org"
         ], 
         "monitor": 1, 
-        "minval": 1, 
+        "val1": 1, 
         "maxval": 6, 
         "value_operator": "outsideof",
         "num_channels": 2, 
@@ -647,7 +647,7 @@
             "loader@pnsn.org"
         ], 
         "monitor": 1, 
-        "minval": 1, 
+        "val1": 1, 
         "maxval": 6, 
         "value_operator": "within",
         "num_channels": 1, 
@@ -664,7 +664,7 @@
             "loader@pnsn.org"
         ], 
         "monitor": 1, 
-        "minval": 4, 
+        "val1": 4, 
         "maxval": 6, 
         "value_operator": "within",
         "num_channels": 2, 
@@ -681,7 +681,7 @@
             "loader@pnsn.org"
         ], 
         "monitor": 2, 
-        "minval": 4, 
+        "val1": 4, 
         "maxval": 6, 
         "value_operator": "within",
         "num_channels": 2, 
