@@ -598,7 +598,7 @@
         "monitor": 1, 
         "minval": 6, 
         "maxval": null, 
-        "band_inclusive": false, 
+        "value_operator": "<",
         "num_channels": 2, 
         "level": 2
     }
@@ -615,7 +615,7 @@
         "monitor": 1, 
         "minval": null, 
         "maxval": 1, 
-        "band_inclusive": false, 
+        "value_operator": ">",
         "num_channels": 2, 
         "level": 2
     }
@@ -632,7 +632,7 @@
         "monitor": 1, 
         "minval": 1, 
         "maxval": 6, 
-        "band_inclusive": false, 
+        "value_operator": "outsideof",
         "num_channels": 2, 
         "level": 2
     }
@@ -649,7 +649,7 @@
         "monitor": 1, 
         "minval": 1, 
         "maxval": 6, 
-        "band_inclusive": true, 
+        "value_operator": "within",
         "num_channels": 2, 
         "level": 2
     }
@@ -666,7 +666,7 @@
         "monitor": 1, 
         "minval": 4, 
         "maxval": 6, 
-        "band_inclusive": true, 
+        "value_operator": "within",
         "num_channels": 2, 
         "level": 2
     }
@@ -683,7 +683,7 @@
         "monitor": 2, 
         "minval": 4, 
         "maxval": 6, 
-        "band_inclusive": true, 
+        "value_operator": "within",
         "num_channels": 2, 
         "level": 2
     }

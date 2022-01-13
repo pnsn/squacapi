@@ -10,6 +10,7 @@ from nslc.models import Channel, Group
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 import pytz
+import operator
 
 from bulk_update_or_create import BulkUpdateOrCreateQuerySet
 
@@ -262,6 +263,14 @@ class Trigger(MeasurementBase):
         LESS_THAN = '<', _('Less than')
         GREATER_THAN = '>', _('Greater than')
 
+    OPERATOR = {
+        '==': operator.eq,
+        '<': operator.lt,
+        '<=': operator.le,
+        '>': operator.gt,
+        '>=': operator.ge
+    }
+
     monitor = models.ForeignKey(
         Monitor,
         on_delete=models.CASCADE,
@@ -306,19 +315,14 @@ class Trigger(MeasurementBase):
         if val is None:
             return False
 
-        # check three cases: only minval, only maxval, both min and max
-        if self.minval is None and self.maxval is None:
+        if self.value is None:
             return False
-        elif self.minval is not None and self.maxval is None:
-            return val < self.minval
-        elif self.minval is None and self.maxval is not None:
-            return val > self.maxval
+        elif self.value_operator == self.ValueOperator.OUTSIDE_OF:
+            return val < self.minval or val > self.maxval
+        elif self.value_operator == self.ValueOperator.WITHIN:
+            return val > self.minval and val < self.maxval
         else:
-            inside_band = (val > self.minval and val < self.maxval)
-            return inside_band == self.band_inclusive
-
-        # Shouldn't ever get here, but return False anyway
-        return False
+            return self.OPERATOR[self.value_operator](val, self.value)
 
     # channel_values is a list of dicts
     def get_breaching_channels(self, channel_values):

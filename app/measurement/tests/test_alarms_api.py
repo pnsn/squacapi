@@ -118,6 +118,7 @@ class PrivateAlarmAPITests(TestCase):
             monitor=self.monitor,
             minval=2,
             maxval=5,
+            value_operator=Trigger.ValueOperator.WITHIN,
             num_channels=5,
             level=Trigger.Level.ONE,
             user=self.user
@@ -618,6 +619,7 @@ class PrivateAlarmAPITests(TestCase):
             monitor=self.monitor,
             minval=0,
             maxval=None,
+            value_operator=Trigger.ValueOperator.LESS_THAN,
             num_channels=5,
             level=Trigger.Level.ONE,
             user=self.user
