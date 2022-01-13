@@ -143,9 +143,9 @@ class TriggerSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Trigger
         fields = (
-            'id', 'url', 'monitor', 'minval', 'maxval', 'band_inclusive',
-            'level', 'num_channels', 'invert_trigger', 'created_at',
-            'updated_at', 'user_id'
+            'id', 'url', 'monitor', 'minval', 'maxval', 'value_operator',
+            'level', 'num_channels', 'num_channels_operator', 'invert_trigger',
+            'created_at', 'updated_at', 'user_id'
         )
         read_only_fields = ('id',)
 

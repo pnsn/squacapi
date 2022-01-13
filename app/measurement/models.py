@@ -278,7 +278,6 @@ class Trigger(MeasurementBase):
     )
     minval = models.FloatField(blank=True, null=True)
     maxval = models.FloatField(blank=True, null=True)
-    band_inclusive = models.BooleanField(default=True)
     value_operator = models.CharField(
         max_length=16,
         choices=ValueOperator.choices,
