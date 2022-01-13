@@ -249,6 +249,10 @@ class Trigger(MeasurementBase):
         THREE = 3
 
     class ValueOperator(models.TextChoices):
+        '''
+        How to compare calculated value to val1 (and val2) threshold to
+        determine if a channel is breaching
+        '''
         OUTSIDE_OF = 'outsideof', _('Outside of')
         WITHIN = 'within', _('Within')
         EQUAL_TO = '==', _('Equal to')
@@ -258,6 +262,10 @@ class Trigger(MeasurementBase):
         GREATER_THAN_OR_EQUAL = '>=', _('Greater than or equal to')
 
     class NumChannelsOperator(models.TextChoices):
+        '''
+        How to compare num_channels to breaching channels to determine if
+        trigger is in alarm
+        '''
         ANY = 'any', _('Any')
         EQUAL_TO = '==', _('Equal to')
         LESS_THAN = '<', _('Less than')
@@ -276,10 +284,10 @@ class Trigger(MeasurementBase):
         on_delete=models.CASCADE,
         related_name='triggers'
     )
-    ''' 
+    '''
     val1 is required. It acts as minval when value_operator is OUTSIDE_OF
     or WITHIN. Otherwise it is used for single value comparisons.
-     '''
+    '''
     val1 = models.FloatField()
     '''
     val2 is optional. It is used as maxval when value_operator is OUTSIDE_OF
