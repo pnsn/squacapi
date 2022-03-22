@@ -357,11 +357,12 @@ class PrivateAlarmAPITests(TestCase):
 
     def check_in_alarm_state(self, monitor_id, trigger_id, expected):
         monitor = Monitor.objects.get(pk=monitor_id)
+        trigger = Trigger.objects.get(pk=trigger_id)
         endtime = datetime(2018, 2, 1, 4, 30, 0, 0, tzinfo=pytz.UTC)
 
         q_list = monitor.agg_measurements(endtime=endtime)
-        trigger = Trigger.objects.get(pk=trigger_id)
-        self.assertEqual(trigger.in_alarm_state(q_list)[0], expected)
+        breaching_channels = trigger.get_breaching_channels(q_list)
+        self.assertEqual(trigger.in_alarm_state(breaching_channels), expected)
 
     def test_in_alarm_state(self):
         monitor_id = 1

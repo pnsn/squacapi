@@ -222,10 +222,9 @@ class Monitor(MeasurementBase):
         # Get Triggers for this alarm. Returns a QuerySet
         triggers = self.triggers.all()
 
-        # Evaluate whether each Trigger is breaching
         for trigger in triggers:
-            in_alarm, breaching_channels = (
-                trigger.in_alarm_state(channel_values, endtime))
+            breaching_channels = trigger.get_breaching_channels(channel_values)
+            in_alarm = trigger.in_alarm_state(breaching_channels, endtime)
             trigger.evaluate_alert(in_alarm, breaching_channels, endtime)
 
     def __str__(self):
@@ -375,22 +374,20 @@ class Trigger(MeasurementBase):
 
         return added, removed
 
-    # channel_values is a list of dicts
+    # breaching_channels comes from trigger.get_breaching_channels()
     def in_alarm_state(self,
-                       channel_values,
+                       breaching_channels,
                        reftime=datetime.now(tz=pytz.UTC)):
         '''
-        Determine if Trigger is breaching for input aggregate channel
-        values
+        Determine if Trigger is in or out of alarm based on breaching_channels
+        and num_channels_operator
         '''
-        breaching_channels = self.get_breaching_channels(channel_values)
         if self.num_channels_operator == self.NumChannelsOperator.ANY:
             # Placeholder before adding more logic
-            return False, breaching_channels
+            return False
         else:
             op = self.OPERATOR[self.num_channels_operator]
-            return (op(len(breaching_channels), self.num_channels),
-                    breaching_channels)
+            return op(len(breaching_channels), self.num_channels)
 
     def get_latest_alert(self, reftime=datetime.now(tz=pytz.UTC)):
         '''Return the most recent alert for this Trigger'''
