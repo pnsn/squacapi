@@ -374,18 +374,23 @@ class Trigger(MeasurementBase):
 
         return added, removed
 
-    # breaching_channels comes from trigger.get_breaching_channels()
+    # breaching_channels is a list of dicts from
+    # trigger.get_breaching_channels()
     def in_alarm_state(self,
                        breaching_channels,
                        reftime=datetime.now(tz=pytz.UTC)):
         '''
         Determine if Trigger is in or out of alarm based on breaching_channels
-        and num_channels_operator
+        and num_channels_operator.
         '''
         if self.num_channels_operator == self.NumChannelsOperator.ANY:
-            # Placeholder before adding more logic
-            return False
+            # This is a special case. evaluate_alert() will perform further
+            # logic checks. Will always be "in_alarm" if there are more than
+            # zero breaching channels
+            return len(breaching_channels) > 0
         else:
+            # Otherwise just compare the breaching_channels to the
+            # num_channels_operator (>, ==, <)
             op = self.OPERATOR[self.num_channels_operator]
             return op(len(breaching_channels), self.num_channels)
 
@@ -397,7 +402,8 @@ class Trigger(MeasurementBase):
     def create_alert(self,
                      in_alarm,
                      breaching_channels=[],
-                     timestamp=datetime.now(tz=pytz.UTC)):
+                     timestamp=datetime.now(tz=pytz.UTC),
+                     send_alert=True):
         new_alert = Alert(trigger=self,
                           timestamp=timestamp,
                           message="",
@@ -405,7 +411,8 @@ class Trigger(MeasurementBase):
                           user=self.user,
                           breaching_channels=breaching_channels)
         new_alert.save()
-        new_alert.create_alert_notifications()
+        if send_alert:
+            new_alert.create_alert_notifications()
         return new_alert
 
     def evaluate_alert(self,
@@ -417,19 +424,41 @@ class Trigger(MeasurementBase):
         or out of spec
         '''
         alert = self.get_latest_alert()
+        create_new = False
+        send_new = False
 
-        if in_alarm:
-            # In alarm state, does alert exist yet? If not, create a new one.
-            # Exist means the most recent one has in_alarm = True
-            if not alert or not alert.in_alarm:
-                return self.create_alert(in_alarm, breaching_channels, reftime)
+        if self.num_channels_operator == self.NumChannelsOperator.ANY:
+            # Special treatment for num_channels_operator == ANY
+            added, removed = self.get_breaching_change(
+                breaching_channels, reftime)
+            if in_alarm:
+                # "if in_alarm" should be equivalent to "if breaching_channels"
+                if added:
+                    # Always send new alert if new channels are added
+                    create_new, send_new = True, True
+                elif removed:
+                    create_new, send_new = True, self.alert_on_out_of_alarm
+            else:
+                if removed:
+                    create_new, send_new = True, self.alert_on_out_of_alarm
         else:
-            # Not in alarm state, is there an alert to cancel?
-            # If so, create new one saying in_alarm = False
-            if alert and alert.in_alarm:
-                return self.create_alert(in_alarm, breaching_channels, reftime)
+            # Regular treatment for num_channels_operator != ANY
+            if in_alarm:
+                # In alarm state, does alert exist yet? If not, create a new
+                # one. Exist means the most recent one has in_alarm = True
+                if not alert or not alert.in_alarm:
+                    create_new, send_new = True, True
+            else:
+                # Not in alarm state, is there an alert to cancel?
+                # If so, create new one saying in_alarm = False
+                if alert and alert.in_alarm:
+                    create_new, send_new = True, self.alert_on_out_of_alarm
 
-        return alert
+        if create_new:
+            return self.create_alert(
+                in_alarm, breaching_channels, reftime, send_new)
+        else:
+            return alert
 
     def __str__(self):
         return (f"Monitor: {str(self.monitor)}, "
