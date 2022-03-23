@@ -309,6 +309,7 @@ class Trigger(MeasurementBase):
         default=NumChannelsOperator.GREATER_THAN
     )
     alert_on_out_of_alarm = models.BooleanField(default=False)
+    email_list = models.JSONField(null=True)
 
     # channel_value is dict
     def is_breaching(self, channel_value):
