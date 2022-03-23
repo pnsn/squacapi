@@ -3,6 +3,7 @@ from django.db.models import (Avg, Count, Max, Min, Sum, F, Value,
                               IntegerField, FloatField)
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
+from django.core.mail import send_mail
 
 from dashboard.models import Widget
 from nslc.models import Channel, Group
@@ -403,8 +404,7 @@ class Trigger(MeasurementBase):
     def create_alert(self,
                      in_alarm,
                      breaching_channels=[],
-                     timestamp=datetime.now(tz=pytz.UTC),
-                     send_alert=True):
+                     timestamp=datetime.now(tz=pytz.UTC)):
         new_alert = Alert(trigger=self,
                           timestamp=timestamp,
                           message="",
@@ -412,8 +412,6 @@ class Trigger(MeasurementBase):
                           user=self.user,
                           breaching_channels=breaching_channels)
         new_alert.save()
-        if send_alert:
-            new_alert.create_alert_notifications()
         return new_alert
 
     def evaluate_alert(self,
@@ -451,10 +449,38 @@ class Trigger(MeasurementBase):
                     create_new, send_new = True, self.alert_on_out_of_alarm
 
         if create_new:
-            return self.create_alert(
-                in_alarm, breaching_channels, reftime, send_new)
+            alert = self.create_alert(in_alarm, breaching_channels, reftime)
+            if send_new:
+                alert.send_alert()
+
+        return alert
+
+    def get_text_description(self):
+        '''
+        Try to return something like:
+            Alert if count of
+            hourly_mean measurements
+            is outside of (-5,5)
+            for less than 5 channels
+            in channel group: UW SMAs
+            over the last 5 hours
+        '''
+        desc = ''
+        desc += f'Alert if {self.monitor.stat} of\n'
+        desc += f'{self.monitor.metric.name} measurements\n'
+        val = (self.val1, self.val2) if self.val2 is not None else self.val1
+        desc += f'is {self.value_operator} {val}\n'
+        if self.num_channels_operator == self.NumChannelsOperator.ANY:
+            desc += 'ANY channel\n'
         else:
-            return alert
+            desc += f'for {self.num_channels_operator} than'
+            add_s = 's' if self.num_channels > 1 else ''
+            desc += f' {self.num_channels} channel{add_s}\n'
+        desc += f'in channel group: {self.monitor.channel_group}\n'
+        add_s = 's' if self.monitor.interval_count > 1 else ''
+        desc += f'over the last {self.monitor.interval_count}'
+        desc += f' {self.monitor.interval_type}{add_s}'
+        return desc
 
     def __str__(self):
         return (f"Monitor: {str(self.monitor)}, "
@@ -476,26 +502,66 @@ class Alert(MeasurementBase):
     in_alarm = models.BooleanField(default=True)
     breaching_channels = models.JSONField(null=True)
 
-    def create_alert_notifications(self):
-        level = self.trigger.level
-        notifications = self.user.get_notifications(level)
+    def get_printable_channel(self, channel, include_stat=True):
+        ret = str(channel['channel'])
+        # The monitor stat should be a key
+        stat = self.trigger.monitor.stat
+        if stat in channel and include_stat:
+            ret += f', {stat}: {channel[stat]}'
 
-        for notification in notifications:
-            notification.send(self)
+        return ret
+
+    def get_printable_channels(self, channels, include_stat=True):
+        if not channels:
+            return '\n'
+        str_out = '\n'
+        for channel in channels:
+            str_out += self.get_printable_channel(channel, include_stat)
+            str_out += '\n'
+
+        return str_out
 
     def get_email_message(self):
         msg = ''
-        if self.in_alarm:
-            msg += 'Trigger in alert for ' + str(self.trigger)
-        else:
-            msg += 'Trigger out of alert for ' + str(self.trigger)
+        msg += self.timestamp.strftime('%Y-%m-%dT%H:%M %Z')
+        in_out = 'IN' if self.in_alarm else 'OUT OF'
+        msg += f'\nTrigger {in_out} alert for {str(self.trigger)}'
+        msg += f'\n{self.trigger.get_text_description()}'
 
-        breaching_out = []
-        if self.breaching_channels:
-            breaching_out = [{k: v for k, v in d.items() if k != 'channel_id'}
-                             for d in self.breaching_channels]
-        msg += '\nBreaching channels: ' + str(breaching_out)
+        if operator.eq(self.trigger.num_channels_operator,
+                       Trigger.NumChannelsOperator.ANY):
+            added, removed = self.trigger.get_breaching_change(
+                self.breaching_channels, self.timestamp)
+            if added:
+                added_out = self.get_printable_channels(added)
+                msg += '\nNew channels in alert:' + str(added_out)
+            if removed:
+                removed_out = self.get_printable_channels(removed)
+                msg += '\nNew channels out of alert:' + str(removed_out)
+
+        breaching_out = self.get_printable_channels(self.breaching_channels)
+        msg += '\nAll breaching channels:' + str(breaching_out)
         return msg
+
+    def send_alert(self):
+        if self.trigger.level == Trigger.Level.ONE:
+            # This alert should only be posted to the Monitors web page
+            return False
+        if not self.trigger.email_list:
+            # There is noone specified to send to
+            return False
+        in_out = "in" if self.in_alarm else "out of"
+        subject = (f"SQUAC {in_out} alert for '{self.trigger.monitor}', "
+                   f"level {self.trigger.level}"
+                   )
+        message = self.get_email_message()
+        send_mail(subject,
+                  message,
+                  settings.EMAIL_NO_REPLY,
+                  [email for email in self.trigger.email_list],
+                  fail_silently=False,
+                  )
+        return True
 
     class Meta:
         indexes = [

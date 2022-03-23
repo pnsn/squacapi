@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.utils import timezone
 # from django.db.models import Avg, Count, Max, Min, Sum
 
-from core.models import Contact, Notification, User
+from core.models import Contact, Notification
 from measurement.models import (Monitor, Trigger, Alert, Measurement,
                                 Metric)
 from nslc.models import Channel, Group, Network
@@ -120,8 +120,9 @@ class PrivateAlarmAPITests(TestCase):
             val2=5,
             value_operator=Trigger.ValueOperator.WITHIN,
             num_channels=5,
-            level=Trigger.Level.ONE,
-            user=self.user
+            level=Trigger.Level.TWO,
+            user=self.user,
+            email_list=[self.user.email]
         )
         self.alert = Alert.objects.create(
             trigger=self.trigger,
@@ -498,57 +499,19 @@ class PrivateAlarmAPITests(TestCase):
         with patch('measurement.models.Monitor.evaluate_alarm') as ea:
             call_command('evaluate_alarms')
             self.assertEqual(n_monitors, ea.call_count)
-            # print('Called {} times'.format(ea.call_count))
 
-    @patch.object(Alert, 'create_alert_notifications')
-    def test_function_create_alert(self, mock):
-        '''Test create_alert'''
-        in_alarm = True
-        trigger = Trigger.objects.get(pk=1)
-        alert = trigger.create_alert(in_alarm)
-
-        self.assertFalse(alert.id is None)
-        self.assertEqual(alert.in_alarm, in_alarm)
-        self.assertEqual(trigger.user, alert.user)
-        self.assertTrue(mock.called)
-
-    @patch.object(Notification, 'send')
-    def test_create_alert_notification(self, mock_send):
-        notification_qs = (
-            Notification.objects.filter(pk=self.notification.id)
-        )
-        with patch.object(User,
-                          'get_notifications',
-                          return_value=notification_qs
-                          ) as mock_method:
-            # Notification.create_alert_notifications(self.alert)
-            self.alert.create_alert_notifications()
-
-            self.assertTrue(mock_method.called)
-            # self.assertEqual(mock_method.call_args[0][0], self.alert.user)
-            self.assertEqual(mock_method.call_args[0][0],
-                             self.alert.trigger.level)
-
-            self.assertTrue(mock_send.called)
-            self.assertEqual(mock_send.call_args[0][0], self.alert)
-            # Alternative version
-            # mock_send.assert_called_once_with(self.alert)
-
-    @patch.object(Notification, 'send_email')
-    def test_send(self, mock_send):
-        self.notification.send(self.alert)
-
-        self.assertTrue(mock_send.called)
-        self.assertEqual(mock_send.call_args[0][0], self.alert)
-
-    def test_send_email(self):
-        self.notification.send_email(self.alert)
+    def test_send_alert(self):
+        self.alert.send_alert()
 
         self.assertEqual(len(mail.outbox), 1)
         self.assertTrue(self.alert.get_email_message() in mail.outbox[0].body)
-        self.assertTrue(self.notification.contact.email_value
-                        in mail.outbox[0].recipients())
+        for email in self.alert.trigger.email_list:
+            self.assertTrue(email in mail.outbox[0].recipients())
 
+    """
+    Contact class isn't used currently but might be in the future so leaving
+    it in for now. CWU 3/23/22
+    """
     def test_create_contact(self):
         url = reverse('user:contact-list')
         payload = {
@@ -650,9 +613,8 @@ class PrivateAlarmAPITests(TestCase):
             user=trigger.user,
             breaching_channels=breaching_channels
         )
-        breaching_out = [{k: v for k, v in a.items() if k != 'channel_id'}
-                         for a in breaching_channels]
-        self.assertTrue(str(breaching_out) in alert.get_email_message())
+        channels_out = alert.get_printable_channels(breaching_channels)
+        self.assertTrue(str(channels_out) in alert.get_email_message())
 
     def test_alert_filter(self):
         '''Test filtering alerts'''
