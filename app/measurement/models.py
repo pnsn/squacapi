@@ -432,16 +432,11 @@ class Trigger(MeasurementBase):
             # Special treatment for num_channels_operator == ANY
             added, removed = self.get_breaching_change(
                 breaching_channels, reftime)
-            if in_alarm:
-                # "if in_alarm" should be equivalent to "if breaching_channels"
-                if added:
-                    # Always send new alert if new channels are added
-                    create_new, send_new = True, True
-                elif removed:
-                    create_new, send_new = True, self.alert_on_out_of_alarm
-            else:
-                if removed:
-                    create_new, send_new = True, self.alert_on_out_of_alarm
+            if added:
+                # Always send new alert if new channels are added
+                create_new, send_new = True, True
+            elif removed:
+                create_new, send_new = True, self.alert_on_out_of_alarm
         else:
             # Regular treatment for num_channels_operator != ANY
             if in_alarm:
