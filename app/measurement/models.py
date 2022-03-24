@@ -3,8 +3,10 @@ from django.db.models import (Avg, Count, Max, Min, Sum, F, Value,
                               IntegerField, FloatField)
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
+from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 
+from .validators import validate_email_list
 from dashboard.models import Widget
 from nslc.models import Channel, Group
 
@@ -310,7 +312,9 @@ class Trigger(MeasurementBase):
         default=NumChannelsOperator.GREATER_THAN
     )
     alert_on_out_of_alarm = models.BooleanField(default=False)
-    email_list = models.JSONField(null=True)
+    email_list = models.JSONField(blank=True,
+                                  null=True,
+                                  validators=[validate_email_list, ])
 
     # channel_value is dict
     def is_breaching(self, channel_value):
@@ -488,6 +492,18 @@ class Trigger(MeasurementBase):
                 f"Max: {self.val2}, "
                 f"Level: {self.level}"
                 )
+
+    def save(self, *args, **kwargs):
+        """
+        Do regular save except also validate fields. This doesn't happen
+        automatically on save
+        """
+        try:
+            self.full_clean()
+        except ValidationError:
+            raise
+
+        super().save(*args, **kwargs)  # Call the "real" save() method.
 
 
 class Alert(MeasurementBase):

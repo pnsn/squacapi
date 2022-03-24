@@ -635,3 +635,58 @@ class PrivateAlarmAPITests(TestCase):
         res = self.client.get(url3)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data), 1)
+
+    def check_email_list(self, email_list, flag=0):
+        """
+        email_list is the potential input into Trigger.email_list
+        flag is the anticipated result
+            0: works (valid email_list)
+            1: invalid input type
+            2: invalid email(s)
+        """
+        test_str = 'Correct'
+        if flag == 0:
+            Trigger.objects.create(
+                monitor=self.monitor,
+                val1=2,
+                val2=5,
+                value_operator=Trigger.ValueOperator.WITHIN,
+                num_channels=5,
+                level=Trigger.Level.TWO,
+                user=self.user,
+                email_list=email_list
+            )
+            return
+
+        if flag == 1:
+            test_str = 'Invalid input type'
+        if flag == 2:
+            test_str = 'Invalid email address'
+
+        with self.assertRaisesRegex(ValidationError, test_str + '*'):
+            Trigger.objects.create(
+                monitor=self.monitor,
+                val1=2,
+                val2=5,
+                value_operator=Trigger.ValueOperator.WITHIN,
+                num_channels=5,
+                level=Trigger.Level.TWO,
+                user=self.user,
+                email_list=email_list
+            )
+
+    def test_trigger_email_list(self):
+        """
+        flag is the anticipated result
+            0: works (valid email_list)
+            1: invalid input type
+            2: invalid email(s)
+        """
+        self.check_email_list('user', flag=2)
+        self.check_email_list('user@gmail.com', flag=0)
+        self.check_email_list(['user'], flag=2)
+        self.check_email_list(['user@gmail.com'], flag=0)
+        self.check_email_list(['user@gmail.com', 'user'], flag=2)
+        self.check_email_list(['user@gmail.com', 'user', 'other'], flag=2)
+        self.check_email_list(['user@gmail.com', 'new@uw.edu'], flag=0)
+        self.check_email_list({'email': 'user@gmail.com'}, flag=1)
