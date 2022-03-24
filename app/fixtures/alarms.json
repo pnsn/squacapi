@@ -600,7 +600,8 @@
         "val2": null, 
         "value_operator": "<",
         "num_channels": 1, 
-        "level": 2
+        "level": 2,
+        "email_list": "loader@pnsn.org"
     }
 },
 {
@@ -617,7 +618,8 @@
         "val2": null, 
         "value_operator": ">",
         "num_channels": 2, 
-        "level": 2
+        "level": 2,
+        "email_list": "loader@pnsn.org"
     }
 },
 {
@@ -634,7 +636,8 @@
         "val2": 6, 
         "value_operator": "outsideof",
         "num_channels": 2, 
-        "level": 2
+        "level": 2,
+        "email_list": "loader@pnsn.org"
     }
 },
 {
@@ -651,7 +654,8 @@
         "val2": 6, 
         "value_operator": "within",
         "num_channels": 1, 
-        "level": 2
+        "level": 2,
+        "email_list": "loader@pnsn.org"
     }
 },
 {
@@ -668,7 +672,8 @@
         "val2": 6, 
         "value_operator": "within",
         "num_channels": 2, 
-        "level": 2
+        "level": 2,
+        "email_list": "loader@pnsn.org"
     }
 },
 {
@@ -685,7 +690,8 @@
         "val2": 6, 
         "value_operator": "within",
         "num_channels": 2, 
-        "level": 2
+        "level": 2,
+        "email_list": "loader@pnsn.org"
     }
 },
 {

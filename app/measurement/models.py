@@ -468,6 +468,7 @@ class Trigger(MeasurementBase):
             for less than 5 channels
             in channel group: UW SMAs
             over the last 5 hours
+        see https://github.com/pnsn/squacapi/issues/373
         '''
         desc = ''
         desc += f'Alert if {self.monitor.stat} of\n'
@@ -492,6 +493,34 @@ class Trigger(MeasurementBase):
                 f"Max: {self.val2}, "
                 f"Level: {self.level}"
                 )
+
+    def clean(self):
+        """
+        Some custom logic to make sure various fields correspond correctly
+        """
+        # Don't allow val2 to be None if using Within, OutsideOf
+        if all([self.val2 is None,
+                self.value_operator in (self.ValueOperator.WITHIN,
+                                        self.ValueOperator.OUTSIDE_OF)]):
+            raise ValidationError(
+                _(f'val2 must be defined when using {self.value_operator}'))
+        # Don't allow num_channels to be None if not using ANY
+        if all([self.num_channels is None,
+                self.num_channels_operator != self.NumChannelsOperator.ANY]):
+            raise ValidationError(
+                _('num_channels must be defined when using'
+                  f' {self.num_channels_operator}'))
+        # Level 2 and 3 require email_list to be filled.
+        if all([self.level in (self.Level.TWO, self.Level.THREE),
+                not self.email_list]):
+            raise ValidationError(
+                _(f'email_list must be filled for level {self.level} Trigger'))
+        # Level 2 should only send to one email
+        if all([self.level == self.Level.TWO,
+                isinstance(self.email_list, list),
+                self.email_list and len(self.email_list) > 1]):
+            raise ValidationError(
+                _('There must only be one email for level TWO triggers'))
 
     def save(self, *args, **kwargs):
         """

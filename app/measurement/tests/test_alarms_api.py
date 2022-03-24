@@ -198,7 +198,8 @@ class PrivateAlarmAPITests(TestCase):
             'val2': 20,
             'num_channels': 3,
             'level': Trigger.Level.TWO,
-            'user': self.user
+            'user': self.user,
+            'email_list': self.user.email
         }
         res = self.client.post(url, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
@@ -644,36 +645,29 @@ class PrivateAlarmAPITests(TestCase):
             1: invalid input type
             2: invalid email(s)
         """
-        test_str = 'Correct'
-        if flag == 0:
+        def create_trigger(monitor, user):
             Trigger.objects.create(
-                monitor=self.monitor,
+                monitor=monitor,
                 val1=2,
                 val2=5,
                 value_operator=Trigger.ValueOperator.WITHIN,
                 num_channels=5,
-                level=Trigger.Level.TWO,
-                user=self.user,
+                level=Trigger.Level.THREE,
+                user=user,
                 email_list=email_list
             )
+        if flag == 0:
+            create_trigger(self.monitor, self.user)
             return
 
+        test_str = 'Correct'
         if flag == 1:
             test_str = 'Invalid input type'
         if flag == 2:
             test_str = 'Invalid email address'
 
         with self.assertRaisesRegex(ValidationError, test_str + '*'):
-            Trigger.objects.create(
-                monitor=self.monitor,
-                val1=2,
-                val2=5,
-                value_operator=Trigger.ValueOperator.WITHIN,
-                num_channels=5,
-                level=Trigger.Level.TWO,
-                user=self.user,
-                email_list=email_list
-            )
+            create_trigger(self.monitor, self.user)
 
     def test_trigger_email_list(self):
         """
@@ -690,3 +684,56 @@ class PrivateAlarmAPITests(TestCase):
         self.check_email_list(['user@gmail.com', 'user', 'other'], flag=2)
         self.check_email_list(['user@gmail.com', 'new@uw.edu'], flag=0)
         self.check_email_list({'email': 'user@gmail.com'}, flag=1)
+
+    def test_val2_is_none_error(self):
+        with self.assertRaisesRegex(ValidationError,
+                                    'val2 must be defined*'):
+            Trigger.objects.create(
+                monitor=self.monitor,
+                val1=2,
+                value_operator=Trigger.ValueOperator.WITHIN,
+                num_channels=5,
+                level=Trigger.Level.THREE,
+                user=self.user,
+                email_list=self.user.email
+            )
+
+    def test_num_channels_is_none_error(self):
+        with self.assertRaisesRegex(ValidationError,
+                                    'num_channels must be defined*'):
+            Trigger.objects.create(
+                monitor=self.monitor,
+                val1=2,
+                value_operator=Trigger.ValueOperator.GREATER_THAN,
+                num_channels_operator=Trigger.NumChannelsOperator.GREATER_THAN,
+                level=Trigger.Level.THREE,
+                user=self.user,
+                email_list=self.user.email
+            )
+
+    def test_level_email_list_correspond(self):
+        with self.assertRaisesRegex(ValidationError,
+                                    'email_list must be filled*'):
+            Trigger.objects.create(
+                monitor=self.monitor,
+                val1=2,
+                value_operator=Trigger.ValueOperator.GREATER_THAN,
+                num_channels=5,
+                num_channels_operator=Trigger.NumChannelsOperator.GREATER_THAN,
+                level=Trigger.Level.THREE,
+                user=self.user
+            )
+
+    def test_level_two_has_single_email(self):
+        with self.assertRaisesRegex(ValidationError,
+                                    'There must only be one email*'):
+            Trigger.objects.create(
+                monitor=self.monitor,
+                val1=2,
+                value_operator=Trigger.ValueOperator.GREATER_THAN,
+                num_channels=5,
+                num_channels_operator=Trigger.NumChannelsOperator.GREATER_THAN,
+                level=Trigger.Level.TWO,
+                user=self.user,
+                email_list=[self.user.email, 'test@email.com']
+            )
