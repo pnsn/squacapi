@@ -551,7 +551,6 @@
         "metric": 1, 
         "interval_type": "hour", 
         "interval_count": 2, 
-        "num_channels": 2, 
         "stat": "avg"
     }
 },
@@ -568,7 +567,6 @@
         "metric": 2, 
         "interval_type": "hour", 
         "interval_count": 2, 
-        "num_channels": 2, 
         "stat": "avg"
     }
 },
@@ -585,7 +583,6 @@
         "metric": 2, 
         "interval_type": "hour", 
         "interval_count": 2, 
-        "num_channels": 2, 
         "stat": "avg"
     }
 },
@@ -599,10 +596,12 @@
             "loader@pnsn.org"
         ], 
         "monitor": 1, 
-        "minval": 6, 
-        "maxval": null, 
-        "band_inclusive": false, 
-        "level": 2
+        "val1": 6, 
+        "val2": null, 
+        "value_operator": "<",
+        "num_channels": 1, 
+        "level": 2,
+        "email_list": "loader@pnsn.org"
     }
 },
 {
@@ -615,10 +614,12 @@
             "loader@pnsn.org"
         ], 
         "monitor": 1, 
-        "minval": null, 
-        "maxval": 1, 
-        "band_inclusive": false, 
-        "level": 2
+        "val1": 1, 
+        "val2": null, 
+        "value_operator": ">",
+        "num_channels": 2, 
+        "level": 2,
+        "email_list": "loader@pnsn.org"
     }
 },
 {
@@ -631,10 +632,12 @@
             "loader@pnsn.org"
         ], 
         "monitor": 1, 
-        "minval": 1, 
-        "maxval": 6, 
-        "band_inclusive": false, 
-        "level": 2
+        "val1": 1, 
+        "val2": 6, 
+        "value_operator": "outsideof",
+        "num_channels": 2, 
+        "level": 2,
+        "email_list": "loader@pnsn.org"
     }
 },
 {
@@ -647,10 +650,12 @@
             "loader@pnsn.org"
         ], 
         "monitor": 1, 
-        "minval": 1, 
-        "maxval": 6, 
-        "band_inclusive": true, 
-        "level": 2
+        "val1": 1, 
+        "val2": 6, 
+        "value_operator": "within",
+        "num_channels": 1, 
+        "level": 2,
+        "email_list": "loader@pnsn.org"
     }
 },
 {
@@ -663,10 +668,12 @@
             "loader@pnsn.org"
         ], 
         "monitor": 1, 
-        "minval": 4, 
-        "maxval": 6, 
-        "band_inclusive": true, 
-        "level": 2
+        "val1": 4, 
+        "val2": 6, 
+        "value_operator": "within",
+        "num_channels": 2, 
+        "level": 2,
+        "email_list": "loader@pnsn.org"
     }
 },
 {
@@ -679,10 +686,12 @@
             "loader@pnsn.org"
         ], 
         "monitor": 2, 
-        "minval": 4, 
-        "maxval": 6, 
-        "band_inclusive": true, 
-        "level": 2
+        "val1": 4, 
+        "val2": 6, 
+        "value_operator": "within",
+        "num_channels": 2, 
+        "level": 2,
+        "email_list": "loader@pnsn.org"
     }
 },
 {

@@ -1,29 +1,39 @@
 language: python
 python:
-- '3.6'
+  - "3.6"
 services:
-- docker
+  - docker
 before_script:
-- pip install docker-compose
+  - pip install docker-compose
 script:
-- docker-compose run app sh -c "python manage.py test && flake8"
+  - docker-compose run app sh -c "python manage.py test && flake8"
 deploy:
   - provider: codedeploy
     secret_access_key: $AWS_SECRET_ACCESS_KEY
     access_key_id: $AWS_ACCESS_KEY_ID
     revision_type: github
-    application: SquacAPI
-    deployment_group: staging-squacapi
+    application: squacapi
+    deployment_group: staging
     region: us-west-2
     on:
       branch: staging
-  
+
   - provider: codedeploy
     secret_access_key: $AWS_SECRET_ACCESS_KEY
     access_key_id: $AWS_ACCESS_KEY_ID
     revision_type: github
-    application: SquacAPI
-    deployment_group: squacapi
+    application: squacapi
+    deployment_group: production
     region: us-west-2
     on:
-      branch: master
+      branch: production
+
+  - provider: codedeploy
+    secret_access_key: $AWS_SECRET_ACCESS_KEY
+    access_key_id: $AWS_ACCESS_KEY_ID
+    revision_type: github
+    application: squacapi
+    deployment_group: jobs
+    region: us-west-2
+    on:
+      branch: production

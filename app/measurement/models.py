@@ -3,12 +3,17 @@ from django.db.models import (Avg, Count, Max, Min, Sum, F, Value,
                               IntegerField, FloatField)
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
+from django.core.exceptions import ValidationError
+from django.core.mail import send_mail
 
+from .validators import validate_email_list
 from dashboard.models import Widget
 from nslc.models import Channel, Group
 
 from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
 import pytz
+import operator
 
 from bulk_update_or_create import BulkUpdateOrCreateQuerySet
 
@@ -132,16 +137,17 @@ class Monitor(MeasurementBase):
         on_delete=models.CASCADE,
         related_name='monitors'
     )
-    interval_type = models.CharField(max_length=8,
-                                     choices=IntervalType.choices,
-                                     default=IntervalType.HOUR
-                                     )
+    interval_type = models.CharField(
+        max_length=8,
+        choices=IntervalType.choices,
+        default=IntervalType.HOUR
+    )
     interval_count = models.IntegerField()
-    num_channels = models.IntegerField()
-    stat = models.CharField(max_length=8,
-                            choices=Stat.choices,
-                            default=Stat.SUM
-                            )
+    stat = models.CharField(
+        max_length=8,
+        choices=Stat.choices,
+        default=Stat.SUM
+    )
     name = models.CharField(max_length=255, default='')
 
     def calc_interval_seconds(self):
@@ -206,10 +212,12 @@ class Monitor(MeasurementBase):
 
         return q_list
 
-    def evaluate_alarm(self, endtime=datetime.now(tz=pytz.UTC)):
+    def evaluate_alarm(self, endtime=datetime.now(tz=pytz.UTC) - relativedelta(
+                       minute=0, second=0, microsecond=0)):
         '''
         Higher-level function that determines alarm state and calls other
-        functions to create alerts if necessary
+        functions to create alerts if necessary. Default is to start on the
+        hour regardless of when it is called (truncate down).
         '''
         # Get aggregate values for each channel. Returns a list(QuerySet)
         channel_values = self.agg_measurements(endtime)
@@ -217,17 +225,16 @@ class Monitor(MeasurementBase):
         # Get Triggers for this alarm. Returns a QuerySet
         triggers = self.triggers.all()
 
-        # Evaluate whether each Trigger is breaching
         for trigger in triggers:
-            in_alarm = trigger.in_alarm_state(channel_values)
-            trigger.evaluate_alert(in_alarm)
+            breaching_channels = trigger.get_breaching_channels(channel_values)
+            in_alarm = trigger.in_alarm_state(breaching_channels, endtime)
+            trigger.evaluate_alert(in_alarm, breaching_channels, endtime)
 
     def __str__(self):
         if not self.name:
             return (f"{str(self.channel_group)}, "
                     f"{str(self.metric)}, "
                     f"{self.interval_count} {self.interval_type}, "
-                    f"{self.num_channels} chan, "
                     f"{self.stat}"
                     )
         else:
@@ -243,17 +250,71 @@ class Trigger(MeasurementBase):
         TWO = 2
         THREE = 3
 
+    class ValueOperator(models.TextChoices):
+        '''
+        How to compare calculated value to val1 (and val2) threshold to
+        determine if a channel is breaching
+        '''
+        OUTSIDE_OF = 'outsideof', _('Outside of')
+        WITHIN = 'within', _('Within')
+        EQUAL_TO = '==', _('Equal to')
+        LESS_THAN = '<', _('Less than')
+        LESS_THAN_OR_EQUAL = '<=', _('Less than or equal to')
+        GREATER_THAN = '>', _('Greater than')
+        GREATER_THAN_OR_EQUAL = '>=', _('Greater than or equal to')
+
+    class NumChannelsOperator(models.TextChoices):
+        '''
+        How to compare num_channels to breaching channels to determine if
+        trigger is in alarm
+        '''
+        ANY = 'any', _('Any')
+        EQUAL_TO = '==', _('Equal to')
+        LESS_THAN = '<', _('Less than')
+        GREATER_THAN = '>', _('Greater than')
+
+    OPERATOR = {
+        '==': operator.eq,
+        '<': operator.lt,
+        '<=': operator.le,
+        '>': operator.gt,
+        '>=': operator.ge
+    }
+
     monitor = models.ForeignKey(
         Monitor,
         on_delete=models.CASCADE,
         related_name='triggers'
     )
-    minval = models.FloatField(blank=True, null=True)
-    maxval = models.FloatField(blank=True, null=True)
-    band_inclusive = models.BooleanField(default=True)
-    level = models.IntegerField(choices=Level.choices,
-                                default=Level.ONE
-                                )
+    '''
+    val1 is required. It acts as minval when value_operator is OUTSIDE_OF
+    or WITHIN. Otherwise it is used for single value comparisons.
+    '''
+    val1 = models.FloatField()
+    '''
+    val2 is optional. It is used as maxval when value_operator is OUTSIDE_OF
+    or WITHIN. Otherwise it is ignored.
+    '''
+    val2 = models.FloatField(blank=True, null=True)
+    value_operator = models.CharField(
+        max_length=16,
+        choices=ValueOperator.choices,
+        default=ValueOperator.GREATER_THAN
+    )
+    level = models.IntegerField(
+        choices=Level.choices,
+        default=Level.ONE
+    )
+    num_channels = models.IntegerField(blank=True, null=True)
+    num_channels_operator = models.CharField(
+        max_length=16,
+        choices=NumChannelsOperator.choices,
+        default=NumChannelsOperator.GREATER_THAN
+    )
+    alert_on_out_of_alarm = models.BooleanField(default=False)
+    email_list = models.JSONField(blank=True,
+                                  null=True,
+                                  validators=[validate_email_list, ])
 
     # channel_value is dict
     def is_breaching(self, channel_value):
@@ -267,19 +328,12 @@ class Trigger(MeasurementBase):
         if val is None:
             return False
 
-        # check three cases: only minval, only maxval, both min and max
-        if self.minval is None and self.maxval is None:
-            return False
-        elif self.minval is not None and self.maxval is None:
-            return val < self.minval
-        elif self.minval is None and self.maxval is not None:
-            return val > self.maxval
+        if self.value_operator == self.ValueOperator.OUTSIDE_OF:
+            return val < self.val1 or val > self.val2
+        elif self.value_operator == self.ValueOperator.WITHIN:
+            return val > self.val1 and val < self.val2
         else:
-            inside_band = (val > self.minval and val < self.maxval)
-            return inside_band == self.band_inclusive
-
-        # Shouldn't ever get here, but return False anyway
-        return False
+            return self.OPERATOR[self.value_operator](val, self.val1)
 
     # channel_values is a list of dicts
     def get_breaching_channels(self, channel_values):
@@ -287,67 +341,198 @@ class Trigger(MeasurementBase):
         breaching_channels = []
         for channel_value in channel_values:
             if self.is_breaching(channel_value):
-                breaching_channels.append(channel_value['channel'])
+                channel = Channel.objects.filter(id=channel_value['channel'])
+                # Should just be one channel in the filter queryset
+                if len(channel) != 1:
+                    continue
+
+                value = channel_value[self.monitor.stat]
+                breaching_channels.append({
+                    'channel': str(channel[0]),
+                    'channel_id': channel_value['channel'],
+                    self.monitor.stat: value
+                })
 
         return breaching_channels
 
-    # channel_values is a list of dicts
-    def in_alarm_state(self, channel_values):
+    def get_breaching_change(self,
+                             breaching_channels,
+                             reftime=datetime.now(tz=pytz.UTC)):
         '''
-        Determine if Trigger is breaching for input aggregate channel
-        values
+        Return channels that were added or removed from the previous
+        breaching_channels list
         '''
-        breaching_channels = self.get_breaching_channels(channel_values)
-        return len(breaching_channels) >= self.monitor.num_channels
-
-    def get_latest_alert(self):
-        '''Return the most recent alert for this Trigger'''
-        return self.alerts.order_by('timestamp').last()
-
-    def get_alert_message(self, in_alarm):
-        if in_alarm:
-            msg = 'Trigger in alert for ' + str(self)
+        added = []
+        removed = []
+        alert = self.get_latest_alert(reftime)
+        if alert:
+            previous_ids = {x['channel_id'] for x in alert.breaching_channels}
+            current_ids = {x['channel_id'] for x in breaching_channels}
+            for chan in breaching_channels:
+                if chan['channel_id'] not in previous_ids:
+                    added.append(chan)
+            for chan in alert.breaching_channels:
+                if chan['channel_id'] not in current_ids:
+                    removed.append(chan)
         else:
-            msg = 'Trigger out of alert for ' + str(self)
-        return msg
+            # Case where there was no previous alert
+            added = breaching_channels
 
-    def create_alert(self, in_alarm):
-        msg = self.get_alert_message(in_alarm)
+        return added, removed
+
+    # breaching_channels is a list of dicts from
+    # trigger.get_breaching_channels()
+    def in_alarm_state(self,
+                       breaching_channels,
+                       reftime=datetime.now(tz=pytz.UTC)):
+        '''
+        Determine if Trigger is in or out of alarm based on breaching_channels
+        and num_channels_operator.
+        '''
+        if self.num_channels_operator == self.NumChannelsOperator.ANY:
+            # This is a special case. evaluate_alert() will perform further
+            # logic checks. Will always be "in_alarm" if there are more than
+            # zero breaching channels
+            return len(breaching_channels) > 0
+        else:
+            # Otherwise just compare the breaching_channels to the
+            # num_channels_operator (>, ==, <)
+            op = self.OPERATOR[self.num_channels_operator]
+            return op(len(breaching_channels), self.num_channels)
+
+    def get_latest_alert(self, reftime=datetime.now(tz=pytz.UTC)):
+        '''Return the most recent alert for this Trigger'''
+        return self.alerts.filter(
+            timestamp__lte=reftime).order_by('timestamp').last()
+
+    def create_alert(self,
+                     in_alarm,
+                     breaching_channels=[],
+                     timestamp=datetime.now(tz=pytz.UTC)):
         new_alert = Alert(trigger=self,
-                          timestamp=datetime.now(tz=pytz.UTC),
-                          message=msg,
+                          timestamp=timestamp,
+                          message="",
                           in_alarm=in_alarm,
-                          user=self.user)
+                          user=self.user,
+                          breaching_channels=breaching_channels)
         new_alert.save()
-        new_alert.create_alert_notifications()
         return new_alert
 
-    def evaluate_alert(self, in_alarm):
+    def evaluate_alert(self,
+                       in_alarm,
+                       breaching_channels=[],
+                       reftime=datetime.now(tz=pytz.UTC)):
         '''
         Determine what to do with alerts given that this Trigger is in
         or out of spec
         '''
         alert = self.get_latest_alert()
+        create_new = False
+        send_new = False
 
-        if in_alarm:
-            # In alarm state, does alert exist yet? If not, create a new one.
-            # Exist means the most recent one has in_alarm = True
-            if not alert or not alert.in_alarm:
-                return self.create_alert(in_alarm)
+        if self.num_channels_operator == self.NumChannelsOperator.ANY:
+            # Special treatment for num_channels_operator == ANY
+            added, removed = self.get_breaching_change(
+                breaching_channels, reftime)
+            if added:
+                # Always send new alert if new channels are added
+                create_new, send_new = True, True
+            elif removed:
+                create_new, send_new = True, self.alert_on_out_of_alarm
         else:
-            # Not in alarm state, is there an alert to cancel?
-            # If so, create new one saying in_alarm = False
-            if alert and alert.in_alarm:
-                return self.create_alert(in_alarm)
+            # Regular treatment for num_channels_operator != ANY
+            if in_alarm:
+                # In alarm state, does alert exist yet? If not, create a new
+                # one. Exist means the most recent one has in_alarm = True
+                if not alert or not alert.in_alarm:
+                    create_new, send_new = True, True
+            else:
+                # Not in alarm state, is there an alert to cancel?
+                # If so, create new one saying in_alarm = False
+                if alert and alert.in_alarm:
+                    create_new, send_new = True, self.alert_on_out_of_alarm
+
+        if create_new:
+            alert = self.create_alert(in_alarm, breaching_channels, reftime)
+            if send_new:
+                alert.send_alert()
 
         return alert
 
+    def get_text_description(self):
+        '''
+        Try to return something like:
+            Alert if count of
+            hourly_mean measurements
+            is outside of (-5,5)
+            for less than 5 channels
+            in channel group: UW SMAs
+            over the last 5 hours
+        see https://github.com/pnsn/squacapi/issues/373
+        '''
+        desc = ''
+        desc += f'Alert if {self.monitor.stat} of\n'
+        desc += f'{self.monitor.metric.name} measurements\n'
+        val = (self.val1, self.val2) if self.val2 is not None else self.val1
+        desc += f'is {self.value_operator} {val}\n'
+        if self.num_channels_operator == self.NumChannelsOperator.ANY:
+            desc += 'ANY channel\n'
+        else:
+            desc += f'for {self.num_channels_operator} than'
+            add_s = 's' if self.num_channels > 1 else ''
+            desc += f' {self.num_channels} channel{add_s}\n'
+        desc += f'in channel group: {self.monitor.channel_group}\n'
+        add_s = 's' if self.monitor.interval_count > 1 else ''
+        desc += f'over the last {self.monitor.interval_count}'
+        desc += f' {self.monitor.interval_type}{add_s}'
+        return desc
+
     def __str__(self):
         return (f"Monitor: {str(self.monitor)}, "
-                f"Min: {self.minval}, "
-                f"Max: {self.maxval}, "
+                f"Min: {self.val1}, "
+                f"Max: {self.val2}, "
                 f"Level: {self.level}"
                 )
+
+    def clean(self):
+        """
+        Some custom logic to make sure various fields correspond correctly
+        """
+        # Don't allow val2 to be None if using Within, OutsideOf
+        if all([self.val2 is None,
+                self.value_operator in (self.ValueOperator.WITHIN,
+                                        self.ValueOperator.OUTSIDE_OF)]):
+            raise ValidationError(
+                _(f'val2 must be defined when using {self.value_operator}'))
+        # Don't allow num_channels to be None if not using ANY
+        if all([self.num_channels is None,
+                self.num_channels_operator != self.NumChannelsOperator.ANY]):
+            raise ValidationError(
+                _('num_channels must be defined when using'
+                  f' {self.num_channels_operator}'))
+        # Level 2 and 3 require email_list to be filled.
+        if all([self.level in (self.Level.TWO, self.Level.THREE),
+                not self.email_list]):
+            raise ValidationError(
+                _(f'email_list must be filled for level {self.level} Trigger'))
+        # Level 2 should only send to one email
+        if all([self.level == self.Level.TWO,
+                isinstance(self.email_list, list),
+                self.email_list and len(self.email_list) > 1]):
+            raise ValidationError(
+                _('There must only be one email for level TWO triggers'))
+
+    def save(self, *args, **kwargs):
+        """
+        Do regular save except also validate fields. This doesn't happen
+        automatically on save
+        """
+        try:
+            self.full_clean()
+        except ValidationError:
+            raise
+
+        super().save(*args, **kwargs)  # Call the "real" save() method.
 
 
 class Alert(MeasurementBase):
@@ -360,13 +545,68 @@ class Alert(MeasurementBase):
     timestamp = models.DateTimeField()
     message = models.CharField(max_length=255)
     in_alarm = models.BooleanField(default=True)
+    breaching_channels = models.JSONField(null=True)
 
-    def create_alert_notifications(self):
-        level = self.trigger.level
-        notifications = self.user.get_notifications(level)
+    def get_printable_channel(self, channel, include_stat=True):
+        ret = str(channel['channel'])
+        # The monitor stat should be a key
+        stat = self.trigger.monitor.stat
+        if stat in channel and include_stat:
+            ret += f', {stat}: {channel[stat]}'
 
-        for notification in notifications:
-            notification.send(self)
+        return ret
+
+    def get_printable_channels(self, channels, include_stat=True):
+        if not channels:
+            return '\n'
+        str_out = '\n'
+        for channel in channels:
+            str_out += self.get_printable_channel(channel, include_stat)
+            str_out += '\n'
+
+        return str_out
+
+    def get_email_message(self):
+        msg = ''
+        msg += self.timestamp.strftime('%Y-%m-%dT%H:%M %Z')
+        in_out = 'IN' if self.in_alarm else 'OUT OF'
+        msg += f'\nTrigger {in_out} alert for {str(self.trigger)}'
+        msg += f'\n{self.trigger.get_text_description()}'
+
+        if operator.eq(self.trigger.num_channels_operator,
+                       Trigger.NumChannelsOperator.ANY):
+            added, removed = self.trigger.get_breaching_change(
+                self.breaching_channels, self.timestamp)
+            if added:
+                added_out = self.get_printable_channels(added)
+                msg += '\nNew channels in alert:' + str(added_out)
+            if removed:
+                removed_out = self.get_printable_channels(removed)
+                msg += '\nNew channels out of alert:' + str(removed_out)
+
+        breaching_out = self.get_printable_channels(self.breaching_channels)
+        msg += '\nAll breaching channels:' + str(breaching_out)
+        return msg
+
+    def send_alert(self):
+        if self.trigger.level == Trigger.Level.ONE:
+            # This alert should only be posted to the Monitors web page
+            return False
+        if not self.trigger.email_list:
+            # There is noone specified to send to
+            return False
+        in_out = "in" if self.in_alarm else "out of"
+        subject = (f"SQUAC {in_out} alert for '{self.trigger.monitor}', "
+                   f"level {self.trigger.level}"
+                   )
+        message = self.get_email_message()
+        send_mail(subject,
+                  message,
+                  settings.EMAIL_NO_REPLY,
+                  [email for email in self.trigger.email_list],
+                  fail_silently=False,
+                  )
+        return True
 
     class Meta:
         indexes = [

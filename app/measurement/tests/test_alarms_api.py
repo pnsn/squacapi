@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.utils import timezone
 # from django.db.models import Avg, Count, Max, Min, Sum
 
-from core.models import Contact, Notification, User
+from core.models import Contact, Notification
 from measurement.models import (Monitor, Trigger, Alert, Measurement,
                                 Metric)
 from nslc.models import Channel, Group, Network
@@ -62,7 +62,6 @@ class PrivateAlarmAPITests(TestCase):
             metric=self.metric,
             interval_type=interval_type,
             interval_count=interval_count,
-            num_channels=5,
             stat=Monitor.Stat.SUM,
             user=self.user
         )
@@ -112,16 +111,18 @@ class PrivateAlarmAPITests(TestCase):
             metric=self.metric,
             interval_type=Monitor.IntervalType.DAY,
             interval_count=1,
-            num_channels=5,
             stat=Monitor.Stat.SUM,
             user=self.user
         )
         self.trigger = Trigger.objects.create(
             monitor=self.monitor,
-            minval=2,
-            maxval=5,
-            level=Trigger.Level.ONE,
-            user=self.user
+            val1=2,
+            val2=5,
+            value_operator=Trigger.ValueOperator.WITHIN,
+            num_channels=5,
+            level=Trigger.Level.TWO,
+            user=self.user,
+            email_list=[self.user.email]
         )
         self.alert = Alert.objects.create(
             trigger=self.trigger,
@@ -166,7 +167,6 @@ class PrivateAlarmAPITests(TestCase):
             'metric': self.metric.id,
             'interval_type': Monitor.IntervalType.MINUTE,
             'interval_count': 5,
-            'num_channels': 3,
             'stat': Monitor.Stat.SUM,
             'user': self.user
         }
@@ -194,10 +194,12 @@ class PrivateAlarmAPITests(TestCase):
         url = reverse('measurement:trigger-list')
         payload = {
             'monitor': self.monitor.id,
-            'minval': 15,
-            'maxval': 20,
+            'val1': 15,
+            'val2': 20,
+            'num_channels': 3,
             'level': Trigger.Level.TWO,
-            'user': self.user
+            'user': self.user,
+            'email_list': self.user.email
         }
         res = self.client.post(url, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
@@ -347,7 +349,7 @@ class PrivateAlarmAPITests(TestCase):
         trigger = Trigger.objects.get(pk=trigger_id)
 
         res = trigger.get_breaching_channels(q_list)
-        self.assertCountEqual(res, expected)
+        self.assertEqual(len(res), len(expected))
 
     def test_get_breaching_channels(self):
         self.check_get_breaching_channels(1, 1, [1, 2])
@@ -357,17 +359,31 @@ class PrivateAlarmAPITests(TestCase):
 
     def check_in_alarm_state(self, monitor_id, trigger_id, expected):
         monitor = Monitor.objects.get(pk=monitor_id)
+        trigger = Trigger.objects.get(pk=trigger_id)
         endtime = datetime(2018, 2, 1, 4, 30, 0, 0, tzinfo=pytz.UTC)
 
         q_list = monitor.agg_measurements(endtime=endtime)
-        trigger = Trigger.objects.get(pk=trigger_id)
-        self.assertEqual(trigger.in_alarm_state(q_list), expected)
+        breaching_channels = trigger.get_breaching_channels(q_list)
+        self.assertEqual(trigger.in_alarm_state(breaching_channels), expected)
 
     def test_in_alarm_state(self):
-        self.check_in_alarm_state(1, 1, True)
-        self.check_in_alarm_state(1, 2, True)
-        self.check_in_alarm_state(1, 3, False)
-        self.check_in_alarm_state(1, 4, True)
+        monitor_id = 1
+        self.check_in_alarm_state(monitor_id, 1, True)
+        self.check_in_alarm_state(monitor_id, 2, True)
+        self.check_in_alarm_state(monitor_id, 3, False)
+        self.check_in_alarm_state(monitor_id, 4, True)
+        # Now change trigger and verify reverse results
+        monitor = Monitor.objects.get(pk=monitor_id)
+        for trigger in monitor.triggers.all():
+            trigger.num_channels_operator = (
+                Trigger.NumChannelsOperator.LESS_THAN
+            )
+            trigger.save()
+
+        self.check_in_alarm_state(monitor_id, 1, False)
+        self.check_in_alarm_state(monitor_id, 2, False)
+        self.check_in_alarm_state(monitor_id, 3, True)
+        self.check_in_alarm_state(monitor_id, 4, False)
 
     def test_get_latest_alert(self):
         trigger = Trigger.objects.get(pk=3)
@@ -424,7 +440,7 @@ class PrivateAlarmAPITests(TestCase):
     def test_evaluate_alarm(self):
         '''This is more like an integration test at the moment'''
         monitor = Monitor.objects.get(pk=1)
-        endtime = datetime(2018, 2, 1, 4, 30, 0, 0, tzinfo=pytz.UTC)
+        endtime = datetime(2018, 2, 1, 4, 35, 0, 0, tzinfo=pytz.UTC)
 
         all_alerts = Alert.objects.all()
         self.assertEqual(len(all_alerts), 6)
@@ -484,57 +500,19 @@ class PrivateAlarmAPITests(TestCase):
         with patch('measurement.models.Monitor.evaluate_alarm') as ea:
             call_command('evaluate_alarms')
             self.assertEqual(n_monitors, ea.call_count)
-            # print('Called {} times'.format(ea.call_count))
 
-    @patch.object(Alert, 'create_alert_notifications')
-    def test_function_create_alert(self, mock):
-        '''Test create_alert'''
-        in_alarm = True
-        trigger = Trigger.objects.get(pk=1)
-        alert = trigger.create_alert(in_alarm)
-
-        self.assertFalse(alert.id is None)
-        self.assertEqual(alert.in_alarm, in_alarm)
-        self.assertEqual(trigger.user, alert.user)
-        self.assertTrue(mock.called)
-
-    @patch.object(Notification, 'send')
-    def test_create_alert_notification(self, mock_send):
-        notification_qs = (
-            Notification.objects.filter(pk=self.notification.id)
-        )
-        with patch.object(User,
-                          'get_notifications',
-                          return_value=notification_qs
-                          ) as mock_method:
-            # Notification.create_alert_notifications(self.alert)
-            self.alert.create_alert_notifications()
-
-            self.assertTrue(mock_method.called)
-            # self.assertEqual(mock_method.call_args[0][0], self.alert.user)
-            self.assertEqual(mock_method.call_args[0][0],
-                             self.alert.trigger.level)
-
-            self.assertTrue(mock_send.called)
-            self.assertEqual(mock_send.call_args[0][0], self.alert)
-            # Alternative version
-            # mock_send.assert_called_once_with(self.alert)
-
-    @patch.object(Notification, 'send_email')
-    def test_send(self, mock_send):
-        self.notification.send(self.alert)
-
-        self.assertTrue(mock_send.called)
-        self.assertEqual(mock_send.call_args[0][0], self.alert)
-
-    def test_send_email(self):
-        self.notification.send_email(self.alert)
+    def test_send_alert(self):
+        self.alert.send_alert()
 
         self.assertEqual(len(mail.outbox), 1)
-        self.assertTrue(self.alert.message in mail.outbox[0].body)
-        self.assertTrue(self.notification.contact.email_value
-                        in mail.outbox[0].recipients())
+        self.assertTrue(self.alert.get_email_message() in mail.outbox[0].body)
+        for email in self.alert.trigger.email_list:
+            self.assertTrue(email in mail.outbox[0].recipients())
 
+    """
+    Contact class isn't used currently but might be in the future so leaving
+    it in for now. CWU 3/23/22
+    """
     def test_create_contact(self):
         url = reverse('user:contact-list')
         payload = {
@@ -606,8 +584,10 @@ class PrivateAlarmAPITests(TestCase):
     def test_trigger_with_zero_vals(self):
         trigger_test = Trigger.objects.create(
             monitor=self.monitor,
-            minval=0,
-            maxval=None,
+            val1=0,
+            val2=None,
+            value_operator=Trigger.ValueOperator.LESS_THAN,
+            num_channels=5,
             level=Trigger.Level.ONE,
             user=self.user
         )
@@ -617,3 +597,143 @@ class PrivateAlarmAPITests(TestCase):
         self.assertTrue(trigger_test.is_breaching(channel_value))
         channel_value[trigger_test.monitor.stat] = 1
         self.assertFalse(trigger_test.is_breaching(channel_value))
+
+    def test_alert_get_email_message(self):
+        monitor = Monitor.objects.get(pk=1)
+        endtime = datetime(2018, 2, 1, 4, 30, 0, 0, tzinfo=pytz.UTC)
+
+        q_list = monitor.agg_measurements(endtime=endtime)
+        trigger = Trigger.objects.get(pk=2)
+
+        breaching_channels = trigger.get_breaching_channels(q_list)
+        alert = Alert.objects.create(
+            trigger=trigger,
+            timestamp=datetime(1975, 1, 1, tzinfo=pytz.UTC),
+            message='',
+            in_alarm=True,
+            user=trigger.user,
+            breaching_channels=breaching_channels
+        )
+        channels_out = alert.get_printable_channels(breaching_channels)
+        self.assertTrue(str(channels_out) in alert.get_email_message())
+
+    def test_alert_filter(self):
+        '''Test filtering alerts'''
+        url = reverse('measurement:alert-list')
+
+        stime, etime = '2018-02-01T03:00:00Z', '2018-02-01T04:15:00Z'
+        url1 = url + f'?timestamp_gte={stime}&timestamp_lt={etime}'
+        res = self.client.get(url1)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data), 2)
+
+        url2 = url + '?trigger=3'
+        res = self.client.get(url2)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data), 3)
+
+        url3 = url + '?trigger=3&in_alarm=True'
+        res = self.client.get(url3)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data), 1)
+
+    def check_email_list(self, email_list, flag=0):
+        """
+        email_list is the potential input into Trigger.email_list
+        flag is the anticipated result
+            0: works (valid email_list)
+            1: invalid input type
+            2: invalid email(s)
+        """
+        def create_trigger(monitor, user):
+            Trigger.objects.create(
+                monitor=monitor,
+                val1=2,
+                val2=5,
+                value_operator=Trigger.ValueOperator.WITHIN,
+                num_channels=5,
+                level=Trigger.Level.THREE,
+                user=user,
+                email_list=email_list
+            )
+        if flag == 0:
+            create_trigger(self.monitor, self.user)
+            return
+
+        test_str = 'Correct'
+        if flag == 1:
+            test_str = 'Invalid input type'
+        if flag == 2:
+            test_str = 'Invalid email address'
+
+        with self.assertRaisesRegex(ValidationError, test_str + '*'):
+            create_trigger(self.monitor, self.user)
+
+    def test_trigger_email_list(self):
+        """
+        flag is the anticipated result
+            0: works (valid email_list)
+            1: invalid input type
+            2: invalid email(s)
+        """
+        self.check_email_list('user', flag=2)
+        self.check_email_list('user@gmail.com', flag=0)
+        self.check_email_list(['user'], flag=2)
+        self.check_email_list(['user@gmail.com'], flag=0)
+        self.check_email_list(['user@gmail.com', 'user'], flag=2)
+        self.check_email_list(['user@gmail.com', 'user', 'other'], flag=2)
+        self.check_email_list(['user@gmail.com', 'new@uw.edu'], flag=0)
+        self.check_email_list({'email': 'user@gmail.com'}, flag=1)
+
+    def test_val2_is_none_error(self):
+        with self.assertRaisesRegex(ValidationError,
+                                    'val2 must be defined*'):
+            Trigger.objects.create(
+                monitor=self.monitor,
+                val1=2,
+                value_operator=Trigger.ValueOperator.WITHIN,
+                num_channels=5,
+                level=Trigger.Level.THREE,
+                user=self.user,
+                email_list=self.user.email
+            )
+
+    def test_num_channels_is_none_error(self):
+        with self.assertRaisesRegex(ValidationError,
+                                    'num_channels must be defined*'):
+            Trigger.objects.create(
+                monitor=self.monitor,
+                val1=2,
+                value_operator=Trigger.ValueOperator.GREATER_THAN,
+                num_channels_operator=Trigger.NumChannelsOperator.GREATER_THAN,
+                level=Trigger.Level.THREE,
+                user=self.user,
+                email_list=self.user.email
+            )
+
+    def test_level_email_list_correspond(self):
+        with self.assertRaisesRegex(ValidationError,
+                                    'email_list must be filled*'):
+            Trigger.objects.create(
+                monitor=self.monitor,
+                val1=2,
+                value_operator=Trigger.ValueOperator.GREATER_THAN,
+                num_channels=5,
+                num_channels_operator=Trigger.NumChannelsOperator.GREATER_THAN,
+                level=Trigger.Level.THREE,
+                user=self.user
+            )
+
+    def test_level_two_has_single_email(self):
+        with self.assertRaisesRegex(ValidationError,
+                                    'There must only be one email*'):
+            Trigger.objects.create(
+                monitor=self.monitor,
+                val1=2,
+                value_operator=Trigger.ValueOperator.GREATER_THAN,
+                num_channels=5,
+                num_channels_operator=Trigger.NumChannelsOperator.GREATER_THAN,
+                level=Trigger.Level.TWO,
+                user=self.user,
+                email_list=[self.user.email, 'test@email.com']
+            )

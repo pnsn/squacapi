@@ -6,8 +6,7 @@ from rest_framework.response import Response
 from django_filters import rest_framework as filters
 from squac.filters import CharInFilter, NumberInFilter
 from measurement.aggregates.percentile import Percentile
-from django.db.models import (Avg, StdDev, Min, Max, Count, FloatField,
-                              Subquery)
+from django.db.models import Avg, StdDev, Min, Max, Count, FloatField
 from django.db.models.functions import (Coalesce, Abs, Least, Greatest)
 from squac.mixins import (SetUserMixin, DefaultPermissionsMixin,
                           AdminOrOwnerPermissionMixin)
@@ -72,6 +71,12 @@ class TriggerFilter(filters.FilterSet):
 
 
 class AlertFilter(filters.FilterSet):
+    """filters alert by trigger, in_alarm, timestamp"""
+    timestamp_gte = filters.CharFilter(field_name='timestamp',
+                                       lookup_expr='gte')
+    timestamp_lt = filters.CharFilter(field_name='timestamp',
+                                      lookup_expr='lt')
+
     class Meta:
         model = Alert
         fields = ('trigger', 'in_alarm')
@@ -115,7 +120,7 @@ class MetricViewSet(MeasurementBaseViewSet):
     def get_queryset(self):
         return Metric.objects.all()
 
-    @method_decorator(cache_page(60 * 10))
+    @method_decorator(cache_page(60 * 10, key_prefix="MetricView"))
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
@@ -135,7 +140,7 @@ class MeasurementViewSet(MeasurementBaseViewSet):
         return super(MeasurementViewSet, self).get_serializer(*args, **kwargs)
 
     def get_queryset(self):
-        return Measurement.objects.all().order_by('channel', 'metric')
+        return Measurement.objects.all().order_by('starttime')
 
     def list(self, request, *args, **kwargs):
         '''We want to be careful about large queries so require params'''
@@ -246,7 +251,7 @@ class AggregatedViewSet(IsAuthenticated, viewsets.ViewSet):
         measurements = measurements.filter(metric__in=metrics)
         measurements = measurements.filter(
             starttime__gte=params['starttime']).filter(
-            starttime__lt=params['endtime']).order_by('-starttime')
+            starttime__lt=params['endtime'])
         aggs = measurements.values(
             'channel', 'metric').annotate(
                 mean=Avg('value'),
@@ -263,10 +268,27 @@ class AggregatedViewSet(IsAuthenticated, viewsets.ViewSet):
                 p95=Percentile('value', percentile=0.95),
                 num_samps=Count('value'),
                 starttime=Min('starttime'),
-                endtime=Max('endtime'),
-                latest=Subquery(measurements.values('value')[:1])
-
+                endtime=Max('endtime')
         )
+
+        # Get the latest value for each channel-metric
+        # The first empty order_by() clears any previous orderings
+        latest = measurements.order_by().order_by(
+            'channel', 'metric', '-starttime').distinct(
+            'channel', 'metric').values(
+            'channel', 'metric', 'value')
+
+        # Convert to dict with (channel, metric) key for easy lookup
+        latest_dict = {(obj['channel'], obj['metric']): obj['value']
+                       for obj in latest}
+
+        # Add in the latest measurement for each channel-metric to aggs. Do
+        # this separately since using a subquery was taxing the db too much.
+        aggs_list = list(aggs)
+        for obj in aggs_list:
+            key = (obj['channel'], obj['metric'])
+            obj['latest'] = latest_dict.get(key, None)
+
         serializer = serializers.AggregatedSerializer(
-            instance=aggs, many=True)
+            instance=aggs_list, many=True)
         return Response(serializer.data)
