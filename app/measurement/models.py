@@ -510,6 +510,9 @@ class Trigger(MeasurementBase):
             raise ValidationError(
                 _('num_channels must be defined when using'
                   f' {self.num_channels_operator}'))
+        # Make sure email_list is an actual list
+        if isinstance(self.email_list, str):
+            self.email_list = [self.email_list]
         # Level 2 and 3 require email_list to be filled.
         if all([self.level in (self.Level.TWO, self.Level.THREE),
                 not self.email_list]):
