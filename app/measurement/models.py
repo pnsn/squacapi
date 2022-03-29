@@ -403,7 +403,7 @@ class Trigger(MeasurementBase):
     def get_latest_alert(self, reftime=datetime.now(tz=pytz.UTC)):
         '''Return the most recent alert for this Trigger'''
         return self.alerts.filter(
-            timestamp__lte=reftime).order_by('timestamp').last()
+            timestamp__lt=reftime).order_by('timestamp').last()
 
     def create_alert(self,
                      in_alarm,
@@ -560,12 +560,12 @@ class Alert(MeasurementBase):
         return ret
 
     def get_printable_channels(self, channels, include_stat=True):
+        str_out = ''
         if not channels:
-            return '\n'
-        str_out = '\n'
+            return str_out
+
         for channel in channels:
-            str_out += self.get_printable_channel(channel, include_stat)
-            str_out += '\n'
+            str_out += '\n' + self.get_printable_channel(channel, include_stat)
 
         return str_out
 
@@ -578,13 +578,16 @@ class Alert(MeasurementBase):
 
         if operator.eq(self.trigger.num_channels_operator,
                        Trigger.NumChannelsOperator.ANY):
+            # Use one second before as reftime just to make sure this alert
+            # itself isn't used as the latest alert
             added, removed = self.trigger.get_breaching_change(
-                self.breaching_channels, self.timestamp)
+                self.breaching_channels,
+                self.timestamp - timedelta(seconds=1))
             if added:
                 added_out = self.get_printable_channels(added)
                 msg += '\n\nNew channels in alert:' + str(added_out)
             if removed:
-                removed_out = self.get_printable_channels(removed)
+                removed_out = self.get_printable_channels(removed, False)
                 msg += '\n\nNew channels out of alert:' + str(removed_out)
 
         breaching_out = self.get_printable_channels(self.breaching_channels)
