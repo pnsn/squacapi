@@ -199,7 +199,7 @@ class PrivateAlarmAPITests(TestCase):
             'num_channels': 3,
             'level': Trigger.Level.TWO,
             'user': self.user,
-            'email_list': self.user.email
+            'email_list': [self.user.email]
         }
         res = self.client.post(url, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
