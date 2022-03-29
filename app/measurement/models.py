@@ -476,7 +476,7 @@ class Trigger(MeasurementBase):
         val = (self.val1, self.val2) if self.val2 is not None else self.val1
         desc += f'is {self.value_operator} {val}\n'
         if self.num_channels_operator == self.NumChannelsOperator.ANY:
-            desc += 'ANY channel\n'
+            desc += 'for ANY channel\n'
         else:
             desc += f'for {self.num_channels_operator} than'
             add_s = 's' if self.num_channels > 1 else ''
@@ -574,7 +574,7 @@ class Alert(MeasurementBase):
         msg += self.timestamp.strftime('%Y-%m-%dT%H:%M %Z')
         in_out = 'IN' if self.in_alarm else 'OUT OF'
         msg += f'\nTrigger {in_out} alert for {str(self.trigger)}'
-        msg += f'\n{self.trigger.get_text_description()}'
+        msg += f'\n\n{self.trigger.get_text_description()}'
 
         if operator.eq(self.trigger.num_channels_operator,
                        Trigger.NumChannelsOperator.ANY):
@@ -582,13 +582,13 @@ class Alert(MeasurementBase):
                 self.breaching_channels, self.timestamp)
             if added:
                 added_out = self.get_printable_channels(added)
-                msg += '\nNew channels in alert:' + str(added_out)
+                msg += '\n\nNew channels in alert:' + str(added_out)
             if removed:
                 removed_out = self.get_printable_channels(removed)
-                msg += '\nNew channels out of alert:' + str(removed_out)
+                msg += '\n\nNew channels out of alert:' + str(removed_out)
 
         breaching_out = self.get_printable_channels(self.breaching_channels)
-        msg += '\nAll breaching channels:' + str(breaching_out)
+        msg += '\n\nAll breaching channels:' + str(breaching_out)
         return msg
 
     def send_alert(self):
@@ -598,7 +598,7 @@ class Alert(MeasurementBase):
         if not self.trigger.email_list:
             # There is noone specified to send to
             return False
-        in_out = "in" if self.in_alarm else "out of"
+        in_out = "IN" if self.in_alarm else "OUT OF"
         subject = (f"SQUAC {in_out} alert for '{self.trigger.monitor}', "
                    f"level {self.trigger.level}"
                    )
