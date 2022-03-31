@@ -157,7 +157,7 @@ class PrivateAlarmAPITests(TestCase):
         )
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        # There are 5 triggers keyed to this monitor in fixtures_measurement
+        # There are 5 triggers keyed to this monitor in fixture alarms.json
         self.assertEqual(5, len(res.data['triggers']))
 
     def test_create_monitor(self):
@@ -397,45 +397,200 @@ class PrivateAlarmAPITests(TestCase):
         alert = trigger.get_latest_alert()
         self.assertIsNone(alert)
 
-    def test_evaluate_alert_false_alert_no_alarm(self):
+    """
+    These next evaluate_alert(in_alarm) tests depend on three main inputs.
+    - The previous alert can be in_alarm=false, in_alarm=true, or none
+    - The in_alarm argument can be false ("no") or true ("in")
+    - breaching_channels is only needed if num_channels_operator=any
+    """
+    @patch.object(Alert, 'send_alert')
+    def test_evaluate_alert_false_alert_no_alarm(self, send_alert):
         trigger = Trigger.objects.get(pk=1)
 
         alert = trigger.evaluate_alert(False)
         self.assertEqual(1, alert.id)
         self.assertFalse(alert.in_alarm)
+        self.assertFalse(send_alert.called)
 
-    def test_evaluate_alert_false_alert_in_alarm(self):
+    @patch.object(Alert, 'send_alert')
+    def test_evaluate_alert_false_alert_in_alarm(self, send_alert):
         trigger = Trigger.objects.get(pk=1)
 
         alert = trigger.evaluate_alert(True)
         self.assertNotEqual(1, alert.id)
         self.assertTrue(alert.in_alarm)
+        self.assertTrue(send_alert.called)
 
-    def test_evaluate_alert_true_alert_no_alarm(self):
+    @patch.object(Alert, 'send_alert')
+    def test_evaluate_alert_true_alert_no_alarm(self, send_alert):
         trigger = Trigger.objects.get(pk=2)
 
         alert = trigger.evaluate_alert(False)
         self.assertNotEqual(2, alert.id)
         self.assertFalse(alert.in_alarm)
+        self.assertFalse(send_alert.called)
 
-    def test_evaluate_alert_true_alert_in_alarm(self):
+    @patch.object(Alert, 'send_alert')
+    def test_evaluate_alert_true_alert_no_alarm2(self, send_alert):
+        """
+        Same as above except set alert_on_out_of_alarm to true
+        """
+        trigger = Trigger.objects.get(pk=2)
+        trigger.alert_on_out_of_alarm = True
+        trigger.save()
+
+        alert = trigger.evaluate_alert(False)
+        self.assertNotEqual(2, alert.id)
+        self.assertFalse(alert.in_alarm)
+        self.assertTrue(send_alert.called)
+
+    @patch.object(Alert, 'send_alert')
+    def test_evaluate_alert_true_alert_in_alarm(self, send_alert):
         trigger = Trigger.objects.get(pk=2)
 
         alert = trigger.evaluate_alert(True)
         self.assertEqual(2, alert.id)
         self.assertTrue(alert.in_alarm)
+        self.assertFalse(send_alert.called)
 
-    def test_evaluate_alert_no_alert_no_alarm(self):
+    @patch.object(Alert, 'send_alert')
+    def test_evaluate_alert_no_alert_no_alarm(self, send_alert):
         trigger = Trigger.objects.get(pk=4)
 
         alert = trigger.evaluate_alert(False)
         self.assertIsNone(alert)
+        self.assertFalse(send_alert.called)
 
-    def test_evaluate_alert_no_alert_in_alarm(self):
+    @patch.object(Alert, 'send_alert')
+    def test_evaluate_alert_no_alert_in_alarm(self, send_alert):
         trigger = Trigger.objects.get(pk=4)
 
         alert = trigger.evaluate_alert(True)
         self.assertTrue(alert.in_alarm)
+        self.assertTrue(send_alert.called)
+
+    @patch.object(Alert, 'send_alert')
+    def test_evaluate_alert_no_alert_not_breaching(self, send_alert):
+        trigger = Trigger.objects.get(pk=7)
+
+        alert = trigger.evaluate_alert(
+            False,
+            breaching_channels=[]
+        )
+        self.assertIsNone(alert)
+        self.assertFalse(send_alert.called)
+
+    @patch.object(Alert, 'send_alert')
+    def test_evaluate_alert_no_alert_breaching(self, send_alert):
+        trigger = Trigger.objects.get(pk=7)
+        breaching_channels = [{
+            "avg": 5,
+            "channel": "UW:STA2:--:HNN",
+            "channel_id": 2
+        }]
+
+        alert = trigger.evaluate_alert(
+            True,
+            breaching_channels=breaching_channels
+        )
+        self.assertTrue(alert.in_alarm)
+        self.assertTrue(send_alert.called)
+
+    @patch.object(Alert, 'send_alert')
+    def test_evaluate_alert_false_alert_not_breaching(self, send_alert):
+        trigger = Trigger.objects.get(pk=8)
+
+        alert = trigger.evaluate_alert(
+            False,
+            breaching_channels=[]
+        )
+        self.assertEqual(6, alert.id)
+        self.assertFalse(alert.in_alarm)
+        self.assertFalse(send_alert.called)
+
+    @patch.object(Alert, 'send_alert')
+    def test_evaluate_alert_false_alert_breaching2(self, send_alert):
+        trigger = Trigger.objects.get(pk=8)
+        breaching_channels = [{
+            "avg": 5,
+            "channel": "UW:STA2:--:HNN",
+            "channel_id": 2
+        }]
+
+        alert = trigger.evaluate_alert(
+            True,
+            breaching_channels=breaching_channels
+        )
+        self.assertNotEqual(6, alert.id)
+        self.assertTrue(alert.in_alarm)
+        self.assertTrue(send_alert.called)
+
+    @patch.object(Alert, 'send_alert')
+    def test_evaluate_alert_true_alert_not_breaching(self, send_alert):
+        trigger = Trigger.objects.get(pk=9)
+
+        alert = trigger.evaluate_alert(
+            False,
+            breaching_channels=[]
+        )
+        self.assertNotEqual(7, alert.id)
+        self.assertFalse(alert.in_alarm)
+        self.assertFalse(send_alert.called)
+
+    @patch.object(Alert, 'send_alert')
+    def test_evaluate_alert_true_alert_not_breaching2(self, send_alert):
+        """
+        Same as above except set alert_on_out_of_alarm to true
+        """
+        trigger = Trigger.objects.get(pk=9)
+        trigger.alert_on_out_of_alarm = True
+        trigger.save()
+
+        alert = trigger.evaluate_alert(
+            False,
+            breaching_channels=[]
+        )
+        self.assertNotEqual(7, alert.id)
+        self.assertFalse(alert.in_alarm)
+        self.assertTrue(send_alert.called)
+
+    @patch.object(Alert, 'send_alert')
+    def test_evaluate_alert_true_alert_breaching(self, send_alert):
+        trigger = Trigger.objects.get(pk=9)
+        breaching_channels = [{
+            "avg": 5,
+            "channel": "UW:STA2:--:HNN",
+            "channel_id": 2
+        }]
+
+        alert = trigger.evaluate_alert(
+            True,
+            breaching_channels=breaching_channels
+        )
+        self.assertNotEqual(7, alert.id)
+        self.assertTrue(alert.in_alarm)
+        self.assertTrue(send_alert.called)
+
+    @patch.object(Alert, 'send_alert')
+    def test_evaluate_alert_true_alert_breaching2(self, send_alert):
+        """
+        Same as above except the same channel is breaching as the previous
+        alert
+        """
+        trigger = Trigger.objects.get(pk=9)
+        breaching_channels = [{
+            "avg": 6,
+            "channel": "UW:STA1:--:HNN",
+            "channel_id": 1
+        }]
+
+        alert = trigger.evaluate_alert(
+            True,
+            breaching_channels=breaching_channels
+        )
+        self.assertEqual(7, alert.id)
+        self.assertTrue(alert.in_alarm)
+        self.assertFalse(send_alert.called)
 
     def test_evaluate_alarm(self):
         '''This is more like an integration test at the moment'''
@@ -443,7 +598,7 @@ class PrivateAlarmAPITests(TestCase):
         endtime = datetime(2018, 2, 1, 4, 35, 0, 0, tzinfo=pytz.UTC)
 
         all_alerts = Alert.objects.all()
-        self.assertEqual(len(all_alerts), 6)
+        self.assertEqual(len(all_alerts), 8)
 
         monitor.evaluate_alarm(endtime=endtime)
 
@@ -492,7 +647,7 @@ class PrivateAlarmAPITests(TestCase):
         self.assertEqual(len(alerts), 0)
 
         all_alerts = Alert.objects.all()
-        self.assertEqual(len(all_alerts), 9)
+        self.assertEqual(len(all_alerts), 11)
 
     def test_evaluate_alarms(self):
         '''Test evaluate_alarm command'''
@@ -625,7 +780,7 @@ class PrivateAlarmAPITests(TestCase):
         url1 = url + f'?timestamp_gte={stime}&timestamp_lt={etime}'
         res = self.client.get(url1)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(res.data), 2)
+        self.assertEqual(len(res.data), 4)
 
         url2 = url + '?trigger=3'
         res = self.client.get(url2)
