@@ -600,7 +600,6 @@
         "val2": null, 
         "value_operator": "<",
         "num_channels": 1, 
-        "level": 2,
         "email_list": "loader@pnsn.org"
     }
 },
@@ -618,7 +617,6 @@
         "val2": null, 
         "value_operator": ">",
         "num_channels": 2, 
-        "level": 2,
         "email_list": "loader@pnsn.org"
     }
 },
@@ -636,7 +634,6 @@
         "val2": 6, 
         "value_operator": "outsideof",
         "num_channels": 2, 
-        "level": 2,
         "email_list": "loader@pnsn.org"
     }
 },
@@ -654,7 +651,6 @@
         "val2": 6, 
         "value_operator": "within",
         "num_channels": 1, 
-        "level": 2,
         "email_list": "loader@pnsn.org"
     }
 },
@@ -672,7 +668,6 @@
         "val2": 6, 
         "value_operator": "within",
         "num_channels": 2, 
-        "level": 2,
         "email_list": "loader@pnsn.org"
     }
 },
@@ -690,7 +685,54 @@
         "val2": 6, 
         "value_operator": "within",
         "num_channels": 2, 
-        "level": 2,
+        "email_list": "loader@pnsn.org"
+    }
+},
+{
+    "model": "measurement.trigger",
+    "pk": 7,
+    "fields": {
+        "created_at": "2019-08-28T23:30:31.262Z", 
+        "updated_at": "2019-08-28T23:30:31.262Z", 
+        "user": [
+            "loader@pnsn.org"
+        ], 
+        "monitor": 2, 
+        "val1": 4, 
+        "value_operator": ">",
+        "num_channels_operator": "any",
+        "email_list": "loader@pnsn.org"
+    }
+},
+{
+    "model": "measurement.trigger",
+    "pk": 8,
+    "fields": {
+        "created_at": "2019-08-28T23:30:31.262Z", 
+        "updated_at": "2019-08-28T23:30:31.262Z", 
+        "user": [
+            "loader@pnsn.org"
+        ], 
+        "monitor": 2, 
+        "val1": 4, 
+        "value_operator": ">",
+        "num_channels_operator": "any",
+        "email_list": "loader@pnsn.org"
+    }
+},
+{
+    "model": "measurement.trigger",
+    "pk": 9,
+    "fields": {
+        "created_at": "2019-08-28T23:30:31.262Z", 
+        "updated_at": "2019-08-28T23:30:31.262Z", 
+        "user": [
+            "loader@pnsn.org"
+        ], 
+        "monitor": 2, 
+        "val1": 4, 
+        "value_operator": ">",
+        "num_channels_operator": "any",
         "email_list": "loader@pnsn.org"
     }
 },
@@ -767,6 +809,40 @@
         "timestamp": "2018-02-01T04:00:00Z", 
         "message": "Wow, an alert! It keeps happening!", 
         "in_alarm": false
+    }
+},
+{
+    "model": "measurement.alert",
+    "pk": 6,
+    "fields": {
+        "created_at": "2019-08-28T23:30:31.262Z", 
+        "updated_at": "2019-08-28T23:30:31.262Z", 
+        "user": [
+            "loader@pnsn.org"
+        ], 
+        "trigger": 8, 
+        "timestamp": "2018-02-01T04:00:00Z", 
+        "message": "", 
+        "breaching_channels": [],
+        "in_alarm": false
+    }
+},
+{
+    "model": "measurement.alert",
+    "pk": 7,
+    "fields": {
+        "created_at": "2019-08-28T23:30:31.262Z", 
+        "updated_at": "2019-08-28T23:30:31.262Z", 
+        "user": [
+            "loader@pnsn.org"
+        ], 
+        "trigger": 9, 
+        "timestamp": "2018-02-01T04:00:00Z", 
+        "message": "", 
+        "breaching_channels": [
+            {"avg": 5, "channel": "UW:STA1:--:HNN", "channel_id": 1}
+        ],
+        "in_alarm": true
     }
 }
 ]

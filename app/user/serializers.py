@@ -3,8 +3,6 @@ from django.contrib.auth.models import Group
 
 from rest_framework import serializers
 from organization.models import Organization
-from core.models import Contact, Notification
-# from measurement.models import Contact
 
 
 class GroupSerializer(serializers.ModelSerializer):
@@ -123,45 +121,3 @@ class AuthTokenSerializer(serializers.Serializer):
 
         attrs['user'] = user
         return attrs
-
-
-class ContactSerializer(serializers.HyperlinkedModelSerializer):
-    url = serializers.HyperlinkedIdentityField(
-        view_name="user:contact-detail")
-
-    class Meta:
-        model = Contact
-        fields = (
-            'id', 'url', 'email_value', 'sms_value', 'name', 'created_at',
-            'updated_at', 'user_id'
-        )
-        read_only_fields = ('id',)
-
-
-class NotificationSerializer(serializers.HyperlinkedModelSerializer):
-    url = serializers.HyperlinkedIdentityField(
-        view_name="user:notification-detail")
-    contact = serializers.PrimaryKeyRelatedField(
-        queryset=Contact.objects.all())
-
-    class Meta:
-        model = Notification
-        fields = (
-            'id', 'url', 'notification_type', 'contact', 'level', 'created_at',
-            'updated_at', 'user_id'
-        )
-        read_only_fields = ('id',)
-
-
-class NotificationDetailSerializer(serializers.HyperlinkedModelSerializer):
-    url = serializers.HyperlinkedIdentityField(
-        view_name="user:notification-detail")
-    contact = ContactSerializer(read_only=True)
-
-    class Meta:
-        model = Notification
-        fields = (
-            'id', 'url', 'notification_type', 'contact', 'level', 'created_at',
-            'updated_at', 'user_id'
-        )
-        read_only_fields = ('id',)

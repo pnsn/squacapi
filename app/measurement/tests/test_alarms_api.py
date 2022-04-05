@@ -7,7 +7,6 @@ from django.urls import reverse
 from django.utils import timezone
 # from django.db.models import Avg, Count, Max, Min, Sum
 
-from core.models import Contact, Notification
 from measurement.models import (Monitor, Trigger, Alert, Measurement,
                                 Metric)
 from nslc.models import Channel, Group, Network
@@ -120,7 +119,6 @@ class PrivateAlarmAPITests(TestCase):
             val2=5,
             value_operator=Trigger.ValueOperator.WITHIN,
             num_channels=5,
-            level=Trigger.Level.TWO,
             user=self.user,
             email_list=[self.user.email]
         )
@@ -130,15 +128,6 @@ class PrivateAlarmAPITests(TestCase):
             message='Alarm on channel group something something!',
             in_alarm=True,
             user=self.user
-        )
-        self.contact = Contact.objects.create(
-            user=self.user,
-            email_value=self.user.email
-        )
-        self.notification = Notification.objects.create(
-            notification_type=Notification.NotificationType.EMAIL,
-            user=self.user,
-            contact=self.contact
         )
 
     def test_get_monitor(self):
@@ -157,7 +146,7 @@ class PrivateAlarmAPITests(TestCase):
         )
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        # There are 5 triggers keyed to this monitor in fixtures_measurement
+        # There are 5 triggers keyed to this monitor in fixture alarms.json
         self.assertEqual(5, len(res.data['triggers']))
 
     def test_create_monitor(self):
@@ -197,7 +186,6 @@ class PrivateAlarmAPITests(TestCase):
             'val1': 15,
             'val2': 20,
             'num_channels': 3,
-            'level': Trigger.Level.TWO,
             'user': self.user,
             'email_list': [self.user.email]
         }
@@ -397,45 +385,200 @@ class PrivateAlarmAPITests(TestCase):
         alert = trigger.get_latest_alert()
         self.assertIsNone(alert)
 
-    def test_evaluate_alert_false_alert_no_alarm(self):
+    """
+    These next evaluate_alert(in_alarm) tests depend on three main inputs.
+    - The previous alert can be in_alarm=false, in_alarm=true, or none
+    - The in_alarm argument can be false ("no") or true ("in")
+    - breaching_channels is only needed if num_channels_operator=any
+    """
+    @patch.object(Alert, 'send_alert')
+    def test_evaluate_alert_false_alert_no_alarm(self, send_alert):
         trigger = Trigger.objects.get(pk=1)
 
         alert = trigger.evaluate_alert(False)
         self.assertEqual(1, alert.id)
         self.assertFalse(alert.in_alarm)
+        self.assertFalse(send_alert.called)
 
-    def test_evaluate_alert_false_alert_in_alarm(self):
+    @patch.object(Alert, 'send_alert')
+    def test_evaluate_alert_false_alert_in_alarm(self, send_alert):
         trigger = Trigger.objects.get(pk=1)
 
         alert = trigger.evaluate_alert(True)
         self.assertNotEqual(1, alert.id)
         self.assertTrue(alert.in_alarm)
+        self.assertTrue(send_alert.called)
 
-    def test_evaluate_alert_true_alert_no_alarm(self):
+    @patch.object(Alert, 'send_alert')
+    def test_evaluate_alert_true_alert_no_alarm(self, send_alert):
         trigger = Trigger.objects.get(pk=2)
 
         alert = trigger.evaluate_alert(False)
         self.assertNotEqual(2, alert.id)
         self.assertFalse(alert.in_alarm)
+        self.assertFalse(send_alert.called)
 
-    def test_evaluate_alert_true_alert_in_alarm(self):
+    @patch.object(Alert, 'send_alert')
+    def test_evaluate_alert_true_alert_no_alarm2(self, send_alert):
+        """
+        Same as above except set alert_on_out_of_alarm to true
+        """
+        trigger = Trigger.objects.get(pk=2)
+        trigger.alert_on_out_of_alarm = True
+        trigger.save()
+
+        alert = trigger.evaluate_alert(False)
+        self.assertNotEqual(2, alert.id)
+        self.assertFalse(alert.in_alarm)
+        self.assertTrue(send_alert.called)
+
+    @patch.object(Alert, 'send_alert')
+    def test_evaluate_alert_true_alert_in_alarm(self, send_alert):
         trigger = Trigger.objects.get(pk=2)
 
         alert = trigger.evaluate_alert(True)
         self.assertEqual(2, alert.id)
         self.assertTrue(alert.in_alarm)
+        self.assertFalse(send_alert.called)
 
-    def test_evaluate_alert_no_alert_no_alarm(self):
+    @patch.object(Alert, 'send_alert')
+    def test_evaluate_alert_no_alert_no_alarm(self, send_alert):
         trigger = Trigger.objects.get(pk=4)
 
         alert = trigger.evaluate_alert(False)
         self.assertIsNone(alert)
+        self.assertFalse(send_alert.called)
 
-    def test_evaluate_alert_no_alert_in_alarm(self):
+    @patch.object(Alert, 'send_alert')
+    def test_evaluate_alert_no_alert_in_alarm(self, send_alert):
         trigger = Trigger.objects.get(pk=4)
 
         alert = trigger.evaluate_alert(True)
         self.assertTrue(alert.in_alarm)
+        self.assertTrue(send_alert.called)
+
+    @patch.object(Alert, 'send_alert')
+    def test_evaluate_alert_no_alert_not_breaching(self, send_alert):
+        trigger = Trigger.objects.get(pk=7)
+
+        alert = trigger.evaluate_alert(
+            False,
+            breaching_channels=[]
+        )
+        self.assertIsNone(alert)
+        self.assertFalse(send_alert.called)
+
+    @patch.object(Alert, 'send_alert')
+    def test_evaluate_alert_no_alert_breaching(self, send_alert):
+        trigger = Trigger.objects.get(pk=7)
+        breaching_channels = [{
+            "avg": 5,
+            "channel": "UW:STA2:--:HNN",
+            "channel_id": 2
+        }]
+
+        alert = trigger.evaluate_alert(
+            True,
+            breaching_channels=breaching_channels
+        )
+        self.assertTrue(alert.in_alarm)
+        self.assertTrue(send_alert.called)
+
+    @patch.object(Alert, 'send_alert')
+    def test_evaluate_alert_false_alert_not_breaching(self, send_alert):
+        trigger = Trigger.objects.get(pk=8)
+
+        alert = trigger.evaluate_alert(
+            False,
+            breaching_channels=[]
+        )
+        self.assertEqual(6, alert.id)
+        self.assertFalse(alert.in_alarm)
+        self.assertFalse(send_alert.called)
+
+    @patch.object(Alert, 'send_alert')
+    def test_evaluate_alert_false_alert_breaching2(self, send_alert):
+        trigger = Trigger.objects.get(pk=8)
+        breaching_channels = [{
+            "avg": 5,
+            "channel": "UW:STA2:--:HNN",
+            "channel_id": 2
+        }]
+
+        alert = trigger.evaluate_alert(
+            True,
+            breaching_channels=breaching_channels
+        )
+        self.assertNotEqual(6, alert.id)
+        self.assertTrue(alert.in_alarm)
+        self.assertTrue(send_alert.called)
+
+    @patch.object(Alert, 'send_alert')
+    def test_evaluate_alert_true_alert_not_breaching(self, send_alert):
+        trigger = Trigger.objects.get(pk=9)
+
+        alert = trigger.evaluate_alert(
+            False,
+            breaching_channels=[]
+        )
+        self.assertNotEqual(7, alert.id)
+        self.assertFalse(alert.in_alarm)
+        self.assertFalse(send_alert.called)
+
+    @patch.object(Alert, 'send_alert')
+    def test_evaluate_alert_true_alert_not_breaching2(self, send_alert):
+        """
+        Same as above except set alert_on_out_of_alarm to true
+        """
+        trigger = Trigger.objects.get(pk=9)
+        trigger.alert_on_out_of_alarm = True
+        trigger.save()
+
+        alert = trigger.evaluate_alert(
+            False,
+            breaching_channels=[]
+        )
+        self.assertNotEqual(7, alert.id)
+        self.assertFalse(alert.in_alarm)
+        self.assertTrue(send_alert.called)
+
+    @patch.object(Alert, 'send_alert')
+    def test_evaluate_alert_true_alert_breaching(self, send_alert):
+        trigger = Trigger.objects.get(pk=9)
+        breaching_channels = [{
+            "avg": 5,
+            "channel": "UW:STA2:--:HNN",
+            "channel_id": 2
+        }]
+
+        alert = trigger.evaluate_alert(
+            True,
+            breaching_channels=breaching_channels
+        )
+        self.assertNotEqual(7, alert.id)
+        self.assertTrue(alert.in_alarm)
+        self.assertTrue(send_alert.called)
+
+    @patch.object(Alert, 'send_alert')
+    def test_evaluate_alert_true_alert_breaching2(self, send_alert):
+        """
+        Same as above except the same channel is breaching as the previous
+        alert
+        """
+        trigger = Trigger.objects.get(pk=9)
+        breaching_channels = [{
+            "avg": 6,
+            "channel": "UW:STA1:--:HNN",
+            "channel_id": 1
+        }]
+
+        alert = trigger.evaluate_alert(
+            True,
+            breaching_channels=breaching_channels
+        )
+        self.assertEqual(7, alert.id)
+        self.assertTrue(alert.in_alarm)
+        self.assertFalse(send_alert.called)
 
     def test_evaluate_alarm(self):
         '''This is more like an integration test at the moment'''
@@ -443,7 +586,7 @@ class PrivateAlarmAPITests(TestCase):
         endtime = datetime(2018, 2, 1, 4, 35, 0, 0, tzinfo=pytz.UTC)
 
         all_alerts = Alert.objects.all()
-        self.assertEqual(len(all_alerts), 6)
+        self.assertEqual(len(all_alerts), 8)
 
         monitor.evaluate_alarm(endtime=endtime)
 
@@ -492,7 +635,7 @@ class PrivateAlarmAPITests(TestCase):
         self.assertEqual(len(alerts), 0)
 
         all_alerts = Alert.objects.all()
-        self.assertEqual(len(all_alerts), 9)
+        self.assertEqual(len(all_alerts), 11)
 
     def test_evaluate_alarms(self):
         '''Test evaluate_alarm command'''
@@ -508,45 +651,6 @@ class PrivateAlarmAPITests(TestCase):
         self.assertTrue(self.alert.get_email_message() in mail.outbox[0].body)
         for email in self.alert.trigger.email_list:
             self.assertTrue(email in mail.outbox[0].recipients())
-
-    """
-    Contact class isn't used currently but might be in the future so leaving
-    it in for now. CWU 3/23/22
-    """
-    def test_create_contact(self):
-        url = reverse('user:contact-list')
-        payload = {
-            'email_value': self.user.email,
-            'user': self.user
-        }
-        res = self.client.post(url, payload)
-        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-        contact = Contact.objects.get(id=res.data['id'])
-        for key in payload.keys():
-            self.assertEqual(payload[key], getattr(contact, key))
-
-    def test_create_contact_bad_email(self):
-        url = reverse('user:contact-list')
-        payload = {
-            'email_value': 'bademail',
-            'user': self.user
-        }
-        res = self.client.post(url, payload)
-        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_create_contact_bad_email_wo_http(self):
-        with self.assertRaises(ValidationError):
-            Contact.objects.create(
-                user=self.user,
-                email_value='bademail'
-            )
-
-    def test_create_contact_empty_email_no_error(self):
-        contact = Contact.objects.create(
-            user=self.user,
-            email_value=''
-        )
-        self.assertEqual(contact.email_value, '')
 
     def test_evaluate_alarms_filter_metric(self):
         '''Test evaluate_alarm command'''
@@ -588,7 +692,6 @@ class PrivateAlarmAPITests(TestCase):
             val2=None,
             value_operator=Trigger.ValueOperator.LESS_THAN,
             num_channels=5,
-            level=Trigger.Level.ONE,
             user=self.user
         )
 
@@ -625,7 +728,7 @@ class PrivateAlarmAPITests(TestCase):
         url1 = url + f'?timestamp_gte={stime}&timestamp_lt={etime}'
         res = self.client.get(url1)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(res.data), 2)
+        self.assertEqual(len(res.data), 4)
 
         url2 = url + '?trigger=3'
         res = self.client.get(url2)
@@ -652,7 +755,6 @@ class PrivateAlarmAPITests(TestCase):
                 val2=5,
                 value_operator=Trigger.ValueOperator.WITHIN,
                 num_channels=5,
-                level=Trigger.Level.THREE,
                 user=user,
                 email_list=email_list
             )
@@ -693,7 +795,6 @@ class PrivateAlarmAPITests(TestCase):
                 val1=2,
                 value_operator=Trigger.ValueOperator.WITHIN,
                 num_channels=5,
-                level=Trigger.Level.THREE,
                 user=self.user,
                 email_list=self.user.email
             )
@@ -706,34 +807,6 @@ class PrivateAlarmAPITests(TestCase):
                 val1=2,
                 value_operator=Trigger.ValueOperator.GREATER_THAN,
                 num_channels_operator=Trigger.NumChannelsOperator.GREATER_THAN,
-                level=Trigger.Level.THREE,
                 user=self.user,
                 email_list=self.user.email
-            )
-
-    def test_level_email_list_correspond(self):
-        with self.assertRaisesRegex(ValidationError,
-                                    'email_list must be filled*'):
-            Trigger.objects.create(
-                monitor=self.monitor,
-                val1=2,
-                value_operator=Trigger.ValueOperator.GREATER_THAN,
-                num_channels=5,
-                num_channels_operator=Trigger.NumChannelsOperator.GREATER_THAN,
-                level=Trigger.Level.THREE,
-                user=self.user
-            )
-
-    def test_level_two_has_single_email(self):
-        with self.assertRaisesRegex(ValidationError,
-                                    'There must only be one email*'):
-            Trigger.objects.create(
-                monitor=self.monitor,
-                val1=2,
-                value_operator=Trigger.ValueOperator.GREATER_THAN,
-                num_channels=5,
-                num_channels_operator=Trigger.NumChannelsOperator.GREATER_THAN,
-                level=Trigger.Level.TWO,
-                user=self.user,
-                email_list=[self.user.email, 'test@email.com']
             )

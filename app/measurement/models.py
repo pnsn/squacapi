@@ -84,8 +84,8 @@ class Measurement(MeasurementBase):
     def __str__(self):
         return (f"Metric: {str(self.metric)} "
                 f"Channel: {str(self.channel)} "
-                f"starttime: {format(self.starttime, '%m-%d-%Y %M:%S')} "
-                f"endtime: {format(self.endtime, '%m-%d-%Y %M:%S')} "
+                f"starttime: {format(self.starttime, '%m-%d-%Y %H:%M:%S')} "
+                f"endtime: {format(self.endtime, '%m-%d-%Y %H:%M:%S')} "
                 )
 
 
@@ -244,12 +244,6 @@ class Monitor(MeasurementBase):
 class Trigger(MeasurementBase):
     '''Describe an individual trigger for a monitor'''
 
-    # Define choices for notification level
-    class Level(models.IntegerChoices):
-        ONE = 1
-        TWO = 2
-        THREE = 3
-
     class ValueOperator(models.TextChoices):
         '''
         How to compare calculated value to val1 (and val2) threshold to
@@ -300,10 +294,6 @@ class Trigger(MeasurementBase):
         max_length=16,
         choices=ValueOperator.choices,
         default=ValueOperator.GREATER_THAN
-    )
-    level = models.IntegerField(
-        choices=Level.choices,
-        default=Level.ONE
     )
     num_channels = models.IntegerField(blank=True, null=True)
     num_channels_operator = models.CharField(
@@ -403,7 +393,7 @@ class Trigger(MeasurementBase):
     def get_latest_alert(self, reftime=datetime.now(tz=pytz.UTC)):
         '''Return the most recent alert for this Trigger'''
         return self.alerts.filter(
-            timestamp__lte=reftime).order_by('timestamp').last()
+            timestamp__lt=reftime).order_by('timestamp').last()
 
     def create_alert(self,
                      in_alarm,
@@ -476,7 +466,7 @@ class Trigger(MeasurementBase):
         val = (self.val1, self.val2) if self.val2 is not None else self.val1
         desc += f'is {self.value_operator} {val}\n'
         if self.num_channels_operator == self.NumChannelsOperator.ANY:
-            desc += 'ANY channel\n'
+            desc += 'for ANY channel\n'
         else:
             desc += f'for {self.num_channels_operator} than'
             add_s = 's' if self.num_channels > 1 else ''
@@ -491,7 +481,6 @@ class Trigger(MeasurementBase):
         return (f"Monitor: {str(self.monitor)}, "
                 f"Min: {self.val1}, "
                 f"Max: {self.val2}, "
-                f"Level: {self.level}"
                 )
 
     def clean(self):
@@ -513,17 +502,6 @@ class Trigger(MeasurementBase):
         # Make sure email_list is an actual list
         if isinstance(self.email_list, str):
             self.email_list = [self.email_list]
-        # Level 2 and 3 require email_list to be filled.
-        if all([self.level in (self.Level.TWO, self.Level.THREE),
-                not self.email_list]):
-            raise ValidationError(
-                _(f'email_list must be filled for level {self.level} Trigger'))
-        # Level 2 should only send to one email
-        if all([self.level == self.Level.TWO,
-                isinstance(self.email_list, list),
-                self.email_list and len(self.email_list) > 1]):
-            raise ValidationError(
-                _('There must only be one email for level TWO triggers'))
 
     def save(self, *args, **kwargs):
         """
@@ -560,12 +538,12 @@ class Alert(MeasurementBase):
         return ret
 
     def get_printable_channels(self, channels, include_stat=True):
+        str_out = ''
         if not channels:
-            return '\n'
-        str_out = '\n'
+            return str_out
+
         for channel in channels:
-            str_out += self.get_printable_channel(channel, include_stat)
-            str_out += '\n'
+            str_out += '\n' + self.get_printable_channel(channel, include_stat)
 
         return str_out
 
@@ -574,34 +552,32 @@ class Alert(MeasurementBase):
         msg += self.timestamp.strftime('%Y-%m-%dT%H:%M %Z')
         in_out = 'IN' if self.in_alarm else 'OUT OF'
         msg += f'\nTrigger {in_out} alert for {str(self.trigger)}'
-        msg += f'\n{self.trigger.get_text_description()}'
+        msg += f'\n\n{self.trigger.get_text_description()}'
 
         if operator.eq(self.trigger.num_channels_operator,
                        Trigger.NumChannelsOperator.ANY):
+            # Use one second before as reftime just to make sure this alert
+            # itself isn't used as the latest alert
             added, removed = self.trigger.get_breaching_change(
-                self.breaching_channels, self.timestamp)
+                self.breaching_channels,
+                self.timestamp - timedelta(seconds=1))
             if added:
                 added_out = self.get_printable_channels(added)
-                msg += '\nNew channels in alert:' + str(added_out)
+                msg += '\n\nNew channels in alert:' + str(added_out)
             if removed:
-                removed_out = self.get_printable_channels(removed)
-                msg += '\nNew channels out of alert:' + str(removed_out)
+                removed_out = self.get_printable_channels(removed, False)
+                msg += '\n\nNew channels out of alert:' + str(removed_out)
 
         breaching_out = self.get_printable_channels(self.breaching_channels)
-        msg += '\nAll breaching channels:' + str(breaching_out)
+        msg += '\n\nAll breaching channels:' + str(breaching_out)
         return msg
 
     def send_alert(self):
-        if self.trigger.level == Trigger.Level.ONE:
-            # This alert should only be posted to the Monitors web page
-            return False
         if not self.trigger.email_list:
             # There is noone specified to send to
             return False
-        in_out = "in" if self.in_alarm else "out of"
-        subject = (f"SQUAC {in_out} alert for '{self.trigger.monitor}', "
-                   f"level {self.trigger.level}"
-                   )
+        in_out = "IN" if self.in_alarm else "OUT OF"
+        subject = f"SQUAC {in_out} alert for '{self.trigger.monitor}'"
         message = self.get_email_message()
         send_mail(subject,
                   message,
