@@ -9,7 +9,6 @@ from rest_framework.settings import api_settings
 from user.serializers import UserWriteSerializer, UserMeSerializer, \
     AuthTokenSerializer, UserGroupSerializer
 from drf_yasg.utils import swagger_auto_schema
-from squac.mixins import SetUserMixin, AdminOrOwnerPermissionMixin
 
 
 class CreateUserView(generics.CreateAPIView):
