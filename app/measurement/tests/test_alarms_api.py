@@ -119,7 +119,6 @@ class PrivateAlarmAPITests(TestCase):
             val2=5,
             value_operator=Trigger.ValueOperator.WITHIN,
             num_channels=5,
-            level=Trigger.Level.TWO,
             user=self.user,
             email_list=[self.user.email]
         )
@@ -187,7 +186,6 @@ class PrivateAlarmAPITests(TestCase):
             'val1': 15,
             'val2': 20,
             'num_channels': 3,
-            'level': Trigger.Level.TWO,
             'user': self.user,
             'email_list': [self.user.email]
         }
@@ -694,7 +692,6 @@ class PrivateAlarmAPITests(TestCase):
             val2=None,
             value_operator=Trigger.ValueOperator.LESS_THAN,
             num_channels=5,
-            level=Trigger.Level.ONE,
             user=self.user
         )
 
@@ -758,7 +755,6 @@ class PrivateAlarmAPITests(TestCase):
                 val2=5,
                 value_operator=Trigger.ValueOperator.WITHIN,
                 num_channels=5,
-                level=Trigger.Level.THREE,
                 user=user,
                 email_list=email_list
             )
@@ -799,7 +795,6 @@ class PrivateAlarmAPITests(TestCase):
                 val1=2,
                 value_operator=Trigger.ValueOperator.WITHIN,
                 num_channels=5,
-                level=Trigger.Level.THREE,
                 user=self.user,
                 email_list=self.user.email
             )
@@ -812,34 +807,6 @@ class PrivateAlarmAPITests(TestCase):
                 val1=2,
                 value_operator=Trigger.ValueOperator.GREATER_THAN,
                 num_channels_operator=Trigger.NumChannelsOperator.GREATER_THAN,
-                level=Trigger.Level.THREE,
                 user=self.user,
                 email_list=self.user.email
-            )
-
-    def test_level_email_list_correspond(self):
-        with self.assertRaisesRegex(ValidationError,
-                                    'email_list must be filled*'):
-            Trigger.objects.create(
-                monitor=self.monitor,
-                val1=2,
-                value_operator=Trigger.ValueOperator.GREATER_THAN,
-                num_channels=5,
-                num_channels_operator=Trigger.NumChannelsOperator.GREATER_THAN,
-                level=Trigger.Level.THREE,
-                user=self.user
-            )
-
-    def test_level_two_has_single_email(self):
-        with self.assertRaisesRegex(ValidationError,
-                                    'There must only be one email*'):
-            Trigger.objects.create(
-                monitor=self.monitor,
-                val1=2,
-                value_operator=Trigger.ValueOperator.GREATER_THAN,
-                num_channels=5,
-                num_channels_operator=Trigger.NumChannelsOperator.GREATER_THAN,
-                level=Trigger.Level.TWO,
-                user=self.user,
-                email_list=[self.user.email, 'test@email.com']
             )

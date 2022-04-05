@@ -244,12 +244,6 @@ class Monitor(MeasurementBase):
 class Trigger(MeasurementBase):
     '''Describe an individual trigger for a monitor'''
 
-    # Define choices for notification level
-    class Level(models.IntegerChoices):
-        ONE = 1
-        TWO = 2
-        THREE = 3
-
     class ValueOperator(models.TextChoices):
         '''
         How to compare calculated value to val1 (and val2) threshold to
@@ -300,10 +294,6 @@ class Trigger(MeasurementBase):
         max_length=16,
         choices=ValueOperator.choices,
         default=ValueOperator.GREATER_THAN
-    )
-    level = models.IntegerField(
-        choices=Level.choices,
-        default=Level.ONE
     )
     num_channels = models.IntegerField(blank=True, null=True)
     num_channels_operator = models.CharField(
@@ -491,7 +481,6 @@ class Trigger(MeasurementBase):
         return (f"Monitor: {str(self.monitor)}, "
                 f"Min: {self.val1}, "
                 f"Max: {self.val2}, "
-                f"Level: {self.level}"
                 )
 
     def clean(self):
@@ -513,17 +502,6 @@ class Trigger(MeasurementBase):
         # Make sure email_list is an actual list
         if isinstance(self.email_list, str):
             self.email_list = [self.email_list]
-        # Level 2 and 3 require email_list to be filled.
-        if all([self.level in (self.Level.TWO, self.Level.THREE),
-                not self.email_list]):
-            raise ValidationError(
-                _(f'email_list must be filled for level {self.level} Trigger'))
-        # Level 2 should only send to one email
-        if all([self.level == self.Level.TWO,
-                isinstance(self.email_list, list),
-                self.email_list and len(self.email_list) > 1]):
-            raise ValidationError(
-                _('There must only be one email for level TWO triggers'))
 
     def save(self, *args, **kwargs):
         """
@@ -595,16 +573,11 @@ class Alert(MeasurementBase):
         return msg
 
     def send_alert(self):
-        if self.trigger.level == Trigger.Level.ONE:
-            # This alert should only be posted to the Monitors web page
-            return False
         if not self.trigger.email_list:
             # There is noone specified to send to
             return False
         in_out = "IN" if self.in_alarm else "OUT OF"
-        subject = (f"SQUAC {in_out} alert for '{self.trigger.monitor}', "
-                   f"level {self.trigger.level}"
-                   )
+        subject = f"SQUAC {in_out} alert for '{self.trigger.monitor}'"
         message = self.get_email_message()
         send_mail(subject,
                   message,

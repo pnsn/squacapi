@@ -33875,8 +33875,7 @@
     "monitor": 1,
     "minval": 6.0,
     "maxval": null,
-    "band_inclusive": false,
-    "level": 2
+    "band_inclusive": false
   }
 },
 {
@@ -33889,8 +33888,7 @@
     "monitor": 1,
     "minval": null,
     "maxval": 1.0,
-    "band_inclusive": false,
-    "level": 2
+    "band_inclusive": false
   }
 },
 {
@@ -33903,8 +33901,7 @@
     "monitor": 1,
     "minval": 1.0,
     "maxval": 6.0,
-    "band_inclusive": false,
-    "level": 2
+    "band_inclusive": false
   }
 },
 {
@@ -33917,8 +33914,7 @@
     "monitor": 1,
     "minval": 1.0,
     "maxval": 6.0,
-    "band_inclusive": true,
-    "level": 2
+    "band_inclusive": true
   }
 },
 {
@@ -33931,8 +33927,7 @@
     "monitor": 1,
     "minval": 4.0,
     "maxval": 6.0,
-    "band_inclusive": true,
-    "level": 2
+    "band_inclusive": true
   }
 },
 {

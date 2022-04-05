@@ -144,9 +144,8 @@ class TriggerSerializer(serializers.HyperlinkedModelSerializer):
         model = Trigger
         fields = (
             'id', 'url', 'monitor', 'val1', 'val2', 'value_operator',
-            'level', 'num_channels', 'num_channels_operator',
-            'created_at', 'updated_at', 'user_id', 'alert_on_out_of_alarm',
-            'email_list'
+            'num_channels', 'num_channels_operator', 'email_list',
+            'created_at', 'updated_at', 'user_id', 'alert_on_out_of_alarm'
         )
         read_only_fields = ('id',)
 
