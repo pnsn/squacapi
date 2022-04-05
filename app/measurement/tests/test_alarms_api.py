@@ -7,7 +7,6 @@ from django.urls import reverse
 from django.utils import timezone
 # from django.db.models import Avg, Count, Max, Min, Sum
 
-from core.models import Contact, Notification
 from measurement.models import (Monitor, Trigger, Alert, Measurement,
                                 Metric)
 from nslc.models import Channel, Group, Network
@@ -130,15 +129,6 @@ class PrivateAlarmAPITests(TestCase):
             message='Alarm on channel group something something!',
             in_alarm=True,
             user=self.user
-        )
-        self.contact = Contact.objects.create(
-            user=self.user,
-            email_value=self.user.email
-        )
-        self.notification = Notification.objects.create(
-            notification_type=Notification.NotificationType.EMAIL,
-            user=self.user,
-            contact=self.contact
         )
 
     def test_get_monitor(self):
@@ -663,45 +653,6 @@ class PrivateAlarmAPITests(TestCase):
         self.assertTrue(self.alert.get_email_message() in mail.outbox[0].body)
         for email in self.alert.trigger.email_list:
             self.assertTrue(email in mail.outbox[0].recipients())
-
-    """
-    Contact class isn't used currently but might be in the future so leaving
-    it in for now. CWU 3/23/22
-    """
-    def test_create_contact(self):
-        url = reverse('user:contact-list')
-        payload = {
-            'email_value': self.user.email,
-            'user': self.user
-        }
-        res = self.client.post(url, payload)
-        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-        contact = Contact.objects.get(id=res.data['id'])
-        for key in payload.keys():
-            self.assertEqual(payload[key], getattr(contact, key))
-
-    def test_create_contact_bad_email(self):
-        url = reverse('user:contact-list')
-        payload = {
-            'email_value': 'bademail',
-            'user': self.user
-        }
-        res = self.client.post(url, payload)
-        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_create_contact_bad_email_wo_http(self):
-        with self.assertRaises(ValidationError):
-            Contact.objects.create(
-                user=self.user,
-                email_value='bademail'
-            )
-
-    def test_create_contact_empty_email_no_error(self):
-        contact = Contact.objects.create(
-            user=self.user,
-            email_value=''
-        )
-        self.assertEqual(contact.email_value, '')
 
     def test_evaluate_alarms_filter_metric(self):
         '''Test evaluate_alarm command'''
