@@ -367,78 +367,6 @@
 },
 {
   "model": "auth.permission",
-  "pk": 33,
-  "fields": {
-    "name": "Can add contact",
-    "content_type": 9,
-    "codename": "add_contact"
-  }
-},
-{
-  "model": "auth.permission",
-  "pk": 34,
-  "fields": {
-    "name": "Can change contact",
-    "content_type": 9,
-    "codename": "change_contact"
-  }
-},
-{
-  "model": "auth.permission",
-  "pk": 35,
-  "fields": {
-    "name": "Can delete contact",
-    "content_type": 9,
-    "codename": "delete_contact"
-  }
-},
-{
-  "model": "auth.permission",
-  "pk": 36,
-  "fields": {
-    "name": "Can view contact",
-    "content_type": 9,
-    "codename": "view_contact"
-  }
-},
-{
-  "model": "auth.permission",
-  "pk": 37,
-  "fields": {
-    "name": "Can add notification",
-    "content_type": 10,
-    "codename": "add_notification"
-  }
-},
-{
-  "model": "auth.permission",
-  "pk": 38,
-  "fields": {
-    "name": "Can change notification",
-    "content_type": 10,
-    "codename": "change_notification"
-  }
-},
-{
-  "model": "auth.permission",
-  "pk": 39,
-  "fields": {
-    "name": "Can delete notification",
-    "content_type": 10,
-    "codename": "delete_notification"
-  }
-},
-{
-  "model": "auth.permission",
-  "pk": 40,
-  "fields": {
-    "name": "Can view notification",
-    "content_type": 10,
-    "codename": "view_notification"
-  }
-},
-{
-  "model": "auth.permission",
   "pk": 41,
   "fields": {
     "name": "Can add network",
@@ -1272,22 +1200,6 @@
   "fields": {
     "app_label": "core",
     "model": "user"
-  }
-},
-{
-  "model": "contenttypes.contenttype",
-  "pk": 9,
-  "fields": {
-    "app_label": "core",
-    "model": "contact"
-  }
-},
-{
-  "model": "contenttypes.contenttype",
-  "pk": 10,
-  "fields": {
-    "app_label": "core",
-    "model": "notification"
   }
 },
 {
@@ -33963,8 +33875,7 @@
     "monitor": 1,
     "minval": 6.0,
     "maxval": null,
-    "band_inclusive": false,
-    "level": 2
+    "band_inclusive": false
   }
 },
 {
@@ -33977,8 +33888,7 @@
     "monitor": 1,
     "minval": null,
     "maxval": 1.0,
-    "band_inclusive": false,
-    "level": 2
+    "band_inclusive": false
   }
 },
 {
@@ -33991,8 +33901,7 @@
     "monitor": 1,
     "minval": 1.0,
     "maxval": 6.0,
-    "band_inclusive": false,
-    "level": 2
+    "band_inclusive": false
   }
 },
 {
@@ -34005,8 +33914,7 @@
     "monitor": 1,
     "minval": 1.0,
     "maxval": 6.0,
-    "band_inclusive": true,
-    "level": 2
+    "band_inclusive": true
   }
 },
 {
@@ -34019,8 +33927,7 @@
     "monitor": 1,
     "minval": 4.0,
     "maxval": 6.0,
-    "band_inclusive": true,
-    "level": 2
+    "band_inclusive": true
   }
 },
 {
