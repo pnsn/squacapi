@@ -493,6 +493,10 @@ class Trigger(MeasurementBase):
                                         self.ValueOperator.OUTSIDE_OF)]):
             raise ValidationError(
                 _(f'val2 must be defined when using {self.value_operator}'))
+        # If it is to be used, val2 must be greater than val1
+        if self.val2 is not None and self.val1 > self.val2:
+            raise ValidationError(
+                _('val2 must be greater than val1'))
         # Don't allow num_channels to be None if not using ANY
         if all([self.num_channels is None,
                 self.num_channels_operator != self.NumChannelsOperator.ANY]):
@@ -582,7 +586,7 @@ class Alert(MeasurementBase):
         send_mail(subject,
                   message,
                   settings.EMAIL_NO_REPLY,
-                  [email for email in self.trigger.email_list],
+                  self.trigger.email_list,
                   fail_silently=False,
                   )
         return True

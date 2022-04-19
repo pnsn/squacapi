@@ -799,6 +799,19 @@ class PrivateAlarmAPITests(TestCase):
                 email_list=self.user.email
             )
 
+    def test_val2_is_less_than_val1_error(self):
+        with self.assertRaisesRegex(ValidationError,
+                                    'val2 must be greater*'):
+            Trigger.objects.create(
+                monitor=self.monitor,
+                val1=2,
+                val2=1,
+                value_operator=Trigger.ValueOperator.WITHIN,
+                num_channels=5,
+                user=self.user,
+                email_list=self.user.email
+            )
+
     def test_num_channels_is_none_error(self):
         with self.assertRaisesRegex(ValidationError,
                                     'num_channels must be defined*'):
