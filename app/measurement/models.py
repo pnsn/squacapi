@@ -461,19 +461,19 @@ class Trigger(MeasurementBase):
         see https://github.com/pnsn/squacapi/issues/373
         '''
         desc = ''
-        desc += f'Alert if {self.monitor.stat} of\n'
-        desc += f'{self.monitor.metric.name} measurements\n'
+        desc += f'Alert if {self.monitor.stat} of'
+        desc += f' {self.monitor.metric.name} measurements'
         val = (self.val1, self.val2) if self.val2 is not None else self.val1
-        desc += f'is {self.value_operator} {val}\n'
+        desc += f' is {self.value_operator} {val}'
         if self.num_channels_operator == self.NumChannelsOperator.ANY:
-            desc += 'for ANY channel\n'
+            desc += '\n\nfor ANY channel'
         else:
-            desc += f'for {self.num_channels_operator} than'
+            desc += f'\n\nfor {self.num_channels_operator} than'
             add_s = 's' if self.num_channels > 1 else ''
-            desc += f' {self.num_channels} channel{add_s}\n'
-        desc += f'in channel group: {self.monitor.channel_group}\n'
+            desc += f' {self.num_channels} channel{add_s}'
+        desc += f' in channel group: {self.monitor.channel_group}'
         add_s = 's' if self.monitor.interval_count > 1 else ''
-        desc += f'over the last {self.monitor.interval_count}'
+        desc += f'\n\nover the last {self.monitor.interval_count}'
         desc += f' {self.monitor.interval_type}{add_s}'
         return desc
 
@@ -555,7 +555,7 @@ class Alert(MeasurementBase):
         msg = ''
         msg += self.timestamp.strftime('%Y-%m-%dT%H:%M %Z')
         in_out = 'IN' if self.in_alarm else 'OUT OF'
-        msg += f'\nTrigger {in_out} alert for {str(self.trigger)}'
+        msg += f'\n\nTrigger {in_out} alert for {str(self.trigger)}'
         msg += f'\n\n{self.trigger.get_text_description()}'
 
         if operator.eq(self.trigger.num_channels_operator,
@@ -586,7 +586,7 @@ class Alert(MeasurementBase):
         send_mail(subject,
                   message,
                   settings.EMAIL_NO_REPLY,
-                  self.trigger.email_list,
+                  [email for email in self.trigger.email_list],
                   fail_silently=False,
                   )
         return True
