@@ -471,7 +471,7 @@ class Trigger(MeasurementBase):
         desc += f' is {self.value_operator} {val}'
         if self.num_channels_operator == self.NumChannelsOperator.ANY:
             desc += '\n\nfor ANY channel'
-        if self.num_channels_operator == self.NumChannelsOperator.ALL:
+        elif self.num_channels_operator == self.NumChannelsOperator.ALL:
             desc += '\n\nfor ALL channels'
         else:
             desc += f'\n\nfor {self.num_channels_operator} than'
