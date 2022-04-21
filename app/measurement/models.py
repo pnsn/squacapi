@@ -263,6 +263,7 @@ class Trigger(MeasurementBase):
         trigger is in alarm
         '''
         ANY = 'any', _('Any')
+        ALL = 'all', _('All')
         EQUAL_TO = '==', _('Equal to')
         LESS_THAN = '<', _('Less than')
         GREATER_THAN = '>', _('Greater than')
@@ -384,6 +385,9 @@ class Trigger(MeasurementBase):
             # logic checks. Will always be "in_alarm" if there are more than
             # zero breaching channels
             return len(breaching_channels) > 0
+        elif self.num_channels_operator == self.NumChannelsOperator.ALL:
+            total_channels = self.monitor.channel_group.channels.count()
+            return len(breaching_channels) == total_channels
         else:
             # Otherwise just compare the breaching_channels to the
             # num_channels_operator (>, ==, <)
@@ -467,6 +471,8 @@ class Trigger(MeasurementBase):
         desc += f' is {self.value_operator} {val}'
         if self.num_channels_operator == self.NumChannelsOperator.ANY:
             desc += '\n\nfor ANY channel'
+        elif self.num_channels_operator == self.NumChannelsOperator.ALL:
+            desc += '\n\nfor ALL channels'
         else:
             desc += f'\n\nfor {self.num_channels_operator} than'
             add_s = 's' if self.num_channels > 1 else ''
@@ -497,9 +503,10 @@ class Trigger(MeasurementBase):
         if self.val2 is not None and self.val1 > self.val2:
             raise ValidationError(
                 _('val2 must be greater than val1'))
-        # Don't allow num_channels to be None if not using ANY
+        # Don't allow num_channels to be None if not using ANY or ALL
         if all([self.num_channels is None,
-                self.num_channels_operator != self.NumChannelsOperator.ANY]):
+                self.num_channels_operator != self.NumChannelsOperator.ANY,
+                self.num_channels_operator != self.NumChannelsOperator.ALL]):
             raise ValidationError(
                 _('num_channels must be defined when using'
                   f' {self.num_channels_operator}'))
