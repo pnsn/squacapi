@@ -373,6 +373,54 @@ class PrivateAlarmAPITests(TestCase):
         self.check_in_alarm_state(monitor_id, 3, True)
         self.check_in_alarm_state(monitor_id, 4, False)
 
+    def test_all_channels_in_alarm_state(self):
+        ch1 = self.getTestChannel('CH11')
+        ch2 = self.getTestChannel('CH12')
+        ch3 = self.getTestChannel('CH13')
+        grp = Group.objects.create(
+            name='Test group 2',
+            user=self.user,
+            organization=self.organization,
+        )
+        grp.channels.set([ch1.id, ch2.id])
+        monitor = Monitor.objects.create(
+            channel_group=grp,
+            metric=self.metric,
+            interval_type=Monitor.IntervalType.DAY,
+            interval_count=1,
+            stat=Monitor.Stat.SUM,
+            user=self.user
+        )
+        trigger = Trigger.objects.create(
+            monitor=monitor,
+            val1=10,
+            value_operator=Trigger.ValueOperator.GREATER_THAN,
+            num_channels_operator=Trigger.NumChannelsOperator.ALL,
+            user=self.user,
+            email_list=[self.user.email]
+        )
+        breaching_channels = [
+            {
+                "sum": 11,
+                "channel": str(ch1),
+                "channel_id": ch1.id
+            },
+            {
+                "sum": 12,
+                "channel": str(ch2),
+                "channel_id": ch2.id
+            }
+        ]
+
+        # With all two channels in the group breaching, this should alarm
+        in_alarm = trigger.in_alarm_state(breaching_channels)
+        self.assertTrue(in_alarm)
+
+        # Add a channel and verify the same breaching list results in no alarm
+        grp.channels.set([ch1.id, ch2.id, ch3.id])
+        in_alarm = trigger.in_alarm_state(breaching_channels)
+        self.assertFalse(in_alarm)
+
     def test_get_latest_alert(self):
         trigger = Trigger.objects.get(pk=3)
 
