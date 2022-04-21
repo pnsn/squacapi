@@ -30,11 +30,16 @@ except AttributeError:
 
 # add EC2 ip to allow heath checks
 try:
-    EC2_IP = requests.get(os.environ.get('META_DATA_IP_URL')).text
+    EC2_IP = requests.get('http://checkip.amazonaws.com').text
     ALLOWED_HOSTS.append(EC2_IP)
 except RequestException or MissingSchema:
     pass
 
+try:
+    EC2_IP = requests.get(os.environ.get('META_DATA_IP_URL')).text
+    ALLOWED_HOSTS.append(EC2_IP)
+except RequestException or MissingSchema:
+    pass
 
 # For debug toolbar
 INTERNAL_IPS = [
@@ -80,14 +85,11 @@ INSTALLED_APPS = [
     'dashboard',
     'organization',
     'invite',
-    'django_crontab',
-    'aws_xray_sdk.ext.django'
+    'django_crontab'
 ]
 
 # The caching middlewares must be first and last
 MIDDLEWARE = [
-    # 'django.middleware.cache.UpdateCacheMiddleware',  # must be first
-    'aws_xray_sdk.ext.django.middleware.XRayMiddleware',  # also must be first
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -97,9 +99,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django_cprofile_middleware.middleware.ProfilerMiddleware',
-    # 'django.middleware.cache.FetchFromCacheMiddleware',  # must be last!!
-
+    'django_cprofile_middleware.middleware.ProfilerMiddleware'
 ]
 
 
@@ -234,15 +234,17 @@ if DEBUG:
         }
     }
 # need to do it this way since we don't want to install redis locally
-elif CACHE_ENABLED:
-    CACHES['default'] = {
-        'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': os.environ.get('CACHE_LOCATION'),
-        'OPTIONS': {
-            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-        },
-        'TIMEOUT': int(os.environ.get('CACHE_SECONDS')),
-        'KEY_PREFIX': 'squac_' + os.environ.get('CACHE_BACKEND')
+if CACHE_ENABLED:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django_redis.cache.RedisCache',
+            'LOCATION': os.environ.get('CACHE_LOCATION'),
+            'OPTIONS': {
+                'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            },
+            'TIMEOUT': int(os.environ.get('CACHE_SECONDS')),
+            'KEY_PREFIX': 'squac_' + os.environ.get('CACHE_BACKEND')
+        }
     }
 
 # FIXME this is broken cache key is not being set
@@ -267,22 +269,6 @@ AWS_SNS_ADMIN_ARN = os.environ.get('AWS_SNS_ADMIN_ARN')
 SQUAC_MEASUREMENTS_BUCKET = os.environ.get('SQUAC_MEASUREMENTS_BUCKET')
 
 MANAGERS = ADMINS
-
-XRAY_RECORDER = {
-    'AWS_XRAY_DAEMON_ADDRESS': '127.0.0.1:2000',
-    # If turned on built-in database queries and template rendering
-    # will be recorded as subsegments
-    'AUTO_INSTRUMENT': True,
-    'AWS_XRAY_CONTEXT_MISSING': 'LOG_ERROR',
-    'PLUGINS': (),
-    'SAMPLING': True,
-    'SAMPLING_RULES': None,
-    # the segment name for segments generated from incoming requests
-    'AWS_XRAY_TRACING_NAME': 'SQUAC',
-    'DYNAMIC_NAMING': None,  # defines a pattern that host names should match
-    # defines when a segment starts to stream out its children subsegments
-    'STREAMING_THRESHOLD': None,
-}
 
 LOGGING = {
     'version': 1,
@@ -330,7 +316,22 @@ LOGGING = {
             'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
         },
         'django.request': {
-            'handlers': ['mail_admins'],
+            'handlers': ['mail_admins', 'console'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'django.security': {
+            'handlers': ['mail_admins', 'console'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'django.server': {
+            'handlers': ['console'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+        'django.db.backends': {
+            'handlers': ['console'],
             'level': 'ERROR',
             'propagate': False,
         }

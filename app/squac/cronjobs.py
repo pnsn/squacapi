@@ -4,7 +4,7 @@ Verify they look correct with 'python {squac_dir}/app/manage.py crontab show'
 Reference: https://pypi.org/project/django-crontab/
 '''
 
-CRONJOBS=[ # noqa
+CRONJOBS = [  # noqa
     ('0 10 * * *', 'django.core.management.call_command', ['load_from_fdsn']),
     ('0 20 * * *', 'django.core.management.call_command',
         ['create_table_partition']),

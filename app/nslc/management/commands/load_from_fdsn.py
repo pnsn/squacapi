@@ -4,14 +4,14 @@ Command run without any options will give default URL
         query?datacenter=IRISDMC,NCEDC,SCEDC
         &targetservice=station
         &level=channel
-        &net=AZ,BC,BK,CC,CE,CI,CN,IU,IW,MB,NC,NN,NP,NV,OO,PB,SN,UO,US,UW
+        &net=AK,AV,AZ,BC,BK,CC,CE,CI,CN,ET,HV,IU,IW,MB,NC,NN,NP,NV,OK,OO,PB,PR,SN,TX,UM,UO,US,UU,UW
         &sta=*
         &cha=EN?,HN?,?H?
         &loc=*
-        &minlat=30.5
-        &maxlat=51
-        &minlon=-131
-        &maxlon=-113
+        &minlat=12.
+        &maxlat=72.
+        &minlon=-183.
+        &maxlon=-62.
         &starttime=2019-01-01
         &format=text
 
@@ -24,10 +24,10 @@ $:docker-compose run --rm app sh -c "LOADER_EMAIL=email@pnsn.org \
                     --sta='BEER,...'
                     --cha='HN?,ENN,...'
                     --loc=*
-                    --minlat=31.5
-                    --maxlat=50
-                    --minlon=-128.1
-                    --maxlon=-113.9
+                    --minlat=12.
+                    --maxlat=72.
+                    --minlon=-183.
+                    --maxlon=-62.
                     --starttime='YYYY-mm-dd'"
 
  text response from fdsn has following schema:
@@ -78,23 +78,23 @@ class Command(BaseCommand):
         )
         parser.add_argument(
             '--minlat',
-            default=30.5,
-            help="Lower latitude for search box, 30.5 default"
+            default=12,
+            help="Lower latitude for search box, 12 default"
         )
         parser.add_argument(
             '--maxlat',
-            default=51,
-            help="Upper latitude for search box, 51 default"
+            default=72,
+            help="Upper latitude for search box, 72 default"
         )
         parser.add_argument(
             '--minlon',
-            default=-131,
-            help="Left latitude for search box, -131 default"
+            default=-183.,
+            help="Left latitude for search box, -183. default"
         )
         parser.add_argument(
             '--maxlon',
-            default=-113,
-            help="Right latitude for search box, -113 default"
+            default=-62,
+            help="Right latitude for search box, -62 default"
         )
         parser.add_argument(
             '--starttime',
@@ -131,8 +131,9 @@ class Command(BaseCommand):
     '''Django command to check network and channel tables with FDSN service'''
     def handle(self, *args, **options):
         ALLOWED_NETWORKS = [
-            "AZ", "BC", "BK", "CC", "CE", "CI", "CN", "IU", "IW", "MB", "NC",
-            "NN", "NP", "NV", "OO", "PB", "SN", "UO", "US", "UW"
+            "AK", "AV", "AZ", "BC", "BK", "CC", "CE", "CI", "CN", "ET", "HV",
+            "IU", "IW", "MB", "NC", "NN", "NP", "NV", "OK", "OO", "PB", "PR",
+            "SN", "TX", "UM", "UO", "US", "UU", "UW"
         ]
         options["net"] = ','.join(ALLOWED_NETWORKS)
         LOADER_EMAIL = os.environ.get('LOADER_EMAIL')

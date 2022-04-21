@@ -146,7 +146,6 @@ class MeasurementPermissionTests(TestCase):
             channel_group=self.grp,
             interval_type='hour',
             interval_count=1,
-            num_channels=1,
             stat="sum",
             name='test',
             user=self.reporter
@@ -157,7 +156,6 @@ class MeasurementPermissionTests(TestCase):
             channel_group=self.grp,
             interval_type='hour',
             interval_count=1,
-            num_channels=1,
             stat="sum",
             name='test',
             user=self.reporter2

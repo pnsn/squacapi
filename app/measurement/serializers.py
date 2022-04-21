@@ -127,8 +127,8 @@ class MonitorSerializer(serializers.HyperlinkedModelSerializer):
         model = Monitor
         fields = (
             'id', 'url', 'channel_group', 'metric', 'interval_type',
-            'interval_count', 'num_channels', 'stat', 'name', 'created_at',
-            'updated_at', 'user_id'
+            'interval_count', 'stat', 'name', 'created_at', 'updated_at',
+            'user_id'
         )
         read_only_fields = ('id',)
 
@@ -143,8 +143,9 @@ class TriggerSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Trigger
         fields = (
-            'id', 'url', 'monitor', 'minval', 'maxval', 'band_inclusive',
-            'level', 'created_at', 'updated_at', 'user_id'
+            'id', 'url', 'monitor', 'val1', 'val2', 'value_operator',
+            'num_channels', 'num_channels_operator', 'email_list',
+            'created_at', 'updated_at', 'user_id', 'alert_on_out_of_alarm'
         )
         read_only_fields = ('id',)
 
@@ -160,7 +161,7 @@ class AlertSerializer(serializers.HyperlinkedModelSerializer):
         model = Alert
         fields = (
             'id', 'url', 'trigger', 'timestamp', 'message', 'in_alarm',
-            'created_at', 'updated_at', 'user_id'
+            'breaching_channels', 'created_at', 'updated_at', 'user_id'
         )
         read_only_fields = ('id',)
 
@@ -227,8 +228,8 @@ class MonitorDetailSerializer(serializers.HyperlinkedModelSerializer):
         model = Monitor
         fields = (
             'id', 'url', 'channel_group', 'metric', 'interval_type',
-            'interval_count', 'num_channels', 'stat', 'name', 'created_at',
-            'updated_at', 'user_id', 'triggers'
+            'interval_count', 'stat', 'name', 'created_at', 'updated_at',
+            'user_id', 'triggers'
         )
         read_only_fields = ('id',)
 
@@ -243,6 +244,6 @@ class AlertDetailSerializer(serializers.HyperlinkedModelSerializer):
         model = Alert
         fields = (
             'id', 'url', 'trigger', 'timestamp', 'message', 'in_alarm',
-            'created_at', 'updated_at', 'user_id'
+            'breaching_channels', 'created_at', 'updated_at', 'user_id'
         )
         read_only_fields = ('id',)
