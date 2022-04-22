@@ -456,11 +456,8 @@ class Trigger(MeasurementBase):
     def get_text_description(self):
         '''
         Try to return something like:
-            Alert if count of
-            hourly_mean measurements
-            is outside of (-5,5)
-            for less than 5 channels
-            in channel group: UW SMAs
+            Alert if avg of hourly_mean measurements is outside of (-5, 5)
+            for less than 5 channels in channel group: UW SMAs
             over the last 5 hours
         see https://github.com/pnsn/squacapi/issues/373
         '''
@@ -485,8 +482,8 @@ class Trigger(MeasurementBase):
 
     def __str__(self):
         return (f"Monitor: {str(self.monitor)}, "
-                f"Min: {self.val1}, "
-                f"Max: {self.val2}, "
+                f"Val1: {self.val1}, "
+                f"Val2: {self.val2}"
                 )
 
     def clean(self):
@@ -562,7 +559,7 @@ class Alert(MeasurementBase):
         msg = ''
         msg += self.timestamp.strftime('%Y-%m-%dT%H:%M %Z')
         in_out = 'IN' if self.in_alarm else 'OUT OF'
-        msg += f'\n\nTrigger {in_out} alert for {str(self.trigger)}'
+        msg += f'\n\nTrigger {in_out} alert for {str(self.trigger.monitor)}'
         msg += f'\n\n{self.trigger.get_text_description()}'
 
         if operator.eq(self.trigger.num_channels_operator,
