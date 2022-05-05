@@ -11,7 +11,7 @@ CRONJOBS = [  # noqa
     ('5 * * * *', 'django.core.management.call_command', ['evaluate_alarms']),
     ('0 5 * * *', 'django.core.management.call_command', ['s3_query_export']),
     ('0 6 1,10 * *', 'django.core.management.call_command',
-        ['archive_measurements', '1', 'month']),
+        ['archive_measurements', 'month']),
     ('30 5 * * *', 'django.core.management.call_command',
         ['backfill_archives', 'day', '--overwrite'])
 ]
