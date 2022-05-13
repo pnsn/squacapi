@@ -31,7 +31,6 @@ class WidgetSerializer(serializers.HyperlinkedModelSerializer):
             'id', 'name', 'dashboard', 'widgettype', 'description', 'metrics',
             'created_at', 'updated_at', 'stattype', 'columns', 'rows',
             'x_position', 'y_position', 'channel_group', 'user_id',
-            'color_pallet'
         )
         read_only_fields = ('id',)
 
@@ -46,7 +45,8 @@ class DashboardSerializer(serializers.HyperlinkedModelSerializer):
         fields = (
             'id', 'name', 'description', 'created_at', 'updated_at',
             'user_id', 'share_all', 'share_org', 'window_seconds', 'starttime',
-            'endtime', 'organization', 'home', 'archive_type'
+            'endtime', 'organization', 'archive_type',
+            'widget', 'properties',
         )
         read_only_fields = ('id',)
 
@@ -67,6 +67,7 @@ class DashboardDetailSerializer(DashboardSerializer):
         many=True,
         queryset=Widget.objects.all()
     )
+
     organization = serializers.PrimaryKeyRelatedField(
         queryset=Organization.objects.all()
     )
@@ -76,7 +77,8 @@ class DashboardDetailSerializer(DashboardSerializer):
         fields = (
             'id', 'description', 'name', 'widgets', 'created_at',
             'updated_at', 'user_id', 'share_all', 'share_org', 'starttime',
-            'endtime', 'organization', 'window_seconds', 'home', 'archive_type'
+            'endtime', 'organization', 'window_seconds',
+            'archive_type', 'widget', 'properties',
         )
         read_only_fields = ('id',)
 
@@ -110,6 +112,6 @@ class WidgetDetailSerializer(serializers.HyperlinkedModelSerializer):
             'id', 'name', 'dashboard', 'description', 'widgettype', 'metrics',
             'created_at', 'updated_at', 'thresholds', 'columns', 'rows',
             'x_position', 'y_position', 'stattype', 'channel_group',
-            'user_id', 'color_pallet',
+            'user_id',
         )
         read_only_fields = ('id',)

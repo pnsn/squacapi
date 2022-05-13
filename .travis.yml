@@ -26,7 +26,7 @@ deploy:
     deployment_group: production
     region: us-west-2
     on:
-      branch: production
+      branch: main
 
   - provider: codedeploy
     secret_access_key: $AWS_SECRET_ACCESS_KEY
@@ -36,4 +36,4 @@ deploy:
     deployment_group: jobs
     region: us-west-2
     on:
-      branch: production
+      branch: main

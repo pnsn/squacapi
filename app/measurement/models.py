@@ -263,6 +263,7 @@ class Trigger(MeasurementBase):
         trigger is in alarm
         '''
         ANY = 'any', _('Any')
+        ALL = 'all', _('All')
         EQUAL_TO = '==', _('Equal to')
         LESS_THAN = '<', _('Less than')
         GREATER_THAN = '>', _('Greater than')
@@ -384,6 +385,9 @@ class Trigger(MeasurementBase):
             # logic checks. Will always be "in_alarm" if there are more than
             # zero breaching channels
             return len(breaching_channels) > 0
+        elif self.num_channels_operator == self.NumChannelsOperator.ALL:
+            total_channels = self.monitor.channel_group.channels.count()
+            return len(breaching_channels) == total_channels
         else:
             # Otherwise just compare the breaching_channels to the
             # num_channels_operator (>, ==, <)
@@ -452,35 +456,34 @@ class Trigger(MeasurementBase):
     def get_text_description(self):
         '''
         Try to return something like:
-            Alert if count of
-            hourly_mean measurements
-            is outside of (-5,5)
-            for less than 5 channels
-            in channel group: UW SMAs
+            Alert if avg of hourly_mean measurements is outside of (-5, 5)
+            for less than 5 channels in channel group: UW SMAs
             over the last 5 hours
         see https://github.com/pnsn/squacapi/issues/373
         '''
         desc = ''
-        desc += f'Alert if {self.monitor.stat} of\n'
-        desc += f'{self.monitor.metric.name} measurements\n'
+        desc += f'Alert if {self.monitor.stat} of'
+        desc += f' {self.monitor.metric.name} measurements'
         val = (self.val1, self.val2) if self.val2 is not None else self.val1
-        desc += f'is {self.value_operator} {val}\n'
+        desc += f' is {self.value_operator} {val}'
         if self.num_channels_operator == self.NumChannelsOperator.ANY:
-            desc += 'for ANY channel\n'
+            desc += '\n\nfor ANY channel'
+        elif self.num_channels_operator == self.NumChannelsOperator.ALL:
+            desc += '\n\nfor ALL channels'
         else:
-            desc += f'for {self.num_channels_operator} than'
+            desc += f'\n\nfor {self.num_channels_operator} than'
             add_s = 's' if self.num_channels > 1 else ''
-            desc += f' {self.num_channels} channel{add_s}\n'
-        desc += f'in channel group: {self.monitor.channel_group}\n'
+            desc += f' {self.num_channels} channel{add_s}'
+        desc += f' in channel group: {self.monitor.channel_group}'
         add_s = 's' if self.monitor.interval_count > 1 else ''
-        desc += f'over the last {self.monitor.interval_count}'
+        desc += f'\n\nover the last {self.monitor.interval_count}'
         desc += f' {self.monitor.interval_type}{add_s}'
         return desc
 
     def __str__(self):
         return (f"Monitor: {str(self.monitor)}, "
-                f"Min: {self.val1}, "
-                f"Max: {self.val2}, "
+                f"Val1: {self.val1}, "
+                f"Val2: {self.val2}"
                 )
 
     def clean(self):
@@ -493,9 +496,14 @@ class Trigger(MeasurementBase):
                                         self.ValueOperator.OUTSIDE_OF)]):
             raise ValidationError(
                 _(f'val2 must be defined when using {self.value_operator}'))
-        # Don't allow num_channels to be None if not using ANY
+        # If it is to be used, val2 must be greater than val1
+        if self.val2 is not None and self.val1 > self.val2:
+            raise ValidationError(
+                _('val2 must be greater than val1'))
+        # Don't allow num_channels to be None if not using ANY or ALL
         if all([self.num_channels is None,
-                self.num_channels_operator != self.NumChannelsOperator.ANY]):
+                self.num_channels_operator != self.NumChannelsOperator.ANY,
+                self.num_channels_operator != self.NumChannelsOperator.ALL]):
             raise ValidationError(
                 _('num_channels must be defined when using'
                   f' {self.num_channels_operator}'))
@@ -551,7 +559,7 @@ class Alert(MeasurementBase):
         msg = ''
         msg += self.timestamp.strftime('%Y-%m-%dT%H:%M %Z')
         in_out = 'IN' if self.in_alarm else 'OUT OF'
-        msg += f'\nTrigger {in_out} alert for {str(self.trigger)}'
+        msg += f'\n\nTrigger {in_out} alert for {str(self.trigger.monitor)}'
         msg += f'\n\n{self.trigger.get_text_description()}'
 
         if operator.eq(self.trigger.num_channels_operator,

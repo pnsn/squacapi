@@ -123,12 +123,12 @@ class PrivateNslcAPITests(TestCase):
             self.assertEqual(payload[key], getattr(network, key))
 
     def test_get_channel(self):
-        '''Test if auth user cat get channel'''
+        '''Test if auth user can get channel'''
         url = reverse('nslc:channel-detail', kwargs={'pk': self.chan.id})
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data['name'], "EHZ")
-        self.assertEqual(str(self.chan), "UW:RCM:--:EHZ")
+        self.assertEqual(str(self.chan), "UW.RCM.--.EHZ")
 
     def test_create_channel(self):
         '''Test that a channel can be created'''

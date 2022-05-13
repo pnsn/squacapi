@@ -1,5 +1,4 @@
 from django.db import models
-from django.db import transaction
 from django.conf import settings
 
 from nslc.models import Group
@@ -74,6 +73,8 @@ class Dashboard(DashboardBase):
         NUM_SAMPS = 'num_samps', _('Number of Samples')
 
     '''describes the container the holds widgets'''
+    properties = models.JSONField(null=True)
+    widget = models.JSONField(null=True)
     share_all = models.BooleanField(default=False)
     share_org = models.BooleanField(default=False)
     window_seconds = models.IntegerField(blank=True, null=True)
@@ -84,23 +85,17 @@ class Dashboard(DashboardBase):
         on_delete=models.CASCADE,
         related_name='dashboards'
     )
-    home = models.BooleanField(default=False)
     archive_type = models.CharField(max_length=8,
                                     choices=ArchiveType.choices,
-                                    default=ArchiveType.RAW
-                                    )
+                                    default=ArchiveType.RAW,
+                                    null=True)
     archive_stat = models.CharField(max_length=16,
                                     choices=ArchiveStat.choices,
-                                    default=ArchiveStat.MEAN
-                                    )
+                                    default=ArchiveStat.MEAN,
+                                    null=True)
 
     def save(self, *args, **kwargs):
-        if not self.home:
-            return super(Dashboard, self).save(*args, **kwargs)
-        with transaction.atomic():
-            Dashboard.objects.filter(
-                home=True).update(home=False)
-            return super(Dashboard, self).save(*args, **kwargs)
+        return super(Dashboard, self).save(*args, **kwargs)
 
     class Meta:
         indexes = [
@@ -112,9 +107,6 @@ class Dashboard(DashboardBase):
 class Widget(DashboardBase):
     '''describes the widget'''
     metrics = models.ManyToManyField('measurement.Metric')
-
-    class Colors(models.TextChoices):
-        SQUAC = 'squac'
 
     dashboard = models.ForeignKey(
         Dashboard,
@@ -134,14 +126,9 @@ class Widget(DashboardBase):
     channel_group = models.ForeignKey(
         Group,
         on_delete=models.CASCADE,
-        related_name='widgets'
+        related_name='widgets',
     )
     columns = models.IntegerField()
     rows = models.IntegerField()
     x_position = models.IntegerField()
     y_position = models.IntegerField()
-    color_pallet = models.CharField(
-        max_length=24,
-        choices=Colors.choices,
-        default=Colors.SQUAC
-    )
