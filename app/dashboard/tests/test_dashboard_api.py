@@ -169,7 +169,9 @@ class PrivateDashboardAPITests(TestCase):
             name='Test dashboard',
             user=self.user,
             organization=self.organization,
-            home=True
+            properties={
+                "window_seconds": 1
+            }
         )
         self.widtype = WidgetType.objects.create(
             name='Test widget type',
@@ -220,26 +222,6 @@ class PrivateDashboardAPITests(TestCase):
         }
         res = self.client.post(url, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-
-    def test_home_dashboard_feature(self):
-        urlGet = reverse(
-            'dashboard:dashboard-detail',
-            kwargs={'pk': self.dashboard.id}
-        )
-        res = self.client.get(urlGet)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data['home'], True)
-        url = reverse('dashboard:dashboard-list')
-        payload = {
-            'name': 'Test dashboard',
-            'organization': self.organization.id,
-            'home': True
-        }
-        res = self.client.post(url, payload)
-        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-        res = self.client.get(urlGet)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data['home'], False)
 
     def test_get_widget_type(self):
         url = reverse(
