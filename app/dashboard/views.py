@@ -2,7 +2,7 @@ from rest_framework import viewsets
 # from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from squac.mixins import SetUserMixin, DefaultPermissionsMixin, \
     SharedPermissionsMixin
-from dashboard.models import Dashboard, WidgetType, Widget, StatType
+from dashboard.models import Dashboard, Widget
 from dashboard import serializers
 from rest_framework.permissions import IsAdminUser
 
@@ -32,21 +32,6 @@ class DashboardViewSet(SharedPermissionsMixin, BaseDashboardViewSet):
             queryset.filter(organization=org.id, share_org=True)
 
         return queryset
-
-
-class WidgetTypeViewSet(BaseDashboardViewSet):
-    serializer_class = serializers.WidgetTypeSerializer
-
-    def get_queryset(self):
-        return WidgetType.objects.all()
-
-
-class StatTypeViewSet(SetUserMixin, IsAdminUser, viewsets.ModelViewSet):
-    ''' we only want readonly through api'''
-    serializer_class = serializers.StatTypeSerializer
-
-    def get_queryset(self):
-        return StatType.objects.all()
 
 
 class WidgetViewSet(BaseDashboardViewSet):

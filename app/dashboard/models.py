@@ -31,68 +31,17 @@ class DashboardBase(models.Model):
         return self.__class__.__name__.lower()
 
 
-class WidgetType(DashboardBase):
-    '''describes the type of widget'''
-    type = models.CharField(max_length=255, unique=True)
-    use_aggregate = models.BooleanField(default=False)
-
-    class Meta:
-        indexes = [
-            models.Index(fields=['type'])
-        ]
-
-
-class StatType(DashboardBase):
-    '''describes the stat used on widget'''
-    type = models.CharField(max_length=255, unique=True)
-
-    class Meta:
-        indexes = [
-            models.Index(fields=['type'])
-        ]
-
-
 class Dashboard(DashboardBase):
-    class ArchiveType(models.TextChoices):
-        RAW = 'raw', _('Raw')
-        HOUR = 'hour', _('Hour')
-        DAY = 'day', _('Day')
-        WEEK = 'week', _('Week')
-        MONTH = 'month', _('Month')
-
-    class ArchiveStat(models.TextChoices):
-        MEAN = 'mean', _('Mean')
-        MEDIAN = 'median', _('Median')
-        STDEV = 'stdev', _('Standard Deviation')
-        MIN = 'min', _('Min')
-        MAX = 'max', _('Max')
-        P05 = 'p05', _('5th Percentile')
-        P10 = 'p10', _('10th Percentile')
-        P90 = 'p90', _('90th Percentile')
-        P95 = 'p95', _('95th Percentile')
-        NUM_SAMPS = 'num_samps', _('Number of Samples')
 
     '''describes the container the holds widgets'''
-    properties = models.JSONField(null=True)
-    widget = models.JSONField(null=True)
+    properties = models.JSONField(blank=True, null=True)
     share_all = models.BooleanField(default=False)
     share_org = models.BooleanField(default=False)
-    window_seconds = models.IntegerField(blank=True, null=True)
-    starttime = models.DateTimeField(blank=True, null=True)
-    endtime = models.DateTimeField(blank=True, null=True)
     organization = models.ForeignKey(
         Organization,
         on_delete=models.CASCADE,
         related_name='dashboards'
     )
-    archive_type = models.CharField(max_length=8,
-                                    choices=ArchiveType.choices,
-                                    default=ArchiveType.RAW,
-                                    null=True)
-    archive_stat = models.CharField(max_length=16,
-                                    choices=ArchiveStat.choices,
-                                    default=ArchiveStat.MEAN,
-                                    null=True)
 
     def save(self, *args, **kwargs):
         return super(Dashboard, self).save(*args, **kwargs)
@@ -113,22 +62,15 @@ class Widget(DashboardBase):
         on_delete=models.CASCADE,
         related_name='widgets'
     )
-    widgettype = models.ForeignKey(
-        WidgetType,
-        on_delete=models.CASCADE,
-        related_name='widgets',
-    )
-    stattype = models.ForeignKey(
-        StatType,
-        on_delete=models.CASCADE,
-        related_name='widgets',
-    )
     channel_group = models.ForeignKey(
         Group,
         on_delete=models.CASCADE,
         related_name='widgets',
     )
-    columns = models.IntegerField()
-    rows = models.IntegerField()
-    x_position = models.IntegerField()
-    y_position = models.IntegerField()
+
+    def widget_props():
+        return {"email": "to1@example.com"}
+
+    properties = models.JSONField("properties", default=widget_props)
+    layout = models.JSONField("layout", null=True)
+    type = models.CharField(max_length=255, null=True)
