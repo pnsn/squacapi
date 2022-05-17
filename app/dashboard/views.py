@@ -4,7 +4,6 @@ from squac.mixins import SetUserMixin, DefaultPermissionsMixin, \
     SharedPermissionsMixin
 from dashboard.models import Dashboard, Widget
 from dashboard import serializers
-from rest_framework.permissions import IsAdminUser
 
 
 class BaseDashboardViewSet(SetUserMixin, DefaultPermissionsMixin,

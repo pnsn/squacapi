@@ -4,7 +4,7 @@ from django.utils import timezone
 
 from measurement.models import Metric, Threshold
 from nslc.models import Network, Channel, Group
-from dashboard.models import Dashboard, Widget, WidgetType, StatType
+from dashboard.models import Dashboard, Widget
 from organization.models import Organization
 
 
@@ -72,26 +72,9 @@ class UnauthenticatedDashboardApiTests(TestCase):
             user=self.user,
             organization=self.organization
         )
-        self.widtype = WidgetType.objects.create(
-            name='Test widget type',
-            type='Some type',
-            user=self.user,
-            use_aggregate=True
-        )
-        self.stattype = StatType.objects.create(
-            name="Average",
-            type="ave",
-            user=self.user
-        )
         self.widget = Widget.objects.create(
             name='Test widget',
             dashboard=self.dashboard,
-            widgettype=self.widtype,
-            stattype=self.stattype,
-            columns=6,
-            rows=3,
-            x_position=1,
-            y_position=1,
             user=self.user,
             channel_group=self.grp,
         )
@@ -101,14 +84,6 @@ class UnauthenticatedDashboardApiTests(TestCase):
         url = reverse(
             'dashboard:dashboard-detail',
             kwargs={'pk': self.dashboard.id}
-        )
-        res = self.client.get(url)
-        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
-
-    def test_widget_type_unauthorized(self):
-        url = reverse(
-            'dashboard:widgettype-detail',
-            kwargs={'pk': self.widtype.id}
         )
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
@@ -173,25 +148,9 @@ class PrivateDashboardAPITests(TestCase):
                 "window_seconds": 1
             }
         )
-        self.widtype = WidgetType.objects.create(
-            name='Test widget type',
-            type='Some type',
-            user=self.user
-        )
-        self.stattype = StatType.objects.create(
-            name="Maxeo",
-            type="max",
-            user=self.user
-        )
         self.widget = Widget.objects.create(
             name='Test widget',
             dashboard=self.dashboard,
-            widgettype=self.widtype,
-            stattype=self.stattype,
-            columns=6,
-            rows=3,
-            x_position=1,
-            y_position=1,
             user=self.user,
             channel_group=self.grp,
         )
@@ -223,25 +182,6 @@ class PrivateDashboardAPITests(TestCase):
         res = self.client.post(url, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 
-    def test_get_widget_type(self):
-        url = reverse(
-            'dashboard:widgettype-detail',
-            kwargs={'pk': self.widtype.id}
-        )
-        res = self.client.get(url)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data['name'], 'Test widget type')
-        self.assertEqual(str(self.widtype), 'Test widget type')
-
-    def test_create_widgettype(self):
-        url = reverse('dashboard:widgettype-list')
-        payload = {'name': "Test widget type", "type": "Type"}
-        res = self.client.post(url, payload)
-        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-        widtype = WidgetType.objects.get(id=res.data['id'])
-        for key in payload.keys():
-            self.assertEqual(payload[key], getattr(widtype, key))
-
     def test_get_widget(self):
         url = reverse('dashboard:widget-detail', kwargs={'pk': self.widget.id})
         res = self.client.get(url)
@@ -254,12 +194,6 @@ class PrivateDashboardAPITests(TestCase):
         payload = {
             'name': 'Test widget',
             'dashboard': self.dashboard.id,
-            'widgettype': self.widtype.id,
-            'stattype': self.stattype.id,
-            'columns': 6,
-            'rows': 3,
-            'x_position': 1,
-            'y_position': 1,
             'metrics': [self.metric.id],
             'channel_group': self.grp.id
         }
@@ -269,10 +203,6 @@ class PrivateDashboardAPITests(TestCase):
         for key in payload.keys():
             if key == 'dashboard':
                 self.assertEqual(payload[key], widget.dashboard.id)
-            elif key == 'widgettype':
-                self.assertEqual(payload[key], widget.widgettype.id)
-            elif key == 'stattype':
-                self.assertEqual(payload[key], widget.stattype.id)
             elif key == 'metrics':
                 metrics = widget.metrics.all()
                 self.assertIn(self.metric, metrics)
@@ -302,9 +232,3 @@ class PrivateDashboardAPITests(TestCase):
         }
         res = self.client.post(url, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-
-    def test_get_stattype(self):
-        url = reverse('dashboard:stattype-detail',
-                      kwargs={'pk': self.stattype.id})
-        res = self.client.get(url)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)

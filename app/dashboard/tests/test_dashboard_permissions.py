@@ -5,7 +5,7 @@ from rest_framework.test import APIClient
 from rest_framework import status
 from datetime import datetime
 import pytz
-from dashboard.models import Dashboard, Widget, WidgetType, StatType
+from dashboard.models import Dashboard, Widget
 from measurement.models import Metric
 from nslc.models import Network, Channel, Group
 from squac.test_mixins import sample_user, create_group
@@ -19,15 +19,12 @@ from squac.test_mixins import sample_user, create_group
 
 REPORTER_PERMISSIONS = [
     'view_dashboard', 'add_dashboard', 'change_dashboard', 'delete_dashboard',
-    'view_widget', 'add_widget', 'change_widget', 'delete_widget',
-    'view_widgettype',
-    'view_stattype']
+    'view_widget', 'add_widget', 'change_widget', 'delete_widget']
 
 VIEWER_PERMISSIONS = [
     'view_dashboard',
     'view_widget',
-    'view_widgettype',
-    'view_stattype']
+]
 
 
 class DashboardPermissionTests(TestCase):
@@ -141,27 +138,14 @@ class DashboardPermissionTests(TestCase):
             organization=self.not_my_org
         )
 
-        self.widtype = WidgetType.objects.create(
-            name='Test widget type',
-            type='Some type',
-            user=self.reporter
-        )
-        self.stattype = StatType.objects.create(
-            name="Average",
-            type="ave",
-            user=self.reporter
-        )
         self.widget = Widget.objects.create(
             name='Test widget',
             dashboard=self.my_org_dashboard_share_org,
-            widgettype=self.widtype,
-            stattype=self.stattype,
-            columns=6,
-            rows=3,
-            x_position=1,
-            y_position=1,
             user=self.reporter,
             channel_group=self.grp,
+            type="test",
+            properties={'type': 0},
+            layout={'x': 0}
         )
 
     def test_reporter_has_perms(self):
@@ -180,16 +164,6 @@ class DashboardPermissionTests(TestCase):
         self.assertTrue(self.reporter.has_perm('dashboard.change_widget'))
         self.assertTrue(self.reporter.has_perm('dashboard.delete_widget'))
 
-        self.assertTrue(self.reporter.has_perm('dashboard.view_widgettype'))
-        self.assertFalse(self.reporter.has_perm('dashboard.add_widgettype'))
-        self.assertFalse(self.reporter.has_perm('dashboard.change_widgettype'))
-        self.assertFalse(self.reporter.has_perm('dashboard.delete_widgetype'))
-
-        self.assertTrue(self.reporter.has_perm('dashboard.view_stattype'))
-        self.assertFalse(self.reporter.has_perm('dashboard.add_stattype'))
-        self.assertFalse(self.reporter.has_perm('dashboard.change_stattype'))
-        self.assertFalse(self.reporter.has_perm('dashboard.delete_stattype'))
-
     def test_viewer_has_perms(self):
         '''viewers can view all models'''
         self.assertTrue(self.viewer.has_perm('dashboard.view_dashboard'))
@@ -201,16 +175,6 @@ class DashboardPermissionTests(TestCase):
         self.assertFalse(self.viewer.has_perm('dashboard.add_widget'))
         self.assertFalse(self.viewer.has_perm('dashboard.change_widget'))
         self.assertFalse(self.viewer.has_perm('dashboard.delete_widget'))
-
-        self.assertTrue(self.viewer.has_perm('dashboard.view_widgettype'))
-        self.assertFalse(self.viewer.has_perm('dashboard.add_widgettype'))
-        self.assertFalse(self.viewer.has_perm('dashboard.change_widgettype'))
-        self.assertFalse(self.viewer.has_perm('dashboard.delete_widgetype'))
-
-        self.assertTrue(self.viewer.has_perm('dashboard.view_stattype'))
-        self.assertFalse(self.viewer.has_perm('dashboard.add_stattype'))
-        self.assertFalse(self.viewer.has_perm('dashboard.change_stattype'))
-        self.assertFalse(self.viewer.has_perm('dashboard.delete_stattype'))
 
     def test_viewer_can_view_my_org_share_org(self):
         ''' a viewer can view own org's share_org resource'''

@@ -3,7 +3,6 @@ from django.conf import settings
 
 from nslc.models import Group
 from organization.models import Organization
-from django.utils.translation import gettext_lazy as _
 
 
 class DashboardBase(models.Model):
