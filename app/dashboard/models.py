@@ -43,6 +43,7 @@ class Dashboard(DashboardBase):
     )
 
     def save(self, *args, **kwargs):
+        print(self, *args, **kwargs)
         return super(Dashboard, self).save(*args, **kwargs)
 
     class Meta:
@@ -67,9 +68,8 @@ class Widget(DashboardBase):
         related_name='widgets',
     )
 
-    def widget_props():
-        return {"email": "to1@example.com"}
-
-    properties = models.JSONField("properties", default=widget_props)
-    layout = models.JSONField("layout", null=True)
+    properties = models.JSONField(null=True)
+    layout = models.JSONField(null=True)
+    thresholds = models.JSONField(null=True)
     type = models.CharField(max_length=255, null=True)
+    stat = models.CharField(max_length=255, null=True)

@@ -72,7 +72,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='widget',
             name='properties',
-            field=models.JSONField(default=dashboard.models.Widget.widget_props, verbose_name='properties'),
+            field=models.JSONField(null=True, verbose_name='properties'),
         ),
         migrations.DeleteModel(
             name='StatType',

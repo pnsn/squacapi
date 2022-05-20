@@ -89,27 +89,6 @@ class Measurement(MeasurementBase):
                 )
 
 
-class Threshold(MeasurementBase):
-    widget = models.ForeignKey(
-        Widget,
-        on_delete=models.CASCADE,
-        related_name='thresholds')
-
-    metric = models.ForeignKey(
-        Metric,
-        on_delete=models.CASCADE,
-        related_name='thresholds')
-    minval = models.FloatField(blank=True, null=True)
-    maxval = models.FloatField(blank=True, null=True)
-
-    def __str__(self):
-        return (f"Threshold for Widget: {str(self.widget)} "
-                f"Metric: {str(self.metric)}"
-                f"Min {self.minval}"
-                f"Max {self.maxval}"
-                )
-
-
 class Monitor(MeasurementBase):
     '''Describes alarms on metrics and channel_groups'''
 

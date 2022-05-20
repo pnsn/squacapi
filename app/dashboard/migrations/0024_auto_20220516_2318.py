@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='widget',
             name='properties',
-            field=models.JSONField(default=dashboard.models.Widget.widget_props, verbose_name='Properties'),
+            field=models.JSONField(null=True, verbose_name='Properties'),
         ),
     ]

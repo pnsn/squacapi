@@ -1,8 +1,7 @@
 from rest_framework import serializers
-from .models import (Metric, Measurement, Threshold,
+from .models import (Metric, Measurement,
                      Alert, ArchiveHour, ArchiveDay, ArchiveWeek, Monitor,
                      Trigger, ArchiveMonth)
-from dashboard.models import Widget
 from nslc.models import Channel, Group
 from nslc.serializers import GroupSerializer
 
@@ -87,26 +86,6 @@ class MetricSerializer(serializers.HyperlinkedModelSerializer):
             'id', 'name', 'code', 'url', 'description', 'unit', 'created_at',
             'updated_at', 'default_minval', 'default_maxval', 'user_id',
             'reference_url', 'sample_rate'
-        )
-        read_only_fields = ('id',)
-
-
-class ThresholdSerializer(serializers.HyperlinkedModelSerializer):
-    url = serializers.HyperlinkedIdentityField(
-        view_name="measurement:threshold-detail")
-
-    metric = serializers.PrimaryKeyRelatedField(
-        queryset=Metric.objects.all())
-
-    widget = serializers.PrimaryKeyRelatedField(
-        queryset=Widget.objects.all()
-    )
-
-    class Meta:
-        model = Threshold
-        fields = (
-            'id', 'url', 'metric', 'widget', 'minval', 'maxval', 'created_at',
-            'updated_at', 'user_id'
         )
         read_only_fields = ('id',)
 
