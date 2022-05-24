@@ -24,7 +24,7 @@ class WidgetSerializer(serializers.HyperlinkedModelSerializer):
         fields = (
             'id', 'name', 'dashboard', 'metrics',
             'channel_group', 'user_id', 'layout',
-            'type', 'properties', 'stat'
+            'type', 'properties', 'stat', 'thresholds'
         )
         read_only_fields = ('id',)
 
