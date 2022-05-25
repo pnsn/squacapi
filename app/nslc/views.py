@@ -1,7 +1,10 @@
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
+<< << << < HEAD
 from django.views.decorators.vary import vary_on_headers
 from django.views.decorators.cache import cache_control
+== == == =
+>>>>>> > test
 from django.conf import settings
 from rest_framework import viewsets
 from rest_framework.decorators import api_view
@@ -123,6 +126,5 @@ class GroupViewSet(BaseNslcViewSet):
         queryset = Group.objects.all()
         return queryset
 
-    @cache_control(must_revalidate=True, max_age=3600)
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
