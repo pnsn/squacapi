@@ -7,7 +7,6 @@ from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 
 from .validators import validate_email_list
-from dashboard.models import Widget
 from nslc.models import Channel, Group
 
 from datetime import datetime, timedelta

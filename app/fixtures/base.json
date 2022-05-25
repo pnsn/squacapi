@@ -576,42 +576,6 @@
   },
   {
     "model": "auth.permission",
-    "pk": 65,
-    "fields": {
-      "name": "Can add threshold",
-      "content_type": 17,
-      "codename": "add_threshold"
-    }
-  },
-  {
-    "model": "auth.permission",
-    "pk": 66,
-    "fields": {
-      "name": "Can change threshold",
-      "content_type": 17,
-      "codename": "change_threshold"
-    }
-  },
-  {
-    "model": "auth.permission",
-    "pk": 67,
-    "fields": {
-      "name": "Can delete threshold",
-      "content_type": 17,
-      "codename": "delete_threshold"
-    }
-  },
-  {
-    "model": "auth.permission",
-    "pk": 68,
-    "fields": {
-      "name": "Can view threshold",
-      "content_type": 17,
-      "codename": "view_threshold"
-    }
-  },
-  {
-    "model": "auth.permission",
     "pk": 69,
     "fields": {
       "name": "Can add archive",
@@ -2142,46 +2106,6 @@
       "default_minval": 1.0,
       "default_maxval": 10.0,
       "reference_url": ""
-    }
-  },
-
-  {
-    "model": "measurement.threshold",
-    "pk": 1,
-    "fields": {
-      "created_at": "2019-10-16T22:00:52.799Z",
-      "updated_at": "2019-10-16T22:00:52.799Z",
-      "user": 1,
-      "widget": 1,
-      "metric": 2,
-      "minval": 1.0,
-      "maxval": 2.0
-    }
-  },
-  {
-    "model": "measurement.threshold",
-    "pk": 2,
-    "fields": {
-      "created_at": "2019-10-16T22:00:52.799Z",
-      "updated_at": "2019-10-16T22:00:52.799Z",
-      "user": 1,
-      "widget": 2,
-      "metric": 2,
-      "minval": 1.0,
-      "maxval": 2.0
-    }
-  },
-  {
-    "model": "measurement.threshold",
-    "pk": 3,
-    "fields": {
-      "created_at": "2019-10-16T22:00:52.799Z",
-      "updated_at": "2019-10-16T22:00:52.799Z",
-      "user": 1,
-      "widget": 1,
-      "metric": 2,
-      "minval": 1.0,
-      "maxval": 2.0
     }
   },
   {

@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
-from measurement.models import Metric, Threshold
+from measurement.models import Metric
 from nslc.models import Network, Channel, Group
 from dashboard.models import Dashboard, Widget
 from organization.models import Organization
@@ -155,14 +155,6 @@ class PrivateDashboardAPITests(TestCase):
             channel_group=self.grp,
         )
 
-        self.threshold = Threshold.objects.create(
-            widget=self.widget,
-            metric=self.metric,
-            minval=9.0,
-            maxval=10.0,
-            user=self.user
-        )
-
     def test_get_dashboard(self):
         url = reverse(
             'dashboard:dashboard-detail',
@@ -213,22 +205,3 @@ class PrivateDashboardAPITests(TestCase):
                                  widget.dashboard.organization.id)
             else:
                 self.assertEqual(payload[key], getattr(widget, key))
-
-    def test_get_threshold(self):
-        url = reverse('measurement:threshold-detail',
-                      kwargs={'pk': self.threshold.id})
-        res = self.client.get(url)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(float(res.data['maxval']), 10.0)
-        self.assertEqual(float(res.data['minval']), 9.0)
-
-    def test_create_threshold(self):
-        url = reverse('measurement:threshold-list')
-        payload = {
-            'maxval': 10.0,
-            'minval': 9.0,
-            'widget': self.widget.id,
-            'metric': self.metric.id
-        }
-        res = self.client.post(url, payload)
-        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
