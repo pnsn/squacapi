@@ -43,7 +43,6 @@ class Dashboard(DashboardBase):
     )
 
     def save(self, *args, **kwargs):
-        print(self, *args, **kwargs)
         return super(Dashboard, self).save(*args, **kwargs)
 
     class Meta:

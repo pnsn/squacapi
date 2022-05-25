@@ -1,9 +1,17 @@
 from rest_framework import viewsets
+from django.views.decorators.cache import cache_control
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_headers
+from django.views.decorators.cache import cache_control
 # from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from squac.mixins import SetUserMixin, DefaultPermissionsMixin, \
     SharedPermissionsMixin
 from dashboard.models import Dashboard, Widget
 from dashboard import serializers
+from django.db.models.signals import post_delete, post_save
+from django.dispatch import receiver
+from django.core.cache import cache
 
 
 class BaseDashboardViewSet(SetUserMixin, DefaultPermissionsMixin,
@@ -18,6 +26,9 @@ class DashboardViewSet(SharedPermissionsMixin, BaseDashboardViewSet):
         if self.action == 'retrieve':
             return serializers.DashboardDetailSerializer
         return self.serializer_class
+
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
         queryset = Dashboard.objects.all()
@@ -48,6 +59,10 @@ class WidgetViewSet(BaseDashboardViewSet):
             dashboard_id = self._params_to_ints(dashboard)
             queryset = queryset.filter(dashboard__id__in=dashboard_id)
         return queryset
+
+    @cache_control(must_revalidate=True, max_age=60)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
 
     def get_serializer_class(self):
         if self.action == 'retrieve' or self.action == 'list':
