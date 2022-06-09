@@ -11,7 +11,7 @@ from django.db.models.functions import (Coalesce, Abs, Least, Greatest)
 from squac.mixins import (SetUserMixin, DefaultPermissionsMixin,
                           AdminOrOwnerPermissionMixin)
 from .exceptions import MissingParameterException
-from .models import (Metric, Measurement, Threshold,
+from .models import (Metric, Measurement,
                      Alert, ArchiveDay, ArchiveWeek, ArchiveMonth,
                      ArchiveHour, Monitor, Trigger)
 from measurement import serializers
@@ -36,12 +36,6 @@ def check_measurement_params(params):
 class MetricFilter(filters.FilterSet):
     # CharInFilter is custom filter see imports
     name = CharInFilter(lookup_expr='in')
-
-
-class ThresholdFilter(filters.FilterSet):
-    class Meta:
-        model = Threshold
-        fields = ('metric', 'widget')
 
 
 class MeasurementFilter(filters.FilterSet):
@@ -146,14 +140,6 @@ class MeasurementViewSet(MeasurementBaseViewSet):
         '''We want to be careful about large queries so require params'''
         check_measurement_params(request.query_params)
         return super().list(self, request, *args, **kwargs)
-
-
-class ThresholdViewSet(MonitorBaseViewSet):
-    serializer_class = serializers.ThresholdSerializer
-    filter_class = ThresholdFilter
-
-    def get_queryset(self):
-        return Threshold.objects.all()
 
 
 class MonitorViewSet(MonitorBaseViewSet):

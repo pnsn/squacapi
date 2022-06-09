@@ -304,7 +304,6 @@ LOGGING = {
             'class': 'django.utils.log.AdminEmailHandler'
         },
     },
-
     'root': {
         'handlers': ['console'],
         'level': 'WARNING',
@@ -312,27 +311,21 @@ LOGGING = {
     'loggers': {
         'django': {
             'handlers': ['console'],
-            'propagate': False,
-            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
         },
         'django.request': {
-            'handlers': ['mail_admins', 'console'],
-            'level': 'ERROR',
+            'handlers': ['mail_admins'],
             'propagate': False,
         },
         'django.security': {
             'handlers': ['mail_admins', 'console'],
-            'level': 'ERROR',
             'propagate': False,
         },
         'django.server': {
             'handlers': ['console'],
-            'level': 'WARNING',
             'propagate': False,
         },
         'django.db.backends': {
             'handlers': ['console'],
-            'level': 'ERROR',
             'propagate': False,
         }
     }

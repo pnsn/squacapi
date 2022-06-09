@@ -7,7 +7,6 @@ router = DefaultRouter()
 router.register('metrics', views.MetricViewSet, basename='metric')
 router.register('measurements', views.MeasurementViewSet,
                 basename='measurement')
-router.register('thresholds', views.ThresholdViewSet, basename='threshold')
 router.register('monitors', views.MonitorViewSet, basename='monitor')
 router.register('triggers', views.TriggerViewSet, basename='trigger')
 router.register('alerts', views.AlertViewSet, basename='alert')

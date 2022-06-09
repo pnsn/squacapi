@@ -12,12 +12,11 @@ from django.contrib.auth import get_user_model
 
 
 def main():
-    from dashboard.models import Dashboard, Widget, WidgetType
+    from dashboard.models import Dashboard, Widget
     from nslc.models import Group
     from measurement.models import Metric
 
     Dashboard.objects.all().delete()
-    WidgetType.objects.all().delete()
     Widget.objects.all().delete()
 
     try:
@@ -36,23 +35,17 @@ def main():
             user=user
         )
 
-    widgettypes = []
-    widgettypes.append(WidgetType.objects.create(type='Tabular', user=user))
-    widgettypes.append(WidgetType.objects.create(type='Map', user=user))
-
     dashboards = Dashboard.objects.all()
 
     for d in dashboards:
         tab_widget = Widget.objects.create(
             name=f"{d.name} tab widget",
             dashboard=d,
-            widgettype=widgettypes[0],
             user=user
         )
         map_widget = Widget.objects.create(
             name=f"{d.name} map widget",
             dashboard=d,
-            widgettype=widgettypes[1],
             user=user
         )
         tab_metrics = Metric.objects.all()

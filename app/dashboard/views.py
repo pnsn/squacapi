@@ -2,9 +2,8 @@ from rest_framework import viewsets
 # from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from squac.mixins import SetUserMixin, DefaultPermissionsMixin, \
     SharedPermissionsMixin
-from dashboard.models import Dashboard, WidgetType, Widget, StatType
+from dashboard.models import Dashboard, Widget
 from dashboard import serializers
-from rest_framework.permissions import IsAdminUser
 
 
 class BaseDashboardViewSet(SetUserMixin, DefaultPermissionsMixin,
@@ -20,6 +19,9 @@ class DashboardViewSet(SharedPermissionsMixin, BaseDashboardViewSet):
             return serializers.DashboardDetailSerializer
         return self.serializer_class
 
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
     def get_queryset(self):
         queryset = Dashboard.objects.all()
         if self.request.user.is_staff:
@@ -32,21 +34,6 @@ class DashboardViewSet(SharedPermissionsMixin, BaseDashboardViewSet):
             queryset.filter(organization=org.id, share_org=True)
 
         return queryset
-
-
-class WidgetTypeViewSet(BaseDashboardViewSet):
-    serializer_class = serializers.WidgetTypeSerializer
-
-    def get_queryset(self):
-        return WidgetType.objects.all()
-
-
-class StatTypeViewSet(SetUserMixin, IsAdminUser, viewsets.ModelViewSet):
-    ''' we only want readonly through api'''
-    serializer_class = serializers.StatTypeSerializer
-
-    def get_queryset(self):
-        return StatType.objects.all()
 
 
 class WidgetViewSet(BaseDashboardViewSet):
@@ -64,6 +51,9 @@ class WidgetViewSet(BaseDashboardViewSet):
             dashboard_id = self._params_to_ints(dashboard)
             queryset = queryset.filter(dashboard__id__in=dashboard_id)
         return queryset
+
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
 
     def get_serializer_class(self):
         if self.action == 'retrieve' or self.action == 'list':

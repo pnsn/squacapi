@@ -1,6 +1,6 @@
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
-from django.views.decorators.vary import vary_on_headers
+from django.views.decorators.cache import cache_control
 from django.conf import settings
 from rest_framework import viewsets
 from rest_framework.decorators import api_view
@@ -104,8 +104,7 @@ class ChannelViewSet(BaseNslcViewSet):
         q = Channel.objects.all()
         return self.serializer_class.setup_eager_loading(q)
 
-    @method_decorator(cache_page(settings.NSLC_DEFAULT_CACHE,
-                                 key_prefix="ChannelView"))
+    @cache_control(must_revalidate=True, max_age=settings.NSLC_DEFAULT_CACHE)
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
@@ -123,7 +122,5 @@ class GroupViewSet(BaseNslcViewSet):
         queryset = Group.objects.all()
         return queryset
 
-    @method_decorator(cache_page(60 * 10, key_prefix="GroupView"))
-    @method_decorator(vary_on_headers('Cookie'))
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
