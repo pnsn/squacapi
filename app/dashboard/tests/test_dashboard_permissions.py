@@ -104,7 +104,8 @@ class DashboardPermissionTests(TestCase):
             share_all=False,
             share_org=True,
             user=self.reporter,
-            organization=self.my_org
+            organization=self.my_org,
+            channel_group=self.grp,
         )
 
         self.my_org_dashboard_share_none = Dashboard.objects.create(
@@ -112,7 +113,8 @@ class DashboardPermissionTests(TestCase):
             share_all=False,
             share_org=False,
             user=self.reporter,
-            organization=self.my_org
+            organization=self.my_org,
+            channel_group=self.grp,
         )
 
         self.not_my_org_dashboard_share_all = Dashboard.objects.create(
@@ -120,7 +122,8 @@ class DashboardPermissionTests(TestCase):
             share_all=True,
             share_org=True,
             user=self.not_me,
-            organization=self.not_my_org
+            organization=self.not_my_org,
+            channel_group=self.grp,
         )
 
         self.not_my_org_dashboard_share_org = Dashboard.objects.create(
@@ -128,21 +131,22 @@ class DashboardPermissionTests(TestCase):
             share_all=False,
             share_org=True,
             user=self.not_me,
-            organization=self.not_my_org
+            organization=self.not_my_org,
+            channel_group=self.grp,
         )
         self.not_my_org_dashboard_share_none = Dashboard.objects.create(
             name='Test dashboard',
             share_all=False,
             share_org=False,
             user=self.not_me,
-            organization=self.not_my_org
+            organization=self.not_my_org,
+            channel_group=self.grp,
         )
 
         self.widget = Widget.objects.create(
             name='Test widget',
             dashboard=self.my_org_dashboard_share_org,
             user=self.reporter,
-            channel_group=self.grp,
             type="test",
             properties={'type': 0},
             layout={'x': 0}
