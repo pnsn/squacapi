@@ -1,12 +1,13 @@
 from django.core.management.base import BaseCommand
 from django.db.models import (Avg, StdDev, Min, Max, Count, F, FloatField,
                               Value as V)
-from django.db.models.functions import (TruncDay, TruncMonth, Coalesce,
-                                        Concat)
-from measurement.models import (Measurement, ArchiveDay, ArchiveMonth)
+from django.db.models.functions import (TruncDay, TruncMonth, TruncWeek,
+                                        Coalesce, Concat)
+from measurement.models import (Measurement, ArchiveDay, ArchiveMonth,
+                                ArchiveWeek)
 from measurement.aggregates.percentile import Percentile
 from datetime import datetime
-from dateutil.relativedelta import relativedelta
+from dateutil.relativedelta import relativedelta, MO
 import pytz
 
 
@@ -17,27 +18,30 @@ class Command(BaseCommand):
 
     TIME_TRUNCATOR = {
         'day': TruncDay,
+        'week': TruncWeek,
         'month': TruncMonth,
     }
     """" Django datetime extractors for dealing with portions of datetimes """
 
     DURATIONS = {
         'day': lambda count: relativedelta(days=count),
+        'week': lambda count: relativedelta(weeks=count),
         'month': lambda count: relativedelta(months=count),
     }
     """ functions for generating timesteps of sizes """
 
     ARCHIVE_TYPE = {
         'day': ArchiveDay,
+        'week': ArchiveWeek,
         'month': ArchiveMonth
     }
     """ Types of archive """
 
     def add_arguments(self, parser):
         parser.add_argument('archive_type',
-                            choices=['day', 'month'],
+                            choices=['day', 'week', 'month'],
                             help=('The granularity of the desired archive '
-                                  '(i.e. day, month, etc.)'))
+                                  '(i.e. day, week, month, etc.)'))
         parser.add_argument('--period_end',
                             type=lambda s: pytz.utc.localize(
                                 datetime.strptime(s, "%m-%d-%Y")),
@@ -65,13 +69,20 @@ class Command(BaseCommand):
         period_size = 1
         period_start = period_end - self.DURATIONS[archive_type](period_size)
 
-        # if archive_type is month, adjust period start/end to go from 1st day
-        # of the month
         if archive_type == 'month':
+            # if archive_type is month, adjust period start/end to go from 1st
+            # day of the month
             period_end = period_end.replace(
                 day=1, hour=0, minute=0, second=0, microsecond=0)
             period_start = period_start.replace(
                 day=1, hour=0, minute=0, second=0, microsecond=0)
+        elif archive_type == 'week':
+            # if archive_type is week, adjust period start/end to go from
+            # Monday of the given week
+            period_end += relativedelta(hour=0, minute=0, second=0,
+                                        microsecond=0, weekday=MO(-1))
+            period_start += relativedelta(hour=0, minute=0, second=0,
+                                          microsecond=0, weekday=MO(-1))
 
         # filter measurements down to time range
         measurements = Measurement.objects.filter(
