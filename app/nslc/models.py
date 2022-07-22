@@ -109,12 +109,14 @@ class Group(models.Model):
         Determines whether this group has the necessary information to
         auto-update
         """
-        return self.matching_rules.count() > 0
+        return any([self.matching_rules.count() > 0,
+                    self.auto_include_channels.count() > 0,
+                    self.auto_exclude_channels.count() > 0])
 
     def update_channels(self):
         if self.can_auto_update():
             print('DEBUG: Adding channels based on matching rules')
-            #### Construct query to add channels
+            # 1. Construct query to add channels
             include_query = Q()
 
             # First add channels based on matching rules
@@ -138,7 +140,7 @@ class Group(models.Model):
             channels = Channel.objects.filter(include_query)
             # channels = channels.filter(include_query)
 
-            #### Construct query to exclude channels
+            # 2. Construct query to exclude channels
             exclude_query = Q()
 
             # First add channels based on matching rules
@@ -158,9 +160,10 @@ class Group(models.Model):
                     id__in=self.auto_exclude_channels.all()
                 )
 
+            print(f"DEBUG: exclude_query = {exclude_query}")
             channels = channels.exclude(exclude_query)
 
-            # Finish
+            # 3. Finish
             print(f'DEBUG: {channels.count()} channels: {channels}')
 
             # Now actually add channels

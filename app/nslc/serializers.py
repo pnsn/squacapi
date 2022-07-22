@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Network, Channel, Group
+from .models import Network, Channel, Group, MatchingRule
 from organization.models import Organization
 
 
@@ -97,9 +97,12 @@ class NetworkSerializer(serializers.HyperlinkedModelSerializer):
 class MatchingRuleSerializer(serializers.HyperlinkedModelSerializer):
     url = serializers.HyperlinkedIdentityField(
         view_name="nslc:matching-rule-detail")
+    group = serializers.PrimaryKeyRelatedField(
+        queryset=Group.objects.all())
 
     class Meta:
-        model = Network
-        fields = ('network_regex', 'station_regex', 'location_regex',
+        model = MatchingRule
+        fields = ('id', 'network_regex', 'station_regex', 'location_regex',
                   'channel_regex', 'created_at', 'updated_at', 'user_id',
-                  'group', 'is_include')
+                  'group', 'is_include', 'url')
+        read_only_fields = ('id',)
