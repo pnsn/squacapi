@@ -8,9 +8,9 @@ from rest_framework.reverse import reverse
 from django_filters import rest_framework as filters
 from squac.filters import CharInFilter
 from squac.mixins import SetUserMixin, DefaultPermissionsMixin
-from .models import Network, Channel, Group
+from .models import Network, Channel, Group, MatchingRule
 from nslc.serializers import NetworkSerializer, ChannelSerializer, \
-    GroupSerializer, GroupDetailSerializer
+    GroupSerializer, GroupDetailSerializer, MatchingRuleSerializer
 
 
 """Filter classes used for view filtering"""
@@ -124,3 +124,11 @@ class GroupViewSet(BaseNslcViewSet):
 
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
+
+
+class MatchingRuleViewSet(BaseNslcViewSet):
+    serializer_class = MatchingRuleSerializer
+
+    def get_queryset(self):
+        queryset = MatchingRule.objects.all()
+        return queryset
