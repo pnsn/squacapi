@@ -78,8 +78,7 @@ class UnAuthenticatedNslcApiTests(TestCase):
 class PrivateNslcAPITests(TestCase):
     '''all authenticated tests go here'''
 
-    # fixtures = ['core_user.json', 'base.json']
-    fixtures = ['core_user.json', 'base_auto2.json']
+    fixtures = ['core_user.json', 'base.json']
     # Fixtures load from the fixtures directory in app
     # Fixture for testing patch/put on group
 
