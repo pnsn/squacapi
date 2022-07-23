@@ -114,62 +114,56 @@ class Group(models.Model):
                     self.auto_exclude_channels.count() > 0])
 
     def update_channels(self):
-        if self.can_auto_update():
-            print('DEBUG: Adding channels based on matching rules')
-            # 1. Construct query to add channels
-            include_query = Q()
+        if not self.can_auto_update():
+            return
 
-            # First add channels based on matching rules
-            for matching_rule in self.matching_rules.all():
-                if not matching_rule.is_include:
-                    continue
-                include_query = include_query | Q(
-                    network__code__iregex=matching_rule.network_regex.pattern,
-                    station_code__iregex=matching_rule.station_regex.pattern,
-                    loc__iregex=matching_rule.location_regex.pattern,
-                    code__iregex=matching_rule.channel_regex.pattern
-                )
+        # 1. Construct query to add channels
+        include_query = Q()
 
-            # Now add channels in auto_include_channels
-            if self.auto_include_channels.count() > 0:
-                include_query = include_query | Q(
-                    id__in=self.auto_include_channels.all()
-                )
+        # First add channels based on matching rules
+        for matching_rule in self.matching_rules.all():
+            if not matching_rule.is_include:
+                continue
+            include_query = include_query | Q(
+                network__code__iregex=matching_rule.network_regex.pattern,
+                station_code__iregex=matching_rule.station_regex.pattern,
+                loc__iregex=matching_rule.location_regex.pattern,
+                code__iregex=matching_rule.channel_regex.pattern
+            )
 
-            print(f"DEBUG: include_query = {include_query}")
-            channels = Channel.objects.filter(include_query)
-            # channels = channels.filter(include_query)
+        # Now add channels in auto_include_channels
+        if self.auto_include_channels.count() > 0:
+            include_query = include_query | Q(
+                id__in=self.auto_include_channels.all()
+            )
 
-            # 2. Construct query to exclude channels
-            exclude_query = Q()
+        channels = Channel.objects.filter(include_query)
 
-            # First add channels based on matching rules
-            for matching_rule in self.matching_rules.all():
-                if matching_rule.is_include:
-                    continue
-                exclude_query = exclude_query | Q(
-                    network__code__iregex=matching_rule.network_regex.pattern,
-                    station_code__iregex=matching_rule.station_regex.pattern,
-                    loc__iregex=matching_rule.location_regex.pattern,
-                    code__iregex=matching_rule.channel_regex.pattern
-                )
+        # 2. Construct query to exclude channels
+        exclude_query = Q()
 
-            # Now add channels in auto_exclude_channels
-            if self.auto_exclude_channels.count() > 0:
-                exclude_query = exclude_query | Q(
-                    id__in=self.auto_exclude_channels.all()
-                )
+        # First add channels based on matching rules
+        for matching_rule in self.matching_rules.all():
+            if matching_rule.is_include:
+                continue
+            exclude_query = exclude_query | Q(
+                network__code__iregex=matching_rule.network_regex.pattern,
+                station_code__iregex=matching_rule.station_regex.pattern,
+                loc__iregex=matching_rule.location_regex.pattern,
+                code__iregex=matching_rule.channel_regex.pattern
+            )
 
-            print(f"DEBUG: exclude_query = {exclude_query}")
-            channels = channels.exclude(exclude_query)
+        # Now add channels in auto_exclude_channels
+        if self.auto_exclude_channels.count() > 0:
+            exclude_query = exclude_query | Q(
+                id__in=self.auto_exclude_channels.all()
+            )
 
-            # 3. Finish
-            print(f'DEBUG: {channels.count()} channels: {channels}')
+        channels = channels.exclude(exclude_query)
 
-            # Now actually add channels
-            self.channels.set(channels)
-        else:
-            print('DEBUG: This group has no matching_rules, not updating')
+        # 3. Finish
+        # Now actually add channels
+        self.channels.set(channels)
 
     def __str__(self):
         return self.name
