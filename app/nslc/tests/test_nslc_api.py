@@ -1,12 +1,15 @@
+from datetime import datetime
+import os
+import pytz
+from unittest.mock import patch
+
 from django.core.management import call_command
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
-from datetime import datetime
-import os
-import pytz
-from nslc.models import Network, Channel, Group
+
+from nslc.models import Network, Channel, Group, MatchingRule
 from organization.models import Organization
 from squac.test_mixins import sample_user
 
@@ -104,6 +107,13 @@ class PrivateNslcAPITests(TestCase):
             user=self.user,
             organization=self.organization
         )
+        self.matching_rule = MatchingRule.objects.create(
+            network_regex='uw',
+            station_regex='^r.*',
+            group=self.grp,
+            user=self.user,
+            is_include=True
+        )
 
     def test_get_network(self):
         '''test if str is corrected'''
@@ -194,6 +204,36 @@ class PrivateNslcAPITests(TestCase):
         self.assertEqual(len(channels), 1)
         self.assertIn(self.chan, channels)
 
+    def test_get_matching_rule(self):
+        '''test if matching rule object is returned'''
+        url = reverse(
+            'nslc:matching-rule-detail',
+            kwargs={'pk': self.matching_rule.id})
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertTrue('uw' in res.data['network_regex'])
+        self.assertTrue(res.data['is_include'])
+
+    def test_create_matching_rule(self):
+        url = reverse('nslc:matching-rule-list')
+        payload = {
+            'network_regex': 'uo',
+            'station_regex': '^a.*',
+            'group': self.grp.id,
+            'is_include': True
+        }
+        res = self.client.post(url, payload)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        matching_rule = MatchingRule.objects.get(id=res.data['id'])
+        for key in payload.keys():
+            if 'regex' in key:
+                self.assertEqual(
+                    payload[key], getattr(matching_rule, key).pattern)
+            elif key == 'group':
+                self.assertEqual(payload[key], matching_rule.group.id)
+            else:
+                self.assertEqual(payload[key], getattr(matching_rule, key))
+
     def test_full_update_group(self):
         group = Group.objects.get(name='UW-All')
         chan_list = []
@@ -266,3 +306,88 @@ class PrivateNslcAPITests(TestCase):
         chan3 = Channel.objects.get(id=chan.id)
         self.assertEqual(chan3.depth, original_depth)
         self.assertEqual(len(Channel.objects.all()), len(channels))
+
+    def test_update_channels_no_rules(self):
+        '''Test that a group with no matching rules will not auto-update'''
+        group = Group.objects.create(
+            name='auto group',
+            user=self.user,
+            organization=self.organization
+        )
+        group.channels.add(self.chan)
+        self.assertEqual(1, group.channels.count())
+
+        # Now call update_channels and verify nothing changes
+        group.update_channels()
+        self.assertEqual(1, group.channels.count())
+
+    def test_update_channels_include_matching(self):
+        '''Test that a group with matching rules will auto-update'''
+        # Before update the group should have 0 channels
+        self.assertEqual(0, self.grp.channels.count())
+
+        # Now call update_channels and verify channels increase
+        self.grp.update_channels()
+        self.assertEqual(4, self.grp.channels.count())
+
+    def test_update_channels_exclude_matching(self):
+        '''Test that a group with excluding matching rules will auto-update'''
+        MatchingRule.objects.create(
+            network_regex='uw',
+            channel_regex='..z',
+            group=self.grp,
+            user=self.user,
+            is_include=False
+        )
+        self.grp.update_channels()
+        self.assertEqual(2, self.grp.channels.count())
+
+    def test_update_channels_include_list(self):
+        '''Test that a group with an include list will auto-update'''
+        chan2 = Channel.objects.create(
+            code='EHE', name="EHE", loc="--", lat=45.0, lon=-122.0,
+            station_code='TESTY', station_name='test sta 2',
+            elev=100.0, network=self.net, user=self.user,
+            starttime=datetime(1970, 1, 1, tzinfo=pytz.UTC),
+            endtime=datetime(2599, 12, 31, tzinfo=pytz.UTC))
+        self.grp.auto_include_channels.add(chan2)
+        self.grp.update_channels()
+        self.assertEqual(5, self.grp.channels.count())
+
+    def test_update_channels_exclude_list(self):
+        '''Test that a group with an exclude list will auto-update'''
+        # Add a channel to the exclude list
+        chan_exclude = Channel.objects.filter(
+            station_code__iregex='^REED',
+            code__iregex='..E'
+        )
+        self.grp.auto_exclude_channels.set(chan_exclude)
+        # Also add some random channel that wouldn't be included in the
+        # first place
+        chan3 = Channel.objects.create(
+            code='EHE', name="EHN", loc="--", lat=45.0, lon=-122.0,
+            station_code='TEST3', station_name='test sta 3',
+            elev=100.0, network=self.net, user=self.user,
+            starttime=datetime(1970, 1, 1, tzinfo=pytz.UTC),
+            endtime=datetime(2599, 12, 31, tzinfo=pytz.UTC))
+
+        self.grp.auto_exclude_channels.add(chan3)
+
+        self.grp.update_channels()
+        self.assertEqual(3, self.grp.channels.count())
+
+    def test_update_auto_channels(self):
+        '''Test update_auto_channels command'''
+        n_groups = len(Group.objects.all())
+        with patch('nslc.models.Group.update_channels') as com:
+            call_command('update_auto_channels')
+            self.assertEqual(n_groups, com.call_count)
+
+    def test_update_auto_channels_filter_group(self):
+        '''Test update_auto_channels command with group filter'''
+        n_groups = len(Group.objects.all())
+        n_groups_filter = len(Group.objects.filter(id__in=[3, 17]))
+        with patch('nslc.models.Group.update_channels') as com:
+            call_command('update_auto_channels', channel_groups=[3, 17])
+            self.assertEqual(n_groups_filter, com.call_count)
+            self.assertTrue(n_groups_filter < n_groups)

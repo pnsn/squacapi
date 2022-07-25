@@ -225,11 +225,12 @@ class AggregatedViewSet(IsAuthenticated, viewsets.ViewSet):
         measurements = Measurement.objects.all()
         # determine if this is a list of channels or list of channel groups
         try:
-            channels = [int(x) for x in params['channel'].split(',')]
+            channels = [
+                int(x) for x in params['channel'].strip(',').split(',')]
             measurements = measurements.filter(channel__in=channels)
         except KeyError:
             '''list of channel groups'''
-            groups = [int(x) for x in params['group'].split(',')]
+            groups = [int(x) for x in params['group'].strip(',').split(',')]
             measurements = measurements.filter(
                 channel__group__in=groups)
 

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Network, Channel, Group
+from .models import Network, Channel, Group, MatchingRule
 from organization.models import Organization
 
 
@@ -19,6 +19,14 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
         many=True,
         queryset=Channel.objects.all()
     )
+    auto_include_channels = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=Channel.objects.all()
+    )
+    auto_exclude_channels = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=Channel.objects.all()
+    )
     organization = serializers.PrimaryKeyRelatedField(
         queryset=Organization.objects.all()
     )
@@ -27,7 +35,8 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
         model = Group
         fields = (
             'name', 'id', 'url', 'description', 'channels',
-            'created_at', 'updated_at', 'user_id', 'organization'
+            'created_at', 'updated_at', 'user_id', 'organization',
+            'auto_include_channels', 'auto_exclude_channels'
         )
         read_only_fields = ('id',)
         ref_name = "NslcGroup"
@@ -57,18 +66,20 @@ class ChannelSerializer(serializers.HyperlinkedModelSerializer):
 class GroupDetailSerializer(GroupSerializer):
     # Serializer when viewing details of specific group
     channels = ChannelSerializer(many=True, read_only=True)
+    auto_include_channels = ChannelSerializer(many=True, read_only=True)
+    auto_exclude_channels = ChannelSerializer(many=True, read_only=True)
 
     class Meta:
         model = Group
         fields = (
             'name', 'id', 'url', 'description', 'channels',
-            'created_at', 'updated_at', 'user_id', 'organization'
+            'created_at', 'updated_at', 'user_id', 'organization',
+            'auto_include_channels', 'auto_exclude_channels'
         )
         read_only_fields = ('id',)
 
 
 class NetworkSerializer(serializers.HyperlinkedModelSerializer):
-    # stations = StationSerializer(many=True, read_only=True)
     url = serializers.HyperlinkedIdentityField(view_name="nslc:network-detail")
 
     class Meta:
@@ -81,3 +92,17 @@ class NetworkSerializer(serializers.HyperlinkedModelSerializer):
     def setup_eager_loading(queryset):
         queryset = queryset.prefetch_related('channels')
         return queryset
+
+
+class MatchingRuleSerializer(serializers.HyperlinkedModelSerializer):
+    url = serializers.HyperlinkedIdentityField(
+        view_name="nslc:matching-rule-detail")
+    group = serializers.PrimaryKeyRelatedField(
+        queryset=Group.objects.all())
+
+    class Meta:
+        model = MatchingRule
+        fields = ('id', 'network_regex', 'station_regex', 'location_regex',
+                  'channel_regex', 'created_at', 'updated_at', 'user_id',
+                  'group', 'is_include', 'url')
+        read_only_fields = ('id',)
