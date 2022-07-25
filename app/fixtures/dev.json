@@ -2363,46 +2363,6 @@
       "reference_url": ""
     }
   },
-
-  {
-    "model": "measurement.threshold",
-    "pk": 1,
-    "fields": {
-      "created_at": "2019-10-16T22:00:52.799Z",
-      "updated_at": "2019-10-16T22:00:52.799Z",
-      "user": 1,
-      "widget": 1,
-      "metric": 2,
-      "minval": 1.0,
-      "maxval": 2.0
-    }
-  },
-  {
-    "model": "measurement.threshold",
-    "pk": 2,
-    "fields": {
-      "created_at": "2019-10-16T22:00:52.799Z",
-      "updated_at": "2019-10-16T22:00:52.799Z",
-      "user": 1,
-      "widget": 2,
-      "metric": 2,
-      "minval": 1.0,
-      "maxval": 2.0
-    }
-  },
-  {
-    "model": "measurement.threshold",
-    "pk": 3,
-    "fields": {
-      "created_at": "2019-10-16T22:00:52.799Z",
-      "updated_at": "2019-10-16T22:00:52.799Z",
-      "user": 1,
-      "widget": 1,
-      "metric": 2,
-      "minval": 1.0,
-      "maxval": 2.0
-    }
-  },
   {
     "model": "dashboard.widgettype",
     "pk": 1,
