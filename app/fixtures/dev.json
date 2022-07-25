@@ -399,108 +399,108 @@
     "model": "auth.permission",
     "pk": 45,
     "fields": {
-      "name": "Can add metric",
+      "name": "Can add matching rule",
       "content_type": 12,
-      "codename": "add_metric"
+      "codename": "add_matchingrule"
     }
   },
   {
     "model": "auth.permission",
     "pk": 46,
     "fields": {
-      "name": "Can change metric",
+      "name": "Can change matching rule",
       "content_type": 12,
-      "codename": "change_metric"
+      "codename": "change_matchingrule"
     }
   },
   {
     "model": "auth.permission",
     "pk": 47,
     "fields": {
-      "name": "Can delete metric",
+      "name": "Can delete matching rule",
       "content_type": 12,
-      "codename": "delete_metric"
+      "codename": "delete_matchingrule"
     }
   },
   {
     "model": "auth.permission",
     "pk": 48,
     "fields": {
-      "name": "Can view metric",
+      "name": "Can view matching rule",
       "content_type": 12,
-      "codename": "view_metric"
+      "codename": "view_matchingrule"
     }
   },
   {
     "model": "auth.permission",
     "pk": 49,
     "fields": {
-      "name": "Can add measurement",
+      "name": "Can add metric",
       "content_type": 13,
-      "codename": "add_measurement"
+      "codename": "add_metric"
     }
   },
   {
     "model": "auth.permission",
     "pk": 50,
     "fields": {
-      "name": "Can change measurement",
+      "name": "Can change metric",
       "content_type": 13,
-      "codename": "change_measurement"
+      "codename": "change_metric"
     }
   },
   {
     "model": "auth.permission",
     "pk": 51,
     "fields": {
-      "name": "Can delete measurement",
+      "name": "Can delete metric",
       "content_type": 13,
-      "codename": "delete_measurement"
+      "codename": "delete_metric"
     }
   },
   {
     "model": "auth.permission",
     "pk": 52,
     "fields": {
-      "name": "Can view measurement",
+      "name": "Can view metric",
       "content_type": 13,
-      "codename": "view_measurement"
+      "codename": "view_metric"
     }
   },
   {
     "model": "auth.permission",
     "pk": 53,
     "fields": {
-      "name": "Can add threshold",
+      "name": "Can add measurement",
       "content_type": 14,
-      "codename": "add_threshold"
+      "codename": "add_measurement"
     }
   },
   {
     "model": "auth.permission",
     "pk": 54,
     "fields": {
-      "name": "Can change threshold",
+      "name": "Can change measurement",
       "content_type": 14,
-      "codename": "change_threshold"
+      "codename": "change_measurement"
     }
   },
   {
     "model": "auth.permission",
     "pk": 55,
     "fields": {
-      "name": "Can delete threshold",
+      "name": "Can delete measurement",
       "content_type": 14,
-      "codename": "delete_threshold"
+      "codename": "delete_measurement"
     }
   },
   {
     "model": "auth.permission",
     "pk": 56,
     "fields": {
-      "name": "Can view threshold",
+      "name": "Can view measurement",
       "content_type": 14,
-      "codename": "view_threshold"
+      "codename": "view_measurement"
     }
   },
   {
@@ -759,215 +759,143 @@
     "model": "auth.permission",
     "pk": 85,
     "fields": {
-      "name": "Can add widget type",
+      "name": "Can add dashboard",
       "content_type": 22,
-      "codename": "add_widgettype"
+      "codename": "add_dashboard"
     }
   },
   {
     "model": "auth.permission",
     "pk": 86,
     "fields": {
-      "name": "Can change widget type",
+      "name": "Can change dashboard",
       "content_type": 22,
-      "codename": "change_widgettype"
+      "codename": "change_dashboard"
     }
   },
   {
     "model": "auth.permission",
     "pk": 87,
     "fields": {
-      "name": "Can delete widget type",
+      "name": "Can delete dashboard",
       "content_type": 22,
-      "codename": "delete_widgettype"
+      "codename": "delete_dashboard"
     }
   },
   {
     "model": "auth.permission",
     "pk": 88,
     "fields": {
-      "name": "Can view widget type",
+      "name": "Can view dashboard",
       "content_type": 22,
-      "codename": "view_widgettype"
+      "codename": "view_dashboard"
     }
   },
   {
     "model": "auth.permission",
     "pk": 89,
     "fields": {
-      "name": "Can add stat type",
+      "name": "Can add widget",
       "content_type": 23,
-      "codename": "add_stattype"
+      "codename": "add_widget"
     }
   },
   {
     "model": "auth.permission",
     "pk": 90,
     "fields": {
-      "name": "Can change stat type",
+      "name": "Can change widget",
       "content_type": 23,
-      "codename": "change_stattype"
+      "codename": "change_widget"
     }
   },
   {
     "model": "auth.permission",
     "pk": 91,
     "fields": {
-      "name": "Can delete stat type",
+      "name": "Can delete widget",
       "content_type": 23,
-      "codename": "delete_stattype"
+      "codename": "delete_widget"
     }
   },
   {
     "model": "auth.permission",
     "pk": 92,
     "fields": {
-      "name": "Can view stat type",
+      "name": "Can view widget",
       "content_type": 23,
-      "codename": "view_stattype"
+      "codename": "view_widget"
     }
   },
   {
     "model": "auth.permission",
     "pk": 93,
     "fields": {
-      "name": "Can add dashboard",
+      "name": "Can add organization",
       "content_type": 24,
-      "codename": "add_dashboard"
+      "codename": "add_organization"
     }
   },
   {
     "model": "auth.permission",
     "pk": 94,
     "fields": {
-      "name": "Can change dashboard",
+      "name": "Can change organization",
       "content_type": 24,
-      "codename": "change_dashboard"
+      "codename": "change_organization"
     }
   },
   {
     "model": "auth.permission",
     "pk": 95,
     "fields": {
-      "name": "Can delete dashboard",
+      "name": "Can delete organization",
       "content_type": 24,
-      "codename": "delete_dashboard"
+      "codename": "delete_organization"
     }
   },
   {
     "model": "auth.permission",
     "pk": 96,
     "fields": {
-      "name": "Can view dashboard",
+      "name": "Can view organization",
       "content_type": 24,
-      "codename": "view_dashboard"
+      "codename": "view_organization"
     }
   },
   {
     "model": "auth.permission",
     "pk": 97,
     "fields": {
-      "name": "Can add widget",
+      "name": "Can add invite token",
       "content_type": 25,
-      "codename": "add_widget"
+      "codename": "add_invitetoken"
     }
   },
   {
     "model": "auth.permission",
     "pk": 98,
     "fields": {
-      "name": "Can change widget",
+      "name": "Can change invite token",
       "content_type": 25,
-      "codename": "change_widget"
+      "codename": "change_invitetoken"
     }
   },
   {
     "model": "auth.permission",
     "pk": 99,
     "fields": {
-      "name": "Can delete widget",
+      "name": "Can delete invite token",
       "content_type": 25,
-      "codename": "delete_widget"
+      "codename": "delete_invitetoken"
     }
   },
   {
     "model": "auth.permission",
     "pk": 100,
     "fields": {
-      "name": "Can view widget",
-      "content_type": 25,
-      "codename": "view_widget"
-    }
-  },
-  {
-    "model": "auth.permission",
-    "pk": 101,
-    "fields": {
-      "name": "Can add organization",
-      "content_type": 26,
-      "codename": "add_organization"
-    }
-  },
-  {
-    "model": "auth.permission",
-    "pk": 102,
-    "fields": {
-      "name": "Can change organization",
-      "content_type": 26,
-      "codename": "change_organization"
-    }
-  },
-  {
-    "model": "auth.permission",
-    "pk": 103,
-    "fields": {
-      "name": "Can delete organization",
-      "content_type": 26,
-      "codename": "delete_organization"
-    }
-  },
-  {
-    "model": "auth.permission",
-    "pk": 104,
-    "fields": {
-      "name": "Can view organization",
-      "content_type": 26,
-      "codename": "view_organization"
-    }
-  },
-  {
-    "model": "auth.permission",
-    "pk": 105,
-    "fields": {
-      "name": "Can add invite token",
-      "content_type": 27,
-      "codename": "add_invitetoken"
-    }
-  },
-  {
-    "model": "auth.permission",
-    "pk": 106,
-    "fields": {
-      "name": "Can change invite token",
-      "content_type": 27,
-      "codename": "change_invitetoken"
-    }
-  },
-  {
-    "model": "auth.permission",
-    "pk": 107,
-    "fields": {
-      "name": "Can delete invite token",
-      "content_type": 27,
-      "codename": "delete_invitetoken"
-    }
-  },
-  {
-    "model": "auth.permission",
-    "pk": 108,
-    "fields": {
       "name": "Can view invite token",
-      "content_type": 27,
+      "content_type": 25,
       "codename": "view_invitetoken"
     }
   },
@@ -1063,8 +991,8 @@
     "model": "contenttypes.contenttype",
     "pk": 12,
     "fields": {
-      "app_label": "measurement",
-      "model": "metric"
+      "app_label": "nslc",
+      "model": "matchingrule"
     }
   },
   {
@@ -1072,7 +1000,7 @@
     "pk": 13,
     "fields": {
       "app_label": "measurement",
-      "model": "measurement"
+      "model": "metric"
     }
   },
   {
@@ -1080,7 +1008,7 @@
     "pk": 14,
     "fields": {
       "app_label": "measurement",
-      "model": "threshold"
+      "model": "measurement"
     }
   },
   {
@@ -1144,7 +1072,7 @@
     "pk": 22,
     "fields": {
       "app_label": "dashboard",
-      "model": "widgettype"
+      "model": "dashboard"
     }
   },
   {
@@ -1152,28 +1080,12 @@
     "pk": 23,
     "fields": {
       "app_label": "dashboard",
-      "model": "stattype"
-    }
-  },
-  {
-    "model": "contenttypes.contenttype",
-    "pk": 24,
-    "fields": {
-      "app_label": "dashboard",
-      "model": "dashboard"
-    }
-  },
-  {
-    "model": "contenttypes.contenttype",
-    "pk": 25,
-    "fields": {
-      "app_label": "dashboard",
       "model": "widget"
     }
   },
   {
     "model": "contenttypes.contenttype",
-    "pk": 26,
+    "pk": 24,
     "fields": {
       "app_label": "organization",
       "model": "organization"
@@ -1181,12 +1093,12 @@
   },
   {
     "model": "contenttypes.contenttype",
-    "pk": 27,
+    "pk": 25,
     "fields": {
       "app_label": "invite",
       "model": "invitetoken"
     }
-  },
+  }
   {
     "model": "auth.group",
     "pk": 1,
