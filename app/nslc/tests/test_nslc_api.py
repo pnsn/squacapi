@@ -1,11 +1,14 @@
+from datetime import datetime
+import os
+import pytz
+from unittest.mock import patch
+
 from django.core.management import call_command
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
-from datetime import datetime
-import os
-import pytz
+
 from nslc.models import Network, Channel, Group, MatchingRule
 from organization.models import Organization
 from squac.test_mixins import sample_user
@@ -372,3 +375,19 @@ class PrivateNslcAPITests(TestCase):
 
         self.grp.update_channels()
         self.assertEqual(3, self.grp.channels.count())
+
+    def test_update_auto_channels(self):
+        '''Test update_auto_channels command'''
+        n_groups = len(Group.objects.all())
+        with patch('nslc.models.Group.update_channels') as com:
+            call_command('update_auto_channels')
+            self.assertEqual(n_groups, com.call_count)
+
+    def test_update_auto_channels_filter_group(self):
+        '''Test update_auto_channels command with group filter'''
+        n_groups = len(Group.objects.all())
+        n_groups_filter = len(Group.objects.filter(id__in=[3, 17]))
+        with patch('nslc.models.Group.update_channels') as com:
+            call_command('update_auto_channels', channel_groups=[3, 17])
+            self.assertEqual(n_groups_filter, com.call_count)
+            self.assertTrue(n_groups_filter < n_groups)

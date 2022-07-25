@@ -6,6 +6,8 @@ Reference: https://pypi.org/project/django-crontab/
 
 CRONJOBS = [  # noqa
     ('0 10 * * *', 'django.core.management.call_command', ['load_from_fdsn']),
+    ('30 10 * * *', 'django.core.management.call_command',
+        ['update_auto_channels']),
     ('0 20 * * *', 'django.core.management.call_command',
         ['create_table_partition']),
     ('5 * * * *', 'django.core.management.call_command', ['evaluate_alarms']),
