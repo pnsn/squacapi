@@ -70,7 +70,7 @@ class Command(BaseCommand):
         parser.add_argument(
             '--start_date',
             type=lambda s: datetime.strptime(s, "%Y-%m-%d").date(),
-            default=(datetime.now(tz=pytz.utc) - timedelta(days=3)).date(),
+            default=(datetime.now(tz=pytz.utc) - timedelta(days=7)).date(),
             help="When to start backup (inclusive, format: YYYY-MM-DD)"
         )
         parser.add_argument(
