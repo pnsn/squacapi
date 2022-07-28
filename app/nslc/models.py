@@ -3,6 +3,8 @@ from django.conf import settings
 from datetime import datetime
 import pytz
 from organization.models import Organization
+from regex_field.fields import RegexField
+from django.db.models import Q
 
 
 class Nslc(models.Model):
@@ -90,6 +92,8 @@ class Group(models.Model):
         related_name='nslcgroups'
     )
     channels = models.ManyToManyField('Channel')
+    auto_include_channels = models.ManyToManyField('Channel', related_name='+')
+    auto_exclude_channels = models.ManyToManyField('Channel', related_name='+')
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=255, blank=True, default='')
     organization = models.ForeignKey(
@@ -100,5 +104,93 @@ class Group(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def can_auto_update(self):
+        """
+        Determines whether this group has the necessary information to
+        auto-update
+        """
+        return any([self.matching_rules.count() > 0,
+                    self.auto_include_channels.count() > 0,
+                    self.auto_exclude_channels.count() > 0])
+
+    def update_channels(self):
+        if not self.can_auto_update():
+            return
+
+        # 1. Construct query to add channels
+        include_query = Q()
+
+        # First add channels based on matching rules
+        for matching_rule in self.matching_rules.all():
+            if not matching_rule.is_include:
+                continue
+            include_query = include_query | Q(
+                network__code__iregex=matching_rule.network_regex.pattern,
+                station_code__iregex=matching_rule.station_regex.pattern,
+                loc__iregex=matching_rule.location_regex.pattern,
+                code__iregex=matching_rule.channel_regex.pattern
+            )
+
+        # Now add channels in auto_include_channels
+        if self.auto_include_channels.count() > 0:
+            include_query = include_query | Q(
+                id__in=self.auto_include_channels.all()
+            )
+
+        channels = Channel.objects.filter(include_query)
+
+        # 2. Construct query to exclude channels
+        exclude_query = Q()
+
+        # First add channels based on matching rules
+        for matching_rule in self.matching_rules.all():
+            if matching_rule.is_include:
+                continue
+            exclude_query = exclude_query | Q(
+                network__code__iregex=matching_rule.network_regex.pattern,
+                station_code__iregex=matching_rule.station_regex.pattern,
+                loc__iregex=matching_rule.location_regex.pattern,
+                code__iregex=matching_rule.channel_regex.pattern
+            )
+
+        # Now add channels in auto_exclude_channels
+        if self.auto_exclude_channels.count() > 0:
+            exclude_query = exclude_query | Q(
+                id__in=self.auto_exclude_channels.all()
+            )
+
+        channels = channels.exclude(exclude_query)
+
+        # 3. Finish
+        # Now actually add channels
+        self.channels.set(channels)
+
     def __str__(self):
         return self.name
+
+
+class MatchingRule(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
+    network_regex = RegexField(max_length=128, default=".*")
+    station_regex = RegexField(max_length=128, default=".*")
+    location_regex = RegexField(max_length=128, default=".*")
+    channel_regex = RegexField(max_length=128, default=".*")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    group = models.ForeignKey(
+        Group,
+        on_delete=models.CASCADE,
+        related_name='matching_rules'
+    )
+    is_include = models.BooleanField(default=True)
+
+    def __str__(self):
+        in_ex = 'include' if self.is_include else 'exclude'
+        return (f'{in_ex}: '
+                f'"{self.network_regex.pattern}".'
+                f'"{self.station_regex.pattern}".'
+                f'"{self.location_regex.pattern}".'
+                f'"{self.channel_regex.pattern}"')

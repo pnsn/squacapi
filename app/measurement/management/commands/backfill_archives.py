@@ -10,7 +10,7 @@ $: python app/manage.py backfill_archives day --start_time=03-01-2021
 
 Run command locally like:
 $: docker-compose run --rm app sh -c "python manage.py backfill_archives ..."
-$: ./mg.sh 'backfill_archives month --start_time=03-01-2021-'
+$: ./mg.sh 'backfill_archives month --start_time=03-01-2021'
 """
 
 
@@ -20,21 +20,22 @@ class Command(BaseCommand):
     """
 
     DURATIONS = {
-        'day': relativedelta(days=1),
-        'month': relativedelta(months=1),
+        'day': lambda count: relativedelta(days=count),
+        'week': lambda count: relativedelta(weeks=count),
+        'month': lambda count: relativedelta(months=count)
     }
 
     def add_arguments(self, parser):
         parser.add_argument(
             'archive_type',
-            choices=['day', 'month']
+            choices=['day', 'week', 'month']
         )
         parser.add_argument(
             '--start_time',
             type=lambda s: pytz.utc.localize(datetime.strptime(s, "%m-%d-%Y")),
             nargs='?',
             default=(
-                datetime.now(tz=pytz.utc) - relativedelta(days=0)).replace(
+                datetime.now(tz=pytz.utc) - relativedelta(days=3)).replace(
                 hour=0, minute=0, second=0, microsecond=0),
             help="When to start calling backup (inclusive, format: MM-DD-YYYY)"
         )
@@ -46,6 +47,14 @@ class Command(BaseCommand):
                 hour=0, minute=0, second=0, microsecond=0),
             help="When to stop calling backup (inclusive, format: MM-DD-YYYY)"
         )
+        parser.add_argument(
+            '--period_size',
+            type=int,
+            default=-1,
+            help=("How many periods to cover. Will only be used if a value is"
+                  "entered. Will result in overwriting start_time: "
+                  "start_time = end_time - period_size")
+        )
         parser.add_argument('--no-overwrite', dest='overwrite',
                             action='store_false')
         parser.add_argument('--overwrite', dest='overwrite',
@@ -56,10 +65,16 @@ class Command(BaseCommand):
         archive_type = kwargs['archive_type']
         current_time = kwargs['start_time']
         end_time = kwargs['end_time']
+        period_size = kwargs['period_size']
+
         if kwargs['overwrite']:
             overwrite = '--overwrite'
         else:
             overwrite = '--no-overwrite'
+
+        # If period_size is defined, use it
+        if period_size >= 0:
+            current_time = end_time - self.DURATIONS[archive_type](period_size)
 
         self.stdout.write(
             f'Calling archive_measurement for each {archive_type} from'
@@ -74,4 +89,4 @@ class Command(BaseCommand):
                          f'--period_end={current_time.strftime("%m-%d-%Y")}',
                          stdout=self.stdout)
 
-            current_time = current_time + self.DURATIONS[archive_type]
+            current_time = current_time + self.DURATIONS[archive_type](1)
