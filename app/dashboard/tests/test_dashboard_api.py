@@ -70,13 +70,13 @@ class UnauthenticatedDashboardApiTests(TestCase):
         self.dashboard = Dashboard.objects.create(
             name='Test dashboard',
             user=self.user,
-            organization=self.organization
+            organization=self.organization,
+            channel_group=self.grp,
         )
         self.widget = Widget.objects.create(
             name='Test widget',
             dashboard=self.dashboard,
-            user=self.user,
-            channel_group=self.grp,
+            user=self.user
         )
         self.widget.metrics.add(self.metric)
 
@@ -146,13 +146,13 @@ class PrivateDashboardAPITests(TestCase):
             organization=self.organization,
             properties={
                 "window_seconds": 1
-            }
+            },
+            channel_group=self.grp,
         )
         self.widget = Widget.objects.create(
             name='Test widget',
             dashboard=self.dashboard,
-            user=self.user,
-            channel_group=self.grp,
+            user=self.user
         )
 
     def test_get_dashboard(self):
@@ -169,7 +169,8 @@ class PrivateDashboardAPITests(TestCase):
         url = reverse('dashboard:dashboard-list')
         payload = {
             'name': 'Test dashboard',
-            'organization': self.organization.id
+            'organization': self.organization.id,
+            'channel_group': self.grp.id
         }
         res = self.client.post(url, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
@@ -187,7 +188,6 @@ class PrivateDashboardAPITests(TestCase):
             'name': 'Test widget',
             'dashboard': self.dashboard.id,
             'metrics': [self.metric.id],
-            'channel_group': self.grp.id
         }
         res = self.client.post(url, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
@@ -198,8 +198,6 @@ class PrivateDashboardAPITests(TestCase):
             elif key == 'metrics':
                 metrics = widget.metrics.all()
                 self.assertIn(self.metric, metrics)
-            elif key == 'channel_group':
-                self.assertEqual(payload[key], widget.channel_group.id)
             elif key == 'organization':
                 self.assertEqual(payload[key],
                                  widget.dashboard.organization.id)

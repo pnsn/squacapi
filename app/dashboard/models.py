@@ -41,6 +41,12 @@ class Dashboard(DashboardBase):
         on_delete=models.CASCADE,
         related_name='dashboards'
     )
+    channel_group = models.ForeignKey(
+        Group,
+        on_delete=models.SET_NULL,
+        related_name='widgets',
+        null=True,
+    )
 
     def save(self, *args, **kwargs):
         return super(Dashboard, self).save(*args, **kwargs)
@@ -61,12 +67,6 @@ class Widget(DashboardBase):
         on_delete=models.CASCADE,
         related_name='widgets'
     )
-    channel_group = models.ForeignKey(
-        Group,
-        on_delete=models.CASCADE,
-        related_name='widgets',
-    )
-
     properties = models.JSONField(null=True)
     layout = models.JSONField(null=True)
     thresholds = models.JSONField(null=True)

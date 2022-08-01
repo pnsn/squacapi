@@ -15,15 +15,12 @@ class WidgetSerializer(serializers.HyperlinkedModelSerializer):
         many=True,
         queryset=Metric.objects.all()
     )
-    channel_group = serializers.PrimaryKeyRelatedField(
-        queryset=Group.objects.all()
-    )
 
     class Meta:
         model = Widget
         fields = (
             'id', 'name', 'dashboard', 'metrics',
-            'channel_group', 'user_id', 'layout',
+            'user_id', 'layout',
             'type', 'properties', 'stat', 'thresholds'
         )
         read_only_fields = ('id',)
@@ -33,11 +30,14 @@ class DashboardSerializer(serializers.HyperlinkedModelSerializer):
     organization = serializers.PrimaryKeyRelatedField(
         queryset=Organization.objects.all()
     )
+    channel_group = serializers.PrimaryKeyRelatedField(
+        queryset=Group.objects.all()
+    )
 
     class Meta:
         model = Dashboard
         fields = (
-            'id', 'name', 'description',
+            'id', 'name', 'description', 'channel_group',
             'user_id', 'share_all', 'share_org', 'organization',
             'properties',
         )
@@ -54,10 +54,14 @@ class DashboardDetailSerializer(DashboardSerializer):
         queryset=Organization.objects.all()
     )
 
+    channel_group = serializers.PrimaryKeyRelatedField(
+        queryset=Group.objects.all()
+    )
+
     class Meta:
         model = Dashboard
         fields = (
-            'id', 'description', 'name', 'widgets',
+            'id', 'description', 'name', 'widgets', 'channel_group',
             'user_id', 'share_all', 'share_org', 'organization',
             'properties',
         )
@@ -71,15 +75,11 @@ class WidgetDetailSerializer(serializers.HyperlinkedModelSerializer):
     )
     metrics = MetricSerializer(many=True, read_only=True)
 
-    channel_group = serializers.PrimaryKeyRelatedField(
-        queryset=Group.objects.all()
-    )
-
     class Meta:
         model = Widget
         fields = (
             'id', 'name', 'dashboard', 'metrics', 'thresholds',
-            'channel_group', 'user_id', 'type', 'stat',
+            'user_id', 'type', 'stat',
             'properties', 'layout',
         )
         read_only_fields = ('id',)
