@@ -1,4 +1,5 @@
 from django.test import TestCase
+from nslc.models import Group
 
 from rest_framework.test import APIClient
 from rest_framework import status
@@ -123,3 +124,14 @@ class NslcFilterTests(TestCase):
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data), 0)
+
+    def test_widget_dashboard_filter(self):
+        groups = Group.objects.all()
+        for g in groups:
+            url = reverse('nslc:matching-rule-list')
+            url += f'?group={g.id}'
+            res = self.client.get(url)
+            self.assertEqual(res.status_code, status.HTTP_200_OK)
+            group = Group.objects.get(id=g.id)
+            matching_rules = group.matching_rules.all()
+            self.assertEqual(len(matching_rules), len(res.data))
