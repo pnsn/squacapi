@@ -4,7 +4,7 @@ Command run without any options will give default URL
         query?datacenter=IRISDMC,NCEDC,SCEDC
         &targetservice=station
         &level=channel
-        &net=AK,AV,AZ,BC,BK,CC,CE,CI,CN,ET,HV,IU,IW,MB,N4,NC,NN,NP,NV,O2,OK,OO,PB,PR,SN,TX,UM,UO,US,UU,UW,WY
+        &net=AG,AK,AV,AZ,BC,BK,CC,CE,CI,CN,ET,HV,IU,IW,MB,N4,NC,NN,NP,NV,O2,OK,OO,PB,PR,SN,TX,UM,UO,US,UU,UW,WY
         &sta=*
         &cha=EN?,HN?,?H?
         &loc=*
