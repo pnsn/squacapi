@@ -78,6 +78,7 @@ class Channel(Nslc):
             models.Index(fields=['lon']),
             models.Index(fields=['-starttime']),
             models.Index(fields=['-endtime']),
+            models.Index(fields=['nslc'])
         ]
 
     def __str__(self):
