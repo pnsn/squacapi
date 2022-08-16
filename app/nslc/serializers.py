@@ -54,8 +54,8 @@ class ChannelSerializer(serializers.HyperlinkedModelSerializer):
                   'station_name', 'url', 'description',
                   'sample_rate', 'network', 'loc', 'lat',
                   'lon', 'elev', 'azimuth', 'dip', 'created_at', 'updated_at',
-                  'user_id', 'starttime', 'endtime',)
-        read_only_fields = ('id',)
+                  'user_id', 'starttime', 'endtime', 'nslc')
+        read_only_fields = ('id', 'nslc')
 
     @ staticmethod
     def setup_eager_loading(queryset):

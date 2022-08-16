@@ -66,6 +66,7 @@ class Channel(Nslc):
         default=datetime(2599, 12, 31, tzinfo=pytz.UTC))
     network = models.ForeignKey(Network, on_delete=models.CASCADE,
                                 related_name='channels')
+    nslc = models.CharField(max_length=255, null=True)
 
     class Meta:
         unique_together = (("code", "network", 'station_code', 'loc'),)
@@ -85,12 +86,14 @@ class Channel(Nslc):
             self.loc.upper() + "." + self.code.upper()
 
     def save(self, *args, **kwargs):
+        if not self.nslc:
+            self.nslc = self.to_nslc()
         super().save(*args, **kwargs)
 
     def to_nslc(self):
-        return str(self.network_id.upper()) + "." + \
-            self.station_code.upper() + "." + \
-            self.loc.upper() + "." + self.code.upper()
+        return str(self.network_id) + "." + \
+            self.station_code + "." + \
+            self.loc + "." + self.code
 
 
 class Group(models.Model):
