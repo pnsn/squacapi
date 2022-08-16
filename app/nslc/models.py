@@ -84,6 +84,14 @@ class Channel(Nslc):
             self.station_code.upper() + "." + \
             self.loc.upper() + "." + self.code.upper()
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+    def to_nslc(self):
+        return str(self.network_id.upper()) + "." + \
+            self.station_code.upper() + "." + \
+            self.loc.upper() + "." + self.code.upper()
+
 
 class Group(models.Model):
     user = models.ForeignKey(

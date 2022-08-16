@@ -33,6 +33,7 @@ class NetworkFilter(filters.FilterSet):
 
 
 class ChannelFilter(filters.FilterSet):
+    nslc = CharInFilter(field_name='nslc')
     network = CharInFilter(field_name='network__code')
     net_search = filters.CharFilter(field_name='network__code',
                                     lookup_expr='iregex')
