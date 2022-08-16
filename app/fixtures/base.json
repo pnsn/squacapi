@@ -1,5 +1,4 @@
-[
-  {
+[{
     "model": "auth.permission",
     "pk": 1,
     "fields": {
@@ -1198,7 +1197,8 @@
       "scale_units": "M/S",
       "starttime": "1970-01-01T23:27:28.597Z",
       "endtime": "2599-12-31T23:27:28.598Z",
-      "network": "uw"
+      "network": "uw",
+      "nslc": "uw.reed.--.hnn"
     }
   },
   {
@@ -1227,7 +1227,8 @@
       "scale_units": "M/S",
       "starttime": "1970-01-01T23:27:28.597Z",
       "endtime": "2599-12-31T23:27:28.598Z",
-      "network": "uw"
+      "network": "uw",
+      "nslc": "uw.reed.--.hnz"
     }
   },
   {

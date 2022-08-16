@@ -159,6 +159,7 @@ class PrivateNslcAPITests(TestCase):
         res = self.client.post(url, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         channel = Channel.objects.get(id=res.data['id'])
+        self.assertEqual(channel.nslc, "UW.RCS.--.TC")
         for key in payload.keys():
             if key != 'network':
                 self.assertEqual(payload[key], getattr(channel, key))
