@@ -180,6 +180,9 @@ class Group(models.Model):
     def __str__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
 
 class MatchingRule(models.Model):
     user = models.ForeignKey(
@@ -206,3 +209,7 @@ class MatchingRule(models.Model):
                 f'"{self.station_regex.pattern}".'
                 f'"{self.location_regex.pattern}".'
                 f'"{self.channel_regex.pattern}"')
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.group.update_channels()
