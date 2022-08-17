@@ -5,6 +5,7 @@ import pytz
 from organization.models import Organization
 from regex_field.fields import RegexField
 from django.db.models import Q
+import re
 
 
 class Nslc(models.Model):
@@ -66,6 +67,7 @@ class Channel(Nslc):
         default=datetime(2599, 12, 31, tzinfo=pytz.UTC))
     network = models.ForeignKey(Network, on_delete=models.CASCADE,
                                 related_name='channels')
+    nslc = models.CharField(max_length=255, null=True)
 
     class Meta:
         unique_together = (("code", "network", 'station_code', 'loc'),)
@@ -77,12 +79,23 @@ class Channel(Nslc):
             models.Index(fields=['lon']),
             models.Index(fields=['-starttime']),
             models.Index(fields=['-endtime']),
+            models.Index(fields=['nslc'])
         ]
 
     def __str__(self):
         return str(self.network_id.upper()) + "." + \
             self.station_code.upper() + "." + \
             self.loc.upper() + "." + self.code.upper()
+
+    def save(self, *args, **kwargs):
+        if not self.nslc:
+            self.nslc = self.to_nslc()
+        super().save(*args, **kwargs)
+
+    def to_nslc(self):
+        return str(self.network_id) + "." + \
+            self.station_code + "." + \
+            self.loc + "." + self.code
 
 
 class Group(models.Model):
@@ -136,7 +149,6 @@ class Group(models.Model):
             include_query = include_query | Q(
                 id__in=self.auto_include_channels.all()
             )
-
         channels = Channel.objects.filter(include_query)
 
         # 2. Construct query to exclude channels
@@ -168,16 +180,24 @@ class Group(models.Model):
     def __str__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.update_channels()
+
 
 class MatchingRule(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE
     )
-    network_regex = RegexField(max_length=128, default=".*")
-    station_regex = RegexField(max_length=128, default=".*")
-    location_regex = RegexField(max_length=128, default=".*")
-    channel_regex = RegexField(max_length=128, default=".*")
+    network_regex = RegexField(
+        max_length=128, default="", blank=True, re_flags=re.IGNORECASE)
+    station_regex = RegexField(
+        max_length=128, default="", blank=True, re_flags=re.IGNORECASE)
+    location_regex = RegexField(
+        max_length=128, default="", blank=True, re_flags=re.IGNORECASE)
+    channel_regex = RegexField(
+        max_length=128, default="", blank=True, re_flags=re.IGNORECASE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     group = models.ForeignKey(
@@ -194,3 +214,11 @@ class MatchingRule(models.Model):
                 f'"{self.station_regex.pattern}".'
                 f'"{self.location_regex.pattern}".'
                 f'"{self.channel_regex.pattern}"')
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.group.update_channels()
+
+    def delete(self, *args, **kwargs):
+        super().delete(*args, **kwargs)
+        self.group.update_channels()

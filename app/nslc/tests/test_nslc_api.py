@@ -159,6 +159,7 @@ class PrivateNslcAPITests(TestCase):
         res = self.client.post(url, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         channel = Channel.objects.get(id=res.data['id'])
+        self.assertEqual(channel.nslc, "UW.RCS.--.TC")
         for key in payload.keys():
             if key != 'network':
                 self.assertEqual(payload[key], getattr(channel, key))
@@ -172,9 +173,7 @@ class PrivateNslcAPITests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data['name'], 'Test group')
         self.assertEqual(str(self.grp), 'Test group')
-        for channel in res.data['channels']:
-            self.assertEqual(channel['id'], self.chan.id)
-            self.assertEqual(channel['code'], self.chan.code)
+        self.assertEqual(4, self.grp.channels.count())
 
     def test_create_group(self):
         '''Test a group can be created'''
@@ -322,13 +321,17 @@ class PrivateNslcAPITests(TestCase):
         self.assertEqual(1, group.channels.count())
 
     def test_update_channels_include_matching(self):
-        '''Test that a group with matching rules will auto-update'''
-        # Before update the group should have 0 channels
-        self.assertEqual(0, self.grp.channels.count())
-
-        # Now call update_channels and verify channels increase
-        self.grp.update_channels()
+        '''Test that a group will update on rule update'''
         self.assertEqual(4, self.grp.channels.count())
+        MatchingRule.objects.create(
+            network_regex='uo',
+            channel_regex='..z',
+            group=self.grp,
+            user=self.user,
+            is_include=True
+        )
+        # number of channels increases
+        self.assertEqual(5, self.grp.channels.count())
 
     def test_update_channels_exclude_matching(self):
         '''Test that a group with excluding matching rules will auto-update'''

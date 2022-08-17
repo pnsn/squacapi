@@ -45,6 +45,13 @@ class NslcFilterTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data), 3)
 
+    def test_channel_nslc_filter(self):
+        url = reverse('nslc:channel-list')
+        url += '?nslc=uw.reed.--.hnn,uw.reed.--.hnz'
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data), 2)
+
     def test_channel_lat_lon_filter(self):
         url_root = reverse('nslc:channel-list')
         url = url_root + \
