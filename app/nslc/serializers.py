@@ -57,7 +57,7 @@ class ChannelSerializer(serializers.HyperlinkedModelSerializer):
                   'user_id', 'starttime', 'endtime', 'nslc')
         read_only_fields = ('id', 'nslc')
 
-    @ staticmethod
+    @staticmethod
     def setup_eager_loading(queryset):
         queryset = queryset.prefetch_related('network')
         return queryset
@@ -88,7 +88,7 @@ class NetworkSerializer(serializers.HyperlinkedModelSerializer):
                   'created_at', 'updated_at', 'user_id')
         # read_only_fields = ('id',)
 
-    @ staticmethod
+    @staticmethod
     def setup_eager_loading(queryset):
         queryset = queryset.prefetch_related('channels')
         return queryset
