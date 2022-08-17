@@ -106,3 +106,16 @@ class MatchingRuleSerializer(serializers.HyperlinkedModelSerializer):
                   'channel_regex', 'created_at', 'updated_at', 'user_id',
                   'group', 'is_include', 'url')
         read_only_fields = ('id',)
+
+    def to_representation(self, instance):
+        """Convert regex fields to string."""
+        ret = super().to_representation(instance)
+        ret['network_regex'] = self.stripRegex(ret['network_regex'])
+        ret['station_regex'] = self.stripRegex(ret['station_regex'])
+        ret['location_regex'] = self.stripRegex(ret['location_regex'])
+        ret['channel_regex'] = self.stripRegex(ret['channel_regex'])
+        return ret
+
+    def stripRegex(self, instance):
+        return instance.strip(
+            "re.compile('").strip("', re.IGNORE_CASE)")

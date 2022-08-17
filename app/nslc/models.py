@@ -5,6 +5,7 @@ import pytz
 from organization.models import Organization
 from regex_field.fields import RegexField
 from django.db.models import Q
+import re
 
 
 class Nslc(models.Model):
@@ -143,16 +144,11 @@ class Group(models.Model):
                 code__iregex=matching_rule.channel_regex.pattern
             )
 
-        print('channels matching rule', Channel.objects.filter(include_query))
-
         # Now add channels in auto_include_channels
         if self.auto_include_channels.count() > 0:
             include_query = include_query | Q(
                 id__in=self.auto_include_channels.all()
             )
-
-        print('channels matching auto include',
-              Channel.objects.filter(include_query))
         channels = Channel.objects.filter(include_query)
 
         # 2. Construct query to exclude channels
@@ -175,15 +171,11 @@ class Group(models.Model):
                 id__in=self.auto_exclude_channels.all()
             )
 
-        print('channels matching auto exclude',
-              Channel.objects.filter(exclude_query))
-
         channels = channels.exclude(exclude_query)
 
         # 3. Finish
         # Now actually add channels
         self.channels.set(channels)
-        print(channels)
 
     def __str__(self):
         return self.name
@@ -197,10 +189,14 @@ class MatchingRule(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE
     )
-    network_regex = RegexField(max_length=128, default=".*")
-    station_regex = RegexField(max_length=128, default=".*")
-    location_regex = RegexField(max_length=128, default=".*")
-    channel_regex = RegexField(max_length=128, default=".*")
+    network_regex = RegexField(
+        max_length=128, null=True, blank=True, re_flags=re.IGNORECASE)
+    station_regex = RegexField(
+        max_length=128, null=True, blank=True, re_flags=re.IGNORECASE)
+    location_regex = RegexField(
+        max_length=128, null=True, blank=True, re_flags=re.IGNORECASE)
+    channel_regex = RegexField(
+        max_length=128, null=True, blank=True, re_flags=re.IGNORECASE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     group = models.ForeignKey(
