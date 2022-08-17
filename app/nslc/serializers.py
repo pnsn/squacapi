@@ -117,5 +117,5 @@ class MatchingRuleSerializer(serializers.HyperlinkedModelSerializer):
         return ret
 
     def stripRegex(self, instance):
-        return instance.strip(
-            "re.compile('").strip("', re.IGNORE_CASE)")
+        return instance.replace(
+            "re.compile('", '').replace("', re.IGNORECASE)", '')

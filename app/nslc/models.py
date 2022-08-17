@@ -182,6 +182,7 @@ class Group(models.Model):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
+        self.update_channels()
 
 
 class MatchingRule(models.Model):
@@ -190,13 +191,13 @@ class MatchingRule(models.Model):
         on_delete=models.CASCADE
     )
     network_regex = RegexField(
-        max_length=128, null=True, blank=True, re_flags=re.IGNORECASE)
+        max_length=128, default="", blank=True, re_flags=re.IGNORECASE)
     station_regex = RegexField(
-        max_length=128, null=True, blank=True, re_flags=re.IGNORECASE)
+        max_length=128, default="", blank=True, re_flags=re.IGNORECASE)
     location_regex = RegexField(
-        max_length=128, null=True, blank=True, re_flags=re.IGNORECASE)
+        max_length=128, default="", blank=True, re_flags=re.IGNORECASE)
     channel_regex = RegexField(
-        max_length=128, null=True, blank=True, re_flags=re.IGNORECASE)
+        max_length=128, default="", blank=True, re_flags=re.IGNORECASE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     group = models.ForeignKey(
