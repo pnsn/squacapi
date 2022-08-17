@@ -143,12 +143,16 @@ class Group(models.Model):
                 code__iregex=matching_rule.channel_regex.pattern
             )
 
+        print('channels matching rule', Channel.objects.filter(include_query))
+
         # Now add channels in auto_include_channels
         if self.auto_include_channels.count() > 0:
             include_query = include_query | Q(
                 id__in=self.auto_include_channels.all()
             )
 
+        print('channels matching auto include',
+              Channel.objects.filter(include_query))
         channels = Channel.objects.filter(include_query)
 
         # 2. Construct query to exclude channels
@@ -171,11 +175,15 @@ class Group(models.Model):
                 id__in=self.auto_exclude_channels.all()
             )
 
+        print('channels matching auto exclude',
+              Channel.objects.filter(exclude_query))
+
         channels = channels.exclude(exclude_query)
 
         # 3. Finish
         # Now actually add channels
         self.channels.set(channels)
+        print(channels)
 
     def __str__(self):
         return self.name
@@ -212,4 +220,8 @@ class MatchingRule(models.Model):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
+        self.group.update_channels()
+
+    def delete(self, *args, **kwargs):
+        super().delete(*args, **kwargs)
         self.group.update_channels()
