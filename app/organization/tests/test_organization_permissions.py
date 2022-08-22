@@ -144,7 +144,9 @@ class OrganizationAPITests(TestCase):
         payload = {
             'email': 'testy@pnsn.org',
             "organization": self.org1.id,
-            'groups': [self.group_reporter.id]
+            'groups': [self.group_reporter.id],
+            "firstname": "first",
+            "lastname": "last"
         }
         res = self.org1_admin_client.post(url, payload, format='json')
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
