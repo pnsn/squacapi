@@ -60,7 +60,6 @@ DEBUG_TOOLBAR_CONFIG = {
     'SHOW_TEMPLATE_CONTEXT': True,
 }
 
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -303,30 +302,21 @@ LOGGING = {
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
         },
+        "file": {
+            "level": "WARNING",
+            'filters': ['require_debug_false'],
+            "class": "logging.FileHandler",
+            "filename": os.environ.get('LOG_FILE', 'info.log'),
+            "formatter": "verbose",
+        },
     },
     'root': {
-        'handlers': ['console'],
+        'handlers': ['console', 'file'],
         'level': 'WARNING',
     },
     'loggers': {
         'django': {
-            'handlers': ['console', 'mail_admins'],
-        },
-        'django.request': {
-            'handlers': ['mail_admins', 'console'],
-            'propagate': False,
-        },
-        'django.security': {
-            'handlers': ['mail_admins', 'console'],
-            'propagate': False,
-        },
-        'django.server': {
-            'handlers': ['console'],
-            'propagate': False,
-        },
-        'django.db.backends': {
-            'handlers': ['console'],
-            'propagate': False,
+            'handlers': ['console', 'mail_admins', 'console'],
         }
     }
 }
