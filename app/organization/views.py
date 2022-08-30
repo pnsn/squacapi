@@ -64,8 +64,6 @@ class OrganizationUserViewSet(OrganizationBase):
 
         except AttributeError:
             pass
-        _data['firstname'] = 'firstname'
-        _data['lastname'] = 'lastname'
         # set temp password
         _data['password'] = secrets.token_hex(16)
         try:
