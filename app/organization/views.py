@@ -64,7 +64,6 @@ class OrganizationUserViewSet(OrganizationBase):
 
         except AttributeError:
             pass
-
         # set temp password
         _data['password'] = secrets.token_hex(16)
         try:

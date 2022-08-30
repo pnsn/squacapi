@@ -66,7 +66,9 @@ class OrganizationAPITests(TestCase):
             "organization": self.org1.id,
             "groups": [
                 self.group_contributor.id
-            ]
+            ],
+            "firstname": "first",
+            "lastname": "last"
         }
         res = self.client.post(url, payload, format='json')
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
