@@ -269,6 +269,13 @@ SQUAC_MEASUREMENTS_BUCKET = os.environ.get('SQUAC_MEASUREMENTS_BUCKET')
 
 MANAGERS = ADMINS
 
+
+# Configure logging to file
+if DEBUG:
+    LOG_FILE = os.environ.get('LOG_FILE', 'django.log')
+else:
+    LOG_FILE = os.environ.get('LOG_FILE')
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -306,7 +313,7 @@ LOGGING = {
             "level": "WARNING",
             'filters': ['require_debug_false'],
             "class": "logging.FileHandler",
-            "filename": os.environ.get('LOG_FILE', 'info.log'),
+            "filename": LOG_FILE,
             "formatter": "verbose",
         },
     },
