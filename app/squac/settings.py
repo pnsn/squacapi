@@ -310,7 +310,7 @@ LOGGING = {
     },
     'loggers': {
         'django': {
-            'handlers': ['console'],
+            'handlers': ['console', 'mail_admins'],
         },
         'django.request': {
             'handlers': ['mail_admins', 'console'],
