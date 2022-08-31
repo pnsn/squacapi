@@ -16,5 +16,4 @@ chmod 775 $APP_ROOT/releases
 
 #ensure there is log file
 mkdir -p /var/log/squacapi
-chown -R ec2-user:ec2-user /var/log/squacapi
-chmod 775 /var/log/squacapi
+chown -R nginx:ec2-user /var/log/squacapi
