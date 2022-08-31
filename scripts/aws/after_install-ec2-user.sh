@@ -15,6 +15,7 @@ echo `ls $dest/app/.env `
 
 # Get instance IP
 INSTANCE_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
+export $INSTANCE_IP
 echo $INSTANCE_IP
 
 # virtual env vars
