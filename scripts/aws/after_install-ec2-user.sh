@@ -14,7 +14,7 @@ echo after s3 call
 echo `ls $dest/app/.env `
 
 # Get instance IP
-export INSTANCE_IP=$(curl http://169.254.169.254/latest/meta-data/public-ipv4)
+INSTANCE_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
 echo $INSTANCE_IP
 
 
