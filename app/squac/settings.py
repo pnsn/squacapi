@@ -316,7 +316,7 @@ LOGGING = {
     },
     'loggers': {
         'django': {
-            'handlers': ['console', 'mail_admins', 'console'],
+            'handlers': ['console'],
         }
     }
 }
