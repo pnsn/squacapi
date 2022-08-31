@@ -13,6 +13,11 @@ source $dest/app/.env
 echo after s3 call
 echo `ls $dest/app/.env `
 
+# Get instance IP
+export INSTANCE_IP=$(curl http://169.254.169.254/latest/meta-data/public-ipv4)
+echo $INSTANCE_IP
+
+
 # virtual env vars
 export WORKON_HOME=/var/.virtualenvs
 export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
