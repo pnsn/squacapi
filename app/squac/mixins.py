@@ -9,7 +9,9 @@ from squac.permissions import IsAdminOwnerOrShared, IsOrgAdminOrMember,\
 class SetUserMixin:
     '''Set user on create'''
     # all models that require user
+
     def perform_create(self, serializer):
+        print(self.request.user)
         serializer.save(user=self.request.user)
 
 

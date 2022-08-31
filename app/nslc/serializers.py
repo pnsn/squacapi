@@ -35,10 +35,10 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
         model = Group
         fields = (
             'name', 'id', 'url', 'description', 'channels',
-            'created_at', 'updated_at', 'user_id', 'organization',
+            'created_at', 'updated_at', 'user', 'organization',
             'auto_include_channels', 'auto_exclude_channels'
         )
-        read_only_fields = ('id',)
+        read_only_fields = ('id', 'user')
         ref_name = "NslcGroup"
 
 
@@ -54,8 +54,8 @@ class ChannelSerializer(serializers.HyperlinkedModelSerializer):
                   'station_name', 'url', 'description',
                   'sample_rate', 'network', 'loc', 'lat',
                   'lon', 'elev', 'azimuth', 'dip', 'created_at', 'updated_at',
-                  'user_id', 'starttime', 'endtime', 'nslc')
-        read_only_fields = ('id', 'nslc')
+                  'user', 'starttime', 'endtime', 'nslc')
+        read_only_fields = ('id', 'nslc', 'user')
 
     @staticmethod
     def setup_eager_loading(queryset):
@@ -73,10 +73,10 @@ class GroupDetailSerializer(GroupSerializer):
         model = Group
         fields = (
             'name', 'id', 'url', 'description', 'channels',
-            'created_at', 'updated_at', 'user_id', 'organization',
+            'created_at', 'updated_at', 'user', 'organization',
             'auto_include_channels', 'auto_exclude_channels'
         )
-        read_only_fields = ('id',)
+        read_only_fields = ('id', 'user')
 
 
 class NetworkSerializer(serializers.HyperlinkedModelSerializer):
@@ -85,8 +85,8 @@ class NetworkSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Network
         fields = ('class_name', 'code', 'name', 'url', 'description',
-                  'created_at', 'updated_at', 'user_id')
-        # read_only_fields = ('id',)
+                  'created_at', 'updated_at', 'user')
+        read_only_fields = ('user',)
 
     @staticmethod
     def setup_eager_loading(queryset):
@@ -103,9 +103,9 @@ class MatchingRuleSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = MatchingRule
         fields = ('id', 'network_regex', 'station_regex', 'location_regex',
-                  'channel_regex', 'created_at', 'updated_at', 'user_id',
+                  'channel_regex', 'created_at', 'updated_at', 'user',
                   'group', 'is_include', 'url')
-        read_only_fields = ('id',)
+        read_only_fields = ('id', 'user')
 
     def to_representation(self, instance):
         """Convert regex fields to string."""

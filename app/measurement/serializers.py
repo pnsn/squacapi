@@ -31,9 +31,9 @@ class MeasurementSerializer(serializers.ModelSerializer):
         model = Measurement
         fields = (
             'id', 'metric', 'channel', 'value', 'starttime', 'endtime',
-            'created_at', 'user_id'
+            'created_at', 'user'
         )
-        read_only_fields = ('id',)
+        read_only_fields = ('id', 'user')
         list_serializer_class = BulkMeasurementListSerializer
 
     def create(self, validated_data):
@@ -84,10 +84,10 @@ class MetricSerializer(serializers.HyperlinkedModelSerializer):
         model = Metric
         fields = (
             'id', 'name', 'code', 'url', 'description', 'unit', 'created_at',
-            'updated_at', 'default_minval', 'default_maxval', 'user_id',
+            'updated_at', 'default_minval', 'default_maxval', 'user',
             'reference_url', 'sample_rate'
         )
-        read_only_fields = ('id',)
+        read_only_fields = ('id', 'user')
 
 
 class MonitorSerializer(serializers.HyperlinkedModelSerializer):
@@ -107,9 +107,9 @@ class MonitorSerializer(serializers.HyperlinkedModelSerializer):
         fields = (
             'id', 'url', 'channel_group', 'metric', 'interval_type',
             'interval_count', 'stat', 'name', 'created_at', 'updated_at',
-            'user_id'
+            'user'
         )
-        read_only_fields = ('id',)
+        read_only_fields = ('id', 'user')
 
 
 class TriggerSerializer(serializers.HyperlinkedModelSerializer):
@@ -124,9 +124,9 @@ class TriggerSerializer(serializers.HyperlinkedModelSerializer):
         fields = (
             'id', 'url', 'monitor', 'val1', 'val2', 'value_operator',
             'num_channels', 'num_channels_operator', 'email_list',
-            'created_at', 'updated_at', 'user_id', 'alert_on_out_of_alarm'
+            'created_at', 'updated_at', 'user', 'alert_on_out_of_alarm'
         )
-        read_only_fields = ('id',)
+        read_only_fields = ('id', 'user')
 
 
 class AlertSerializer(serializers.HyperlinkedModelSerializer):
@@ -140,9 +140,9 @@ class AlertSerializer(serializers.HyperlinkedModelSerializer):
         model = Alert
         fields = (
             'id', 'url', 'trigger', 'timestamp', 'message', 'in_alarm',
-            'breaching_channels', 'created_at', 'updated_at', 'user_id'
+            'breaching_channels', 'created_at', 'updated_at', 'user'
         )
-        read_only_fields = ('id',)
+        read_only_fields = ('id', 'user')
 
 
 class ArchiveBaseSerializer(serializers.HyperlinkedModelSerializer):
@@ -208,9 +208,9 @@ class MonitorDetailSerializer(serializers.HyperlinkedModelSerializer):
         fields = (
             'id', 'url', 'channel_group', 'metric', 'interval_type',
             'interval_count', 'stat', 'name', 'created_at', 'updated_at',
-            'user_id', 'triggers'
+            'user', 'triggers'
         )
-        read_only_fields = ('id',)
+        read_only_fields = ('id', 'user')
 
 
 class AlertDetailSerializer(serializers.HyperlinkedModelSerializer):
@@ -223,6 +223,6 @@ class AlertDetailSerializer(serializers.HyperlinkedModelSerializer):
         model = Alert
         fields = (
             'id', 'url', 'trigger', 'timestamp', 'message', 'in_alarm',
-            'breaching_channels', 'created_at', 'updated_at', 'user_id'
+            'breaching_channels', 'created_at', 'updated_at', 'user'
         )
-        read_only_fields = ('id',)
+        read_only_fields = ('id', 'user')

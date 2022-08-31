@@ -6,7 +6,7 @@ from measurement.serializers import MetricSerializer
 from organization.models import Organization
 
 
-class WidgetSerializer(serializers.HyperlinkedModelSerializer):
+class WidgetSerializer(serializers.ModelSerializer):
     '''Post/PUT serializer'''
     dashboard = serializers.PrimaryKeyRelatedField(
         queryset=Dashboard.objects.all()
@@ -20,13 +20,13 @@ class WidgetSerializer(serializers.HyperlinkedModelSerializer):
         model = Widget
         fields = (
             'id', 'name', 'dashboard', 'metrics',
-            'user_id', 'layout',
+            'user', 'layout',
             'type', 'properties', 'stat', 'thresholds'
         )
-        read_only_fields = ('id',)
+        read_only_fields = ('id', 'user')
 
 
-class DashboardSerializer(serializers.HyperlinkedModelSerializer):
+class DashboardSerializer(serializers.ModelSerializer):
     organization = serializers.PrimaryKeyRelatedField(
         queryset=Organization.objects.all()
     )
@@ -38,10 +38,10 @@ class DashboardSerializer(serializers.HyperlinkedModelSerializer):
         model = Dashboard
         fields = (
             'id', 'name', 'description', 'channel_group',
-            'user_id', 'share_all', 'share_org', 'organization',
+            'user', 'share_all', 'share_org', 'organization',
             'properties',
         )
-        read_only_fields = ('id',)
+        read_only_fields = ('id', 'user')
 
 
 class DashboardDetailSerializer(DashboardSerializer):
@@ -62,13 +62,13 @@ class DashboardDetailSerializer(DashboardSerializer):
         model = Dashboard
         fields = (
             'id', 'description', 'name', 'widgets', 'channel_group',
-            'user_id', 'share_all', 'share_org', 'organization',
+            'user', 'share_all', 'share_org', 'organization',
             'properties',
         )
-        read_only_fields = ('id',)
+        read_only_fields = ('id', 'user')
 
 
-class WidgetDetailSerializer(serializers.HyperlinkedModelSerializer):
+class WidgetDetailSerializer(WidgetSerializer):
     '''Detail and list view'''
     dashboard = serializers.PrimaryKeyRelatedField(
         queryset=Dashboard.objects.all()
@@ -79,7 +79,7 @@ class WidgetDetailSerializer(serializers.HyperlinkedModelSerializer):
         model = Widget
         fields = (
             'id', 'name', 'dashboard', 'metrics', 'thresholds',
-            'user_id', 'type', 'stat',
+            'user', 'type', 'stat',
             'properties', 'layout',
         )
-        read_only_fields = ('id',)
+        read_only_fields = ('id', 'user')
