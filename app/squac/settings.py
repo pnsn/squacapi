@@ -311,14 +311,14 @@ LOGGING = {
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
         },
-        # "file": {
-        #     "level": "INFO",
-        #     "class": "logging.FileHandler",
-        #     "filename": "/var/log/squacapi/django.log",
-        # },
+        "file": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "filename": "/var/log/squacapi/django.log",
+        },
     },
     'root': {
-        'handlers': ['console'],
+        'handlers': ['console', 'file'],
         'level': 'INFO',
     },
     'loggers': {
