@@ -41,8 +41,6 @@ try:
 except RequestException or MissingSchema:
     pass
 
-print(ALLOWED_HOSTS)
-
 # For debug toolbar
 INTERNAL_IPS = [
     'localhost',
@@ -300,10 +298,10 @@ LOGGING = {
             'formatter': 'simple'
         },
         'console_on_not_debug': {
-            'level': 'WARNING',
+            'level': 'ERROR',
             'filters': ['require_debug_false'],
             'class': 'logging.StreamHandler',
-            'formatter': 'simple'
+            'formatter': 'verbose'
         },
         'django.server': {
             'level': 'INFO',
