@@ -271,13 +271,6 @@ SQUAC_MEASUREMENTS_BUCKET = os.environ.get('SQUAC_MEASUREMENTS_BUCKET')
 
 MANAGERS = ADMINS
 
-
-# Configure logging to file
-if DEBUG:
-    LOG_FILE = os.environ.get('LOG_FILE', 'django.log')
-else:
-    LOG_FILE = os.environ.get('LOG_FILE')
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -306,25 +299,32 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
         },
+        'console_on_not_debug': {
+            'level': 'WARNING',
+            'filters': ['require_debug_false'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'django.server': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'django.server',
+        },
         'mail_admins': {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
-        },
-        "file": {
-            "level": "INFO",
-            "class": "logging.FileHandler",
-            "filename": "/var/log/squacapi/django.log",
-        },
-    },
-    'root': {
-        'handlers': ['console', 'file'],
-        'level': 'INFO',
+        }
     },
     'loggers': {
         'django': {
             'handlers': ['console'],
             'level': "INFO"
-        }
+        },
+        'django.server': {
+            'handlers': ['django.server'],
+            'level': 'INFO',
+            'propagate': False,
+        },
     }
 }
