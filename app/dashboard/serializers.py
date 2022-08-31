@@ -31,7 +31,8 @@ class DashboardSerializer(serializers.ModelSerializer):
         queryset=Organization.objects.all()
     )
     channel_group = serializers.PrimaryKeyRelatedField(
-        queryset=Group.objects.all()
+        queryset=Group.objects.all(),
+        required=False
     )
 
     class Meta:
@@ -55,7 +56,8 @@ class DashboardDetailSerializer(DashboardSerializer):
     )
 
     channel_group = serializers.PrimaryKeyRelatedField(
-        queryset=Group.objects.all()
+        queryset=Group.objects.all(),
+        required=False
     )
 
     class Meta:

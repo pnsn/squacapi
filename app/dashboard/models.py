@@ -44,8 +44,8 @@ class Dashboard(DashboardBase):
     channel_group = models.ForeignKey(
         Group,
         on_delete=models.SET_NULL,
-        related_name='widgets',
         null=True,
+        blank=True
     )
 
     def save(self, *args, **kwargs):
