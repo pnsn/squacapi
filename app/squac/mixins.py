@@ -11,7 +11,6 @@ class SetUserMixin:
     # all models that require user
 
     def perform_create(self, serializer):
-        print(self.request.user)
         serializer.save(user=self.request.user)
 
 

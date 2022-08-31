@@ -10,11 +10,8 @@ from organization.models import Organization
 # $:./mg.sh "test nslc.tests.test_nslc_api"
 
 
-class GroupSerializer(serializers.HyperlinkedModelSerializer):
+class GroupSerializer(serializers.ModelSerializer):
     # Group Serializer for list view, will not include channels/dashboards
-    url = serializers.HyperlinkedIdentityField(
-        view_name='nslc:group-detail'
-    )
     channels = serializers.PrimaryKeyRelatedField(
         many=True,
         queryset=Channel.objects.all()
@@ -34,7 +31,7 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Group
         fields = (
-            'name', 'id', 'url', 'description', 'channels',
+            'name', 'id', 'description', 'channels',
             'created_at', 'updated_at', 'user', 'organization',
             'auto_include_channels', 'auto_exclude_channels'
         )
@@ -42,16 +39,15 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
         ref_name = "NslcGroup"
 
 
-class ChannelSerializer(serializers.HyperlinkedModelSerializer):
+class ChannelSerializer(serializers.ModelSerializer):
     network = serializers.PrimaryKeyRelatedField(
         queryset=Network.objects.all()
     )
-    url = serializers.HyperlinkedIdentityField(view_name="nslc:channel-detail")
 
     class Meta:
         model = Channel
         fields = ('id', 'class_name', 'code', 'name', 'station_code',
-                  'station_name', 'url', 'description',
+                  'station_name', 'description',
                   'sample_rate', 'network', 'loc', 'lat',
                   'lon', 'elev', 'azimuth', 'dip', 'created_at', 'updated_at',
                   'user', 'starttime', 'endtime', 'nslc')
@@ -72,19 +68,18 @@ class GroupDetailSerializer(GroupSerializer):
     class Meta:
         model = Group
         fields = (
-            'name', 'id', 'url', 'description', 'channels',
+            'name', 'id', 'description', 'channels',
             'created_at', 'updated_at', 'user', 'organization',
             'auto_include_channels', 'auto_exclude_channels'
         )
         read_only_fields = ('id', 'user')
 
 
-class NetworkSerializer(serializers.HyperlinkedModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name="nslc:network-detail")
+class NetworkSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Network
-        fields = ('class_name', 'code', 'name', 'url', 'description',
+        fields = ('class_name', 'code', 'name', 'description',
                   'created_at', 'updated_at', 'user')
         read_only_fields = ('user',)
 
@@ -94,9 +89,7 @@ class NetworkSerializer(serializers.HyperlinkedModelSerializer):
         return queryset
 
 
-class MatchingRuleSerializer(serializers.HyperlinkedModelSerializer):
-    url = serializers.HyperlinkedIdentityField(
-        view_name="nslc:matching-rule-detail")
+class MatchingRuleSerializer(serializers.ModelSerializer):
     group = serializers.PrimaryKeyRelatedField(
         queryset=Group.objects.all())
 
@@ -104,7 +97,7 @@ class MatchingRuleSerializer(serializers.HyperlinkedModelSerializer):
         model = MatchingRule
         fields = ('id', 'network_regex', 'station_regex', 'location_regex',
                   'channel_regex', 'created_at', 'updated_at', 'user',
-                  'group', 'is_include', 'url')
+                  'group', 'is_include')
         read_only_fields = ('id', 'user')
 
     def to_representation(self, instance):
