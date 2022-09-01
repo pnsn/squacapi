@@ -312,12 +312,20 @@ LOGGING = {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
-        }
+        },
+        'null': {  # this
+            'level': 'DEBUG',
+            'class': 'logging.NullHandler',
+        },
     },
     'loggers': {
         'django': {
             'handlers': ['console', 'mail_admins', 'console_on_not_debug'],
             'level': "INFO"
+        },
+        'django.security.DisallowedHost': {  # and this
+            'handlers': ['null'],
+            'propagate': False,
         },
         'django.server': {
             'handlers': ['django.server'],
