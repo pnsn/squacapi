@@ -273,12 +273,8 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
-        'verbose': {
-            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
-            'style': '{',
-        },
         'simple': {
-            'format': '{levelname} {message}',
+            'format': '{levelname} {asctime}: {lineno} {message}',
             'style': '{',
         },
     },
@@ -295,18 +291,18 @@ LOGGING = {
             'level': 'INFO',
             'filters': ['require_debug_true'],
             'class': 'logging.StreamHandler',
-            'formatter': 'simple'
+            'formatter': 'simple',
         },
         'console_on_not_debug': {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
             'class': 'logging.StreamHandler',
-            'formatter': 'verbose'
+            'formatter': 'simple',
         },
         'django.server': {
             'level': 'INFO',
             'class': 'logging.StreamHandler',
-            'formatter': 'verbose',
+            'formatter': 'simple',
         },
         'mail_admins': {
             'level': 'ERROR',
@@ -324,7 +320,7 @@ LOGGING = {
             'level': "INFO"
         },
         'django.security.DisallowedHost': {  # and this
-            'handlers': ['null'],
+            'handlers': ['console', 'console_on_not_debug'],
             'propagate': False,
         },
         'django.server': {
