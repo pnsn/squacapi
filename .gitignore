@@ -7,3 +7,4 @@ docs/build
 **/.hypothesis/**
 .codegen/*
 docker-compose-test.yml
+*.log

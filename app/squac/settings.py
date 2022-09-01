@@ -30,7 +30,7 @@ except AttributeError:
 
 # add EC2 ip to allow heath checks
 try:
-    EC2_IP = requests.get('http://checkip.amazonaws.com').text
+    EC2_IP = requests.get(os.environ.get('INSTANCE_IP_URL')).text
     ALLOWED_HOSTS.append(EC2_IP)
 except RequestException or MissingSchema:
     pass
@@ -59,7 +59,6 @@ DEBUG_TOOLBAR_CONFIG = {
     ],
     'SHOW_TEMPLATE_CONTEXT': True,
 }
-
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -298,35 +297,32 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
         },
+        'console_on_not_debug': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        },
+        'django.server': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
         'mail_admins': {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
-        },
-    },
-    'root': {
-        'handlers': ['console'],
-        'level': 'WARNING',
+        }
     },
     'loggers': {
         'django': {
-            'handlers': ['console'],
-        },
-        'django.request': {
-            'handlers': ['mail_admins', 'console'],
-            'propagate': False,
-        },
-        'django.security': {
-            'handlers': ['mail_admins', 'console'],
-            'propagate': False,
+            'handlers': ['console', 'mail_admins', 'console_on_not_debug'],
+            'level': "INFO"
         },
         'django.server': {
-            'handlers': ['console'],
+            'handlers': ['django.server'],
+            'level': 'INFO',
             'propagate': False,
         },
-        'django.db.backends': {
-            'handlers': ['console'],
-            'propagate': False,
-        }
     }
 }
