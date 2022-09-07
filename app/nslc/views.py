@@ -55,6 +55,12 @@ class ChannelFilter(filters.FilterSet):
 
 
 class GroupFilter(filters.FilterSet):
+    order = filters.OrderingFilter(
+        fields=(('name', 'name'), ('organization',
+                'organization'), ('user__lastname', 'user_lastname'),
+                ('user__firstname', 'user_firstname')),
+    )
+
     class Meta:
         model = Group
         fields = ('name', 'organization')

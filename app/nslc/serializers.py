@@ -28,6 +28,8 @@ class GroupSerializer(serializers.ModelSerializer):
         queryset=Organization.objects.all()
     )
 
+    user = serializers.StringRelatedField()
+
     class Meta:
         model = Group
         fields = (
