@@ -20,7 +20,6 @@ perform regex SQL 'LIKE' for channel
 
 
 class DashboardFilter(filters.FilterSet):
-    channel = filters.CharFilter(field_name='channels__code')
     order = filters.OrderingFilter(
         fields=(('name', 'name'),
                 ('organization', 'organization'),
@@ -29,6 +28,10 @@ class DashboardFilter(filters.FilterSet):
                 ('description', 'description'),
                 ('channel_group__name', 'channel_group')),
     )
+
+    class Meta:
+        model = Dashboard
+        fields = ('user', 'organization', 'share_all', 'share_org',)
 
 
 class BaseDashboardViewSet(SetUserMixin, DefaultPermissionsMixin,
