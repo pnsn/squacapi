@@ -38,6 +38,7 @@ class BaseDashboardViewSet(SetUserMixin, DefaultPermissionsMixin,
 
 class DashboardViewSet(SharedPermissionsMixin, BaseDashboardViewSet):
     serializer_class = serializers.DashboardSerializer
+    filter_class = DashboardFilter
 
     def get_serializer_class(self):
         if self.action == 'retrieve':

@@ -38,3 +38,21 @@ class PublicDashboardFilterTests(TestCase):
             dashboard = Dashboard.objects.get(id=d.id)
             widgets = dashboard.widgets.all()
             self.assertEqual(len(widgets), len(res.data))
+
+    def test_dashboard_ordering(self):
+        url = reverse('dashboard:dashboard-list')
+        res = self.client.get(url + '?order=name')
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        for d in range(0, len(res.data) - 1):
+            if d > 0:
+                self.assertGreater(
+                    res.data[d]['name'], res.data[d - 1]['name'])
+
+        res2 = self.client.get(url + '?order=-name')
+        self.assertEqual(res2.status_code, status.HTTP_200_OK)
+
+        for d in range(0, len(res2.data) - 1):
+            if d > 0:
+                self.assertGreater(
+                    res2.data[d - 1]['name'], res2.data[d]['name'])

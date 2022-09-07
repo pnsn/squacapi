@@ -155,3 +155,21 @@ class NslcFilterTests(TestCase):
             if d['class_name'] == 'channel':
                 channel_count += 1
         self.assertEqual(channel_count, limit)
+
+    def test_channel_ordering(self):
+        url = reverse('nslc:channel-list')
+        res = self.client.get(url + '?order=channel')
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        for d in range(0, len(res.data) - 1):
+            if d > 0:
+                self.assertGreaterEqual(
+                    res.data[d]['code'], res.data[d - 1]['code'])
+
+        res2 = self.client.get(url + '?order=-channel')
+        self.assertEqual(res2.status_code, status.HTTP_200_OK)
+
+        for d in range(0, len(res2.data) - 1):
+            if d > 0:
+                self.assertGreaterEqual(
+                    res2.data[d - 1]['code'], res2.data[d]['code'])

@@ -116,3 +116,17 @@ class AuthenticatedMeasurementFilterTests(TestCase):
 
         self.assertEqual(res2.status_code, status.HTTP_200_OK)
         self.assertEqual(res2.data, res1.data)
+
+    def test_metric_ordering(self):
+        m1, m2 = 'pctavailable', 'ngaps'
+        url = reverse('measurement:metric-list')
+        url += f'?name={m1},{m2}'
+        res = self.client.get(url + "&order=name")
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data), 2)
+        self.assertGreater(res.data[1]['name'], res.data[0]['name'])
+
+        res2 = self.client.get(url + "&order=-name")
+        self.assertEqual(res2.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res2.data), 2)
+        self.assertGreater(res2.data[0]['name'], res2.data[1]['name'])
