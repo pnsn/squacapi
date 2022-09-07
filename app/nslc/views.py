@@ -76,7 +76,7 @@ class GroupFilter(filters.FilterSet):
 
     class Meta:
         model = Group
-        fields = ('name', 'organization')
+        fields = ('name', 'organization', 'user')
 
 
 @ api_view(['GET'])
