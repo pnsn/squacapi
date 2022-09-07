@@ -4,6 +4,31 @@ from squac.mixins import SetUserMixin, DefaultPermissionsMixin, \
     SharedPermissionsMixin
 from dashboard.models import Dashboard, Widget
 from dashboard import serializers
+from django_filters import rest_framework as filters
+
+"""Filter classes used for view filtering"""
+
+''''
+All query values are case insensitive.
+perform 'in' query for network param
+    /networks?network=uw,uo,cc
+perform exact case for station
+    /networks?station=rcm
+perform regex SQL 'LIKE' for channel
+    /networks?channel=ez
+'''
+
+
+class DashboardFilter(filters.FilterSet):
+    channel = filters.CharFilter(field_name='channels__code')
+    order = filters.OrderingFilter(
+        fields=(('name', 'name'),
+                ('organization', 'organization'),
+                ('user__lastname', 'user_lastname'),
+                ('user__firstname', 'user_firstname'),
+                ('description', 'description'),
+                ('channel_group__name', 'channel_group')),
+    )
 
 
 class BaseDashboardViewSet(SetUserMixin, DefaultPermissionsMixin,
