@@ -30,6 +30,9 @@ perform regex SQL 'LIKE' for channel
 class NetworkFilter(filters.FilterSet):
     network = CharInFilter(field_name='code', lookup_expr='in')
     channel = filters.CharFilter(field_name='channels__code')
+    order = filters.OrderingFilter(
+        fields=(('name', 'name'), ('code', 'network'),)
+    )
 
 
 class ChannelFilter(filters.FilterSet):
@@ -52,6 +55,16 @@ class ChannelFilter(filters.FilterSet):
     lat_max = filters.NumberFilter(field_name='lat', lookup_expr='lte')
     lon_min = filters.NumberFilter(field_name='lon', lookup_expr='gte')
     lon_max = filters.NumberFilter(field_name='lon', lookup_expr='lte')
+    order = filters.OrderingFilter(
+        fields=(('nslc', 'nslc'),
+                ('network__code', 'network'),
+                ('station_code', 'station'),
+                ('loc', 'location'),
+                ('code', 'channel'),
+                ('starttime', 'starttime'),
+                ('endtime', 'endtime')),
+
+    )
 
 
 class GroupFilter(filters.FilterSet):
@@ -66,7 +79,7 @@ class GroupFilter(filters.FilterSet):
         fields = ('name', 'organization')
 
 
-@api_view(['GET'])
+@ api_view(['GET'])
 def api_root(request, format=None):
     '''api root'''
     return Response({
@@ -97,8 +110,8 @@ class NetworkViewSet(BaseNslcViewSet):
         q = Network.objects.all()
         return self.serializer_class.setup_eager_loading(q)
 
-    @method_decorator(cache_page(settings.NSLC_DEFAULT_CACHE,
-                                 key_prefix="NetworkView"))
+    @ method_decorator(cache_page(settings.NSLC_DEFAULT_CACHE,
+                                  key_prefix="NetworkView"))
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
@@ -111,7 +124,7 @@ class ChannelViewSet(BaseNslcViewSet):
         q = Channel.objects.all()
         return self.serializer_class.setup_eager_loading(q)
 
-    @cache_control(must_revalidate=True, max_age=settings.NSLC_DEFAULT_CACHE)
+    @ cache_control(must_revalidate=True, max_age=settings.NSLC_DEFAULT_CACHE)
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 

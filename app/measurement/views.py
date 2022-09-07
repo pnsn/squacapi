@@ -36,6 +36,13 @@ def check_measurement_params(params):
 class MetricFilter(filters.FilterSet):
     # CharInFilter is custom filter see imports
     name = CharInFilter(lookup_expr='in')
+    order = filters.OrderingFilter(
+        fields=(('name', 'name'),
+                ('code', 'code'),
+                ('unit', 'unit'),
+                ('default_minval', 'default_minval'),
+                ('default_maxval', 'default_maxval'),
+                ('sample_rate', 'sample_rate')))
 
 
 class MeasurementFilter(filters.FilterSet):
@@ -50,6 +57,12 @@ class MeasurementFilter(filters.FilterSet):
     metric = NumberInFilter(field_name='metric')
     channel = NumberInFilter(field_name='channel')
     group = NumberInFilter(field_name='channel__group')
+    order = filters.OrderingFilter(
+        fields=(('starttime', 'starttime'),
+                ('endtime', 'endtime'),
+                ('metric', 'metric'),
+                ('channel__nslc', 'channel')),
+    )
 
 
 class MonitorFilter(filters.FilterSet):
@@ -70,6 +83,13 @@ class AlertFilter(filters.FilterSet):
                                        lookup_expr='gte')
     timestamp_lt = filters.CharFilter(field_name='timestamp',
                                       lookup_expr='lt')
+
+    order = filters.OrderingFilter(
+        fields=(('trigger', 'trigger'),
+                ('trigger__monitor__name', 'monitor'),
+                ('timestamp', 'timestamp'),
+                ('in_alarm', 'in_alarm')),
+    )
 
     class Meta:
         model = Alert
