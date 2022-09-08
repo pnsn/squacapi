@@ -110,8 +110,8 @@ class NetworkViewSet(BaseNslcViewSet):
         q = Network.objects.all()
         return self.serializer_class.setup_eager_loading(q)
 
-    @ method_decorator(cache_page(settings.NSLC_DEFAULT_CACHE,
-                                  key_prefix="NetworkView"))
+    @method_decorator(cache_page(settings.NSLC_DEFAULT_CACHE,
+                                 key_prefix="NetworkView"))
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
@@ -124,7 +124,7 @@ class ChannelViewSet(BaseNslcViewSet):
         q = Channel.objects.all()
         return self.serializer_class.setup_eager_loading(q)
 
-    @ cache_control(must_revalidate=True, max_age=settings.NSLC_DEFAULT_CACHE)
+    @cache_control(must_revalidate=True, max_age=settings.NSLC_DEFAULT_CACHE)
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
