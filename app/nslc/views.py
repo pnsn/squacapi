@@ -79,7 +79,7 @@ class GroupFilter(filters.FilterSet):
         fields = ('name', 'organization', 'user')
 
 
-@ api_view(['GET'])
+@api_view(['GET'])
 def api_root(request, format=None):
     '''api root'''
     return Response({
