@@ -30,6 +30,9 @@ perform regex SQL 'LIKE' for channel
 class NetworkFilter(filters.FilterSet):
     network = CharInFilter(field_name='code', lookup_expr='in')
     channel = filters.CharFilter(field_name='channels__code')
+    order = filters.OrderingFilter(
+        fields=(('name', 'name'), ('code', 'network'),)
+    )
 
 
 class ChannelFilter(filters.FilterSet):
@@ -52,12 +55,28 @@ class ChannelFilter(filters.FilterSet):
     lat_max = filters.NumberFilter(field_name='lat', lookup_expr='lte')
     lon_min = filters.NumberFilter(field_name='lon', lookup_expr='gte')
     lon_max = filters.NumberFilter(field_name='lon', lookup_expr='lte')
+    order = filters.OrderingFilter(
+        fields=(('nslc', 'nslc'),
+                ('network__code', 'network'),
+                ('station_code', 'station'),
+                ('loc', 'location'),
+                ('code', 'channel'),
+                ('starttime', 'starttime'),
+                ('endtime', 'endtime')),
+
+    )
 
 
 class GroupFilter(filters.FilterSet):
+    order = filters.OrderingFilter(
+        fields=(('name', 'name'), ('organization',
+                'organization'), ('user__lastname', 'user_lastname'),
+                ('user__firstname', 'user_firstname')),
+    )
+
     class Meta:
         model = Group
-        fields = ('name', 'organization')
+        fields = ('name', 'organization', 'user')
 
 
 @api_view(['GET'])

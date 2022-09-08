@@ -52,7 +52,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
 
     def __str__(self):
-        return self.email
+        return self.get_full_name()
 
     def get_full_name(self):
         return self.firstname + " " + self.lastname
