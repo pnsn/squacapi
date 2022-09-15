@@ -16,7 +16,8 @@ class CharInFilter(filters.BaseInFilter, filters.CharFilter):
 
     def filter(self, qs, value):
         if value:
-            return qs.filter(**{self.field_name + '__in': map(str.lower, value)})
+            return qs.filter(**{self.field_name + '__in':
+                                map(str.lower, value)})
         return qs
 
     pass
