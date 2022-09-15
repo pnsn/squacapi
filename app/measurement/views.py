@@ -140,10 +140,10 @@ class MetricViewSet(MeasurementBaseViewSet):
         return super().dispatch(request, *args, **kwargs)
 
 
-@method_decorator(name='create', decorator=swagger_auto_schema(
-    request_body=serializers.MeasurementSerializer(many=True),
-    operation_description="post list of measuremetns"
-))
+# @method_decorator(name='create', decorator=swagger_auto_schema(
+#     request_body=serializers.MeasurementSerializer(many=True),
+#     operation_description="post list of measuremetns"
+# ))
 class MeasurementViewSet(MeasurementBaseViewSet):
     '''end point for using channel filter'''
     serializer_class = serializers.MeasurementSerializer
