@@ -23,13 +23,9 @@ class MeasurementSerializer(serializers.ModelSerializer):
     metric = serializers.PrimaryKeyRelatedField(
         queryset=Metric.objects.all()
     )
-    # channel = serializers.PrimaryKeyRelatedField(
-    #     queryset=Channel.objects.all()
-    # )
-
-    channel = serializers.SlugRelatedField(
-        slug_field='nslc',
-        queryset=Channel.objects.all())
+    channel = serializers.PrimaryKeyRelatedField(
+        queryset=Channel.objects.all()
+    )
 
     class Meta:
         model = Measurement
