@@ -9,21 +9,28 @@ from organization.models import Organization
 # to run only these tests
 # $:./mg.sh "test nslc.tests.test_nslc_api"
 
-
 class GroupSerializer(serializers.ModelSerializer):
     # Group Serializer for list view, will not include channels/dashboards
+    channels_count = serializers.IntegerField(read_only=True)
+    auto_include_channels_count = serializers.IntegerField(read_only=True)
+    auto_exclude_channels_count = serializers.IntegerField(read_only=True)
+
     channels = serializers.PrimaryKeyRelatedField(
         many=True,
-        queryset=Channel.objects.all()
+        queryset=Channel.objects.all(),
+        write_only=True
     )
     auto_include_channels = serializers.PrimaryKeyRelatedField(
         many=True,
-        queryset=Channel.objects.all()
+        queryset=Channel.objects.all(),
+        write_only=True
     )
     auto_exclude_channels = serializers.PrimaryKeyRelatedField(
         many=True,
-        queryset=Channel.objects.all()
+        queryset=Channel.objects.all(),
+        write_only=True
     )
+
     organization = serializers.PrimaryKeyRelatedField(
         queryset=Organization.objects.all()
     )
@@ -33,10 +40,12 @@ class GroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
         fields = (
-            'name', 'id', 'description', 'channels',
+            'name', 'id', 'description',
             'created_at', 'updated_at', 'user', 'organization',
             'share_all', 'share_org',
-            'auto_include_channels', 'auto_exclude_channels'
+            'channels_count', 'auto_include_channels_count',
+            'auto_exclude_channels_count',
+            'channels', 'auto_include_channels', 'auto_exclude_channels'
         )
         read_only_fields = ('id', 'user')
         ref_name = "NslcGroup"

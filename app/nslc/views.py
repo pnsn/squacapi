@@ -2,6 +2,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.views.decorators.cache import cache_control
 from django.conf import settings
+from django.db.models import Count
 from rest_framework import viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -141,6 +142,10 @@ class GroupViewSet(SharedPermissionsMixin, BaseNslcViewSet):
 
     def get_queryset(self):
         queryset = Group.objects.all()
+        queryset = queryset.annotate(
+            channels_count=Count('channels'),
+            auto_include_channels_count=Count('auto_include_channels'),
+            auto_exclude_channels_count=Count('auto_exclude_channels'))
         if self.request.user.is_staff:
             return queryset
         org = self.request.user.organization
