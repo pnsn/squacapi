@@ -8,7 +8,8 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from django_filters import rest_framework as filters
 from squac.filters import CharInFilter
-from squac.mixins import SetUserMixin, DefaultPermissionsMixin
+from squac.mixins import SetUserMixin, DefaultPermissionsMixin, \
+    SharedPermissionsMixin
 from .models import Network, Channel, Group, MatchingRule
 from nslc.serializers import NetworkSerializer, ChannelSerializer, \
     GroupSerializer, GroupDetailSerializer, MatchingRuleSerializer
@@ -129,7 +130,7 @@ class ChannelViewSet(BaseNslcViewSet):
         return super().dispatch(request, *args, **kwargs)
 
 
-class GroupViewSet(BaseNslcViewSet):
+class GroupViewSet(SharedPermissionsMixin, BaseNslcViewSet):
     filter_class = GroupFilter
     serializer_class = GroupSerializer
 
@@ -140,6 +141,14 @@ class GroupViewSet(BaseNslcViewSet):
 
     def get_queryset(self):
         queryset = Group.objects.all()
+        if self.request.user.is_staff:
+            return queryset
+        org = self.request.user.organization
+        # get users dash, shared_all dashes and users org shared dashes
+        queryset = \
+            queryset.filter(user=self.request.user) |\
+            queryset.filter(share_all=True) |\
+            queryset.filter(organization=org.id, share_org=True)
         return queryset
 
     def dispatch(self, request, *args, **kwargs):
