@@ -143,18 +143,18 @@ class NslcFilterTests(TestCase):
             matching_rules = group.matching_rules.all()
             self.assertEqual(len(matching_rules), len(res.data))
 
-    def test_get_channels_with_pagination(self):
-        url = reverse('nslc:channel-list')
-        offset = 0
-        limit = 3
-        url += f'?offset={offset}&limit={limit}'
-        res = self.client.get(url)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        channel_count = 0
-        for d in res.data['results']:
-            if d['class_name'] == 'channel':
-                channel_count += 1
-        self.assertEqual(channel_count, limit)
+    # def test_get_channels_with_pagination(self):
+    #     url = reverse('nslc:channel-list')
+    #     offset = 0
+    #     limit = 3
+    #     url += f'?offset={offset}&limit={limit}'
+    #     res = self.client.get(url)
+    #     self.assertEqual(res.status_code, status.HTTP_200_OK)
+    #     channel_count = 0
+    #     for d in res.data['results']:
+    #         if d['class_name'] == 'channel':
+    #             channel_count += 1
+    #     self.assertEqual(channel_count, limit)
 
     def test_channel_ordering(self):
         url = reverse('nslc:channel-list')

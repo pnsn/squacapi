@@ -116,8 +116,8 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication'
     ),
-    'DEFAULT_PAGINATION_CLASS': 'squac.pagination.OptionalPagination',
-    'PAGE_SIZE': 100
+    # 'DEFAULT_PAGINATION_CLASS': 'squac.pagination.OptionalPagination',
+    # 'PAGE_SIZE': 100
 }
 
 SWAGGER_SETTINGS = {

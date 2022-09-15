@@ -1,3 +1,4 @@
+
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from django.utils.decorators import method_decorator
@@ -15,6 +16,8 @@ from .models import (Metric, Measurement,
                      Alert, ArchiveDay, ArchiveWeek, ArchiveMonth,
                      ArchiveHour, Monitor, Trigger)
 from measurement import serializers
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 
 def check_measurement_params(params):
@@ -139,6 +142,12 @@ class MetricViewSet(MeasurementBaseViewSet):
         return super().dispatch(request, *args, **kwargs)
 
 
+@method_decorator(name='create', decorator=swagger_auto_schema(
+    request_body=serializers.MeasurementSerializer(many=True),
+    operation_description="post list of measurements",
+    responses={201: openapi.Response(
+        "created measurements", serializers.MeasurementSerializer(many=True))}
+))
 class MeasurementViewSet(MeasurementBaseViewSet):
     '''end point for using channel filter'''
     serializer_class = serializers.MeasurementSerializer
