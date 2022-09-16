@@ -20,17 +20,17 @@ class GroupSerializer(serializers.ModelSerializer):
     channels = serializers.PrimaryKeyRelatedField(
         many=True,
         queryset=Channel.objects.all(),
-        write_only=True
+        # write_only=True
     )
     auto_include_channels = serializers.PrimaryKeyRelatedField(
         many=True,
         queryset=Channel.objects.all(),
-        write_only=True
+        # write_only=True
     )
     auto_exclude_channels = serializers.PrimaryKeyRelatedField(
         many=True,
         queryset=Channel.objects.all(),
-        write_only=True
+        # write_only=True
     )
 
     organization = serializers.PrimaryKeyRelatedField(
@@ -45,8 +45,6 @@ class GroupSerializer(serializers.ModelSerializer):
             'name', 'id', 'description',
             'created_at', 'updated_at', 'user', 'organization',
             'share_all', 'share_org',
-            'channels_count', 'auto_include_channels_count',
-            'auto_exclude_channels_count',
             'channels', 'auto_include_channels', 'auto_exclude_channels'
         )
         read_only_fields = ('id', 'user')
