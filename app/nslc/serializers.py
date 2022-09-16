@@ -9,21 +9,30 @@ from organization.models import Organization
 # to run only these tests
 # $:./mg.sh "test nslc.tests.test_nslc_api"
 
-
 class GroupSerializer(serializers.ModelSerializer):
     # Group Serializer for list view, will not include channels/dashboards
+    # shaw channels_count for all read operations
+    channels_count = serializers.IntegerField(read_only=True)
+    auto_include_channels_count = serializers.IntegerField(read_only=True)
+    auto_exclude_channels_count = serializers.IntegerField(read_only=True)
+
+    # allow write only to channels, but not read (smaller requests)
     channels = serializers.PrimaryKeyRelatedField(
         many=True,
-        queryset=Channel.objects.all()
+        queryset=Channel.objects.all(),
+        write_only=True
     )
     auto_include_channels = serializers.PrimaryKeyRelatedField(
         many=True,
-        queryset=Channel.objects.all()
+        queryset=Channel.objects.all(),
+        write_only=True
     )
     auto_exclude_channels = serializers.PrimaryKeyRelatedField(
         many=True,
-        queryset=Channel.objects.all()
+        queryset=Channel.objects.all(),
+        write_only=True
     )
+
     organization = serializers.PrimaryKeyRelatedField(
         queryset=Organization.objects.all()
     )
@@ -33,9 +42,12 @@ class GroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
         fields = (
-            'name', 'id', 'description', 'channels',
+            'name', 'id', 'description',
             'created_at', 'updated_at', 'user', 'organization',
-            'auto_include_channels', 'auto_exclude_channels'
+            'share_all', 'share_org',
+            'channels_count', 'auto_include_channels_count',
+            'auto_exclude_channels_count',
+            'channels', 'auto_include_channels', 'auto_exclude_channels'
         )
         read_only_fields = ('id', 'user')
         ref_name = "NslcGroup"
@@ -72,6 +84,7 @@ class GroupDetailSerializer(GroupSerializer):
         fields = (
             'name', 'id', 'description', 'channels',
             'created_at', 'updated_at', 'user', 'organization',
+            'share_all', 'share_org',
             'auto_include_channels', 'auto_exclude_channels'
         )
         read_only_fields = ('id', 'user')
@@ -102,6 +115,7 @@ class MatchingRuleSerializer(serializers.ModelSerializer):
                   'group', 'is_include')
         read_only_fields = ('id', 'user')
 
+    # remove regex cruft before returning
     def to_representation(self, instance):
         """Convert regex fields to string."""
         ret = super().to_representation(instance)

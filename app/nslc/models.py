@@ -114,6 +114,8 @@ class Group(models.Model):
         on_delete=models.CASCADE,
         related_name='channel_groups'
     )
+    share_all = models.BooleanField(default=False)
+    share_org = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

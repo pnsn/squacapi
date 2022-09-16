@@ -52,6 +52,7 @@ class MeasurementFilter(filters.FilterSet):
     """filters measurment by metric, channel, starttime,
         and endtime (starttime)"""
     starttime = filters.CharFilter(field_name='starttime', lookup_expr='gte')
+    nslc = CharInFilter(field_name='nslc', lookup_expr='in')
 
     ''' Note although param is called endtime, it uses starttime, which is
         the the only field with an index

@@ -186,7 +186,8 @@ class PrivateNslcAPITests(TestCase):
         }
         res = self.client.post(url, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-        # self.assertTrue(self.user.has_perm('nslc.change_group'))
+
+    def test_partial_update_group(self):
         group = Group.objects.get(name='UW-All')
         payload = {
             'name': 'UW-All-partial-update',
@@ -197,6 +198,7 @@ class PrivateNslcAPITests(TestCase):
         res = self.client.patch(url, payload)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         group.refresh_from_db()
+
         self.assertEqual(group.name, payload['name'])
         self.assertEqual(group.description, "All UW channels")
         channels = group.channels.all()

@@ -8,6 +8,18 @@ class CharInFilter(filters.BaseInFilter, filters.CharFilter):
         BaseInFilter validates comman seperated list, CharFilter validates
         individual char strings.
     '''
+
+    """
+    Expects a comma separated list
+    filters values in list
+    """
+
+    def filter(self, qs, value):
+        if value:
+            return qs.filter(**{self.field_name + '__in':
+                                map(str.lower, value)})
+        return qs
+
     pass
 
 

@@ -191,7 +191,6 @@ class DashboardPermissionTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
     def test_viewer_cannot_view_my_org_share_none(self):
-        self.my_org_dashboard_share_none.id
         ''' a viewer can view own org's share_org resource'''
         url = reverse(
             'dashboard:dashboard-detail',
@@ -202,7 +201,6 @@ class DashboardPermissionTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_viewer_can_view_not_my_org_share_all(self):
-        self.not_my_org_dashboard_share_all.id
         ''' a viewer can view own org's share_org resource'''
         url = reverse(
             'dashboard:dashboard-detail',
@@ -213,7 +211,6 @@ class DashboardPermissionTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
     def test_viewer_cannot_view_not_my_org_share_org(self):
-        self.not_my_org_dashboard_share_all.id
         ''' a viewer can view own org's share_org resource'''
         url = reverse(
             'dashboard:dashboard-detail',
@@ -224,7 +221,6 @@ class DashboardPermissionTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_viewer_cannot_view_not_my_org_share_none(self):
-        self.not_my_org_dashboard_share_all.id
         ''' a viewer can view own org's share_org resource'''
         url = reverse(
             'dashboard:dashboard-detail',
