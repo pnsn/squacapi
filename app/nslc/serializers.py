@@ -11,10 +11,12 @@ from organization.models import Organization
 
 class GroupSerializer(serializers.ModelSerializer):
     # Group Serializer for list view, will not include channels/dashboards
+    # shaw channels_count for all read operations
     channels_count = serializers.IntegerField(read_only=True)
     auto_include_channels_count = serializers.IntegerField(read_only=True)
     auto_exclude_channels_count = serializers.IntegerField(read_only=True)
 
+    # allow write only to channels, but not read (smaller requests)
     channels = serializers.PrimaryKeyRelatedField(
         many=True,
         queryset=Channel.objects.all(),
@@ -113,6 +115,7 @@ class MatchingRuleSerializer(serializers.ModelSerializer):
                   'group', 'is_include')
         read_only_fields = ('id', 'user')
 
+    # remove regex cruft before returning
     def to_representation(self, instance):
         """Convert regex fields to string."""
         ret = super().to_representation(instance)
