@@ -1,3 +1,4 @@
+import inspect
 from django.db import models
 from django.conf import settings
 from datetime import datetime
@@ -104,9 +105,11 @@ class Group(models.Model):
         on_delete=models.CASCADE,
         related_name='nslcgroups'
     )
-    channels = models.ManyToManyField('Channel')
-    auto_include_channels = models.ManyToManyField('Channel', related_name='+')
-    auto_exclude_channels = models.ManyToManyField('Channel', related_name='+')
+    channels = models.ManyToManyField('Channel', related_name='+')
+    auto_include_channels = models.ManyToManyField(
+        'Channel', related_name='+')
+    auto_exclude_channels = models.ManyToManyField(
+        'Channel', related_name='+')
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=255, blank=True, default='')
     organization = models.ForeignKey(
@@ -129,6 +132,7 @@ class Group(models.Model):
                     self.auto_exclude_channels.count() > 0])
 
     def update_channels(self):
+        print("update channels", self.description)
         if not self.can_auto_update():
             return
 
@@ -175,6 +179,7 @@ class Group(models.Model):
 
         channels = channels.exclude(exclude_query)
 
+        print(len(channels))
         # 3. Finish
         # Now actually add channels
         self.channels.set(channels)
@@ -183,8 +188,8 @@ class Group(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
         self.update_channels()
+        super().save(*args, **kwargs)
 
 
 class MatchingRule(models.Model):

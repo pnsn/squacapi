@@ -144,7 +144,8 @@ class GroupViewSet(SharedPermissionsMixin, BaseNslcViewSet):
     def get_queryset(self):
 
         queryset = Group.objects \
-            .select_related('user')
+            .select_related('user') \
+            .annotate(channels_count=Count('channels'))\
 
         if self.request.user.is_staff:
             return queryset

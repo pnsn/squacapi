@@ -10,20 +10,22 @@ from organization.models import Organization
 # $:./mg.sh "test nslc.tests.test_nslc_api"
 
 class GroupSerializer(serializers.ModelSerializer):
+
+    channels_count = serializers.IntegerField(read_only=True)
     channels = serializers.PrimaryKeyRelatedField(
         many=True,
         queryset=Channel.objects.all(),
-        # write_only=True
+        write_only=True
     )
     auto_include_channels = serializers.PrimaryKeyRelatedField(
         many=True,
         queryset=Channel.objects.all(),
-        # write_only=True
+        write_only=True
     )
     auto_exclude_channels = serializers.PrimaryKeyRelatedField(
         many=True,
         queryset=Channel.objects.all(),
-        # write_only=True
+        write_only=True
     )
 
     organization = serializers.PrimaryKeyRelatedField(
@@ -37,7 +39,7 @@ class GroupSerializer(serializers.ModelSerializer):
         fields = (
             'name', 'id', 'description',
             'created_at', 'updated_at', 'user', 'organization',
-            'share_all', 'share_org',
+            'share_all', 'share_org', 'channels_count',
             'channels', 'auto_include_channels', 'auto_exclude_channels'
         )
         read_only_fields = ('id', 'user')
