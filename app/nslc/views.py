@@ -14,6 +14,7 @@ from squac.mixins import SetUserMixin, DefaultPermissionsMixin, \
 from .models import Network, Channel, Group, MatchingRule
 from nslc.serializers import NetworkSerializer, ChannelSerializer, \
     GroupSerializer, GroupDetailSerializer, MatchingRuleSerializer
+from django.db.models import Count
 
 
 """Filter classes used for view filtering"""
@@ -143,7 +144,8 @@ class GroupViewSet(SharedPermissionsMixin, BaseNslcViewSet):
     def get_queryset(self):
 
         queryset = Group.objects \
-            .select_related('user').all()
+            .select_related('user') \
+            .annotate(channels_count=Count('channels'))
 
         if self.request.user.is_staff:
             return queryset

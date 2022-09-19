@@ -106,7 +106,6 @@ class Group(models.Model):
         on_delete=models.CASCADE,
         related_name='nslcgroups'
     )
-    channels_count = models.IntegerField(default=0)
     channels = models.ManyToManyField('Channel')
     auto_include_channels = models.ManyToManyField(
         'Channel', related_name='+')
@@ -183,8 +182,6 @@ class Group(models.Model):
         # 3. Finish
         # Now actually add channels
         self.channels.set(channels)
-        # update count of channels
-        self.channels_count = self.channels.count()
         self.save()
 
     def __str__(self):
