@@ -27,7 +27,7 @@ def check_measurement_params(params):
         * starttime
         * endtime
     '''
-    if 'channel' not in params and 'group' not in params or \
+    if 'nslc' not in params and 'channel' not in params and 'group' not in params or \
             (not all([p in params
                       for p in ("metric", "starttime", "endtime")])):
         raise MissingParameterException
@@ -52,7 +52,7 @@ class MeasurementFilter(filters.FilterSet):
     """filters measurment by metric, channel, starttime,
         and endtime (starttime)"""
     starttime = filters.CharFilter(field_name='starttime', lookup_expr='gte')
-    nslc = CharInFilter(field_name='nslc', lookup_expr='in')
+    nslc = CharInFilter(field_name='channel__nslc', lookup_expr='in')
 
     ''' Note although param is called endtime, it uses starttime, which is
         the the only field with an index

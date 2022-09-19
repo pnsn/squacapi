@@ -7,6 +7,8 @@ from organization.models import Organization
 from regex_field.fields import RegexField
 from django.db.models import Q
 import re
+from django.db.models.signals import post_save, pre_save, m2m_changed
+from django.dispatch import receiver
 
 
 class Nslc(models.Model):
@@ -105,6 +107,7 @@ class Group(models.Model):
         on_delete=models.CASCADE,
         related_name='nslcgroups'
     )
+    channels_count = models.IntegerField(default=0)
     channels = models.ManyToManyField('Channel', related_name='+')
     auto_include_channels = models.ManyToManyField(
         'Channel', related_name='+')
@@ -132,9 +135,12 @@ class Group(models.Model):
                     self.auto_exclude_channels.count() > 0])
 
     def update_channels(self):
-        print("update channels", self.description)
-        if not self.can_auto_update():
-            return
+        print("channels",
+              self.channels.count())
+        print("exclude", self.auto_exclude_channels.count())
+        print("inlude", self.auto_include_channels.count(), )
+        # if not self.can_auto_update():
+        #     return
 
         # 1. Construct query to add channels
         include_query = Q()
@@ -179,17 +185,27 @@ class Group(models.Model):
 
         channels = channels.exclude(exclude_query)
 
-        print(len(channels))
         # 3. Finish
         # Now actually add channels
         self.channels.set(channels)
+        self.channels_count = self.channels.count()
+        print("after in method", self.channels.count())
 
     def __str__(self):
         return self.name
 
-    def save(self, *args, **kwargs):
-        self.update_channels()
-        super().save(*args, **kwargs)
+
+def category_changed(sender, instance, action, **kwargs):
+
+    if action == 'post_add':
+        print("I got called!!!!!!", instance, action)
+        p = Group.objects.get(id=instance.id)
+        print("after auto_include", p.auto_include_channels.count())
+        p.update_channels()
+
+
+m2m_changed.connect(
+    category_changed, sender=Group.auto_include_channels.through)
 
 
 class MatchingRule(models.Model):
