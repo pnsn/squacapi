@@ -27,9 +27,9 @@ def check_measurement_params(params):
         * starttime
         * endtime
     '''
-    if 'nslc' not in params and 'channel' not in params and 'group' not in params or \
-            (not all([p in params
-                      for p in ("metric", "starttime", "endtime")])):
+    if 'nslc' not in params and 'channel' not in params and 'group' \
+            not in params or (not all([p in params for p in
+                                       ("metric", "starttime", "endtime")])):
         raise MissingParameterException
 
 

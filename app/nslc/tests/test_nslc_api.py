@@ -182,7 +182,7 @@ class PrivateNslcAPITests(TestCase):
             'name': 'Test group',
             'description': 'A test',
             'organization': self.organization.id,
-            'channels': [self.chan.id]
+            'auto_include_channels': [self.chan.id]
         }
         res = self.client.post(url, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
@@ -191,7 +191,7 @@ class PrivateNslcAPITests(TestCase):
         group = Group.objects.get(name='UW-All')
         payload = {
             'name': 'UW-All-partial-update',
-            'channels': [self.chan.id]
+            'auto_include_channels': [self.chan.id]
         }
         self.assertTrue(self.user.is_staff)
         url = reverse('nslc:group-detail', args=[group.id])
@@ -251,7 +251,7 @@ class PrivateNslcAPITests(TestCase):
 
         payload = {
             'name': 'UW-All-full-update',
-            'channels': chan_id_list,
+            'auto_include_channels': chan_id_list,
             'organization': self.organization.id
         }
         url = reverse('nslc:group-detail', args=[group.id])
@@ -309,18 +309,17 @@ class PrivateNslcAPITests(TestCase):
         self.assertEqual(len(Channel.objects.all()), len(channels))
 
     def test_update_channels_no_rules(self):
-        '''Test that a group with no matching rules will not auto-update'''
+        '''Test that a group with no matching rules or
+            auto_update channels will have no channels'''
         group = Group.objects.create(
             name='auto group',
             user=self.user,
             organization=self.organization
         )
-        group.channels.add(self.chan)
-        self.assertEqual(1, group.channels.count())
-
+        self.assertEqual(0, group.channels.count())
         # Now call update_channels and verify nothing changes
         group.update_channels()
-        self.assertEqual(1, group.channels.count())
+        self.assertEqual(0, group.channels.count())
 
     def test_update_channels_include_matching(self):
         '''Test that a group will update on rule update'''

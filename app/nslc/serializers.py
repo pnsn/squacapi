@@ -12,11 +12,6 @@ from organization.models import Organization
 class GroupSerializer(serializers.ModelSerializer):
 
     channels_count = serializers.IntegerField(read_only=True)
-    channels = serializers.PrimaryKeyRelatedField(
-        many=True,
-        queryset=Channel.objects.all(),
-        write_only=True
-    )
     auto_include_channels = serializers.PrimaryKeyRelatedField(
         many=True,
         queryset=Channel.objects.all(),
@@ -40,7 +35,7 @@ class GroupSerializer(serializers.ModelSerializer):
             'name', 'id', 'description',
             'created_at', 'updated_at', 'user', 'organization',
             'share_all', 'share_org', 'channels_count',
-            'channels', 'auto_include_channels', 'auto_exclude_channels'
+            'auto_include_channels', 'auto_exclude_channels'
         )
         read_only_fields = ('id', 'user')
         ref_name = "NslcGroup"
@@ -77,7 +72,7 @@ class GroupDetailSerializer(GroupSerializer):
         fields = (
             'name', 'id', 'description', 'channels',
             'created_at', 'updated_at', 'user', 'organization',
-            'share_all', 'share_org',
+            'share_all', 'share_org', 'channels_count',
             'auto_include_channels', 'auto_exclude_channels'
         )
         read_only_fields = ('id', 'user')
