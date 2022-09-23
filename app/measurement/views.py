@@ -268,7 +268,8 @@ class AggregatedViewSet(IsAuthenticated, viewsets.ViewSet):
             except KeyError:
                 '''list of nslcs'''
                 channels = [
-                    str(x).lower() for x in params['nslc'].strip(',').split(',')
+                    str(x).lower() for x in params['nslc']
+                    .strip(',').split(',')
                 ]
                 measurements = measurements.filter(channel__nslc__in=channels)
 
