@@ -260,9 +260,17 @@ class AggregatedViewSet(IsAuthenticated, viewsets.ViewSet):
             measurements = measurements.filter(channel__in=channels)
         except KeyError:
             '''list of channel groups'''
-            groups = [int(x) for x in params['group'].strip(',').split(',')]
-            measurements = measurements.filter(
-                channel__group__in=groups)
+            try:
+                groups = [int(x)
+                          for x in params['group'].strip(',').split(',')]
+                measurements = measurements.filter(
+                    channel__group__in=groups)
+            except KeyError:
+                '''list of nslcs'''
+                channels = [
+                    str(x).lower() for x in params['nslc'].strip(',').split(',')
+                ]
+                measurements = measurements.filter(channel__nslc__in=channels)
 
         metrics = [int(x) for x in params['metric'].split(',')]
         measurements = measurements.filter(metric__in=metrics)
