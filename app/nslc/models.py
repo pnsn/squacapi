@@ -191,7 +191,7 @@ class Group(models.Model):
 def channels_changed(instance, action, **kwargs):
 
     # after m2m change is saved
-    if action == 'post_add':
+    if action in ['post_add', 'post_clear', 'post_remove']:
         p = Group.objects.get(id=instance.id)
         # update the channels
         p.update_channels()
