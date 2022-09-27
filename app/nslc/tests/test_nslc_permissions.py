@@ -60,15 +60,20 @@ class NslcPermissionTests(TestCase):
         self.me_viewer = sample_user('me_viewer@pnsn.org')
         self.me_reporter = sample_user('me_reporter@pnsn.org')
         self.not_me = sample_user('not_me@pnsn.org')
+        self.staff_admin = sample_user('admin@pnsn.org')
         self.me_reporter_client = APIClient()
         self.me_viewer_client = APIClient()
+        self.staff_admin_client = APIClient()
 
         self.me_reporter_group = create_group('reporter', REPORTER_PERMISSIONS)
         self.me_viewer_group = create_group('viewer', VIEWER_PERMISSIONS)
         self.me_reporter.groups.add(self.me_reporter_group)
         self.me_viewer.groups.add(self.me_viewer_group)
+        self.staff_admin.groups.add(self.me_reporter_group)
+        self.staff_admin.is_staff = True
         self.me_reporter_client.force_authenticate(user=self.me_reporter)
         self.me_viewer_client.force_authenticate(user=self.me_viewer)
+        self.staff_admin_client.force_authenticate(user=self.staff_admin)
 
         self.net = Network.objects.create(
             code="UW", name="University of Washington", user=self.me_reporter)
@@ -89,6 +94,7 @@ class NslcPermissionTests(TestCase):
         # add users to orgs
         self.me_reporter.organization = self.my_org
         self.me_viewer.organization = self.my_org
+        self.staff_admin.organization = self.my_org
 
         self.my_org_group_share_org = Group.objects.create(
             name='Test group',
@@ -167,7 +173,17 @@ class NslcPermissionTests(TestCase):
         self.assertFalse(self.me_viewer.has_perm('nslc.change_group'))
         self.assertFalse(self.me_viewer.has_perm('nslc.delete_group'))
 
+    def test_staff_can_view_all(self):
+        '''admin should be able to view all groups'''
+        url = reverse(
+            'nslc:group-list'
+        )
+        res = self.staff_admin_client.get(url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data), 5)
+
     # # #### groups tests ####
+
     def test_viewer_can_view_my_org_share_org(self):
         ''' a viewer can view own org's share_org resource'''
         url = reverse(

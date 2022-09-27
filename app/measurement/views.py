@@ -27,9 +27,9 @@ def check_measurement_params(params):
         * starttime
         * endtime
     '''
-    if 'channel' not in params and 'group' not in params or \
-            (not all([p in params
-                      for p in ("metric", "starttime", "endtime")])):
+    if 'nslc' not in params and 'channel' not in params and 'group' \
+            not in params or (not all([p in params for p in
+                                       ("metric", "starttime", "endtime")])):
         raise MissingParameterException
 
 
@@ -52,7 +52,7 @@ class MeasurementFilter(filters.FilterSet):
     """filters measurment by metric, channel, starttime,
         and endtime (starttime)"""
     starttime = filters.CharFilter(field_name='starttime', lookup_expr='gte')
-    nslc = CharInFilter(field_name='nslc', lookup_expr='in')
+    nslc = CharInFilter(field_name='channel__nslc', lookup_expr='in')
 
     ''' Note although param is called endtime, it uses starttime, which is
         the the only field with an index
@@ -260,9 +260,18 @@ class AggregatedViewSet(IsAuthenticated, viewsets.ViewSet):
             measurements = measurements.filter(channel__in=channels)
         except KeyError:
             '''list of channel groups'''
-            groups = [int(x) for x in params['group'].strip(',').split(',')]
-            measurements = measurements.filter(
-                channel__group__in=groups)
+            try:
+                groups = [int(x)
+                          for x in params['group'].strip(',').split(',')]
+                measurements = measurements.filter(
+                    channel__group__in=groups)
+            except KeyError:
+                '''list of nslcs'''
+                channels = [
+                    str(x).lower() for x in params['nslc']
+                    .strip(',').split(',')
+                ]
+                measurements = measurements.filter(channel__nslc__in=channels)
 
         metrics = [int(x) for x in params['metric'].split(',')]
         measurements = measurements.filter(metric__in=metrics)

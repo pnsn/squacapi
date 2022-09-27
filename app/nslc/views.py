@@ -1,8 +1,8 @@
+
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.views.decorators.cache import cache_control
 from django.conf import settings
-from django.db.models import Count
 from rest_framework import viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -14,6 +14,7 @@ from squac.mixins import SetUserMixin, DefaultPermissionsMixin, \
 from .models import Network, Channel, Group, MatchingRule
 from nslc.serializers import NetworkSerializer, ChannelSerializer, \
     GroupSerializer, GroupDetailSerializer, MatchingRuleSerializer
+from django.db.models import Count
 
 
 """Filter classes used for view filtering"""
@@ -141,11 +142,11 @@ class GroupViewSet(SharedPermissionsMixin, BaseNslcViewSet):
         return self.serializer_class
 
     def get_queryset(self):
-        queryset = Group.objects.all()
-        queryset = queryset.annotate(
-            channels_count=Count('channels'),
-            auto_include_channels_count=Count('auto_include_channels'),
-            auto_exclude_channels_count=Count('auto_exclude_channels'))
+
+        queryset = Group.objects \
+            .select_related('user') \
+            .annotate(channels_count=Count('channels'))
+
         if self.request.user.is_staff:
             return queryset
         org = self.request.user.organization
@@ -154,6 +155,7 @@ class GroupViewSet(SharedPermissionsMixin, BaseNslcViewSet):
             queryset.filter(user=self.request.user) |\
             queryset.filter(share_all=True) |\
             queryset.filter(organization=org.id, share_org=True)
+
         return queryset
 
     def dispatch(self, request, *args, **kwargs):

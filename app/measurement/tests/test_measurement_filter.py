@@ -66,6 +66,16 @@ class AuthenticatedMeasurementFilterTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data), 1)
 
+    def test_measurement_filter_with_nslc(self):
+        # Test that filter properly finds the measurement that fits params
+        url = reverse('measurement:measurement-list')
+        stime, etime = '2016-02-01T03:00:00Z', '2020-02-02T05:00:00Z'
+        nslc = Channel.objects.get(pk=5).nslc
+        url += f'?metric=3&nslc={nslc}&starttime={stime}&endtime={etime}'
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data), 1)
+
     def test_measurement_filter_with_group(self):
         '''test using group param'''
         url = reverse('measurement:measurement-list')

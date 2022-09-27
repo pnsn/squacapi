@@ -10,18 +10,8 @@ from organization.models import Organization
 # $:./mg.sh "test nslc.tests.test_nslc_api"
 
 class GroupSerializer(serializers.ModelSerializer):
-    # Group Serializer for list view, will not include channels/dashboards
-    # shaw channels_count for all read operations
-    channels_count = serializers.IntegerField(read_only=True)
-    auto_include_channels_count = serializers.IntegerField(read_only=True)
-    auto_exclude_channels_count = serializers.IntegerField(read_only=True)
 
-    # allow write only to channels, but not read (smaller requests)
-    channels = serializers.PrimaryKeyRelatedField(
-        many=True,
-        queryset=Channel.objects.all(),
-        write_only=True
-    )
+    channels_count = serializers.IntegerField(read_only=True)
     auto_include_channels = serializers.PrimaryKeyRelatedField(
         many=True,
         queryset=Channel.objects.all(),
@@ -37,17 +27,13 @@ class GroupSerializer(serializers.ModelSerializer):
         queryset=Organization.objects.all()
     )
 
-    user = serializers.StringRelatedField()
-
     class Meta:
         model = Group
         fields = (
             'name', 'id', 'description',
             'created_at', 'updated_at', 'user', 'organization',
-            'share_all', 'share_org',
-            'channels_count', 'auto_include_channels_count',
-            'auto_exclude_channels_count',
-            'channels', 'auto_include_channels', 'auto_exclude_channels'
+            'share_all', 'share_org', 'channels_count',
+            'auto_include_channels', 'auto_exclude_channels'
         )
         read_only_fields = ('id', 'user')
         ref_name = "NslcGroup"
@@ -84,7 +70,7 @@ class GroupDetailSerializer(GroupSerializer):
         fields = (
             'name', 'id', 'description', 'channels',
             'created_at', 'updated_at', 'user', 'organization',
-            'share_all', 'share_org',
+            'share_all', 'share_org', 'channels_count',
             'auto_include_channels', 'auto_exclude_channels'
         )
         read_only_fields = ('id', 'user')
