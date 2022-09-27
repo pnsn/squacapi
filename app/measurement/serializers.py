@@ -1,8 +1,7 @@
 from rest_framework import serializers
-from .models import (Metric, Measurement, Threshold,
+from .models import (Metric, Measurement,
                      Alert, ArchiveHour, ArchiveDay, ArchiveWeek, Monitor,
                      Trigger, ArchiveMonth)
-from dashboard.models import Widget
 from nslc.models import Channel, Group
 from nslc.serializers import GroupSerializer
 
@@ -32,9 +31,9 @@ class MeasurementSerializer(serializers.ModelSerializer):
         model = Measurement
         fields = (
             'id', 'metric', 'channel', 'value', 'starttime', 'endtime',
-            'created_at', 'user_id'
+            'created_at', 'user'
         )
-        read_only_fields = ('id',)
+        read_only_fields = ('id', 'user')
         list_serializer_class = BulkMeasurementListSerializer
 
     def create(self, validated_data):
@@ -76,44 +75,19 @@ class AggregatedSerializer(serializers.Serializer):
     latest = serializers.FloatField()
 
 
-class MetricSerializer(serializers.HyperlinkedModelSerializer):
-
-    url = serializers.HyperlinkedIdentityField(
-        view_name="measurement:metric-detail")
+class MetricSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Metric
         fields = (
-            'id', 'name', 'code', 'url', 'description', 'unit', 'created_at',
-            'updated_at', 'default_minval', 'default_maxval', 'user_id',
+            'id', 'name', 'code', 'description', 'unit', 'created_at',
+            'updated_at', 'default_minval', 'default_maxval', 'user',
             'reference_url', 'sample_rate'
         )
-        read_only_fields = ('id',)
+        read_only_fields = ('id', 'user')
 
 
-class ThresholdSerializer(serializers.HyperlinkedModelSerializer):
-    url = serializers.HyperlinkedIdentityField(
-        view_name="measurement:threshold-detail")
-
-    metric = serializers.PrimaryKeyRelatedField(
-        queryset=Metric.objects.all())
-
-    widget = serializers.PrimaryKeyRelatedField(
-        queryset=Widget.objects.all()
-    )
-
-    class Meta:
-        model = Threshold
-        fields = (
-            'id', 'url', 'metric', 'widget', 'minval', 'maxval', 'created_at',
-            'updated_at', 'user_id'
-        )
-        read_only_fields = ('id',)
-
-
-class MonitorSerializer(serializers.HyperlinkedModelSerializer):
-    url = serializers.HyperlinkedIdentityField(
-        view_name="measurement:monitor-detail")
+class MonitorSerializer(serializers.ModelSerializer):
 
     channel_group = serializers.PrimaryKeyRelatedField(
         queryset=Group.objects.all()
@@ -126,16 +100,14 @@ class MonitorSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Monitor
         fields = (
-            'id', 'url', 'channel_group', 'metric', 'interval_type',
+            'id', 'channel_group', 'metric', 'interval_type',
             'interval_count', 'stat', 'name', 'created_at', 'updated_at',
-            'user_id'
+            'user'
         )
-        read_only_fields = ('id',)
+        read_only_fields = ('id', 'user')
 
 
-class TriggerSerializer(serializers.HyperlinkedModelSerializer):
-    url = serializers.HyperlinkedIdentityField(
-        view_name="measurement:trigger-detail")
+class TriggerSerializer(serializers.ModelSerializer):
 
     monitor = serializers.PrimaryKeyRelatedField(
         queryset=Monitor.objects.all())
@@ -143,27 +115,24 @@ class TriggerSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Trigger
         fields = (
-            'id', 'url', 'monitor', 'val1', 'val2', 'value_operator',
+            'id', 'monitor', 'val1', 'val2', 'value_operator',
             'num_channels', 'num_channels_operator', 'email_list',
-            'created_at', 'updated_at', 'user_id', 'alert_on_out_of_alarm'
+            'created_at', 'updated_at', 'user', 'alert_on_out_of_alarm'
         )
-        read_only_fields = ('id',)
+        read_only_fields = ('id', 'user')
 
 
-class AlertSerializer(serializers.HyperlinkedModelSerializer):
-    url = serializers.HyperlinkedIdentityField(
-        view_name="measurement:alert-detail")
-
+class AlertSerializer(serializers.ModelSerializer):
     trigger = serializers.PrimaryKeyRelatedField(
         queryset=Trigger.objects.all())
 
     class Meta:
         model = Alert
         fields = (
-            'id', 'url', 'trigger', 'timestamp', 'message', 'in_alarm',
-            'breaching_channels', 'created_at', 'updated_at', 'user_id'
+            'id', 'trigger', 'timestamp', 'message', 'in_alarm',
+            'breaching_channels', 'created_at', 'updated_at', 'user'
         )
-        read_only_fields = ('id',)
+        read_only_fields = ('id', 'user')
 
 
 class ArchiveBaseSerializer(serializers.HyperlinkedModelSerializer):
@@ -216,10 +185,7 @@ class ArchiveMonthSerializer(ArchiveBaseSerializer):
         exclude = ("url",)
 
 
-class MonitorDetailSerializer(serializers.HyperlinkedModelSerializer):
-    url = serializers.HyperlinkedIdentityField(
-        view_name="measurement:monitor-detail")
-
+class MonitorDetailSerializer(serializers.ModelSerializer):
     channel_group = GroupSerializer(read_only=True)
     metric = MetricSerializer(read_only=True)
     triggers = TriggerSerializer(many=True, read_only=True)
@@ -227,23 +193,20 @@ class MonitorDetailSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Monitor
         fields = (
-            'id', 'url', 'channel_group', 'metric', 'interval_type',
+            'id', 'channel_group', 'metric', 'interval_type',
             'interval_count', 'stat', 'name', 'created_at', 'updated_at',
-            'user_id', 'triggers'
+            'user', 'triggers'
         )
-        read_only_fields = ('id',)
+        read_only_fields = ('id', 'user')
 
 
-class AlertDetailSerializer(serializers.HyperlinkedModelSerializer):
-    url = serializers.HyperlinkedIdentityField(
-        view_name="measurement:alert-detail")
-
+class AlertDetailSerializer(serializers.ModelSerializer):
     trigger = TriggerSerializer(read_only=True)
 
     class Meta:
         model = Alert
         fields = (
-            'id', 'url', 'trigger', 'timestamp', 'message', 'in_alarm',
-            'breaching_channels', 'created_at', 'updated_at', 'user_id'
+            'id', 'trigger', 'timestamp', 'message', 'in_alarm',
+            'breaching_channels', 'created_at', 'updated_at', 'user'
         )
-        read_only_fields = ('id',)
+        read_only_fields = ('id', 'user')

@@ -1,3 +1,4 @@
+
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from django.utils.decorators import method_decorator
@@ -11,10 +12,12 @@ from django.db.models.functions import (Coalesce, Abs, Least, Greatest)
 from squac.mixins import (SetUserMixin, DefaultPermissionsMixin,
                           AdminOrOwnerPermissionMixin)
 from .exceptions import MissingParameterException
-from .models import (Metric, Measurement, Threshold,
+from .models import (Metric, Measurement,
                      Alert, ArchiveDay, ArchiveWeek, ArchiveMonth,
                      ArchiveHour, Monitor, Trigger)
 from measurement import serializers
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 
 def check_measurement_params(params):
@@ -24,9 +27,9 @@ def check_measurement_params(params):
         * starttime
         * endtime
     '''
-    if 'channel' not in params and 'group' not in params or \
-            (not all([p in params
-                      for p in ("metric", "starttime", "endtime")])):
+    if 'nslc' not in params and 'channel' not in params and 'group' \
+            not in params or (not all([p in params for p in
+                                       ("metric", "starttime", "endtime")])):
         raise MissingParameterException
 
 
@@ -36,18 +39,20 @@ def check_measurement_params(params):
 class MetricFilter(filters.FilterSet):
     # CharInFilter is custom filter see imports
     name = CharInFilter(lookup_expr='in')
-
-
-class ThresholdFilter(filters.FilterSet):
-    class Meta:
-        model = Threshold
-        fields = ('metric', 'widget')
+    order = filters.OrderingFilter(
+        fields=(('name', 'name'),
+                ('code', 'code'),
+                ('unit', 'unit'),
+                ('default_minval', 'default_minval'),
+                ('default_maxval', 'default_maxval'),
+                ('sample_rate', 'sample_rate')))
 
 
 class MeasurementFilter(filters.FilterSet):
     """filters measurment by metric, channel, starttime,
         and endtime (starttime)"""
     starttime = filters.CharFilter(field_name='starttime', lookup_expr='gte')
+    nslc = CharInFilter(field_name='channel__nslc', lookup_expr='in')
 
     ''' Note although param is called endtime, it uses starttime, which is
         the the only field with an index
@@ -56,6 +61,12 @@ class MeasurementFilter(filters.FilterSet):
     metric = NumberInFilter(field_name='metric')
     channel = NumberInFilter(field_name='channel')
     group = NumberInFilter(field_name='channel__group')
+    order = filters.OrderingFilter(
+        fields=(('starttime', 'starttime'),
+                ('endtime', 'endtime'),
+                ('metric', 'metric'),
+                ('channel__nslc', 'channel')),
+    )
 
 
 class MonitorFilter(filters.FilterSet):
@@ -76,6 +87,13 @@ class AlertFilter(filters.FilterSet):
                                        lookup_expr='gte')
     timestamp_lt = filters.CharFilter(field_name='timestamp',
                                       lookup_expr='lt')
+
+    order = filters.OrderingFilter(
+        fields=(('trigger', 'trigger'),
+                ('trigger__monitor__name', 'monitor'),
+                ('timestamp', 'timestamp'),
+                ('in_alarm', 'in_alarm')),
+    )
 
     class Meta:
         model = Alert
@@ -125,6 +143,12 @@ class MetricViewSet(MeasurementBaseViewSet):
         return super().dispatch(request, *args, **kwargs)
 
 
+@method_decorator(name='create', decorator=swagger_auto_schema(
+    request_body=serializers.MeasurementSerializer(many=True),
+    operation_description="post list of measurements",
+    responses={201: openapi.Response(
+        "created measurements", serializers.MeasurementSerializer(many=True))}
+))
 class MeasurementViewSet(MeasurementBaseViewSet):
     '''end point for using channel filter'''
     serializer_class = serializers.MeasurementSerializer
@@ -146,14 +170,6 @@ class MeasurementViewSet(MeasurementBaseViewSet):
         '''We want to be careful about large queries so require params'''
         check_measurement_params(request.query_params)
         return super().list(self, request, *args, **kwargs)
-
-
-class ThresholdViewSet(MonitorBaseViewSet):
-    serializer_class = serializers.ThresholdSerializer
-    filter_class = ThresholdFilter
-
-    def get_queryset(self):
-        return Threshold.objects.all()
 
 
 class MonitorViewSet(MonitorBaseViewSet):
@@ -239,13 +255,23 @@ class AggregatedViewSet(IsAuthenticated, viewsets.ViewSet):
         measurements = Measurement.objects.all()
         # determine if this is a list of channels or list of channel groups
         try:
-            channels = [int(x) for x in params['channel'].split(',')]
+            channels = [
+                int(x) for x in params['channel'].strip(',').split(',')]
             measurements = measurements.filter(channel__in=channels)
         except KeyError:
             '''list of channel groups'''
-            groups = [int(x) for x in params['group'].split(',')]
-            measurements = measurements.filter(
-                channel__group__in=groups)
+            try:
+                groups = [int(x)
+                          for x in params['group'].strip(',').split(',')]
+                measurements = measurements.filter(
+                    channel__group__in=groups)
+            except KeyError:
+                '''list of nslcs'''
+                channels = [
+                    str(x).lower() for x in params['nslc']
+                    .strip(',').split(',')
+                ]
+                measurements = measurements.filter(channel__nslc__in=channels)
 
         metrics = [int(x) for x in params['metric'].split(',')]
         measurements = measurements.filter(metric__in=metrics)

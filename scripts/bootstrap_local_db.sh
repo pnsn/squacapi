@@ -14,8 +14,8 @@ else
   exit
 fi
 if [ $1 = "staging" ]; then
-    ssh $DEPLOY_USER@$DEPLOY_HOST $DUMP_SCRIPT
-    scp $DEPLOY_USER@$DEPLOY_HOST:$DUMP_DIR/staging-current.sql /tmp/
+    ssh -i $PEM_FILE $DEPLOY_USER@$DEPLOY_HOST $DUMP_SCRIPT
+    scp -i $PEM_FILE $DEPLOY_USER@$DEPLOY_HOST:$DUMP_DIR/staging-current.sql /tmp/
 fi
 docker exec squacapi_db  psql -U postgres  template1 -c "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = 'squac_dev' AND pid <> pg_backend_pid();"
 docker exec squacapi_db  psql -U postgres  template1 -c 'DROP DATABASE squac_dev;'

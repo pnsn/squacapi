@@ -1,65 +1,48 @@
 from rest_framework import serializers
-from .models import Widget, WidgetType, Dashboard, StatType
+from .models import Widget, Dashboard
 from nslc.models import Group
 from measurement.models import Metric
-from measurement.serializers import ThresholdSerializer, MetricSerializer
+from measurement.serializers import MetricSerializer
 from organization.models import Organization
 
 
-class WidgetSerializer(serializers.HyperlinkedModelSerializer):
+class WidgetSerializer(serializers.ModelSerializer):
     '''Post/PUT serializer'''
     dashboard = serializers.PrimaryKeyRelatedField(
         queryset=Dashboard.objects.all()
-    )
-    widgettype = serializers.PrimaryKeyRelatedField(
-        queryset=WidgetType.objects.all()
     )
     metrics = serializers.PrimaryKeyRelatedField(
         many=True,
         queryset=Metric.objects.all()
     )
-    stattype = serializers.PrimaryKeyRelatedField(
-        queryset=StatType.objects.all()
-    )
-    channel_group = serializers.PrimaryKeyRelatedField(
-        queryset=Group.objects.all()
-    )
 
     class Meta:
         model = Widget
         fields = (
-            'id', 'name', 'dashboard', 'widgettype', 'description', 'metrics',
-            'created_at', 'updated_at', 'stattype', 'columns', 'rows',
-            'x_position', 'y_position', 'channel_group', 'user_id',
-            'color_pallet'
+            'id', 'name', 'dashboard', 'metrics',
+            'user', 'layout',
+            'type', 'properties', 'stat', 'thresholds'
         )
-        read_only_fields = ('id',)
+        read_only_fields = ('id', 'user')
 
 
-class DashboardSerializer(serializers.HyperlinkedModelSerializer):
+class DashboardSerializer(serializers.ModelSerializer):
     organization = serializers.PrimaryKeyRelatedField(
         queryset=Organization.objects.all()
+    )
+    channel_group = serializers.PrimaryKeyRelatedField(
+        queryset=Group.objects.all(),
+        required=False
     )
 
     class Meta:
         model = Dashboard
         fields = (
-            'id', 'name', 'description', 'created_at', 'updated_at',
-            'user_id', 'share_all', 'share_org', 'window_seconds', 'starttime',
-            'endtime', 'organization', 'home', 'archive_type'
+            'id', 'name', 'description', 'channel_group',
+            'user', 'share_all', 'share_org', 'organization',
+            'properties',
         )
-        read_only_fields = ('id',)
-
-
-class WidgetTypeSerializer(serializers.HyperlinkedModelSerializer):
-
-    class Meta:
-        model = WidgetType
-        fields = (
-            'id', 'name', 'type', 'description', 'created_at', 'updated_at',
-            'user_id', 'use_aggregate'
-        )
-        read_only_fields = ('id',)
+        read_only_fields = ('id', 'user')
 
 
 class DashboardDetailSerializer(DashboardSerializer):
@@ -67,49 +50,38 @@ class DashboardDetailSerializer(DashboardSerializer):
         many=True,
         queryset=Widget.objects.all()
     )
+
     organization = serializers.PrimaryKeyRelatedField(
         queryset=Organization.objects.all()
+    )
+
+    channel_group = serializers.PrimaryKeyRelatedField(
+        queryset=Group.objects.all(),
+        required=False
     )
 
     class Meta:
         model = Dashboard
         fields = (
-            'id', 'description', 'name', 'widgets', 'created_at',
-            'updated_at', 'user_id', 'share_all', 'share_org', 'starttime',
-            'endtime', 'organization', 'window_seconds', 'home', 'archive_type'
+            'id', 'description', 'name', 'widgets', 'channel_group',
+            'user', 'share_all', 'share_org', 'organization',
+            'properties',
         )
-        read_only_fields = ('id',)
+        read_only_fields = ('id', 'user')
 
 
-class StatTypeSerializer(WidgetSerializer):
-
-    class Meta:
-        model = StatType
-        fields = (
-            'id', 'type', 'name', 'description'
-        )
-        read_only_fields = ('id',)
-
-
-class WidgetDetailSerializer(serializers.HyperlinkedModelSerializer):
+class WidgetDetailSerializer(WidgetSerializer):
     '''Detail and list view'''
     dashboard = serializers.PrimaryKeyRelatedField(
         queryset=Dashboard.objects.all()
     )
-    widgettype = WidgetTypeSerializer(read_only=True)
     metrics = MetricSerializer(many=True, read_only=True)
-    stattype = StatTypeSerializer(read_only=True)
-    thresholds = ThresholdSerializer(many=True, read_only=True)
-    channel_group = serializers.PrimaryKeyRelatedField(
-        queryset=Group.objects.all()
-    )
 
     class Meta:
         model = Widget
         fields = (
-            'id', 'name', 'dashboard', 'description', 'widgettype', 'metrics',
-            'created_at', 'updated_at', 'thresholds', 'columns', 'rows',
-            'x_position', 'y_position', 'stattype', 'channel_group',
-            'user_id', 'color_pallet',
+            'id', 'name', 'dashboard', 'metrics', 'thresholds',
+            'user', 'type', 'stat',
+            'properties', 'layout',
         )
-        read_only_fields = ('id',)
+        read_only_fields = ('id', 'user')

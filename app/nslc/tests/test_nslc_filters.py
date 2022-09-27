@@ -1,4 +1,5 @@
 from django.test import TestCase
+from nslc.models import Group
 
 from rest_framework.test import APIClient
 from rest_framework import status
@@ -43,6 +44,13 @@ class NslcFilterTests(TestCase):
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data), 3)
+
+    def test_channel_nslc_filter(self):
+        url = reverse('nslc:channel-list')
+        url += '?nslc=uw.reed.--.hnn,uw.reed.--.hnz'
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data), 2)
 
     def test_channel_lat_lon_filter(self):
         url_root = reverse('nslc:channel-list')
@@ -123,3 +131,45 @@ class NslcFilterTests(TestCase):
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data), 0)
+
+    def test_widget_dashboard_filter(self):
+        groups = Group.objects.all()
+        for g in groups:
+            url = reverse('nslc:matching-rule-list')
+            url += f'?group={g.id}'
+            res = self.client.get(url)
+            self.assertEqual(res.status_code, status.HTTP_200_OK)
+            group = Group.objects.get(id=g.id)
+            matching_rules = group.matching_rules.all()
+            self.assertEqual(len(matching_rules), len(res.data))
+
+    # def test_get_channels_with_pagination(self):
+    #     url = reverse('nslc:channel-list')
+    #     offset = 0
+    #     limit = 3
+    #     url += f'?offset={offset}&limit={limit}'
+    #     res = self.client.get(url)
+    #     self.assertEqual(res.status_code, status.HTTP_200_OK)
+    #     channel_count = 0
+    #     for d in res.data['results']:
+    #         if d['class_name'] == 'channel':
+    #             channel_count += 1
+    #     self.assertEqual(channel_count, limit)
+
+    def test_channel_ordering(self):
+        url = reverse('nslc:channel-list')
+        res = self.client.get(url + '?order=channel')
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        for d in range(0, len(res.data) - 1):
+            if d > 0:
+                self.assertGreaterEqual(
+                    res.data[d]['code'], res.data[d - 1]['code'])
+
+        res2 = self.client.get(url + '?order=-channel')
+        self.assertEqual(res2.status_code, status.HTTP_200_OK)
+
+        for d in range(0, len(res2.data) - 1):
+            if d > 0:
+                self.assertGreaterEqual(
+                    res2.data[d - 1]['code'], res2.data[d]['code'])

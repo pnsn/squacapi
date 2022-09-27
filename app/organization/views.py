@@ -10,12 +10,29 @@ import secrets
 
 
 class OrganizationUserFilter(filters.FilterSet):
+    order = filters.OrderingFilter(
+        fields=(('firstname', 'firstname'),
+                ('lastname', 'lastname'),
+                ('organization_name', 'organization'),
+                ('email', 'email'),
+                ('last_login', 'last_login'),
+                ('is_active', 'is_active'),
+                ('is_org_admin', 'is_org_admin'),
+                ),
+
+    )
+
     class Meta:
         model = get_user_model()
         fields = ('organization', )
 
 
 class OrganizationFilter(filters.FilterSet):
+    order = filters.OrderingFilter(
+        fields=(('name', 'name'),
+                ('description', 'description')),
+    )
+
     class Meta:
         model = Organization
         fields = ('name',)
@@ -64,8 +81,6 @@ class OrganizationUserViewSet(OrganizationBase):
 
         except AttributeError:
             pass
-        _data['firstname'] = 'firstname'
-        _data['lastname'] = 'lastname'
         # set temp password
         _data['password'] = secrets.token_hex(16)
         try:

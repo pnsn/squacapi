@@ -39,8 +39,6 @@ REPORTER_PERMISSIONS = ['view_metric', 'add_metric', 'change_metric',
                         'delete_trigger',
                         'view_alert', 'add_alert', 'change_alert',
                         'delete_alert',
-                        'view_threshold', 'add_threshold', 'change_threshold',
-                        'delete_threshold'
                         ]
 
 VIEWER_PERMISSIONS = ['view_metric',
@@ -49,7 +47,6 @@ VIEWER_PERMISSIONS = ['view_metric',
                       'view_archiveday',
                       'view_archiveweek',
                       'view_archivemonth',
-                      'view_threshold'
                       ]
 
 
@@ -233,14 +230,6 @@ class MeasurementPermissionTests(TestCase):
             'measurement.change_alert'))
         self.assertTrue(self.reporter.has_perm(
             'measurement.delete_alert'))
-        self.assertTrue(self.reporter.has_perm(
-            'measurement.view_threshold'))
-        self.assertTrue(self.reporter.has_perm(
-            'measurement.add_threshold'))
-        self.assertTrue(self.reporter.has_perm(
-            'measurement.change_threshold'))
-        self.assertTrue(self.reporter.has_perm(
-            'measurement.delete_threshold'))
 
     def test_viewer_has_perms(self):
         '''viewers can view all models'''
@@ -310,14 +299,6 @@ class MeasurementPermissionTests(TestCase):
             'measurement.change_alert'))
         self.assertFalse(self.viewer.has_perm(
             'measurement.delete_alert'))
-        self.assertTrue(self.viewer.has_perm(
-            'measurement.view_threshold'))
-        self.assertFalse(self.viewer.has_perm(
-            'measurement.add_threshold'))
-        self.assertFalse(self.viewer.has_perm(
-            'measurement.change_threshold'))
-        self.assertFalse(self.viewer.has_perm(
-            'measurement.delete_threshold'))
 
     def test_get_list_monitors(self):
         self.assertFalse(self.reporter.is_staff)

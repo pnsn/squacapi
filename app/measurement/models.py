@@ -7,7 +7,6 @@ from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 
 from .validators import validate_email_list
-from dashboard.models import Widget
 from nslc.models import Channel, Group
 
 from datetime import datetime, timedelta
@@ -86,27 +85,6 @@ class Measurement(MeasurementBase):
                 f"Channel: {str(self.channel)} "
                 f"starttime: {format(self.starttime, '%m-%d-%Y %H:%M:%S')} "
                 f"endtime: {format(self.endtime, '%m-%d-%Y %H:%M:%S')} "
-                )
-
-
-class Threshold(MeasurementBase):
-    widget = models.ForeignKey(
-        Widget,
-        on_delete=models.CASCADE,
-        related_name='thresholds')
-
-    metric = models.ForeignKey(
-        Metric,
-        on_delete=models.CASCADE,
-        related_name='thresholds')
-    minval = models.FloatField(blank=True, null=True)
-    maxval = models.FloatField(blank=True, null=True)
-
-    def __str__(self):
-        return (f"Threshold for Widget: {str(self.widget)} "
-                f"Metric: {str(self.metric)}"
-                f"Min {self.minval}"
-                f"Max {self.maxval}"
                 )
 
 

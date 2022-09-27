@@ -30,7 +30,7 @@ except AttributeError:
 
 # add EC2 ip to allow heath checks
 try:
-    EC2_IP = requests.get('http://checkip.amazonaws.com').text
+    EC2_IP = requests.get(os.environ.get('INSTANCE_IP_URL')).text
     ALLOWED_HOSTS.append(EC2_IP)
 except RequestException or MissingSchema:
     pass
@@ -59,7 +59,6 @@ DEBUG_TOOLBAR_CONFIG = {
     ],
     'SHOW_TEMPLATE_CONTEXT': True,
 }
-
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -116,7 +115,9 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication'
-    )
+    ),
+    # 'DEFAULT_PAGINATION_CLASS': 'squac.pagination.OptionalPagination',
+    # 'PAGE_SIZE': 100
 }
 
 SWAGGER_SETTINGS = {
@@ -274,12 +275,8 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
-        'verbose': {
-            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
-            'style': '{',
-        },
         'simple': {
-            'format': '{levelname} {message}',
+            'format': '{levelname} {asctime}: {lineno} {message}',
             'style': '{',
         },
     },
@@ -296,44 +293,42 @@ LOGGING = {
             'level': 'INFO',
             'filters': ['require_debug_true'],
             'class': 'logging.StreamHandler',
-            'formatter': 'simple'
+            'formatter': 'simple',
+        },
+        'console_on_not_debug': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+        'django.server': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
         },
         'mail_admins': {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
         },
-    },
-
-    'root': {
-        'handlers': ['console'],
-        'level': 'WARNING',
+        'null': {  # this
+            'level': 'DEBUG',
+            'class': 'logging.NullHandler',
+        },
     },
     'loggers': {
         'django': {
-            'handlers': ['console'],
-            'propagate': False,
-            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+            'handlers': ['console', 'mail_admins', 'console_on_not_debug'],
+            'level': "INFO"
         },
-        'django.request': {
-            'handlers': ['mail_admins', 'console'],
-            'level': 'ERROR',
-            'propagate': False,
-        },
-        'django.security': {
-            'handlers': ['mail_admins', 'console'],
-            'level': 'ERROR',
+        'django.security.DisallowedHost': {  # and this
+            'handlers': ['console', 'console_on_not_debug'],
             'propagate': False,
         },
         'django.server': {
-            'handlers': ['console'],
-            'level': 'WARNING',
+            'handlers': ['django.server'],
+            'level': 'INFO',
             'propagate': False,
         },
-        'django.db.backends': {
-            'handlers': ['console'],
-            'level': 'ERROR',
-            'propagate': False,
-        }
     }
 }
