@@ -45,24 +45,25 @@ class ChannelFilter(filters.FilterSet):
                                     lookup_expr='iregex')
     channel = CharInFilter(field_name='code', lookup_expr='in')
     chan_search = filters.CharFilter(field_name='code', lookup_expr='iregex')
-    station = CharInFilter(field_name='station_code', lookup_expr='in')
-    sta_search = filters.CharFilter(field_name='station_code',
+    station = CharInFilter(field_name='station', lookup_expr='in')
+    sta_search = filters.CharFilter(field_name='station',
                                     lookup_expr='iregex')
-    location = filters.CharFilter(field_name='loc')
-    loc_search = filters.CharFilter(field_name='loc', lookup_expr='iregex')
+    location = filters.CharFilter(field_name='location')
+    loc_search = filters.CharFilter(
+        field_name='location', lookup_expr='iregex')
     startafter = filters.CharFilter(field_name='starttime', lookup_expr='gte')
     startbefore = filters.CharFilter(field_name='starttime', lookup_expr='lte')
     endafter = filters.CharFilter(field_name='endtime', lookup_expr='gte')
     endbefore = filters.CharFilter(field_name='endtime', lookup_expr='lte')
-    lat_min = filters.NumberFilter(field_name='lat', lookup_expr='gte')
-    lat_max = filters.NumberFilter(field_name='lat', lookup_expr='lte')
-    lon_min = filters.NumberFilter(field_name='lon', lookup_expr='gte')
-    lon_max = filters.NumberFilter(field_name='lon', lookup_expr='lte')
+    lat_min = filters.NumberFilter(field_name='latitude', lookup_expr='gte')
+    lat_max = filters.NumberFilter(field_name='latitude', lookup_expr='lte')
+    lon_min = filters.NumberFilter(field_name='longitude', lookup_expr='gte')
+    lon_max = filters.NumberFilter(field_name='longitude', lookup_expr='lte')
     order = filters.OrderingFilter(
         fields=(('nslc', 'nslc'),
                 ('network__code', 'network'),
-                ('station_code', 'station'),
-                ('loc', 'location'),
+                ('station', 'station'),
+                ('location', 'location'),
                 ('code', 'channel'),
                 ('starttime', 'starttime'),
                 ('endtime', 'endtime')),

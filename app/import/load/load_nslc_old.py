@@ -63,12 +63,12 @@ def main(csv_length=0):
         Channel.objects.get_or_create(
             code=row[2].lower(),
             network=net,
-            station_code=row[1].lower(),
+            station=row[1].lower(),
             user=user,
             defaults={
                 'name': row[2],
                 'sample_rate': float(row[7]),
-                'loc': row[3].lower(),
+                'location': row[3].lower(),
                 'lat': float(row[4]),
                 'lon': float(row[5]),
                 'elev': float(row[6])

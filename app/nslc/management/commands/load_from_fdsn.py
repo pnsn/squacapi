@@ -7,7 +7,7 @@ Command run without any options will give default URL
         &net=AK,AV,AZ,BC,BK,CC,CE,CI,CN,ET,HV,IU,IW,MB,N4,NC,NN,NP,NV,O2,OK,OO,PB,PR,SN,TX,UM,UO,US,UU,UW,WY
         &sta=*
         &cha=EN?,HN?,?H?
-        &loc=*
+        &location=*
         &minlat=12.
         &maxlat=72.
         &minlon=-183.
@@ -23,7 +23,7 @@ $:docker-compose run --rm app sh -c "LOADER_EMAIL=email@pnsn.org \
                     --datacenter='IRISDMC,...'
                     --sta='BEER,...'
                     --cha='HN?,ENN,...'
-                    --loc=*
+                    --location=*
                     --minlat=12.
                     --maxlat=72.
                     --minlon=-183.
@@ -120,7 +120,7 @@ class Command(BaseCommand):
             url += (
                 f"&sta={params['sta']}"
                 f"&cha={params['cha']}"
-                f"&loc={params['loc']}"
+                f"&location={params['loc']}"
                 f"&minlat={params['minlat']}"
                 f"&maxlat={params['maxlat']}"
                 f"&minlon={params['minlon']}"
@@ -129,6 +129,7 @@ class Command(BaseCommand):
         return url
 
     '''Django command to check network and channel tables with FDSN service'''
+
     def handle(self, *args, **options):
         ALLOWED_NETWORKS = [
             "AK", "AV", "AZ", "BC", "BK", "CC", "CE", "CI", "CN", "ET", "HV",
@@ -233,13 +234,13 @@ class Command(BaseCommand):
                         # Update or create the channel using data
                         Channel.objects.update_or_create(
                             network=Network.objects.get(code=net.lower()),
-                            station_code=sta.lower(),
-                            loc='--' if not loc else loc.lower(),
+                            station=sta.lower(),
+                            location='--' if not loc else loc.lower(),
                             code=cha.lower(),
                             defaults={
-                                'lat': float(lat),
-                                'lon': float(lon),
-                                'elev': float(elev),
+                                'latitude': float(lat),
+                                'longitude': float(lon),
+                                'elevation': float(elev),
                                 'depth': float(depth),
                                 'name': stations[sta.lower()],
                                 'azimuth': 0.0 if not azimuth else float(

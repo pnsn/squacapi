@@ -98,13 +98,13 @@ class MeasurementPermissionTests(TestCase):
         self.chan = Channel.objects.create(
             code='EHZ',
             name="EHZ",
-            station_code='RCM',
+            station='RCM',
             station_name='Camp Muir',
-            loc="--",
+            location="--",
             network=self.net,
-            lat=45,
-            lon=-122,
-            elev=0,
+            latitude=45,
+            longitude=-122,
+            elevation=0,
             user=self.reporter,
             starttime=datetime(1970, 1, 1, tzinfo=pytz.UTC),
             endtime=datetime(2599, 12, 31, tzinfo=pytz.UTC)

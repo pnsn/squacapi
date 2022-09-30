@@ -44,14 +44,12 @@ class ChannelSerializer(serializers.ModelSerializer):
     network = serializers.PrimaryKeyRelatedField(
         queryset=Network.objects.all()
     )
-    location = serializers.CharField(source='loc')
-    station = serializers.CharField(source='station_code')
 
     class Meta:
         model = Channel
         fields = ('id', 'code', 'station',
-                  'network', 'location', 'lat',
-                  'lon', 'nslc')
+                  'network', 'location', 'latitude',
+                  'longitude', 'nslc')
         read_only_fields = ('id', 'nslc', 'user')
 
 
@@ -60,9 +58,9 @@ class ChannelDetailSerializer(ChannelSerializer):
         model = Channel
         fields = ('id', 'class_name', 'code', 'name', 'station',
                   'station_name', 'description',
-                  'sample_rate', 'network', 'location', 'lat',
-                  'lon', 'elev', 'azimuth', 'dip', 'created_at', 'updated_at',
-                  'user', 'starttime', 'endtime', 'nslc')
+                  'sample_rate', 'network', 'location', 'latitude',
+                  'longitude', 'elevation', 'azimuth', 'dip', 'created_at',
+                  'updated_at', 'user', 'starttime', 'endtime', 'nslc')
         read_only_fields = ('id', 'nslc', 'user')
 
     @staticmethod

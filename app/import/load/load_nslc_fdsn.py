@@ -135,13 +135,13 @@ def main():
             net = networks[row[0].lower()]
             Channel.objects.get_or_create(
                 network=net,
-                station_code=row[1].lower(),
-                loc='--' if not row[2] else row[2].lower(),
+                station=row[1].lower(),
+                location='--' if not row[2] else row[2].lower(),
                 code=row[3].lower(),
                 defaults={
-                    'lat': float(row[4]),
-                    'lon': float(row[5]),
-                    'elev': float(row[6]),
+                    'latitude': float(row[4]),
+                    'longitude': float(row[5]),
+                    'elevation': float(row[6]),
                     'depth': float(row[7]),
                     'name': stations[row[1].lower()],
                     'azimuth': 0.0 if not row[8] else float(row[8]),

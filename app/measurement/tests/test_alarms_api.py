@@ -38,17 +38,17 @@ class PrivateAlarmAPITests(TestCase):
     # More data to test filtering for alarm calculations
     fixtures = ['alarms.json']
 
-    def getTestChannel(self, station_code):
+    def getTestChannel(self, station):
         return Channel.objects.create(
             code='EHZ',
             name="EHZ",
-            station_code=station_code,
+            station=station,
             station_name='Test Name',
-            loc="--",
+            location="--",
             network=self.net,
-            lat=45,
-            lon=-122,
-            elev=0,
+            latitude=45,
+            longitude=-122,
+            elevation=0,
             user=self.user,
             starttime=datetime(1970, 1, 1, tzinfo=pytz.UTC),
             endtime=datetime(2599, 12, 31, tzinfo=pytz.UTC)

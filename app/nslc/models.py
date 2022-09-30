@@ -48,13 +48,13 @@ class Network(Nslc):
 class Channel(Nslc):
     code = models.CharField(max_length=3)
     name = models.CharField(max_length=255, blank=True)
-    station_code = models.CharField(max_length=5)
+    station = models.CharField(max_length=5)
     station_name = models.CharField(max_length=255, blank=True)
     sample_rate = models.FloatField(null=True, blank=True)
-    loc = models.CharField(max_length=2, default='--')
-    lat = models.FloatField()
-    lon = models.FloatField()
-    elev = models.FloatField()
+    location = models.CharField(max_length=2, default='--')
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+    elevation = models.FloatField()
     depth = models.FloatField(default=0.0)
     azimuth = models.FloatField(default=0.0)
     dip = models.FloatField(default=0.0)
@@ -72,13 +72,13 @@ class Channel(Nslc):
     nslc = models.CharField(max_length=255, null=True)
 
     class Meta:
-        unique_together = (("code", "network", 'station_code', 'loc'),)
+        unique_together = (("code", "network", 'station', 'location'),)
         indexes = [
-            models.Index(fields=['station_code']),
+            models.Index(fields=['station']),
             models.Index(fields=['station_name']),
-            models.Index(fields=['loc']),
-            models.Index(fields=['lat']),
-            models.Index(fields=['lon']),
+            models.Index(fields=['location']),
+            models.Index(fields=['latitude']),
+            models.Index(fields=['longitude']),
             models.Index(fields=['-starttime']),
             models.Index(fields=['-endtime']),
             models.Index(fields=['nslc'])
@@ -86,8 +86,8 @@ class Channel(Nslc):
 
     def __str__(self):
         return str(self.network_id.upper()) + "." + \
-            self.station_code.upper() + "." + \
-            self.loc.upper() + "." + self.code.upper()
+            self.station.upper() + "." + \
+            self.location.upper() + "." + self.code.upper()
 
     def save(self, *args, **kwargs):
         if not self.nslc:
@@ -96,8 +96,8 @@ class Channel(Nslc):
 
     def to_nslc(self):
         return str(self.network_id) + "." + \
-            self.station_code + "." + \
-            self.loc + "." + self.code
+            self.station + "." + \
+            self.location + "." + self.code
 
 
 class Group(models.Model):
@@ -145,8 +145,8 @@ class Group(models.Model):
                 continue
             include_query = include_query | Q(
                 network__code__iregex=matching_rule.network_regex.pattern,
-                station_code__iregex=matching_rule.station_regex.pattern,
-                loc__iregex=matching_rule.location_regex.pattern,
+                station__iregex=matching_rule.station_regex.pattern,
+                location__iregex=matching_rule.location_regex.pattern,
                 code__iregex=matching_rule.channel_regex.pattern
             )
 
@@ -166,8 +166,8 @@ class Group(models.Model):
                 continue
             exclude_query = exclude_query | Q(
                 network__code__iregex=matching_rule.network_regex.pattern,
-                station_code__iregex=matching_rule.station_regex.pattern,
-                loc__iregex=matching_rule.location_regex.pattern,
+                station__iregex=matching_rule.station_regex.pattern,
+                location__iregex=matching_rule.location_regex.pattern,
                 code__iregex=matching_rule.channel_regex.pattern
             )
 

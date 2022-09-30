@@ -78,9 +78,10 @@ class NslcPermissionTests(TestCase):
         self.net = Network.objects.create(
             code="UW", name="University of Washington", user=self.me_reporter)
         self.chan = Channel.objects.create(
-            code='EHZ', name="EHZ", loc="--", network=self.net,
-            station_code='RCM', station_name='Camp Muir',
-            lat=45, lon=-122, elev=100.0, user=self.me_reporter,
+            code='EHZ', name="EHZ", location="--", network=self.net,
+            station='RCM', station_name='Camp Muir',
+            latitude=45, longitude=-122, elevation=100.0,
+            user=self.me_reporter,
             starttime=datetime(1970, 1, 1, tzinfo=pytz.UTC),
             endtime=datetime(2599, 12, 31, tzinfo=pytz.UTC))
         # create two orgs min and not mine

@@ -40,9 +40,9 @@ class UnAuthenticatedNslcApiTests(TestCase):
         self.net = Network.objects.create(
             code="UW", name="University of Washington", user=self.user)
         self.chan = Channel.objects.create(
-            code='EHZ', name="EHZ", loc="--", lat=45.0, lon=-122.0,
-            station_code='RCM', station_name='Camp Muir',
-            elev=100.0, network=self.net, user=self.user,
+            code='EHZ', name="EHZ", location="--", latitude=45.0,
+            longitude=-122.0, station='RCM', station_name='Camp Muir',
+            elevation=100.0, network=self.net, user=self.user,
             starttime=datetime(1970, 1, 1, tzinfo=pytz.UTC),
             endtime=datetime(2599, 12, 31, tzinfo=pytz.UTC))
         self.organization = Organization.objects.create(
@@ -94,9 +94,9 @@ class PrivateNslcAPITests(TestCase):
         self.net = Network.objects.create(
             code="UW", name="University of Washington", user=self.user)
         self.chan = Channel.objects.create(
-            code='EHZ', name="EHZ", loc="--", network=self.net,
-            station_code='RCM', station_name='Camp Muir',
-            lat=45, lon=-122, elev=100.0, user=self.user,
+            code='EHZ', name="EHZ", location="--", network=self.net,
+            station='RCM', station_name='Camp Muir',
+            latitude=45, longitude=-122, elevation=100.0, user=self.user,
             starttime=datetime(1970, 1, 1, tzinfo=pytz.UTC),
             endtime=datetime(2599, 12, 31, tzinfo=pytz.UTC))
         self.organization = Organization.objects.create(
@@ -152,9 +152,9 @@ class PrivateNslcAPITests(TestCase):
             'sample_rate': 96.5,
             'location': "--",
             'network': self.net.code,
-            'lat': 45.0,
-            'lon': -122.0,
-            'elev': 190.0
+            'latitude': 45.0,
+            'longitude': -122.0,
+            'elevation': 190.0
         }
         res = self.client.post(url, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
@@ -242,9 +242,10 @@ class PrivateNslcAPITests(TestCase):
         for i in range(5):
             chan_list.append(
                 Channel.objects.create(
-                    code=f"TC{i}", name=f"TC{i}", loc="--", network=self.net,
-                    station_code='RCM', station_name='Camp Muir',
-                    lat=45, lon=-122, elev=100.0, user=self.user
+                    code=f"TC{i}", name=f"TC{i}", location="--",
+                    network=self.net, station='RCM', station_name='Camp Muir',
+                    latitude=45, longitude=-122, elevation=100.0,
+                    user=self.user
                 )
             )
             chan_id_list.append(chan_list[i].id)
@@ -267,9 +268,9 @@ class PrivateNslcAPITests(TestCase):
         for i in range(5):
             new_chan_list.append(
                 Channel.objects.create(
-                    code=f'TC{i+5}', name=f"TC{i+5}", loc="--",
-                    network=self.net, lat=45, lon=-122, elev=100.0,
-                    station_code='RCM', station_name='Camp Muir',
+                    code=f'TC{i+5}', name=f"TC{i+5}", location="--",
+                    network=self.net, latitude=45, longitude=-122,
+                    elevation=100.0, station='RCM', station_name='Camp Muir',
                     user=self.user
                 )
             )
@@ -289,7 +290,7 @@ class PrivateNslcAPITests(TestCase):
 
         # Get channel, modify it
         channels = Channel.objects.all()
-        chan = channels.filter(station_code=station_name.lower(),
+        chan = channels.filter(station=station_name.lower(),
                                code__contains='z')
         self.assertTrue(len(chan) >= 1)
         chan = chan[0]
@@ -349,9 +350,9 @@ class PrivateNslcAPITests(TestCase):
     def test_update_channels_include_list(self):
         '''Test that a group with an include list will auto-update'''
         chan2 = Channel.objects.create(
-            code='EHE', name="EHE", loc="--", lat=45.0, lon=-122.0,
-            station_code='TESTY', station_name='test sta 2',
-            elev=100.0, network=self.net, user=self.user,
+            code='EHE', name="EHE", location="--", latitude=45.0,
+            longitude=-122.0, station='TESTY', station_name='test sta 2',
+            elevation=100.0, network=self.net, user=self.user,
             starttime=datetime(1970, 1, 1, tzinfo=pytz.UTC),
             endtime=datetime(2599, 12, 31, tzinfo=pytz.UTC))
         self.grp.auto_include_channels.add(chan2)
@@ -362,16 +363,16 @@ class PrivateNslcAPITests(TestCase):
         '''Test that a group with an exclude list will auto-update'''
         # Add a channel to the exclude list
         chan_exclude = Channel.objects.filter(
-            station_code__iregex='^REED',
+            station__iregex='^REED',
             code__iregex='..E'
         )
         self.grp.auto_exclude_channels.set(chan_exclude)
         # Also add some random channel that wouldn't be included in the
         # first place
         chan3 = Channel.objects.create(
-            code='EHE', name="EHN", loc="--", lat=45.0, lon=-122.0,
-            station_code='TEST3', station_name='test sta 3',
-            elev=100.0, network=self.net, user=self.user,
+            code='EHE', name="EHN", location="--", latitude=45.0,
+            longitude=-122.0, station='TEST3', station_name='test sta 3',
+            elevation=100.0, network=self.net, user=self.user,
             starttime=datetime(1970, 1, 1, tzinfo=pytz.UTC),
             endtime=datetime(2599, 12, 31, tzinfo=pytz.UTC))
 
