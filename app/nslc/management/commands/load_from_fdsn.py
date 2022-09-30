@@ -7,7 +7,7 @@ Command run without any options will give default URL
         &net=AK,AV,AZ,BC,BK,CC,CE,CI,CN,ET,HV,IU,IW,MB,N4,NC,NN,NP,NV,O2,OK,OO,PB,PR,SN,TX,UM,UO,US,UU,UW,WY
         &sta=*
         &cha=EN?,HN?,?H?
-        &location=*
+        &loc=*
         &minlat=12.
         &maxlat=72.
         &minlon=-183.
@@ -23,7 +23,7 @@ $:docker-compose run --rm app sh -c "LOADER_EMAIL=email@pnsn.org \
                     --datacenter='IRISDMC,...'
                     --sta='BEER,...'
                     --cha='HN?,ENN,...'
-                    --location=*
+                    --loc=*
                     --minlat=12.
                     --maxlat=72.
                     --minlon=-183.
@@ -120,7 +120,7 @@ class Command(BaseCommand):
             url += (
                 f"&sta={params['sta']}"
                 f"&cha={params['cha']}"
-                f"&location={params['loc']}"
+                f"&loc={params['loc']}"
                 f"&minlat={params['minlat']}"
                 f"&maxlat={params['maxlat']}"
                 f"&minlon={params['minlon']}"
