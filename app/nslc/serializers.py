@@ -59,11 +59,22 @@ class ChannelSerializer(serializers.ModelSerializer):
         return queryset
 
 
+class ChannelSimpleSerializer(ChannelSerializer):
+    network = serializers.StringRelatedField()
+
+    class Meta:
+        model = Channel
+        fields = ('id', 'code', 'station_code',
+                  'network', 'loc', 'lat',
+                  'lon', 'nslc')
+        read_only_fields = ('id', 'nslc', 'user')
+
+
 class GroupDetailSerializer(GroupSerializer):
     # Serializer when viewing details of specific group
-    channels = ChannelSerializer(many=True, read_only=True)
-    auto_include_channels = ChannelSerializer(many=True, read_only=True)
-    auto_exclude_channels = ChannelSerializer(many=True, read_only=True)
+    channels = ChannelSimpleSerializer(many=True, read_only=True)
+    auto_include_channels = ChannelSimpleSerializer(many=True, read_only=True)
+    auto_exclude_channels = ChannelSimpleSerializer(many=True, read_only=True)
 
     class Meta:
         model = Group
