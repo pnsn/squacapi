@@ -48,8 +48,8 @@ class Network(Nslc):
 class Channel(Nslc):
     code = models.CharField(max_length=3)
     name = models.CharField(max_length=255, blank=True)
-    station_code = models.CharField(max_length=5)
-    station_name = models.CharField(max_length=255, blank=True)
+    sta = models.CharField(max_length=5)
+    sta_name = models.CharField(max_length=255, blank=True)
     sample_rate = models.FloatField(null=True, blank=True)
     loc = models.CharField(max_length=2, default='--')
     lat = models.FloatField()
@@ -67,15 +67,15 @@ class Channel(Nslc):
         default=datetime(1970, 1, 1, tzinfo=pytz.UTC))
     endtime = models.DateTimeField(
         default=datetime(2599, 12, 31, tzinfo=pytz.UTC))
-    network = models.ForeignKey(Network, on_delete=models.CASCADE,
-                                related_name='channels')
+    net = models.ForeignKey(Network, on_delete=models.CASCADE,
+                            related_name='channels')
     nslc = models.CharField(max_length=255, null=True)
 
     class Meta:
-        unique_together = (("code", "network", 'station_code', 'loc'),)
+        unique_together = (("code", "net", 'sta', 'loc'),)
         indexes = [
-            models.Index(fields=['station_code']),
-            models.Index(fields=['station_name']),
+            models.Index(fields=['sta']),
+            models.Index(fields=['sta_name']),
             models.Index(fields=['loc']),
             models.Index(fields=['lat']),
             models.Index(fields=['lon']),
@@ -85,8 +85,8 @@ class Channel(Nslc):
         ]
 
     def __str__(self):
-        return str(self.network_id.upper()) + "." + \
-            self.station_code.upper() + "." + \
+        return str(self.net_id.upper()) + "." + \
+            self.sta.upper() + "." + \
             self.loc.upper() + "." + self.code.upper()
 
     def save(self, *args, **kwargs):
@@ -95,8 +95,8 @@ class Channel(Nslc):
         super().save(*args, **kwargs)
 
     def to_nslc(self):
-        return str(self.network_id) + "." + \
-            self.station_code + "." + \
+        return str(self.net_id) + "." + \
+            self.sta + "." + \
             self.loc + "." + self.code
 
 
