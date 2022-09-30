@@ -12,7 +12,7 @@ from squac.filters import CharInFilter
 from squac.mixins import SetUserMixin, DefaultPermissionsMixin, \
     SharedPermissionsMixin
 from .models import Network, Channel, Group, MatchingRule
-from nslc.serializers import NetworkSerializer, ChannelSerializer, \
+from nslc.serializers import NetworkSerializer, ChannelDetailSerializer, \
     GroupSerializer, GroupDetailSerializer, MatchingRuleSerializer
 from django.db.models import Count
 
@@ -121,7 +121,7 @@ class NetworkViewSet(BaseNslcViewSet):
 
 class ChannelViewSet(BaseNslcViewSet):
     filter_class = ChannelFilter
-    serializer_class = ChannelSerializer
+    serializer_class = ChannelDetailSerializer
 
     def get_queryset(self):
         q = Channel.objects.all()

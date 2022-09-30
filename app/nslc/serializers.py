@@ -40,15 +40,27 @@ class GroupSerializer(serializers.ModelSerializer):
 
 
 class ChannelSerializer(serializers.ModelSerializer):
+    # serializer used for group view
     network = serializers.PrimaryKeyRelatedField(
         queryset=Network.objects.all()
     )
+    location = serializers.CharField(source='loc')
+    station = serializers.CharField(source='station_code')
 
     class Meta:
         model = Channel
-        fields = ('id', 'class_name', 'code', 'name', 'station_code',
+        fields = ('id', 'code', 'station',
+                  'network', 'location', 'lat',
+                  'lon', 'nslc')
+        read_only_fields = ('id', 'nslc', 'user')
+
+
+class ChannelDetailSerializer(ChannelSerializer):
+    class Meta:
+        model = Channel
+        fields = ('id', 'class_name', 'code', 'name', 'station',
                   'station_name', 'description',
-                  'sample_rate', 'network', 'loc', 'lat',
+                  'sample_rate', 'network', 'location', 'lat',
                   'lon', 'elev', 'azimuth', 'dip', 'created_at', 'updated_at',
                   'user', 'starttime', 'endtime', 'nslc')
         read_only_fields = ('id', 'nslc', 'user')
@@ -59,22 +71,11 @@ class ChannelSerializer(serializers.ModelSerializer):
         return queryset
 
 
-class ChannelSimpleSerializer(ChannelSerializer):
-    network = serializers.StringRelatedField()
-
-    class Meta:
-        model = Channel
-        fields = ('id', 'code', 'station_code',
-                  'network', 'loc', 'lat',
-                  'lon', 'nslc')
-        read_only_fields = ('id', 'nslc', 'user')
-
-
 class GroupDetailSerializer(GroupSerializer):
     # Serializer when viewing details of specific group
-    channels = ChannelSimpleSerializer(many=True, read_only=True)
-    auto_include_channels = ChannelSimpleSerializer(many=True, read_only=True)
-    auto_exclude_channels = ChannelSimpleSerializer(many=True, read_only=True)
+    channels = ChannelSerializer(many=True, read_only=True)
+    auto_include_channels = ChannelSerializer(many=True, read_only=True)
+    auto_exclude_channels = ChannelSerializer(many=True, read_only=True)
 
     class Meta:
         model = Group

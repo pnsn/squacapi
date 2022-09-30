@@ -147,10 +147,10 @@ class PrivateNslcAPITests(TestCase):
         payload = {
             'code': 'TC',
             'name': 'Test channel',
-            'station_code': 'RCS',
+            'station': 'RCS',
             'station_name': 'Schurman',
             'sample_rate': 96.5,
-            'loc': "--",
+            'location': "--",
             'network': self.net.code,
             'lat': 45.0,
             'lon': -122.0,
