@@ -50,8 +50,8 @@ class UnauthenticatedMeasurementApiTests(TestCase):
         self.chan = Channel.objects.create(
             code='EHZ',
             name="EHZ",
-            station_code='RCM',
-            station_name='Camp Muir',
+            sta='RCM',
+            sta_name='Camp Muir',
             loc="--",
             network=self.net,
             lat=45,
@@ -131,8 +131,8 @@ class PrivateMeasurementAPITests(TestCase):
         self.chan = Channel.objects.create(
             code='EHZ',
             name="EHZ",
-            station_code='RCM',
-            station_name='Camp Muir',
+            sta='RCM',
+            sta_name='Camp Muir',
             loc="--",
             network=self.net,
             lat=45,

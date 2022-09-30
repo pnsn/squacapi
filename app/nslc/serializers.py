@@ -40,15 +40,15 @@ class GroupSerializer(serializers.ModelSerializer):
 
 
 class ChannelSerializer(serializers.ModelSerializer):
-    network = serializers.PrimaryKeyRelatedField(
+    net = serializers.PrimaryKeyRelatedField(
         queryset=Network.objects.all()
     )
 
     class Meta:
         model = Channel
-        fields = ('id', 'class_name', 'code', 'name', 'station_code',
-                  'station_name', 'description',
-                  'sample_rate', 'network', 'loc', 'lat',
+        fields = ('id', 'class_name', 'code', 'name', 'sta',
+                  'sta_name', 'description',
+                  'sample_rate', 'net', 'loc', 'lat',
                   'lon', 'elev', 'azimuth', 'dip', 'created_at', 'updated_at',
                   'user', 'starttime', 'endtime', 'nslc')
         read_only_fields = ('id', 'nslc', 'user')
@@ -64,8 +64,8 @@ class ChannelSimpleSerializer(ChannelSerializer):
 
     class Meta:
         model = Channel
-        fields = ('id', 'code', 'station_code',
-                  'network', 'loc', 'lat',
+        fields = ('id', 'code', 'sta',
+                  'net', 'loc', 'lat',
                   'lon', 'nslc')
         read_only_fields = ('id', 'nslc', 'user')
 

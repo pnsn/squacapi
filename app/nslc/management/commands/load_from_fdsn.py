@@ -129,6 +129,7 @@ class Command(BaseCommand):
         return url
 
     '''Django command to check network and channel tables with FDSN service'''
+
     def handle(self, *args, **options):
         ALLOWED_NETWORKS = [
             "AK", "AV", "AZ", "BC", "BK", "CC", "CE", "CI", "CN", "ET", "HV",
@@ -233,7 +234,7 @@ class Command(BaseCommand):
                         # Update or create the channel using data
                         Channel.objects.update_or_create(
                             network=Network.objects.get(code=net.lower()),
-                            station_code=sta.lower(),
+                            sta=sta.lower(),
                             loc='--' if not loc else loc.lower(),
                             code=cha.lower(),
                             defaults={

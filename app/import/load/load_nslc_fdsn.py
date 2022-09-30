@@ -135,7 +135,7 @@ def main():
             net = networks[row[0].lower()]
             Channel.objects.get_or_create(
                 network=net,
-                station_code=row[1].lower(),
+                sta=row[1].lower(),
                 loc='--' if not row[2] else row[2].lower(),
                 code=row[3].lower(),
                 defaults={

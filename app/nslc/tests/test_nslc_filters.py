@@ -122,7 +122,7 @@ class NslcFilterTests(TestCase):
         for d in res.data:
             if d['class_name'] == 'channel':
                 channel_count += 1
-                self.assertEqual(d['station_code'][0], 'd')
+                self.assertEqual(d['sta'][0], 'd')
         self.assertEqual(channel_count, 3)
 
     def test_bad_channel_request(self):

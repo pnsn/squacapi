@@ -41,7 +41,7 @@ class UnAuthenticatedNslcApiTests(TestCase):
             code="UW", name="University of Washington", user=self.user)
         self.chan = Channel.objects.create(
             code='EHZ', name="EHZ", loc="--", lat=45.0, lon=-122.0,
-            station_code='RCM', station_name='Camp Muir',
+            sta='RCM', sta_name='Camp Muir',
             elev=100.0, network=self.net, user=self.user,
             starttime=datetime(1970, 1, 1, tzinfo=pytz.UTC),
             endtime=datetime(2599, 12, 31, tzinfo=pytz.UTC))
@@ -95,7 +95,7 @@ class PrivateNslcAPITests(TestCase):
             code="UW", name="University of Washington", user=self.user)
         self.chan = Channel.objects.create(
             code='EHZ', name="EHZ", loc="--", network=self.net,
-            station_code='RCM', station_name='Camp Muir',
+            sta='RCM', sta_name='Camp Muir',
             lat=45, lon=-122, elev=100.0, user=self.user,
             starttime=datetime(1970, 1, 1, tzinfo=pytz.UTC),
             endtime=datetime(2599, 12, 31, tzinfo=pytz.UTC))
@@ -147,8 +147,8 @@ class PrivateNslcAPITests(TestCase):
         payload = {
             'code': 'TC',
             'name': 'Test channel',
-            'station_code': 'RCS',
-            'station_name': 'Schurman',
+            'sta': 'RCS',
+            'sta_name': 'Schurman',
             'sample_rate': 96.5,
             'loc': "--",
             'network': self.net.code,
@@ -243,7 +243,7 @@ class PrivateNslcAPITests(TestCase):
             chan_list.append(
                 Channel.objects.create(
                     code=f"TC{i}", name=f"TC{i}", loc="--", network=self.net,
-                    station_code='RCM', station_name='Camp Muir',
+                    sta='RCM', sta_name='Camp Muir',
                     lat=45, lon=-122, elev=100.0, user=self.user
                 )
             )
@@ -269,7 +269,7 @@ class PrivateNslcAPITests(TestCase):
                 Channel.objects.create(
                     code=f'TC{i+5}', name=f"TC{i+5}", loc="--",
                     network=self.net, lat=45, lon=-122, elev=100.0,
-                    station_code='RCM', station_name='Camp Muir',
+                    sta='RCM', sta_name='Camp Muir',
                     user=self.user
                 )
             )
@@ -283,13 +283,13 @@ class PrivateNslcAPITests(TestCase):
     def test_load_from_fdsn(self):
         '''Test that load script will update fields that have changed'''
         # Load new station
-        station_name = 'BST23'
+        sta_name = 'BST23'
         os.environ['LOADER_EMAIL'] = 'contributor@pnsn.org'
-        call_command('load_from_fdsn', sta=station_name)
+        call_command('load_from_fdsn', sta=sta_name)
 
         # Get channel, modify it
         channels = Channel.objects.all()
-        chan = channels.filter(station_code=station_name.lower(),
+        chan = channels.filter(sta=sta_name.lower(),
                                code__contains='z')
         self.assertTrue(len(chan) >= 1)
         chan = chan[0]
@@ -303,7 +303,7 @@ class PrivateNslcAPITests(TestCase):
 
         # Load again, verify it has been clobbered without adding additional
         # channels
-        call_command('load_from_fdsn', sta=station_name)
+        call_command('load_from_fdsn', sta=sta_name)
         chan3 = Channel.objects.get(id=chan.id)
         self.assertEqual(chan3.depth, original_depth)
         self.assertEqual(len(Channel.objects.all()), len(channels))
@@ -350,7 +350,7 @@ class PrivateNslcAPITests(TestCase):
         '''Test that a group with an include list will auto-update'''
         chan2 = Channel.objects.create(
             code='EHE', name="EHE", loc="--", lat=45.0, lon=-122.0,
-            station_code='TESTY', station_name='test sta 2',
+            sta='TESTY', sta_name='test sta 2',
             elev=100.0, network=self.net, user=self.user,
             starttime=datetime(1970, 1, 1, tzinfo=pytz.UTC),
             endtime=datetime(2599, 12, 31, tzinfo=pytz.UTC))
@@ -362,7 +362,7 @@ class PrivateNslcAPITests(TestCase):
         '''Test that a group with an exclude list will auto-update'''
         # Add a channel to the exclude list
         chan_exclude = Channel.objects.filter(
-            station_code__iregex='^REED',
+            sta__iregex='^REED',
             code__iregex='..E'
         )
         self.grp.auto_exclude_channels.set(chan_exclude)
@@ -370,7 +370,7 @@ class PrivateNslcAPITests(TestCase):
         # first place
         chan3 = Channel.objects.create(
             code='EHE', name="EHN", loc="--", lat=45.0, lon=-122.0,
-            station_code='TEST3', station_name='test sta 3',
+            sta='TEST3', sta_name='test sta 3',
             elev=100.0, network=self.net, user=self.user,
             starttime=datetime(1970, 1, 1, tzinfo=pytz.UTC),
             endtime=datetime(2599, 12, 31, tzinfo=pytz.UTC))

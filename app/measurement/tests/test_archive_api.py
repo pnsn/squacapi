@@ -47,8 +47,8 @@ class UnauthenticatedArchiveApiTests(TestCase):
         chan = Channel.objects.create(
             code='EHZ',
             name="EHZ",
-            station_code='RCM',
-            station_name='Camp Muir',
+            sta='RCM',
+            sta_name='Camp Muir',
             loc="--",
             network=net,
             lat=45,
@@ -119,8 +119,8 @@ class ArchiveApiTests(TestCase):
         self.chan1 = Channel.objects.create(
             code='EHZ',
             name="EHZ",
-            station_code='RCM',
-            station_name='Camp Muir',
+            sta='RCM',
+            sta_name='Camp Muir',
             loc="--",
             network=self.net,
             lat=45,
@@ -134,8 +134,8 @@ class ArchiveApiTests(TestCase):
         self.chan2 = Channel.objects.create(
             code='EHZ',
             name="EHZ",
-            station_code='RCS',
-            station_name='Camp Schurman',
+            sta='RCS',
+            sta_name='Camp Schurman',
             loc="--",
             network=self.net,
             lat=45,

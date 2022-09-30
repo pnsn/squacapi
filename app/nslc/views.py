@@ -45,8 +45,8 @@ class ChannelFilter(filters.FilterSet):
                                     lookup_expr='iregex')
     channel = CharInFilter(field_name='code', lookup_expr='in')
     chan_search = filters.CharFilter(field_name='code', lookup_expr='iregex')
-    station = CharInFilter(field_name='station_code', lookup_expr='in')
-    sta_search = filters.CharFilter(field_name='station_code',
+    station = CharInFilter(field_name='sta', lookup_expr='in')
+    sta_search = filters.CharFilter(field_name='sta',
                                     lookup_expr='iregex')
     location = filters.CharFilter(field_name='loc')
     loc_search = filters.CharFilter(field_name='loc', lookup_expr='iregex')
@@ -61,7 +61,7 @@ class ChannelFilter(filters.FilterSet):
     order = filters.OrderingFilter(
         fields=(('nslc', 'nslc'),
                 ('network__code', 'network'),
-                ('station_code', 'station'),
+                ('sta', 'station'),
                 ('loc', 'location'),
                 ('code', 'channel'),
                 ('starttime', 'starttime'),
