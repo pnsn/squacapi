@@ -111,7 +111,7 @@ net,sta,seedchan,location,lat,lon,elev,samplerate,staname
 "UW","UMPQ","ENZ","","43.2909","-123.3319","162",,"Umpqua Community College, OR, DOGAMI SMO"
 "UW","UMPQ","EHZ","","43.2909","-123.3319","162",,"Umpqua Community College, OR, DOGAMI SMO"
 "UW","LO2","EHZ","","46.7506","-121.8096","853",,"Longmire short period"
-"UW","LOC","EHZ","","46.71686","-119.43197","210",,"Locke Island previous ISC code: LOCW"
+"UW","location","EHZ","","46.71686","-119.43197","210",,"Locke Island previous ISC code: LOCW"
 "UW","WRD","EHZ","","46.96986","-119.14596","375",,"Warden"
 "UW","WPO","EHZ","","45.57283","-122.790527","334",,"West Portland, OR"
 "UW","QAMI","HNN","01","45.52561","-122.97613","57",,"Birchwood Dr. Hillsboro, OR"

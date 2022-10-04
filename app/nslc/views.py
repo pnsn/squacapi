@@ -12,7 +12,7 @@ from squac.filters import CharInFilter
 from squac.mixins import SetUserMixin, DefaultPermissionsMixin, \
     SharedPermissionsMixin
 from .models import Network, Channel, Group, MatchingRule
-from nslc.serializers import NetworkSerializer, ChannelSerializer, \
+from nslc.serializers import NetworkSerializer, ChannelDetailSerializer, \
     GroupSerializer, GroupDetailSerializer, MatchingRuleSerializer
 from django.db.models import Count
 
@@ -54,10 +54,10 @@ class ChannelFilter(filters.FilterSet):
     startbefore = filters.CharFilter(field_name='starttime', lookup_expr='lte')
     endafter = filters.CharFilter(field_name='endtime', lookup_expr='gte')
     endbefore = filters.CharFilter(field_name='endtime', lookup_expr='lte')
-    lat_min = filters.NumberFilter(field_name='lat', lookup_expr='gte')
-    lat_max = filters.NumberFilter(field_name='lat', lookup_expr='lte')
-    lon_min = filters.NumberFilter(field_name='lon', lookup_expr='gte')
-    lon_max = filters.NumberFilter(field_name='lon', lookup_expr='lte')
+    lat_min = filters.NumberFilter(field_name='latitude', lookup_expr='gte')
+    lat_max = filters.NumberFilter(field_name='latitude', lookup_expr='lte')
+    lon_min = filters.NumberFilter(field_name='longitude', lookup_expr='gte')
+    lon_max = filters.NumberFilter(field_name='longitude', lookup_expr='lte')
     order = filters.OrderingFilter(
         fields=(('nslc', 'nslc'),
                 ('net__code', 'network'),
@@ -121,7 +121,7 @@ class NetworkViewSet(BaseNslcViewSet):
 
 class ChannelViewSet(BaseNslcViewSet):
     filter_class = ChannelFilter
-    serializer_class = ChannelSerializer
+    serializer_class = ChannelDetailSerializer
 
     def get_queryset(self):
         q = Channel.objects.all()

@@ -98,7 +98,7 @@ class NslcFilterTests(TestCase):
         for d in res.data:
             if d['class_name'] == 'channel':
                 channel_count += 1
-                self.assertEqual(d['loc'][0], '-')
+                self.assertEqual(d['location'][0], '-')
         self.assertEqual(channel_count, 8)
 
     def test_net_search_filter(self):

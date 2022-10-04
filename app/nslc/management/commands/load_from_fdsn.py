@@ -238,9 +238,9 @@ class Command(BaseCommand):
                             loc='--' if not loc else loc.lower(),
                             code=cha.lower(),
                             defaults={
-                                'lat': float(lat),
-                                'lon': float(lon),
-                                'elev': float(elev),
+                                'latitude': float(lat),
+                                'longitude': float(lon),
+                                'elevation': float(elev),
                                 'depth': float(depth),
                                 'name': stations[sta.lower()],
                                 'azimuth': 0.0 if not azimuth else float(

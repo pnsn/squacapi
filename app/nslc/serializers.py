@@ -72,9 +72,9 @@ class ChannelSimpleSerializer(ChannelSerializer):
 
 class GroupDetailSerializer(GroupSerializer):
     # Serializer when viewing details of specific group
-    channels = ChannelSimpleSerializer(many=True, read_only=True)
-    auto_include_channels = ChannelSimpleSerializer(many=True, read_only=True)
-    auto_exclude_channels = ChannelSimpleSerializer(many=True, read_only=True)
+    channels = ChannelSerializer(many=True, read_only=True)
+    auto_include_channels = ChannelSerializer(many=True, read_only=True)
+    auto_exclude_channels = ChannelSerializer(many=True, read_only=True)
 
     class Meta:
         model = Group
