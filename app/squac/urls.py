@@ -40,7 +40,6 @@ schema_view = get_schema_view(
 
 
 urlpatterns = [
-    path('', views.home_v1, name='SQUAC Api Root'),
     path('admin/', admin.site.urls),
     path('invite/', include('invite.urls')),
     path('api/user/accounts/', include('django.contrib.auth.urls')),
@@ -63,6 +62,7 @@ urlpatterns = [
     re_path(r'^api/swagger(?P<format>\.json|\.yaml)$',
             schema_view.without_ui(cache_timeout=0),
             name='schema-json'),
+    path('', views.home_v1, name='SQUAC Api Root'),
     # browser routes for password resets
 ]
 
