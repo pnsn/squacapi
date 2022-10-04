@@ -110,7 +110,7 @@ class NslcFilterTests(TestCase):
         for d in res.data:
             if d['class_name'] == 'channel':
                 channel_count += 1
-                self.assertEqual(d['network'][0], 'u')
+                self.assertEqual(d['net'][0], 'u')
         self.assertEqual(channel_count, 10)
 
     def test_sta_search_filter(self):

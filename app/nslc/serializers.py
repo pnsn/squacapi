@@ -55,7 +55,7 @@ class ChannelSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def setup_eager_loading(queryset):
-        queryset = queryset.prefetch_related('network')
+        queryset = queryset.prefetch_related('net')
         return queryset
 
 

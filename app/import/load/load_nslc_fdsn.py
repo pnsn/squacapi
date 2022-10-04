@@ -134,7 +134,7 @@ def main():
         for row in row_list[5:]:
             net = networks[row[0].lower()]
             Channel.objects.get_or_create(
-                network=net,
+                net=net,
                 sta=row[1].lower(),
                 loc='--' if not row[2] else row[2].lower(),
                 code=row[3].lower(),

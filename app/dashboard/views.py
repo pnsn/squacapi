@@ -11,7 +11,7 @@ from django_filters import rest_framework as filters
 ''''
 All query values are case insensitive.
 perform 'in' query for network param
-    /networks?network=uw,uo,cc
+    /networks?net=uw,uo,cc
 perform exact case for station
     /networks?station=rcm
 perform regex SQL 'LIKE' for channel

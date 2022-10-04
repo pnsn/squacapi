@@ -103,7 +103,7 @@ class TestArchiveCreation(TestCase):
             sta='RCM',
             sta_name='Camp Muir',
             loc="--",
-            network=self.net,
+            net=self.net,
             lat=45,
             lon=-122,
             elev=0,

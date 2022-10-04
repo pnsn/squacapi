@@ -45,7 +45,7 @@ class PrivateAlarmAPITests(TestCase):
             sta=sta,
             sta_name='Test Name',
             loc="--",
-            network=self.net,
+            net=self.net,
             lat=45,
             lon=-122,
             elev=0,

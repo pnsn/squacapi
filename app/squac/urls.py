@@ -43,7 +43,6 @@ urlpatterns = [
     path('', views.home_v1, name='Squacapi V1.0'),
     path('admin/', admin.site.urls),
     path('v1.0/invite/', include('invite.urls')),
-    path('user/', include('user.urls', namespace='legacy')),
     path('v1.0/user/accounts/', include('django.contrib.auth.urls')),
     path('v1.0/user/', include('user.urls')),
     path('v1.0/nslc/', include('nslc.urls')),

@@ -233,7 +233,7 @@ class Command(BaseCommand):
                     try:
                         # Update or create the channel using data
                         Channel.objects.update_or_create(
-                            network=Network.objects.get(code=net.lower()),
+                            net=Network.objects.get(code=net.lower()),
                             sta=sta.lower(),
                             loc='--' if not loc else loc.lower(),
                             code=cha.lower(),

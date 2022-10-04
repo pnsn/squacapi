@@ -78,7 +78,7 @@ class NslcPermissionTests(TestCase):
         self.net = Network.objects.create(
             code="UW", name="University of Washington", user=self.me_reporter)
         self.chan = Channel.objects.create(
-            code='EHZ', name="EHZ", loc="--", network=self.net,
+            code='EHZ', name="EHZ", loc="--", net=self.net,
             sta='RCM', sta_name='Camp Muir',
             lat=45, lon=-122, elev=100.0, user=self.me_reporter,
             starttime=datetime(1970, 1, 1, tzinfo=pytz.UTC),

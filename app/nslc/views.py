@@ -40,15 +40,15 @@ class NetworkFilter(filters.FilterSet):
 
 class ChannelFilter(filters.FilterSet):
     nslc = CharInFilter(field_name='nslc', lookup_expr='in')
-    network = CharInFilter(field_name='network__code')
-    net_search = filters.CharFilter(field_name='network__code',
+    net = CharInFilter(field_name='net__code')
+    net_search = filters.CharFilter(field_name='net__code',
                                     lookup_expr='iregex')
-    channel = CharInFilter(field_name='code', lookup_expr='in')
+    chan = CharInFilter(field_name='code', lookup_expr='in')
     chan_search = filters.CharFilter(field_name='code', lookup_expr='iregex')
-    station = CharInFilter(field_name='sta', lookup_expr='in')
+    sta = CharInFilter(field_name='sta', lookup_expr='in')
     sta_search = filters.CharFilter(field_name='sta',
                                     lookup_expr='iregex')
-    location = filters.CharFilter(field_name='loc')
+    loc = filters.CharFilter(field_name='loc')
     loc_search = filters.CharFilter(field_name='loc', lookup_expr='iregex')
     startafter = filters.CharFilter(field_name='starttime', lookup_expr='gte')
     startbefore = filters.CharFilter(field_name='starttime', lookup_expr='lte')
@@ -60,7 +60,7 @@ class ChannelFilter(filters.FilterSet):
     lon_max = filters.NumberFilter(field_name='lon', lookup_expr='lte')
     order = filters.OrderingFilter(
         fields=(('nslc', 'nslc'),
-                ('network__code', 'network'),
+                ('net__code', 'network'),
                 ('sta', 'station'),
                 ('loc', 'location'),
                 ('code', 'channel'),

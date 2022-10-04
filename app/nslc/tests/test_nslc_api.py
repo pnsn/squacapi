@@ -42,7 +42,7 @@ class UnAuthenticatedNslcApiTests(TestCase):
         self.chan = Channel.objects.create(
             code='EHZ', name="EHZ", loc="--", lat=45.0, lon=-122.0,
             sta='RCM', sta_name='Camp Muir',
-            elev=100.0, network=self.net, user=self.user,
+            elev=100.0, net=self.net, user=self.user,
             starttime=datetime(1970, 1, 1, tzinfo=pytz.UTC),
             endtime=datetime(2599, 12, 31, tzinfo=pytz.UTC))
         self.organization = Organization.objects.create(
@@ -94,7 +94,7 @@ class PrivateNslcAPITests(TestCase):
         self.net = Network.objects.create(
             code="UW", name="University of Washington", user=self.user)
         self.chan = Channel.objects.create(
-            code='EHZ', name="EHZ", loc="--", network=self.net,
+            code='EHZ', name="EHZ", loc="--", net=self.net,
             sta='RCM', sta_name='Camp Muir',
             lat=45, lon=-122, elev=100.0, user=self.user,
             starttime=datetime(1970, 1, 1, tzinfo=pytz.UTC),
@@ -151,7 +151,7 @@ class PrivateNslcAPITests(TestCase):
             'sta_name': 'Schurman',
             'sample_rate': 96.5,
             'loc': "--",
-            'network': self.net.code,
+            'net': self.net.code,
             'lat': 45.0,
             'lon': -122.0,
             'elev': 190.0
@@ -161,10 +161,10 @@ class PrivateNslcAPITests(TestCase):
         channel = Channel.objects.get(id=res.data['id'])
         self.assertEqual(channel.nslc, "UW.RCS.--.TC")
         for key in payload.keys():
-            if key != 'network':
+            if key != 'net':
                 self.assertEqual(payload[key], getattr(channel, key))
             else:
-                self.assertEqual(payload[key], channel.network.code)
+                self.assertEqual(payload[key], channel.net.code)
 
     def test_get_group(self):
         '''Test if correct group object is returned'''
@@ -242,7 +242,7 @@ class PrivateNslcAPITests(TestCase):
         for i in range(5):
             chan_list.append(
                 Channel.objects.create(
-                    code=f"TC{i}", name=f"TC{i}", loc="--", network=self.net,
+                    code=f"TC{i}", name=f"TC{i}", loc="--", net=self.net,
                     sta='RCM', sta_name='Camp Muir',
                     lat=45, lon=-122, elev=100.0, user=self.user
                 )
@@ -268,7 +268,7 @@ class PrivateNslcAPITests(TestCase):
             new_chan_list.append(
                 Channel.objects.create(
                     code=f'TC{i+5}', name=f"TC{i+5}", loc="--",
-                    network=self.net, lat=45, lon=-122, elev=100.0,
+                    net=self.net, lat=45, lon=-122, elev=100.0,
                     sta='RCM', sta_name='Camp Muir',
                     user=self.user
                 )
@@ -351,7 +351,7 @@ class PrivateNslcAPITests(TestCase):
         chan2 = Channel.objects.create(
             code='EHE', name="EHE", loc="--", lat=45.0, lon=-122.0,
             sta='TESTY', sta_name='test sta 2',
-            elev=100.0, network=self.net, user=self.user,
+            elev=100.0, net=self.net, user=self.user,
             starttime=datetime(1970, 1, 1, tzinfo=pytz.UTC),
             endtime=datetime(2599, 12, 31, tzinfo=pytz.UTC))
         self.grp.auto_include_channels.add(chan2)
@@ -371,7 +371,7 @@ class PrivateNslcAPITests(TestCase):
         chan3 = Channel.objects.create(
             code='EHE', name="EHN", loc="--", lat=45.0, lon=-122.0,
             sta='TEST3', sta_name='test sta 3',
-            elev=100.0, network=self.net, user=self.user,
+            elev=100.0, net=self.net, user=self.user,
             starttime=datetime(1970, 1, 1, tzinfo=pytz.UTC),
             endtime=datetime(2599, 12, 31, tzinfo=pytz.UTC))
 
