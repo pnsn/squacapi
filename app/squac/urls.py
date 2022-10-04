@@ -40,7 +40,7 @@ schema_view = get_schema_view(
 
 
 urlpatterns = [
-    path('', views.home_v1, name='Squacapi V1.0'),
+    path('', views.home_v1, name='SQUAC Api Root'),
     path('admin/', admin.site.urls),
     path('invite/', include('invite.urls')),
     path('api/user/accounts/', include('django.contrib.auth.urls')),
@@ -53,9 +53,9 @@ urlpatterns = [
     path('api/password_reset/', include('django_rest_passwordreset.urls',
          namespace='password_reset')),
     # invitation url
-    path('api/', views.home_v1, name='Squacapi V1.0'),
+    path('api/', views.home_v1, name='SQUAC Api Root'),
     # default path for thel login /logout
-    path('api-auth/', include('rest_framework.urls',
+    path('auth/', include('rest_framework.urls',
          namespace='rest_framework')),
     path('api/docs/',
          schema_view.with_ui('swagger', cache_timeout=0),
