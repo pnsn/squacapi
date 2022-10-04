@@ -60,7 +60,7 @@ urlpatterns = [
     path('api/docs/',
          schema_view.with_ui('swagger', cache_timeout=0),
          name='schema-swagger-ui'),
-    re_path(r'^api/docs/swagger(?P<format>\.json|\.yaml)$',
+    re_path(r'^api/swagger(?P<format>\.json|\.yaml)$',
             schema_view.without_ui(cache_timeout=0),
             name='schema-json'),
     # browser routes for password resets
