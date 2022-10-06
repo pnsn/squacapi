@@ -19,11 +19,20 @@ from django.conf import settings
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+from drf_yasg.generators import OpenAPISchemaGenerator
 from . import views
 
 '''use drf json response for errors rather than default django html'''
 handler500 = 'rest_framework.exceptions.server_error'
 handler400 = 'rest_framework.exceptions.bad_request'
+
+
+class APISchemeGenerator(OpenAPISchemaGenerator):
+    def get_schema(self, request=None, public=False):
+        schema = super().get_schema(request, public)
+        schema.base_path = 'api'
+        return schema
+
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -35,6 +44,7 @@ schema_view = get_schema_view(
         license=openapi.License(name="BSD License"),
     ),
     public=True,
+    generator_class=APISchemeGenerator,
     permission_classes=(permissions.IsAuthenticated,),
 )
 
@@ -42,6 +52,7 @@ schema_view = get_schema_view(
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('invite/', include('invite.urls')),
+    # browser routes for password resets
     path('api/user/accounts/', include('django.contrib.auth.urls')),
     path('api/user/', include('user.urls')),
     path('api/nslc/', include('nslc.urls')),
@@ -63,7 +74,7 @@ urlpatterns = [
             schema_view.without_ui(cache_timeout=0),
             name='schema-json'),
     path('', views.home_v1, name='SQUAC Api Root'),
-    # browser routes for password resets
+
 ]
 
 if settings.DEBUG:

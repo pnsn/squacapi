@@ -6,14 +6,14 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.settings import api_settings
 
-from user.serializers import UserWriteSerializer, UserMeSerializer, \
+from user.serializers import UserSerializer, UserMeSerializer, \
     AuthTokenSerializer, UserGroupSerializer
 from drf_yasg.utils import swagger_auto_schema
 
 
 class CreateUserView(generics.CreateAPIView):
     '''create a new user in the system'''
-    serializer_class = UserWriteSerializer
+    serializer_class = UserSerializer
     permission_classes = (IsAuthenticated,)
 
 

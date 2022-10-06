@@ -1,11 +1,11 @@
 from rest_framework import serializers
 # from org.models import Org, OrgUser
 from organization.models import Organization
-from user.serializers import UserSimpleSerializer
+from user.serializers import UserSerializer
 
 
 class OrganizationSerializer(serializers.ModelSerializer):
-    users = UserSimpleSerializer(many=True)
+    users = UserSerializer(many=True)
 
     class Meta:
         model = Organization
