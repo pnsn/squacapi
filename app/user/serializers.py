@@ -16,7 +16,7 @@ class UserBaseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = get_user_model()
-        fields = ('email', 'password', 'firstname', 'lastname', 'is_staff',
+        fields = ('email', 'firstname', 'lastname', 'password', 'is_staff',
                   'groups', 'id', 'organization', 'is_org_admin', 'last_login',
                   'is_active')
         read_only_fields = ('is_staff', 'id')
@@ -44,7 +44,7 @@ class UserBaseSerializer(serializers.ModelSerializer):
         return user
 
 
-class UserSerializer(UserBaseSerializer):
+class UserDetailSerializer(UserBaseSerializer):
     '''for nesting in organization_user serializer'''
     organization = serializers.PrimaryKeyRelatedField(
         queryset=Organization.objects.all()
@@ -57,19 +57,20 @@ class UserSerializer(UserBaseSerializer):
     class Meta:
         model = get_user_model()
         fields = ('email', 'firstname', 'lastname', 'id', 'is_active',
-                  'last_login', 'organization', 'is_org_admin', 'groups')
+                  'last_login', 'organization', 'is_org_admin', 'groups',
+                  'password')
+        extra_kwargs = {'password': {'write_only': True, 'min_length': 5}}
 
 
-class UserMeSerializer(UserBaseSerializer):
+class UserSerializer(UserBaseSerializer):
     groups = GroupSerializer(many=True, read_only=True)
 
     class Meta:
         model = get_user_model()
-        fields = ('email', 'password', 'firstname', 'lastname', 'is_staff',
+        fields = ('email', 'firstname', 'lastname', 'is_staff',
                   'id', 'organization', 'is_org_admin', 'groups')
         read_only_fields = ('is_staff', 'id', 'is_org_admin', 'groups',
                             'organization', 'email')
-        extra_kwargs = {'password': {'write_only': True, 'min_length': 5}}
 
 
 class UserGroupSerializer(serializers.Serializer):

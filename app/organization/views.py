@@ -5,7 +5,7 @@ from organization.models import Organization
 from organization.serializers import OrganizationSerializer
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
-from user.serializers import UserSerializer
+from user.serializers import UserDetailSerializer
 import secrets
 
 
@@ -53,7 +53,7 @@ class OrganizationViewSet(OrganizationBase):
 
 class OrganizationUserViewSet(OrganizationBase):
     filter_class = OrganizationUserFilter
-    serializer_class = UserSerializer
+    serializer_class = UserDetailSerializer
 
     def get_queryset(self):
         return get_user_model().objects.all()
