@@ -4,7 +4,7 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.models import Group
 from rest_framework import generics, viewsets
 from squac.permissions import IsAdminOrReadOnly
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.settings import api_settings
 
@@ -26,7 +26,7 @@ class CreateTokenView(ObtainAuthToken):
 class CreateUserView(generics.CreateAPIView):
     '''create a new user in the system'''
     serializer_class = UserSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsAdminUser, )
 
 
 class ManageUserView(generics.RetrieveUpdateAPIView,
@@ -41,7 +41,7 @@ class ManageUserView(generics.RetrieveUpdateAPIView,
 
 
 class GroupViewSet(viewsets.ModelViewSet):
-    """Edit permissions groups, only allow admins"""
+    """Manage user permissions groups"""
     serializer_class = UserGroupSerializer
     permission_classes = (IsAuthenticated, IsAdminOrReadOnly, )
 

@@ -73,6 +73,15 @@ class PrivateUserAPITests(TestCase):
         self.client = APIClient()
         self.client.force_authenticate(user=self.user)
 
+        self.admin_user = get_user_model().objects.create_superuser(
+            email='adminy@pnsn.org',
+            password='admin_pass',
+            organization=self.organization,
+        )
+
+        self.admin_client = APIClient()
+        self.admin_client.force_authenticate(user=self.admin_user)
+
     def test_retrieve_profile_success(self):
         '''test retrieving profile for logged in user'''
         res = self.client.get(ME_URL)
@@ -137,22 +146,23 @@ class PrivateUserAPITests(TestCase):
         res = self.client.post
 
     def test_create_valid_user_success(self):
-        '''test creating user with valid payload is succssful'''
+        '''test creating user with valid payload is succssful if admin'''
 
         payload = {
             'email': 'test3@test.com',
-            'password': 'supersecret',
             'organization': self.organization.id,
             'firstname': 'some',
             'lastname': 'name',
         }
 
         res = self.client.post(CREATE_USER_URL, payload)
+        self.assertFalse(self.user.is_staff)
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
 
-        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        res = self.admin_client.post(CREATE_USER_URL, payload)
         user = get_user_model().objects.get(
             email=payload['email'])
-        self.assertTrue(user.check_password(payload['password']))
+        self.assertEqual(user.firstname, payload['firstname'])
         self.assertNotIn('password', res.data)
 
     def test_user_exists(self):
@@ -164,24 +174,31 @@ class PrivateUserAPITests(TestCase):
         }
         # sample_user(**payload)
 
-        res = self.client.post(CREATE_USER_URL, payload)
+        res = self.admin_client.post(CREATE_USER_URL, payload)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_password_too_short(self):
         '''the password must be more than 5 chars'''
 
+        # create user
         payload = {
-            'email': "test.test.com",
-            'password': 'js',
+            'email': "test@test.com",
+            'firstname': 'name',
+            'lastname': 'name',
             'organization': self.organization.id
         }
-
-        res = self.client.post(CREATE_USER_URL, payload)
-        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        res = self.admin_client.post(CREATE_USER_URL, payload)
         user_exists = get_user_model().objects.filter(
             email=payload['email']
         ).exists()
-        self.assertFalse(user_exists)
+        self.assertTrue(user_exists)
+
+        update_payload = {
+            'password': 'js',
+        }
+
+        res = self.client.patch(ME_URL, update_payload)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_retrieve_groups(self):
         '''test retrieve perm groups'''
