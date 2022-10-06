@@ -1,11 +1,14 @@
+
 from rest_framework import viewsets
-from squac.mixins import SetUserMixin, OrganizationPermissionsMixin
+from squac.mixins import SetUserMixin, OrganizationPermissionsMixin, \
+    EnablePartialUpdateMixin
 from django_filters import rest_framework as filters
 from organization.models import Organization
 from organization.serializers import OrganizationSerializer
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
-from user.serializers import UserDetailSerializer
+from user.serializers import UserSimpleSerializer, UserSerializer, \
+    UserFullSerializer
 import secrets
 
 
@@ -51,12 +54,19 @@ class OrganizationViewSet(OrganizationBase):
         return Organization.objects.all()
 
 
-class OrganizationUserViewSet(OrganizationBase):
+class OrganizationUserViewSet(OrganizationBase, EnablePartialUpdateMixin):
     filter_class = OrganizationUserFilter
-    serializer_class = UserDetailSerializer
+    serializer_class = UserSerializer
 
     def get_queryset(self):
         return get_user_model().objects.all()
+
+    def get_serializer_class(self):
+        if self.action == 'update' or self.action == 'partial_update':
+            return UserFullSerializer
+        if self.action == 'retrieve' or self.action == 'list':
+            return UserSimpleSerializer
+        return self.serializer_class
 
     def create(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
