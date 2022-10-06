@@ -37,7 +37,6 @@ class IsAdminOwnerOrShared(DjangoModelPermissions):
     '''extends DjanoModelPermissions and adds object level perms'''
 
     def has_permission(self, request, view):
-
         '''has permission
             called before has_object_permission
             check for is_staff, then check model permissions
@@ -127,3 +126,12 @@ class IsAdminOrOwner(DjangoModelPermissions):
         if request.user.is_staff or obj.user == request.user:
             return True
         return False
+
+
+class IsAdminOrReadOnly(DjangoModelPermissions):
+    '''Only allow non-staff to read'''
+
+    def has_permission(self, request, view):
+        if request.user.is_staff:
+            return True
+        return request.method == 'GET'
