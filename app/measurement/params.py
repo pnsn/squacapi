@@ -9,27 +9,27 @@ metric_param = openapi.Parameter(
     description="Comma separated list of metric ids",
     type=openapi.TYPE_ARRAY,
     items=openapi.Items(type=openapi.TYPE_INTEGER),
-    collection_foramt='multi')
+    collection_format='multi')
 
 channel_param = openapi.Parameter(
     'channel', openapi.IN_QUERY,
     description="Comma separated list of channel ids",
     type=openapi.TYPE_ARRAY,
     items=openapi.Items(type=openapi.TYPE_INTEGER),
-    collection_foramt='multi')
+    collection_format='multi')
 
 nslc_param = openapi.Parameter(
     'nslc', openapi.IN_QUERY,
     description="Comma separated list of channel nslcs",
     type=openapi.TYPE_ARRAY,
     items=openapi.Items(type=openapi.TYPE_STRING),
-    collection_foramt='multi')
+    collection_format='multi')
 
 group_param = openapi.Parameter(
     'group', openapi.IN_QUERY,
     description="Comma separated list of channel group ids",
     type=openapi.TYPE_ARRAY,
     items=openapi.Items(type=openapi.TYPE_INTEGER),
-    ollection_format='multi')
+    collection_format='multi')
 
 measurement_params = [metric_param, channel_param, nslc_param, group_param, ]
