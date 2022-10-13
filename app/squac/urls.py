@@ -30,7 +30,6 @@ handler400 = 'rest_framework.exceptions.bad_request'
 class APISchemeGenerator(OpenAPISchemaGenerator):
     def get_schema(self, request=None, public=False):
         schema = super().get_schema(request, public)
-        schema.base_path = 'api'
         return schema
 
 

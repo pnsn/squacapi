@@ -14,6 +14,15 @@ class UserGroupSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     '''serialzer for the user object'''
+
+    organization = serializers.PrimaryKeyRelatedField(
+        queryset=Organization.objects.all()
+    )
+    groups = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=Group.objects.all()
+    )
+
     class Meta:
         model = get_user_model()
         fields = ('email', 'firstname', 'lastname', 'is_staff',
@@ -29,21 +38,8 @@ class UserSerializer(serializers.ModelSerializer):
             user.set_permission_groups(groups)
         return user
 
-    def update(self, instance, validate_data):
-        '''update user, set group and password and return'''
-        # the None arg is the default, and for a passwd this is no good
-        password = validate_data.pop('password', None)
-        groups = validate_data.pop('groups', [])
-        user = super().update(instance, validate_data)
-        if(len(groups) > 0):
-            user.set_permission_groups(groups)
-        if password:
-            user.set_password(password)
-            user.save()
-        return user
 
-
-class UserFullSerializer(UserSerializer):
+class UserUpdateSerializer(UserSerializer):
     '''serializer for updating users'''
     organization = serializers.PrimaryKeyRelatedField(
         queryset=Organization.objects.all()
@@ -63,10 +59,25 @@ class UserFullSerializer(UserSerializer):
                                      "required": False},
                         'firstname': {"required": False},
                         'lastname': {"required": False},
+                        'organization': {"required": False},
+                        'groups': {"required": False}
                         }
 
+    def update(self, instance, validate_data):
+        '''update user, set group and password and return'''
+        # the None arg is the default, and for a passwd this is no good
+        password = validate_data.pop('password', None)
+        groups = validate_data.pop('groups', [])
+        user = super().update(instance, validate_data)
+        if(len(groups) > 0):
+            user.set_permission_groups(groups)
+        if password:
+            user.set_password(password)
+            user.save()
+        return user
 
-class UserMeSerializer(UserSerializer):
+
+class UserMeSerializer(UserUpdateSerializer):
     '''serializer for managing authenticated user'''
     groups = UserGroupSerializer(many=True, read_only=True)
 

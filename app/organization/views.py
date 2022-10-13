@@ -8,7 +8,7 @@ from organization.serializers import OrganizationSerializer
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 from user.serializers import UserSimpleSerializer, UserSerializer, \
-    UserFullSerializer
+    UserUpdateSerializer
 import secrets
 
 
@@ -63,7 +63,7 @@ class OrganizationUserViewSet(OrganizationBase, EnablePartialUpdateMixin):
 
     def get_serializer_class(self):
         if self.action == 'update' or self.action == 'partial_update':
-            return UserFullSerializer
+            return UserUpdateSerializer
         if self.action == 'retrieve' or self.action == 'list':
             return UserSimpleSerializer
         return self.serializer_class
