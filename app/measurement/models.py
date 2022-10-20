@@ -218,6 +218,15 @@ class Monitor(MeasurementBase):
         else:
             return self.name
 
+    def save(self, *args, **kwargs):
+        """
+        Reset alerts associated with triggers on this monitor
+        """
+        super().save(*args, **kwargs)  # Call the "real" save() method.
+
+        for trigger in self.triggers.all():
+            trigger.create_alert(False)
+
 
 class Trigger(MeasurementBase):
     '''Describe an individual trigger for a monitor'''
@@ -492,14 +501,19 @@ class Trigger(MeasurementBase):
     def save(self, *args, **kwargs):
         """
         Do regular save except also validate fields. This doesn't happen
-        automatically on save
+        automatically on save. Also reset alerts associated with this trigger
         """
+        # Validate fields
         try:
             self.full_clean()
         except ValidationError:
             raise
 
         super().save(*args, **kwargs)  # Call the "real" save() method.
+
+        # Create a new alert with in_alarm = False. Should happen after trigger
+        # is saved
+        self.create_alert(False)
 
 
 class Alert(MeasurementBase):
