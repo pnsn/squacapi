@@ -1098,7 +1098,7 @@
       "app_label": "invite",
       "model": "invitetoken"
     }
-  }
+  },
   {
     "model": "auth.group",
     "pk": 1,
@@ -2611,178 +2611,6 @@
       "reference_url": ""
     }
   },
-  
-  {
-    "model": "measurement.threshold",
-    "pk": 1,
-    "fields": {
-      "created_at": "2019-10-16T22:00:52.799Z",
-      "updated_at": "2019-10-16T22:00:52.799Z",
-      "user": 1,
-      "widget": 1,
-      "metric": 2,
-      "minval": 1.0,
-      "maxval": 2.0
-    }
-  },
-  {
-    "model": "measurement.threshold",
-    "pk": 2,
-    "fields": {
-      "created_at": "2019-10-16T22:00:52.799Z",
-      "updated_at": "2019-10-16T22:00:52.799Z",
-      "user": 1,
-      "widget": 2,
-      "metric": 2,
-      "minval": 1.0,
-      "maxval": 2.0
-    }
-  },
-  {
-    "model": "measurement.threshold",
-    "pk": 3,
-    "fields": {
-      "created_at": "2019-10-16T22:00:52.799Z",
-      "updated_at": "2019-10-16T22:00:52.799Z",
-      "user": 1,
-      "widget": 1,
-      "metric": 2,
-      "minval": 1.0,
-      "maxval": 2.0
-    }
-  },
-  {
-    "model": "dashboard.widgettype",
-    "pk": 1,
-    "fields": {
-      "name": "",
-      "description": "",
-      "created_at": "2019-08-28T23:30:52.170Z",
-      "updated_at": "2019-08-28T23:30:52.170Z",
-      "user": 1,
-      "type": "Tabular"
-    }
-  },
-  {
-    "model": "dashboard.widgettype",
-    "pk": 2,
-    "fields": {
-      "name": "",
-      "description": "",
-      "created_at": "2019-08-28T23:30:52.171Z",
-      "updated_at": "2019-08-28T23:30:52.171Z",
-      "user": 1,
-      "type": "Map"
-    }
-  },
-  {
-    "model": "dashboard.stattype",
-    "pk": 1,
-    "fields": {
-      "name": "Average",
-      "description": "",
-      "created_at": "2019-10-16T22:00:52.775Z",
-      "updated_at": "2019-10-16T22:00:52.775Z",
-      "user": 1,
-      "type": "ave"
-    }
-  },
-  {
-    "model": "dashboard.stattype",
-    "pk": 2,
-    "fields": {
-      "name": "Median",
-      "description": "",
-      "created_at": "2019-10-16T22:00:52.778Z",
-      "updated_at": "2019-10-16T22:00:52.778Z",
-      "user": 1,
-      "type": "med"
-    }
-  },
-  {
-    "model": "dashboard.stattype",
-    "pk": 3,
-    "fields": {
-      "name": "Minimum",
-      "description": "",
-      "created_at": "2019-10-16T22:00:52.781Z",
-      "updated_at": "2019-10-16T22:00:52.781Z",
-      "user": 1,
-      "type": "min"
-    }
-  },
-  {
-    "model": "dashboard.stattype",
-    "pk": 5,
-    "fields": {
-      "name": "Sample Count",
-      "description": "",
-      "created_at": "2019-10-16T22:00:52.786Z",
-      "updated_at": "2019-10-16T22:00:52.786Z",
-      "user": 1,
-      "type": "num_samp"
-    }
-  },
-  {
-    "model": "dashboard.stattype",
-    "pk": 6,
-    "fields": {
-      "name": "99th percentile",
-      "description": "",
-      "created_at": "2019-10-16T22:00:52.789Z",
-      "updated_at": "2019-10-16T22:00:52.789Z",
-      "user": 1,
-      "type": "p99"
-    }
-  },
-  {
-    "model": "dashboard.stattype",
-    "pk": 7,
-    "fields": {
-      "name": "95th percentile",
-      "description": "",
-      "created_at": "2019-10-16T22:00:52.792Z",
-      "updated_at": "2019-10-16T22:00:52.792Z",
-      "user": 1,
-      "type": "p95"
-    }
-  },
-  {
-    "model": "dashboard.stattype",
-    "pk": 8,
-    "fields": {
-      "name": "90th percentile",
-      "description": "",
-      "created_at": "2019-10-16T22:00:52.794Z",
-      "updated_at": "2019-10-16T22:00:52.794Z",
-      "user": 1,
-      "type": "p90"
-    }
-  },
-  {
-    "model": "dashboard.stattype",
-    "pk": 9,
-    "fields": {
-      "name": "50th percentile",
-      "description": "",
-      "created_at": "2019-10-16T22:00:52.797Z",
-      "updated_at": "2019-10-16T22:00:52.797Z",
-      "user": 1,
-      "type": "p50"
-    }
-  },
-  {
-    "model": "dashboard.stattype",
-    "pk": 10,
-    "fields": {
-      "name": "10th percentile",
-      "description": "",
-      "created_at": "2019-10-16T22:00:52.799Z",
-      "updated_at": "2019-10-16T22:00:52.799Z",
-      "user": 1,
-      "type": "p10"
-    }
-  },
   {
     "model": "dashboard.dashboard",
     "pk": 1,
@@ -2794,9 +2622,7 @@
       "user": 1,
       "share_all": true,
       "share_org": false,
-      "window_seconds": null,
-      "starttime": null,
-      "endtime": null,
+      "channel_group": 1,
       "organization": 1
     }
   },
@@ -2811,9 +2637,7 @@
       "user": 1,
       "share_all": true,
       "share_org": false,
-      "window_seconds": null,
-      "starttime": null,
-      "endtime": null,
+      "channel_group": 1,
       "organization": 1
     }
   },
@@ -2828,9 +2652,6 @@
       "user": 1,
       "share_all": true,
       "share_org": false,
-      "window_seconds": null,
-      "starttime": null,
-      "endtime": null,
       "organization": 1
     }
   },
@@ -2845,9 +2666,6 @@
       "user": 1,
       "share_all": true,
       "share_org": false,
-      "window_seconds": null,
-      "starttime": null,
-      "endtime": null,
       "organization": 1
     }
   },
@@ -2862,9 +2680,6 @@
       "user": 1,
       "share_all": true,
       "share_org": false,
-      "window_seconds": null,
-      "starttime": null,
-      "endtime": null,
       "organization": 1
     }
   },
@@ -2879,9 +2694,6 @@
       "user": 1,
       "share_all": true,
       "share_org": false,
-      "window_seconds": null,
-      "starttime": null,
-      "endtime": null,
       "organization": 1
     }
   },
@@ -2895,13 +2707,6 @@
       "updated_at": "2019-08-28T23:30:52.173Z",
       "user": 1,
       "dashboard": 1,
-      "widgettype": 1,
-      "stattype": 1,
-      "channel_group": 1,
-      "columns": 6,
-      "rows": 3,
-      "x_position": 1,
-      "y_position": 1,
       "metrics": [
         2,
         3,
@@ -2948,13 +2753,6 @@
       "updated_at": "2019-08-28T23:30:52.175Z",
       "user": 1,
       "dashboard": 1,
-      "widgettype": 2,
-      "stattype": 1,
-      "channel_group": 1,
-      "columns": 6,
-      "rows": 3,
-      "x_position": 1,
-      "y_position": 1,
       "metrics": [
         22
       ]
@@ -2970,13 +2768,6 @@
       "updated_at": "2019-08-28T23:30:52.274Z",
       "user": 1,
       "dashboard": 2,
-      "widgettype": 1,
-      "stattype": 1,
-      "channel_group": 2,
-      "columns": 6,
-      "rows": 3,
-      "x_position": 1,
-      "y_position": 1,
       "metrics": [
         2,
         3,
@@ -3023,13 +2814,6 @@
       "updated_at": "2019-08-28T23:30:52.276Z",
       "user": 1,
       "dashboard": 2,
-      "widgettype": 2,
-      "stattype": 1,
-      "channel_group": 1,
-      "columns": 6,
-      "rows": 3,
-      "x_position": 1,
-      "y_position": 1,
       "metrics": [
         22
       ]
@@ -3045,13 +2829,6 @@
       "updated_at": "2019-08-28T23:30:52.375Z",
       "user": 1,
       "dashboard": 3,
-      "widgettype": 1,
-      "stattype": 1,
-      "channel_group": 3,
-      "columns": 6,
-      "rows": 3,
-      "x_position": 1,
-      "y_position": 1,
       "metrics": [
         2,
         3,
@@ -3098,13 +2875,6 @@
       "updated_at": "2019-08-28T23:30:52.376Z",
       "user": 1,
       "dashboard": 3,
-      "widgettype": 2,
-      "stattype": 1,
-      "channel_group": 3,
-      "columns": 6,
-      "rows": 3,
-      "x_position": 1,
-      "y_position": 1,
       "metrics": [
         22
       ]
@@ -3120,13 +2890,6 @@
       "updated_at": "2019-08-28T23:30:52.476Z",
       "user": 1,
       "dashboard": 4,
-      "widgettype": 1,
-      "stattype": 1,
-      "channel_group": 4,
-      "columns": 6,
-      "rows": 3,
-      "x_position": 1,
-      "y_position": 1,
       "metrics": [
         2,
         3,
@@ -3173,13 +2936,6 @@
       "updated_at": "2019-08-28T23:30:52.478Z",
       "user": 1,
       "dashboard": 4,
-      "widgettype": 2,
-      "stattype": 1,
-      "channel_group": 4,
-      "columns": 6,
-      "rows": 3,
-      "x_position": 1,
-      "y_position": 1,
       "metrics": [
         22
       ]
@@ -3195,13 +2951,6 @@
       "updated_at": "2019-08-28T23:30:52.573Z",
       "user": 1,
       "dashboard": 5,
-      "widgettype": 1,
-      "stattype": 1,
-      "channel_group": 5,
-      "columns": 6,
-      "rows": 3,
-      "x_position": 1,
-      "y_position": 1,
       "metrics": [
         2,
         3,
@@ -3248,13 +2997,6 @@
       "updated_at": "2019-08-28T23:30:52.574Z",
       "user": 1,
       "dashboard": 5,
-      "widgettype": 2,
-      "stattype": 1,
-      "channel_group": 5,
-      "columns": 6,
-      "rows": 3,
-      "x_position": 1,
-      "y_position": 1,
       "metrics": [
         22
       ]
@@ -3270,13 +3012,6 @@
       "updated_at": "2019-08-28T23:30:52.674Z",
       "user": 1,
       "dashboard": 6,
-      "widgettype": 1,
-      "stattype": 1,
-      "channel_group": 6,
-      "columns": 6,
-      "rows": 3,
-      "x_position": 1,
-      "y_position": 1,
       "metrics": [
         2,
         3,
@@ -3323,13 +3058,6 @@
       "updated_at": "2019-08-28T23:30:52.675Z",
       "user": 1,
       "dashboard": 6,
-      "widgettype": 2,
-      "stattype": 1,
-      "channel_group": 6,
-      "columns": 6,
-      "rows": 3,
-      "x_position": 1,
-      "y_position": 1,
       "metrics": [
         22
       ]
