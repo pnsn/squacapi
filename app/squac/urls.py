@@ -40,28 +40,27 @@ schema_view = get_schema_view(
 
 
 urlpatterns = [
-    path('', views.home_v1, name='Squacapi V1.0'),
+    path('', views.home_v1, name='SQUAC Api Root'),
     path('admin/', admin.site.urls),
-    path('v1.0/invite/', include('invite.urls')),
-    path('user/', include('user.urls', namespace='legacy')),
-    path('v1.0/user/accounts/', include('django.contrib.auth.urls')),
-    path('v1.0/user/', include('user.urls')),
-    path('v1.0/nslc/', include('nslc.urls')),
-    path('v1.0/measurement/', include('measurement.urls')),
-    path('v1.0/dashboard/', include('dashboard.urls')),
-    path('v1.0/organization/', include('organization.urls')),
+    path('invite/', include('invite.urls')),
+    path('api/user/accounts/', include('django.contrib.auth.urls')),
+    path('api/user/', include('user.urls')),
+    path('api/nslc/', include('nslc.urls')),
+    path('api/measurement/', include('measurement.urls')),
+    path('api/dashboard/', include('dashboard.urls')),
+    path('api/organization/', include('organization.urls')),
     # api password reset endpoints
-    path('v1.0/password_reset/', include('django_rest_passwordreset.urls',
+    path('api/password_reset/', include('django_rest_passwordreset.urls',
          namespace='password_reset')),
     # invitation url
-    path('v1.0/', views.home_v1, name='Squacapi V1.0'),
+    path('api/', views.home_v1, name='SQUAC Api Root'),
     # default path for thel login /logout
-    path('api-auth/', include('rest_framework.urls',
+    path('auth/', include('rest_framework.urls',
          namespace='rest_framework')),
-    path('swagger/',
+    path('api/docs/',
          schema_view.with_ui('swagger', cache_timeout=0),
          name='schema-swagger-ui'),
-    re_path(r'^swagger(?P<format>\.json|\.yaml)$',
+    re_path(r'^api/swagger(?P<format>\.json|\.yaml)$',
             schema_view.without_ui(cache_timeout=0),
             name='schema-json'),
     # browser routes for password resets
