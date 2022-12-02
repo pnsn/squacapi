@@ -82,6 +82,12 @@ class GroupFilter(filters.FilterSet):
         fields = ('name', 'organization', 'user')
 
 
+class RuleFilter(filters.FilterSet):
+    class Meta:
+        model = MatchingRule
+        fields = ('group',)
+
+
 @api_view(['GET'])
 def api_root(request, format=None):
     '''api root'''
@@ -163,16 +169,6 @@ class GroupViewSet(SharedPermissionsMixin, BaseNslcViewSet):
 
 
 class MatchingRuleViewSet(BaseNslcViewSet):
+    queryset = MatchingRule.objects.all()
     serializer_class = MatchingRuleSerializer
-
-    def _params_to_ints(self, qs):
-        # Convert a list of string IDs to a list of integers
-        return [int(str_id) for str_id in qs.split(',')]
-
-    def get_queryset(self):
-        group = self.request.query_params.get('group')
-        queryset = MatchingRule.objects.all()
-        if group:
-            group_id = self._params_to_ints(group)
-            queryset = queryset.filter(group__id__in=group_id)
-        return queryset
+    filter_class = RuleFilter

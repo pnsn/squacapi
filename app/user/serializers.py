@@ -5,14 +5,16 @@ from rest_framework import serializers
 from organization.models import Organization
 
 
-class GroupSerializer(serializers.ModelSerializer):
+class UserGroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
-        fields = ('name',)
+        fields = ('id', 'name',)
+        read_only_fields = ('id',)
 
 
-class UserSimpleSerializer(serializers.ModelSerializer):
-    '''for nesting in organization_user serializer'''
+class UserSerializer(serializers.ModelSerializer):
+    '''serialzer for the user object'''
+
     organization = serializers.PrimaryKeyRelatedField(
         queryset=Organization.objects.all()
     )
@@ -23,20 +25,10 @@ class UserSimpleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = get_user_model()
-        fields = ('email', 'firstname', 'lastname', 'id', 'is_active',
-                  'last_login', 'organization', 'is_org_admin', 'groups')
-
-
-class UserBaseSerializer(serializers.ModelSerializer):
-    '''serialzer for the user object'''
-
-    class Meta:
-        model = get_user_model()
-        fields = ('email', 'password', 'firstname', 'lastname', 'is_staff',
+        fields = ('email', 'firstname', 'lastname', 'is_staff',
                   'groups', 'id', 'organization', 'is_org_admin', 'last_login',
                   'is_active')
         read_only_fields = ('is_staff', 'id')
-        extra_kwargs = {'password': {'write_only': True, 'min_length': 5}}
 
     def create(self, validated_data):
         '''Create a new user with an encrypted password set groups'''
@@ -45,6 +37,31 @@ class UserBaseSerializer(serializers.ModelSerializer):
         if(len(groups) > 0):
             user.set_permission_groups(groups)
         return user
+
+
+class UserUpdateSerializer(UserSerializer):
+    '''serializer for updating users'''
+    organization = serializers.PrimaryKeyRelatedField(
+        queryset=Organization.objects.all()
+    )
+    groups = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=Group.objects.all()
+    )
+
+    class Meta:
+        model = get_user_model()
+        fields = ('email', 'firstname', 'lastname', 'password', 'is_staff',
+                  'groups', 'id', 'organization', 'is_org_admin', 'last_login',
+                  'is_active')
+        read_only_fields = ('is_staff', 'id', 'email')
+        extra_kwargs = {'password': {'write_only': True, 'min_length': 5,
+                                     "required": False},
+                        'firstname': {"required": False},
+                        'lastname': {"required": False},
+                        'organization': {"required": False},
+                        'groups': {"required": False}
+                        }
 
     def update(self, instance, validate_data):
         '''update user, set group and password and return'''
@@ -60,41 +77,33 @@ class UserBaseSerializer(serializers.ModelSerializer):
         return user
 
 
-class UserWriteSerializer(UserBaseSerializer):
-    groups = serializers.PrimaryKeyRelatedField(
-        many=True,
-        queryset=Group.objects.all()
-    )
-
-    organization = serializers.PrimaryKeyRelatedField(
-        queryset=Organization.objects.all()
-    )
-
-
-class UserReadSerializer(UserBaseSerializer):
-    groups = GroupSerializer(many=True, read_only=True)
-    organization = serializers.PrimaryKeyRelatedField(
-        queryset=Organization.objects.all()
-    )
-
-
-class UserMeSerializer(UserBaseSerializer):
-    groups = GroupSerializer(many=True, read_only=True)
+class UserMeSerializer(UserUpdateSerializer):
+    '''serializer for managing authenticated user'''
+    groups = UserGroupSerializer(many=True, read_only=True)
 
     class Meta:
         model = get_user_model()
-        fields = ('email', 'password', 'firstname', 'lastname', 'is_staff',
-                  'id', 'organization', 'is_org_admin', 'groups')
-        read_only_fields = ('is_staff', 'id', 'is_org_admin', 'groups',
-                            'organization', 'email')
-        extra_kwargs = {'password': {'write_only': True, 'min_length': 5}}
+        fields = ('id', 'firstname', 'lastname', 'password', 'groups',
+                  'organization', 'email', 'is_active', 'is_org_admin',
+                  'is_staff')
+        extra_kwargs = {'password': {'write_only': True, 'min_length': 5,
+                                     "required": False},
+                        'firstname': {"required": False},
+                        'lastname': {"required": False},
+                        }
+        read_only_fields = ('id', 'email', 'is_active', 'is_org_admin',
+                            'groups', 'organization', 'is_staff')
 
 
-class UserGroupSerializer(serializers.Serializer):
+class UserSimpleSerializer(UserSerializer):
+    '''serializer for nesting in orgs'''
+    groups = UserGroupSerializer(many=True, read_only=True)
+
     class Meta:
-        model = Group
-        fields = ('id', 'name')
-        read_only_fields = ('id', 'name')
+        model = get_user_model()
+        fields = ('email', 'firstname', 'lastname', 'id',
+                  'is_active', 'organization', 'is_org_admin',
+                  'groups')
 
 
 class AuthTokenSerializer(serializers.Serializer):

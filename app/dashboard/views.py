@@ -5,7 +5,6 @@ from squac.mixins import SetUserMixin, DefaultPermissionsMixin, \
 from dashboard.models import Dashboard, Widget
 from dashboard import serializers
 from django_filters import rest_framework as filters
-
 """Filter classes used for view filtering"""
 
 ''''
@@ -32,6 +31,12 @@ class DashboardFilter(filters.FilterSet):
     class Meta:
         model = Dashboard
         fields = ('user', 'organization', 'share_all', 'share_org',)
+
+
+class WidgetFilter(filters.FilterSet):
+    class Meta:
+        model = Widget
+        fields = ('dashboard',)
 
 
 class BaseDashboardViewSet(SetUserMixin, DefaultPermissionsMixin,
@@ -66,20 +71,13 @@ class DashboardViewSet(SharedPermissionsMixin, BaseDashboardViewSet):
 
 
 class WidgetViewSet(BaseDashboardViewSet):
-
+    queryset = Widget.objects.all()
     serializer_class = serializers.WidgetSerializer
+    filter_class = WidgetFilter
 
     def _params_to_ints(self, qs):
         # Convert a list of string IDs to a list of integers
         return [int(str_id) for str_id in qs.split(',')]
-
-    def get_queryset(self):
-        dashboard = self.request.query_params.get('dashboard')
-        queryset = Widget.objects.all()
-        if dashboard:
-            dashboard_id = self._params_to_ints(dashboard)
-            queryset = queryset.filter(dashboard__id__in=dashboard_id)
-        return queryset
 
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)

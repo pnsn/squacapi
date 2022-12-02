@@ -54,6 +54,17 @@ class MeasurementSerializer(serializers.ModelSerializer):
     #     return queryset
 
 
+class AggregatedParametersSerializer(serializers.Serializer):
+
+    ''' serializer for documentation purposes'''
+    metric = serializers.CharField(required=False)
+    group = serializers.CharField(required=False)
+    channel = serializers.CharField(required=False)
+    starttime = serializers.CharField(required=False)
+    endtime = serializers.CharField(required=False)
+    nslc = serializers.CharField(required=False)
+
+
 class AggregatedSerializer(serializers.Serializer):
     '''simple serializer for aggregated response data'''
     metric = serializers.IntegerField()
