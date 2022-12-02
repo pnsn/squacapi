@@ -18,6 +18,7 @@ from .models import (Metric, Measurement,
 from measurement import serializers
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+from measurement.params import measurement_params
 
 
 def check_measurement_params(params):
@@ -123,6 +124,7 @@ class ArchiveBaseViewSet(DefaultPermissionsMixin,
     """
     filter_class = MeasurementFilter
 
+    @swagger_auto_schema(manual_parameters=measurement_params)
     def list(self, request, *args, **kwargs):
         check_measurement_params(request.query_params)
         return super().list(self, request, *args, **kwargs)
@@ -166,6 +168,7 @@ class MeasurementViewSet(MeasurementBaseViewSet):
     def get_queryset(self):
         return Measurement.objects.all().order_by('starttime')
 
+    @swagger_auto_schema(manual_parameters=measurement_params)
     def list(self, request, *args, **kwargs):
         '''We want to be careful about large queries so require params'''
         check_measurement_params(request.query_params)
@@ -249,6 +252,9 @@ class AggregatedViewSet(IsAuthenticated, viewsets.ViewSet):
         cannot be used
     '''
 
+    @swagger_auto_schema(
+        query_serializer=serializers.AggregatedParametersSerializer,
+        manual_parameters=measurement_params)
     def list(self, request):
         params = request.query_params
         check_measurement_params(params)
