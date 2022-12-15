@@ -96,6 +96,7 @@ class Monitor(MeasurementBase):
         MINUTE = 'minute', _('Minute')
         HOUR = 'hour', _('Hour')
         DAY = 'day', _('Day')
+        LASTN = 'last n', _('Last N')
 
     # Define choices for stat
     # These need to match the field names used in agg_measurements
@@ -147,18 +148,35 @@ class Monitor(MeasurementBase):
         '''
         Gather all measurements for the alarm and calculate aggregate values
         '''
-        seconds = self.calc_interval_seconds()
-        starttime = endtime - timedelta(seconds=seconds)
-
         group = self.channel_group
         metric = self.metric
+        q_data = Measurement.objects.none()
 
         # Get a QuerySet containing only measurements for the correct time
         # period and metric for this alarm
-        q_data = metric.measurements.filter(
-            starttime__range=(starttime, endtime),
-            channel__in=group.channels.all()
-        )
+        if self.interval_type == self.IntervalType.LASTN:
+            # Special case that isn't time-based
+            # Restrict time window to reduce query time
+            starttime = endtime - timedelta(weeks=2)
+            measurement_ids = []
+            for channel in group.channels.all():
+                measurements = metric.measurements.filter(
+                    starttime__range=(starttime, endtime),
+                    channel=channel
+                ).order_by(
+                    '-starttime')[:self.interval_count]
+                measurement_ids += list(
+                    measurements.values_list('id', flat=True)
+                )
+
+            q_data = Measurement.objects.filter(id__in=measurement_ids)
+        else:
+            seconds = self.calc_interval_seconds()
+            starttime = endtime - timedelta(seconds=seconds)
+            q_data = metric.measurements.filter(
+                starttime__range=(starttime, endtime),
+                channel__in=group.channels.all()
+            )
 
         # Now calculate the aggregate values for each channel
         q_data = q_data.values('channel').annotate(
