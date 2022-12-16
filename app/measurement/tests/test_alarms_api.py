@@ -536,11 +536,13 @@ class PrivateAlarmAPITests(TestCase):
     def test_evaluate_alert_false_alert_not_breaching(self, send_alert):
         trigger = Trigger.objects.get(pk=8)
 
+        n_alerts1 = trigger.alerts.count()
         alert = trigger.evaluate_alert(
             False,
             breaching_channels=[]
         )
-        self.assertEqual(6, alert.id)
+        n_alerts2 = trigger.alerts.count()
+        self.assertEqual(n_alerts1, n_alerts2)
         self.assertFalse(alert.in_alarm)
         self.assertFalse(send_alert.called)
 
@@ -553,11 +555,13 @@ class PrivateAlarmAPITests(TestCase):
             "channel_id": 2
         }]
 
+        n_alerts1 = trigger.alerts.count()
         alert = trigger.evaluate_alert(
             True,
             breaching_channels=breaching_channels
         )
-        self.assertNotEqual(6, alert.id)
+        n_alerts2 = trigger.alerts.count()
+        self.assertNotEqual(n_alerts1, n_alerts2)
         self.assertTrue(alert.in_alarm)
         self.assertTrue(send_alert.called)
 
@@ -565,11 +569,13 @@ class PrivateAlarmAPITests(TestCase):
     def test_evaluate_alert_true_alert_not_breaching(self, send_alert):
         trigger = Trigger.objects.get(pk=9)
 
+        n_alerts1 = trigger.alerts.count()
         alert = trigger.evaluate_alert(
             False,
             breaching_channels=[]
         )
-        self.assertNotEqual(7, alert.id)
+        n_alerts2 = trigger.alerts.count()
+        self.assertNotEqual(n_alerts1, n_alerts2)
         self.assertFalse(alert.in_alarm)
         self.assertFalse(send_alert.called)
 
@@ -578,15 +584,15 @@ class PrivateAlarmAPITests(TestCase):
         """
         Same as above except set alert_on_out_of_alarm to true
         """
-        trigger = Trigger.objects.get(pk=9)
-        trigger.alert_on_out_of_alarm = True
-        trigger.save()
+        trigger = Trigger.objects.get(pk=10)
 
+        n_alerts1 = trigger.alerts.count()
         alert = trigger.evaluate_alert(
             False,
             breaching_channels=[]
         )
-        self.assertNotEqual(7, alert.id)
+        n_alerts2 = trigger.alerts.count()
+        self.assertNotEqual(n_alerts1, n_alerts2)
         self.assertFalse(alert.in_alarm)
         self.assertTrue(send_alert.called)
 
@@ -599,11 +605,13 @@ class PrivateAlarmAPITests(TestCase):
             "channel_id": 2
         }]
 
+        n_alerts1 = trigger.alerts.count()
         alert = trigger.evaluate_alert(
             True,
             breaching_channels=breaching_channels
         )
-        self.assertNotEqual(7, alert.id)
+        n_alerts2 = trigger.alerts.count()
+        self.assertNotEqual(n_alerts1, n_alerts2)
         self.assertTrue(alert.in_alarm)
         self.assertTrue(send_alert.called)
 
@@ -620,11 +628,13 @@ class PrivateAlarmAPITests(TestCase):
             "channel_id": 1
         }]
 
+        n_alerts1 = trigger.alerts.count()
         alert = trigger.evaluate_alert(
             True,
             breaching_channels=breaching_channels
         )
-        self.assertEqual(7, alert.id)
+        n_alerts2 = trigger.alerts.count()
+        self.assertEqual(n_alerts1, n_alerts2)
         self.assertTrue(alert.in_alarm)
         self.assertFalse(send_alert.called)
 
@@ -634,7 +644,7 @@ class PrivateAlarmAPITests(TestCase):
         endtime = datetime(2018, 2, 1, 4, 35, 0, 0, tzinfo=pytz.UTC)
 
         all_alerts = Alert.objects.all()
-        self.assertEqual(len(all_alerts), 8)
+        self.assertEqual(len(all_alerts), 10)
 
         monitor.evaluate_alarm(endtime=endtime)
 
@@ -683,7 +693,7 @@ class PrivateAlarmAPITests(TestCase):
         self.assertEqual(len(alerts), 0)
 
         all_alerts = Alert.objects.all()
-        self.assertEqual(len(all_alerts), 11)
+        self.assertEqual(len(all_alerts), 13)
 
     def test_evaluate_alarms(self):
         '''Test evaluate_alarm command'''
@@ -776,7 +786,7 @@ class PrivateAlarmAPITests(TestCase):
         url1 = url + f'?timestamp_gte={stime}&timestamp_lt={etime}'
         res = self.client.get(url1)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(res.data), 4)
+        self.assertEqual(len(res.data), 5)
 
         url2 = url + '?trigger=3'
         res = self.client.get(url2)
@@ -871,3 +881,58 @@ class PrivateAlarmAPITests(TestCase):
                 user=self.user,
                 email_list=self.user.email
             )
+
+    def test_reset_alert_on_monitor_change(self):
+        n_alerts1 = 0
+        for trigger in self.monitor.triggers.all():
+            n_alerts1 += trigger.alerts.count()
+
+        self.monitor.interval_count = 5
+        self.monitor.save()
+
+        n_alerts2 = 0
+        for trigger in self.monitor.triggers.all():
+            n_alerts2 += trigger.alerts.count()
+
+        self.assertNotEqual(n_alerts1, n_alerts2)
+
+    def test_reset_alert_on_trigger_change(self):
+        n_alerts1 = self.trigger.alerts.count()
+
+        self.trigger.val2 = 7
+        self.trigger.save()
+
+        n_alerts2 = self.trigger.alerts.count()
+        self.assertNotEqual(n_alerts1, n_alerts2)
+
+    def test_last_n_monitor(self):
+        # Create new monitor
+        group = Group.objects.get(pk=1)
+        metric = Metric.objects.get(pk=1)
+        monitor = Monitor.objects.create(
+            channel_group=group,
+            metric=metric,
+            interval_type=Monitor.IntervalType.LASTN,
+            interval_count=2,
+            stat=Monitor.Stat.SUM,
+            user=self.user
+        )
+
+        # Retrieve last n aggregate measurements
+        endtime = datetime(2018, 2, 1, 4, 30, 0, 0, tzinfo=pytz.UTC)
+        q_list = monitor.agg_measurements(endtime=endtime)
+
+        # Calculate last n aggregate measurements separately
+        chan_vals = {}
+        for channel in group.channels.all():
+            agg_val = sum(
+                Measurement.objects.filter(
+                    metric=metric,
+                    channel=channel,
+                    starttime__lt=endtime
+                ).order_by('-starttime')[:2].values_list('value', flat=True))
+            chan_vals[channel.id] = agg_val
+
+        # Compare results
+        for q_item in q_list:
+            self.assertEqual(q_item['sum'], chan_vals[q_item['channel']])

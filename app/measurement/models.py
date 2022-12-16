@@ -402,7 +402,7 @@ class Trigger(MeasurementBase):
     def get_latest_alert(self, reftime=datetime.now(tz=pytz.UTC)):
         '''Return the most recent alert for this Trigger'''
         return self.alerts.filter(
-            timestamp__lt=reftime).order_by('timestamp').last()
+            timestamp__lte=reftime).order_by('timestamp').last()
 
     def create_alert(self,
                      in_alarm,
@@ -612,7 +612,8 @@ class Alert(MeasurementBase):
         ]
 
     def __str__(self):
-        return (f"Time: {self.timestamp}, "
+        return (f"in_alarm: {self.in_alarm}, "
+                f"Time: {self.timestamp}, "
                 f"{str(self.trigger)}"
                 )
 
