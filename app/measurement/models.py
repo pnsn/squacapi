@@ -482,7 +482,10 @@ class Trigger(MeasurementBase):
         desc += f' in channel group: {self.monitor.channel_group}'
         add_s = 's' if self.monitor.interval_count > 1 else ''
         desc += f'\n\nover the last {self.monitor.interval_count}'
-        desc += f' {self.monitor.interval_type}{add_s}'
+        if self.monitor.interval_type == self.monitor.IntervalType.LASTN:
+            desc += f' measurement{add_s}'
+        else:
+            desc += f' {self.monitor.interval_type}{add_s}'
         return desc
 
     def __str__(self):
