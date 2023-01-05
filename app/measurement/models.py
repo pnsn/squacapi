@@ -558,6 +558,9 @@ class Alert(MeasurementBase):
         if not channels:
             return str_out
 
+        # First sort channels alphanumerically
+        channels = sorted(channels, key=lambda channel: channel['channel'])
+
         for channel in channels:
             str_out += '\n' + self.get_printable_channel(channel, include_stat)
 
