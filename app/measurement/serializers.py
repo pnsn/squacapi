@@ -212,12 +212,24 @@ class MonitorDetailSerializer(serializers.ModelSerializer):
 
 
 class AlertDetailSerializer(serializers.ModelSerializer):
-    trigger = TriggerSerializer(read_only=True)
+    trigger = serializers.PrimaryKeyRelatedField(read_only=True)
+    monitor = serializers.PrimaryKeyRelatedField(
+        source="trigger.monitor", read_only=True)
+    val1 = serializers.FloatField(source="trigger.val1", read_only=True)
+    val2 = serializers.FloatField(source="trigger.val2", read_only=True)
+    value_operator = serializers.CharField(
+        source="trigger.value_operator", read_only=True)
+    num_channels = serializers.IntegerField(
+        source="trigger.num_channels", read_only=True)
+    num_channels_operator = serializers.CharField(
+        source="trigger.num_channels_operator", read_only=True)
 
     class Meta:
         model = Alert
         fields = (
-            'id', 'trigger', 'timestamp', 'message', 'in_alarm',
-            'breaching_channels', 'created_at', 'updated_at', 'user'
+            'id', 'trigger', 'monitor', 'timestamp', 'in_alarm',
+            'val1', 'val2', 'value_operator', 'num_channels',
+            'num_channels_operator', 'breaching_channels', 'created_at',
+            'updated_at', 'user'
         )
         read_only_fields = ('id', 'user')
