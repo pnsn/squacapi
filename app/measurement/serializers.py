@@ -229,7 +229,6 @@ class AlertDetailSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'trigger', 'monitor', 'timestamp', 'in_alarm',
             'val1', 'val2', 'value_operator', 'num_channels',
-            'num_channels_operator', 'breaching_channels', 'created_at',
-            'updated_at', 'user'
+            'num_channels_operator', 'breaching_channels', 'user'
         )
         read_only_fields = ('id', 'user')
