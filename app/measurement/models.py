@@ -349,6 +349,9 @@ class Trigger(MeasurementBase):
                     self.monitor.stat: value
                 })
 
+        # Sort the channels for simplicity later
+        breaching_channels = sorted(
+            breaching_channels, key=lambda channel: channel['channel'])
         return breaching_channels
 
     def get_breaching_change(self,
@@ -558,7 +561,8 @@ class Alert(MeasurementBase):
         if not channels:
             return str_out
 
-        # First sort channels alphanumerically
+        # These should be sorted alphanumerically already,
+        # but do it again to be sure.
         channels = sorted(channels, key=lambda channel: channel['channel'])
 
         for channel in channels:
