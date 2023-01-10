@@ -88,6 +88,7 @@ class AlertFilter(filters.FilterSet):
                                        lookup_expr='gte')
     timestamp_lt = filters.CharFilter(field_name='timestamp',
                                       lookup_expr='lt')
+    monitor = NumberInFilter(field_name='trigger__monitor')
 
     order = filters.OrderingFilter(
         fields=(('trigger', 'trigger'),
