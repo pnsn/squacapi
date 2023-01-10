@@ -197,14 +197,21 @@ class ArchiveMonthSerializer(ArchiveBaseSerializer):
 
 
 class MonitorDetailSerializer(serializers.ModelSerializer):
-    channel_group = GroupSerializer(read_only=True)
-    metric = MetricSerializer(read_only=True)
+    channel_group = serializers.PrimaryKeyRelatedField(
+        queryset=Group.objects.all())
+    metric = serializers.PrimaryKeyRelatedField(
+        queryset=Metric.objects.all())
     triggers = TriggerSerializer(many=True, read_only=True)
+    channel_group_name = serializers.CharField(
+        source="channel_group.name", read_only=True)
+    metric_name = serializers.CharField(
+        source="metric.name", read_only=True)
 
     class Meta:
         model = Monitor
         fields = (
-            'id', 'channel_group', 'metric', 'interval_type',
+            'id', 'channel_group', 'channel_group_name',
+            'metric_name', 'metric', 'interval_type',
             'interval_count', 'stat', 'name', 'created_at', 'updated_at',
             'user', 'triggers'
         )
