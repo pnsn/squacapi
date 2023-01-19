@@ -18,7 +18,8 @@ class UserSerializer(serializers.ModelSerializer):
     organization = serializers.PrimaryKeyRelatedField(
         queryset=Organization.objects.all()
     )
-    groups = serializers.PrimaryKeyRelatedField(
+    groups = serializers.SlugRelatedField(
+        slug_field="name",
         many=True,
         queryset=Group.objects.all()
     )
@@ -44,7 +45,8 @@ class UserUpdateSerializer(UserSerializer):
     organization = serializers.PrimaryKeyRelatedField(
         queryset=Organization.objects.all()
     )
-    groups = serializers.PrimaryKeyRelatedField(
+    groups = serializers.SlugRelatedField(
+        slug_field="name",
         many=True,
         queryset=Group.objects.all()
     )
@@ -79,7 +81,10 @@ class UserUpdateSerializer(UserSerializer):
 
 class UserMeSerializer(UserUpdateSerializer):
     '''serializer for managing authenticated user'''
-    groups = UserGroupSerializer(many=True, read_only=True)
+    groups = serializers.StringRelatedField(many=True, read_only=True)
+    organization = serializers.PrimaryKeyRelatedField(
+        read_only=True
+    )
 
     class Meta:
         model = get_user_model()
@@ -90,6 +95,7 @@ class UserMeSerializer(UserUpdateSerializer):
                                      "required": False},
                         'firstname': {"required": False},
                         'lastname': {"required": False},
+                        'organization': {"read_only": True, "required": False}
                         }
         read_only_fields = ('id', 'email', 'is_active', 'is_org_admin',
                             'groups', 'organization', 'is_staff')
@@ -97,7 +103,7 @@ class UserMeSerializer(UserUpdateSerializer):
 
 class UserSimpleSerializer(UserSerializer):
     '''serializer for nesting in orgs'''
-    groups = UserGroupSerializer(many=True, read_only=True)
+    groups = serializers.StringRelatedField(many=True, read_only=True)
 
     class Meta:
         model = get_user_model()

@@ -124,7 +124,6 @@ class MonitorSerializer(serializers.ModelSerializer):
 
 
 class TriggerSerializer(serializers.ModelSerializer):
-
     monitor = serializers.PrimaryKeyRelatedField(
         queryset=Monitor.objects.all())
 
@@ -157,8 +156,8 @@ class ArchiveBaseSerializer(serializers.HyperlinkedModelSerializer):
         queryset=Channel.objects.all())
     metric = serializers.PrimaryKeyRelatedField(
         queryset=Metric.objects.all())
-    minabs = serializers.ReadOnlyField()
-    maxabs = serializers.ReadOnlyField()
+    minabs = serializers.FloatField(read_only=True)
+    maxabs = serializers.FloatField(read_only=True)
 
 
 class ArchiveHourSerializer(ArchiveBaseSerializer):
