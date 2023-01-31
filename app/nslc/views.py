@@ -10,7 +10,7 @@ from rest_framework.reverse import reverse
 from django_filters import rest_framework as filters
 from squac.filters import CharInFilter
 from squac.mixins import SetUserMixin, DefaultPermissionsMixin, \
-    SharedPermissionsMixin
+    SharedPermissionsMixin, OverrideParamsMixin
 from .models import Network, Channel, Group, MatchingRule
 from nslc.serializers import NetworkSerializer, ChannelSerializer, \
     GroupSerializer, GroupDetailSerializer, MatchingRuleSerializer
@@ -101,12 +101,12 @@ def api_root(request, format=None):
     list
     update
     partial_update
-    destory
+    destroy
 """
 
 
 class BaseNslcViewSet(SetUserMixin, DefaultPermissionsMixin,
-                      viewsets.ModelViewSet):
+                      OverrideParamsMixin, viewsets.ModelViewSet):
 
     pass
 

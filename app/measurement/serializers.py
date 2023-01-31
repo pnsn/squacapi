@@ -3,7 +3,6 @@ from .models import (Metric, Measurement,
                      Alert, ArchiveHour, ArchiveDay, ArchiveWeek, Monitor,
                      Trigger, ArchiveMonth)
 from nslc.models import Channel, Group
-from nslc.serializers import GroupSerializer
 
 
 class BulkMeasurementListSerializer(serializers.ListSerializer):

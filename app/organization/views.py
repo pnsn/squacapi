@@ -1,7 +1,7 @@
 
 from rest_framework import viewsets
 from squac.mixins import SetUserMixin, OrganizationPermissionsMixin, \
-    EnablePartialUpdateMixin
+    EnablePartialUpdateMixin, OverrideParamsMixin
 from django_filters import rest_framework as filters
 from organization.models import Organization
 from organization.serializers import OrganizationSerializer
@@ -42,6 +42,7 @@ class OrganizationFilter(filters.FilterSet):
 
 
 class OrganizationBase(SetUserMixin, OrganizationPermissionsMixin,
+                       OverrideParamsMixin,
                        viewsets.ModelViewSet):
     pass
 
