@@ -96,6 +96,7 @@ class Monitor(MeasurementBase):
         MINUTE = 'minute', _('Minute')
         HOUR = 'hour', _('Hour')
         DAY = 'day', _('Day')
+        LASTN = 'last n', _('Last N')
 
     # Define choices for stat
     # These need to match the field names used in agg_measurements
@@ -147,18 +148,35 @@ class Monitor(MeasurementBase):
         '''
         Gather all measurements for the alarm and calculate aggregate values
         '''
-        seconds = self.calc_interval_seconds()
-        starttime = endtime - timedelta(seconds=seconds)
-
         group = self.channel_group
         metric = self.metric
+        q_data = Measurement.objects.none()
 
         # Get a QuerySet containing only measurements for the correct time
         # period and metric for this alarm
-        q_data = metric.measurements.filter(
-            starttime__range=(starttime, endtime),
-            channel__in=group.channels.all()
-        )
+        if self.interval_type == self.IntervalType.LASTN:
+            # Special case that isn't time-based
+            # Restrict time window to reduce query time
+            starttime = endtime - timedelta(weeks=2)
+            measurement_ids = []
+            for channel in group.channels.all():
+                measurements = metric.measurements.filter(
+                    starttime__range=(starttime, endtime),
+                    channel=channel
+                ).order_by(
+                    '-starttime')[:self.interval_count]
+                measurement_ids += list(
+                    measurements.values_list('id', flat=True)
+                )
+
+            q_data = Measurement.objects.filter(id__in=measurement_ids)
+        else:
+            seconds = self.calc_interval_seconds()
+            starttime = endtime - timedelta(seconds=seconds)
+            q_data = metric.measurements.filter(
+                starttime__range=(starttime, endtime),
+                channel__in=group.channels.all()
+            )
 
         # Now calculate the aggregate values for each channel
         q_data = q_data.values('channel').annotate(
@@ -217,6 +235,15 @@ class Monitor(MeasurementBase):
                     )
         else:
             return self.name
+
+    def save(self, *args, **kwargs):
+        """
+        Reset alerts associated with triggers on this monitor
+        """
+        super().save(*args, **kwargs)  # Call the "real" save() method.
+
+        for trigger in self.triggers.all():
+            trigger.create_alert(False)
 
 
 class Trigger(MeasurementBase):
@@ -375,7 +402,7 @@ class Trigger(MeasurementBase):
     def get_latest_alert(self, reftime=datetime.now(tz=pytz.UTC)):
         '''Return the most recent alert for this Trigger'''
         return self.alerts.filter(
-            timestamp__lt=reftime).order_by('timestamp').last()
+            timestamp__lte=reftime).order_by('timestamp').last()
 
     def create_alert(self,
                      in_alarm,
@@ -492,14 +519,19 @@ class Trigger(MeasurementBase):
     def save(self, *args, **kwargs):
         """
         Do regular save except also validate fields. This doesn't happen
-        automatically on save
+        automatically on save. Also reset alerts associated with this trigger
         """
+        # Validate fields
         try:
             self.full_clean()
         except ValidationError:
             raise
 
         super().save(*args, **kwargs)  # Call the "real" save() method.
+
+        # Create a new alert with in_alarm = False. Should happen after trigger
+        # is saved
+        self.create_alert(False)
 
 
 class Alert(MeasurementBase):
@@ -580,7 +612,8 @@ class Alert(MeasurementBase):
         ]
 
     def __str__(self):
-        return (f"Time: {self.timestamp}, "
+        return (f"in_alarm: {self.in_alarm}, "
+                f"Time: {self.timestamp}, "
                 f"{str(self.trigger)}"
                 )
 
