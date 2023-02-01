@@ -144,7 +144,7 @@ class OrganizationAPITests(TestCase):
         payload = {
             'email': 'testy@pnsn.org',
             "organization": self.org1.id,
-            'groups': [self.group_reporter.id],
+            'groups': [self.group_reporter.name],
             "firstname": "first",
             "lastname": "last"
         }
