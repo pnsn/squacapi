@@ -4,7 +4,7 @@ Command run without any options will give default URL
         query?datacenter=IRISDMC,NCEDC,SCEDC
         &targetservice=station
         &level=channel
-        &net=AK,AV,AZ,BC,BK,CC,CE,CI,CN,ET,HV,IU,IW,MB,N4,NC,NN,NP,NV,O2,OK,OO,PB,PR,SN,TX,UM,UO,US,UU,UW,WY
+        &net=AE,AG,AK,AV,AZ,BC,BK,CC,CE,CI,CN,CO,CU,ET,HV,IU,IW,LD,MB,N4,NC,NN,NP,NV,O2,OK,OO,PB,PR,SN,TX,UM,UO,US,UU,UW,WR,WY
         &sta=*
         &cha=EN?,HN?,?H?
         &loc=*
@@ -131,9 +131,10 @@ class Command(BaseCommand):
     '''Django command to check network and channel tables with FDSN service'''
     def handle(self, *args, **options):
         ALLOWED_NETWORKS = [
-            "AK", "AV", "AZ", "BC", "BK", "CC", "CE", "CI", "CN", "ET", "HV",
-            "IU", "IW", "MB", "N4", "NC", "NN", "NP", "NV", "O2", "OK", "OO",
-            "PB", "PR", "SN", "TX", "UM", "UO", "US", "UU", "UW", "WY"
+            "AE", "AK", "AV", "AZ", "BC", "BK", "CC", "CE", "CI", "CN", "CO",
+            "CU", "ET", "HV", "IU", "IW", "LD", "MB", "N4", "NC", "NN", "NP",
+            "NV", "O2", "OK", "OO", "PB", "PR", "SN", "TX", "UM", "UO", "US",
+            "UU", "UW", "WR", "WY"
         ]
         options["net"] = ','.join(ALLOWED_NETWORKS)
         LOADER_EMAIL = os.environ.get('LOADER_EMAIL')

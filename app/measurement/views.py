@@ -10,6 +10,7 @@ from measurement.aggregates.percentile import Percentile
 from django.db.models import Avg, StdDev, Min, Max, Count, FloatField
 from django.db.models.functions import (Coalesce, Abs, Least, Greatest)
 from squac.mixins import (SetUserMixin, DefaultPermissionsMixin,
+                          OverrideParamsMixin, OverrideReadParamsMixin,
                           AdminOrOwnerPermissionMixin)
 from .exceptions import MissingParameterException
 from .models import (Metric, Measurement,
@@ -88,6 +89,7 @@ class AlertFilter(filters.FilterSet):
                                        lookup_expr='gte')
     timestamp_lt = filters.CharFilter(field_name='timestamp',
                                       lookup_expr='lt')
+    monitor = NumberInFilter(field_name='trigger__monitor')
 
     order = filters.OrderingFilter(
         fields=(('trigger', 'trigger'),
@@ -105,17 +107,18 @@ class AlertFilter(filters.FilterSet):
 
 
 class MeasurementBaseViewSet(SetUserMixin, DefaultPermissionsMixin,
-                             viewsets.ModelViewSet):
+                             OverrideParamsMixin, viewsets.ModelViewSet):
     pass
 
 
 class MonitorBaseViewSet(SetUserMixin, AdminOrOwnerPermissionMixin,
-                         viewsets.ModelViewSet):
+                         OverrideParamsMixin, viewsets.ModelViewSet):
     '''only owner can see monitors and alert'''
     pass
 
 
 class ArchiveBaseViewSet(DefaultPermissionsMixin,
+                         OverrideReadParamsMixin,
                          viewsets.ReadOnlyModelViewSet):
     """Viewset that provides access to Archive data
 

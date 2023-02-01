@@ -3,7 +3,6 @@ from .models import (Metric, Measurement,
                      Alert, ArchiveHour, ArchiveDay, ArchiveWeek, Monitor,
                      Trigger, ArchiveMonth)
 from nslc.models import Channel, Group
-from nslc.serializers import GroupSerializer
 
 
 class BulkMeasurementListSerializer(serializers.ListSerializer):
@@ -103,15 +102,20 @@ class MonitorSerializer(serializers.ModelSerializer):
     channel_group = serializers.PrimaryKeyRelatedField(
         queryset=Group.objects.all()
     )
-
     metric = serializers.PrimaryKeyRelatedField(
         queryset=Metric.objects.all()
     )
 
+    channel_group_name = serializers.CharField(
+        source="channel_group.name", read_only=True)
+    metric_name = serializers.CharField(
+        source="metric.name", read_only=True)
+
     class Meta:
         model = Monitor
         fields = (
-            'id', 'channel_group', 'metric', 'interval_type',
+            'id', 'channel_group', 'channel_group_name',
+            'metric_name', 'metric', 'interval_type',
             'interval_count', 'stat', 'name', 'created_at', 'updated_at',
             'user'
         )
@@ -119,7 +123,6 @@ class MonitorSerializer(serializers.ModelSerializer):
 
 
 class TriggerSerializer(serializers.ModelSerializer):
-
     monitor = serializers.PrimaryKeyRelatedField(
         queryset=Monitor.objects.all())
 
@@ -140,7 +143,7 @@ class AlertSerializer(serializers.ModelSerializer):
     class Meta:
         model = Alert
         fields = (
-            'id', 'trigger', 'timestamp', 'message', 'in_alarm',
+            'id', 'trigger', 'timestamp', 'in_alarm',
             'breaching_channels', 'created_at', 'updated_at', 'user'
         )
         read_only_fields = ('id', 'user')
@@ -152,8 +155,8 @@ class ArchiveBaseSerializer(serializers.HyperlinkedModelSerializer):
         queryset=Channel.objects.all())
     metric = serializers.PrimaryKeyRelatedField(
         queryset=Metric.objects.all())
-    minabs = serializers.ReadOnlyField()
-    maxabs = serializers.ReadOnlyField()
+    minabs = serializers.FloatField(read_only=True)
+    maxabs = serializers.FloatField(read_only=True)
 
 
 class ArchiveHourSerializer(ArchiveBaseSerializer):
@@ -196,15 +199,14 @@ class ArchiveMonthSerializer(ArchiveBaseSerializer):
         exclude = ("url",)
 
 
-class MonitorDetailSerializer(serializers.ModelSerializer):
-    channel_group = GroupSerializer(read_only=True)
-    metric = MetricSerializer(read_only=True)
+class MonitorDetailSerializer(MonitorSerializer):
     triggers = TriggerSerializer(many=True, read_only=True)
 
     class Meta:
         model = Monitor
         fields = (
-            'id', 'channel_group', 'metric', 'interval_type',
+            'id', 'channel_group', 'channel_group_name',
+            'metric_name', 'metric', 'interval_type',
             'interval_count', 'stat', 'name', 'created_at', 'updated_at',
             'user', 'triggers'
         )
@@ -212,12 +214,26 @@ class MonitorDetailSerializer(serializers.ModelSerializer):
 
 
 class AlertDetailSerializer(serializers.ModelSerializer):
-    trigger = TriggerSerializer(read_only=True)
+    trigger = serializers.PrimaryKeyRelatedField(read_only=True)
+    monitor = serializers.PrimaryKeyRelatedField(
+        source="trigger.monitor", read_only=True)
+    monitor_name = serializers.CharField(
+        source="trigger.monitor.name", read_only=True)
+    val1 = serializers.FloatField(source="trigger.val1", read_only=True)
+    val2 = serializers.FloatField(source="trigger.val2", read_only=True)
+    value_operator = serializers.CharField(
+        source="trigger.value_operator", read_only=True)
+    num_channels = serializers.IntegerField(
+        source="trigger.num_channels", read_only=True)
+    num_channels_operator = serializers.CharField(
+        source="trigger.num_channels_operator", read_only=True)
 
     class Meta:
         model = Alert
         fields = (
-            'id', 'trigger', 'timestamp', 'message', 'in_alarm',
-            'breaching_channels', 'created_at', 'updated_at', 'user'
+            'id', 'trigger', 'monitor', 'timestamp', 'in_alarm',
+            'val1', 'val2', 'value_operator', 'num_channels',
+            'num_channels_operator', 'breaching_channels', 'user',
+            'monitor_name'
         )
         read_only_fields = ('id', 'user')

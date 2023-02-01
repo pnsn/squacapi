@@ -1,4 +1,4 @@
-from squac.mixins import EnablePartialUpdateMixin
+from squac.mixins import EnablePartialUpdateMixin, OverrideParamsMixin
 from django_rest_passwordreset.serializers import TokenSerializer
 from django.utils.decorators import method_decorator
 from django.contrib.auth.models import Group
@@ -40,7 +40,7 @@ class ManageUserView(generics.RetrieveUpdateAPIView,
         return self.request.user
 
 
-class GroupViewSet(viewsets.ModelViewSet):
+class GroupViewSet(OverrideParamsMixin, viewsets.ModelViewSet):
     """Manage user permissions groups"""
     serializer_class = UserGroupSerializer
     permission_classes = (IsAuthenticated, IsAdminOrReadOnly, )

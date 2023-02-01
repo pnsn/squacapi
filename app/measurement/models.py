@@ -410,7 +410,6 @@ class Trigger(MeasurementBase):
                      timestamp=datetime.now(tz=pytz.UTC)):
         new_alert = Alert(trigger=self,
                           timestamp=timestamp,
-                          message="",
                           in_alarm=in_alarm,
                           user=self.user,
                           breaching_channels=breaching_channels)
@@ -542,7 +541,6 @@ class Alert(MeasurementBase):
         related_name='alerts'
     )
     timestamp = models.DateTimeField()
-    message = models.CharField(max_length=255)
     in_alarm = models.BooleanField(default=True)
     breaching_channels = models.JSONField(null=True)
 
