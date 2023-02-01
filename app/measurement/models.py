@@ -410,7 +410,6 @@ class Trigger(MeasurementBase):
                      timestamp=datetime.now(tz=pytz.UTC)):
         new_alert = Alert(trigger=self,
                           timestamp=timestamp,
-                          message="",
                           in_alarm=in_alarm,
                           user=self.user,
                           breaching_channels=breaching_channels)

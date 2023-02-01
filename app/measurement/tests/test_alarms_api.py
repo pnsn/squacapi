@@ -125,7 +125,6 @@ class PrivateAlarmAPITests(TestCase):
         self.alert = Alert.objects.create(
             trigger=self.trigger,
             timestamp=datetime(1970, 1, 1, tzinfo=pytz.UTC),
-            message='Alarm on channel group something something!',
             in_alarm=True,
             user=self.user
         )
@@ -205,14 +204,13 @@ class PrivateAlarmAPITests(TestCase):
         )
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data['trigger']['id'], self.trigger.id)
+        self.assertEqual(res.data['trigger'], self.trigger.id)
 
     def test_create_alert(self):
         url = reverse('measurement:alert-list')
         payload = {
             'trigger': self.trigger.id,
             'timestamp': datetime(1999, 12, 31, tzinfo=pytz.UTC),
-            'message': "What happened? I don't know",
             'in_alarm': False,
             'user': self.user
         }
@@ -724,14 +722,12 @@ class PrivateAlarmAPITests(TestCase):
         Alert.objects.create(
             trigger=self.trigger,
             timestamp=datetime(1975, 1, 1, tzinfo=pytz.UTC),
-            message='This one should come second!',
             in_alarm=True,
             user=self.user
         )
         Alert.objects.create(
             trigger=self.trigger,
             timestamp=datetime(1980, 1, 1, tzinfo=pytz.UTC),
-            message='This one should come first!',
             in_alarm=True,
             user=self.user
         )
@@ -770,7 +766,6 @@ class PrivateAlarmAPITests(TestCase):
         alert = Alert.objects.create(
             trigger=trigger,
             timestamp=datetime(1975, 1, 1, tzinfo=pytz.UTC),
-            message='',
             in_alarm=True,
             user=trigger.user,
             breaching_channels=breaching_channels

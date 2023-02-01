@@ -143,7 +143,7 @@ class AlertSerializer(serializers.ModelSerializer):
     class Meta:
         model = Alert
         fields = (
-            'id', 'trigger', 'timestamp', 'message', 'in_alarm',
+            'id', 'trigger', 'timestamp', 'in_alarm',
             'breaching_channels', 'created_at', 'updated_at', 'user'
         )
         read_only_fields = ('id', 'user')
