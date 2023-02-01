@@ -542,7 +542,6 @@ class Alert(MeasurementBase):
         related_name='alerts'
     )
     timestamp = models.DateTimeField()
-    message = models.CharField(max_length=255)
     in_alarm = models.BooleanField(default=True)
     breaching_channels = models.JSONField(null=True)
 
