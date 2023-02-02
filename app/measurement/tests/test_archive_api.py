@@ -15,10 +15,10 @@ import pytz
 from squac.test_mixins import sample_user
 
 '''Tests for all measurement models:
-    *
+    ./mg.sh "test measurement && flake8"
 
 to run only these tests:
-    ./mg.sh "test measurement && flake8"
+    ./mg.sh "test measurement.tests.test_archive_api && flake8"
 '''
 
 
@@ -155,10 +155,12 @@ class ArchiveApiTests(TestCase):
         self.grp.channels.add(self.chan1)
         self.grp.channels.add(self.chan2)
 
+        # Input values would be -2, 0, 0, 1
+        # for accurate min, max, mean, median, num_samps
         self.archive1 = ArchiveDay.objects.create(
             channel=self.chan1,
             metric=self.metric,
-            min=-2, max=1, mean=0, median=0, stdev=0, num_samps=1,
+            min=-2, max=1, mean=-0.25, median=0, stdev=0, num_samps=4,
             p05=0, p10=0, p90=0, p95=0,
             starttime=datetime(2019, 5, 5, 0, tzinfo=pytz.UTC),
             endtime=datetime(2019, 5, 6, 0, tzinfo=pytz.UTC)
@@ -192,10 +194,12 @@ class ArchiveApiTests(TestCase):
             kwargs={'pk': self.archive1.id}
         ) in res.data[0]["id"])
         # also check for calculated properties
-        self.assertEqual(res.data[0]["minabs"], min(abs(self.archive1.min),
-                                                    abs(self.archive1.max)))
-        self.assertEqual(res.data[0]["maxabs"], max(abs(self.archive1.min),
-                                                    abs(self.archive1.max)))
+        self.assertEqual(res.data[0]["minabs"],
+                         min(abs(self.archive1.min), abs(self.archive1.max)))
+        self.assertEqual(res.data[0]["maxabs"],
+                         max(abs(self.archive1.min), abs(self.archive1.max)))
+        self.assertEqual(res.data[0]["sum"],
+                         self.archive1.mean * self.archive1.num_samps)
 
     def test_get_multiple_archives(self):
         '''ensure requesting by channels and by group
