@@ -71,6 +71,7 @@ class AggregatedSerializer(serializers.Serializer):
     mean = serializers.FloatField()
     min = serializers.FloatField()
     max = serializers.FloatField()
+    sum = serializers.FloatField()
     minabs = serializers.FloatField()
     maxabs = serializers.FloatField()
     median = serializers.FloatField()

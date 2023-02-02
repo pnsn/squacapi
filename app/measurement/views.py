@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from django_filters import rest_framework as filters
 from squac.filters import CharInFilter, NumberInFilter
 from measurement.aggregates.percentile import Percentile
-from django.db.models import Avg, StdDev, Min, Max, Count, FloatField
+from django.db.models import Avg, StdDev, Min, Max, Sum, Count, FloatField
 from django.db.models.functions import (Coalesce, Abs, Least, Greatest)
 from squac.mixins import (SetUserMixin, DefaultPermissionsMixin,
                           OverrideParamsMixin, OverrideReadParamsMixin,
@@ -293,6 +293,7 @@ class AggregatedViewSet(IsAuthenticated, viewsets.ViewSet):
                 median=Percentile('value', percentile=0.5),
                 min=Min('value'),
                 max=Max('value'),
+                sum=Sum('value'),
                 minabs=Least(Abs(Min('value')), Abs(Max('value'))),
                 maxabs=Greatest(Abs(Min('value')), Abs(Max('value'))),
                 stdev=Coalesce(StdDev('value', sample=True), 0,

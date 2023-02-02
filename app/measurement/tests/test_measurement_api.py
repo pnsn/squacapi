@@ -444,6 +444,7 @@ class PrivateMeasurementAPITests(TestCase):
         self.assertAlmostEqual(np.median(values).item(), res.data[i]['median'])
         self.assertAlmostEqual(np.max(values).item(), res.data[i]['max'])
         self.assertAlmostEqual(np.min(values).item(), res.data[i]['min'])
+        self.assertAlmostEqual(np.sum(values).item(), res.data[i]['sum'])
         self.assertAlmostEqual(min(np.abs(np.min(values)),
                                    np.abs(np.max(values))).item(),
                                res.data[i]['minabs'])
