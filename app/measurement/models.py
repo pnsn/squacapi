@@ -650,6 +650,10 @@ class ArchiveBase(models.Model):
     def maxabs(self):
         return max(abs(self.min), abs(self.max))
 
+    @property
+    def sum(self):
+        return (self.mean * self.num_samps)
+
     def __str__(self):
         return (f"Archive of Metric: {str(self.metric)} "
                 f"Channel: {str(self.channel)} "

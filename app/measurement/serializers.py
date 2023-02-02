@@ -157,6 +157,7 @@ class ArchiveBaseSerializer(serializers.HyperlinkedModelSerializer):
         queryset=Metric.objects.all())
     minabs = serializers.FloatField(read_only=True)
     maxabs = serializers.FloatField(read_only=True)
+    sum = serializers.FloatField(read_only=True)
 
 
 class ArchiveHourSerializer(ArchiveBaseSerializer):
