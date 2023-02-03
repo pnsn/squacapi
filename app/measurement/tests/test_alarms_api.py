@@ -197,6 +197,41 @@ class PrivateAlarmAPITests(TestCase):
             else:
                 self.assertEqual(payload[key], getattr(trigger, key))
 
+    def test_trigger_in_alarm(self):
+        url = reverse('measurement:trigger-list')
+        payload = {
+            'monitor': self.monitor.id,
+            'val1': 15,
+            'val2': 20,
+            'num_channels': 3,
+            'user': self.user,
+            'email_list': [self.user.email]
+        }
+        res = self.client.post(url, payload)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
+        trigger = Trigger.objects.get(id=res.data['id'])
+
+        # should have no alert and default to False
+        self.assertEqual(res.data['in_alarm'], False)
+
+        # create alert with in_alarm True
+        Alert.objects.create(
+            trigger=trigger,
+            timestamp=datetime(1970, 1, 1, tzinfo=pytz.UTC),
+            in_alarm=True,
+            user=self.user
+        )
+        url = reverse(
+            'measurement:trigger-detail',
+            kwargs={'pk': trigger.id}
+        )
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        # new alert with in_alarm true should make trigger in_alarm true
+        self.assertEqual(res.data['in_alarm'], True)
+
     def test_get_alert(self):
         url = reverse(
             'measurement:alert-detail',

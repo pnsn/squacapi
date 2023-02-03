@@ -127,14 +127,27 @@ class TriggerSerializer(serializers.ModelSerializer):
     monitor = serializers.PrimaryKeyRelatedField(
         queryset=Monitor.objects.all())
 
+    in_alarm = serializers.SerializerMethodField()
+
     class Meta:
         model = Trigger
         fields = (
             'id', 'monitor', 'val1', 'val2', 'value_operator',
             'num_channels', 'num_channels_operator', 'email_list',
-            'created_at', 'updated_at', 'user', 'alert_on_out_of_alarm'
+            'created_at', 'updated_at', 'user',
+            'alert_on_out_of_alarm', 'in_alarm'
+
         )
         read_only_fields = ('id', 'user')
+
+    def get_in_alarm(self, obj):
+        """returns in_alarm state of most recent alert for trigger"""
+        alert = obj.get_latest_alert()
+
+        if alert:
+            return alert.in_alarm
+
+        return False
 
 
 class AlertSerializer(serializers.ModelSerializer):
