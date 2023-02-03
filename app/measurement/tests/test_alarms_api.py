@@ -197,7 +197,7 @@ class PrivateAlarmAPITests(TestCase):
             else:
                 self.assertEqual(payload[key], getattr(trigger, key))
 
-    def test_trigger_in_alarm(self):
+    def test_trigger_most_recent_alarm(self):
         url = reverse('measurement:trigger-list')
         payload = {
             'monitor': self.monitor.id,
@@ -212,8 +212,8 @@ class PrivateAlarmAPITests(TestCase):
 
         trigger = Trigger.objects.get(id=res.data['id'])
 
-        # should have no alert and default to False
-        self.assertEqual(res.data['in_alarm'], False)
+        # should have no alert
+        self.assertIsNone(res.data['latest_alert'])
 
         # create alert with in_alarm True
         Alert.objects.create(
@@ -226,11 +226,14 @@ class PrivateAlarmAPITests(TestCase):
             'measurement:trigger-detail',
             kwargs={'pk': trigger.id}
         )
-        res = self.client.get(url)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        res2 = self.client.get(url)
+        self.assertEqual(res2.status_code, status.HTTP_200_OK)
 
-        # new alert with in_alarm true should make trigger in_alarm true
-        self.assertEqual(res.data['in_alarm'], True)
+        # new alert with in_alarm true should make trigger have latest_alert
+        self.assertIsNotNone(res2.data['latest_alert'])
+        alert = Alert.objects.get(id=res2.data['latest_alert']['id'])
+        self.assertEqual(
+            alert.in_alarm, res2.data['latest_alert']['in_alarm'])
 
     def test_get_alert(self):
         url = reverse(

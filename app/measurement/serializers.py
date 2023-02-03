@@ -3,6 +3,7 @@ from .models import (Metric, Measurement,
                      Alert, ArchiveHour, ArchiveDay, ArchiveWeek, Monitor,
                      Trigger, ArchiveMonth)
 from nslc.models import Channel, Group
+from drf_yasg.utils import swagger_serializer_method
 
 
 class BulkMeasurementListSerializer(serializers.ListSerializer):
@@ -123,33 +124,6 @@ class MonitorSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'user')
 
 
-class TriggerSerializer(serializers.ModelSerializer):
-    monitor = serializers.PrimaryKeyRelatedField(
-        queryset=Monitor.objects.all())
-
-    in_alarm = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Trigger
-        fields = (
-            'id', 'monitor', 'val1', 'val2', 'value_operator',
-            'num_channels', 'num_channels_operator', 'email_list',
-            'created_at', 'updated_at', 'user',
-            'alert_on_out_of_alarm', 'in_alarm'
-
-        )
-        read_only_fields = ('id', 'user')
-
-    def get_in_alarm(self, obj):
-        """returns in_alarm state of most recent alert for trigger"""
-        alert = obj.get_latest_alert()
-
-        if alert:
-            return alert.in_alarm
-
-        return False
-
-
 class AlertSerializer(serializers.ModelSerializer):
     trigger = serializers.PrimaryKeyRelatedField(
         queryset=Trigger.objects.all())
@@ -161,6 +135,34 @@ class AlertSerializer(serializers.ModelSerializer):
             'breaching_channels', 'created_at', 'updated_at', 'user'
         )
         read_only_fields = ('id', 'user')
+
+
+class TriggerSerializer(serializers.ModelSerializer):
+    monitor = serializers.PrimaryKeyRelatedField(
+        queryset=Monitor.objects.all())
+
+    latest_alert = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Trigger
+        fields = (
+            'id', 'monitor', 'val1', 'val2', 'value_operator',
+            'num_channels', 'num_channels_operator', 'email_list',
+            'created_at', 'updated_at', 'user',
+            'alert_on_out_of_alarm', 'latest_alert'
+
+        )
+        read_only_fields = ('id', 'user')
+
+    @swagger_serializer_method(serializer_or_field=AlertSerializer)
+    def get_latest_alert(self, obj):
+        """returns most recent alert for trigger"""
+        alert = obj.get_latest_alert()
+
+        if alert:
+            return AlertSerializer(alert).data
+
+        return None
 
 
 class ArchiveBaseSerializer(serializers.HyperlinkedModelSerializer):
