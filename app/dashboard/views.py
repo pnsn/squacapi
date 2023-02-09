@@ -46,7 +46,8 @@ class BaseDashboardViewSet(SetUserMixin, DefaultPermissionsMixin,
     pass
 
 
-class DashboardViewSet(SharedPermissionsMixin, BaseDashboardViewSet):
+class DashboardViewSet(SharedPermissionsMixin, BaseDashboardViewSet,
+                       EnablePartialUpdateMixin):
     serializer_class = serializers.DashboardSerializer
     filter_class = DashboardFilter
 
