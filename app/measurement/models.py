@@ -428,27 +428,29 @@ class Trigger(MeasurementBase):
         create_new = False
         send_new = False
 
+        # Create alert whenever in alarm or when exiting alarm state
+        if in_alarm:
+            # always create an alert when in alarm
+            create_new = True
+
+            # if last alert does not exist or was not in alarm, send new one
+            if not alert or not alert.in_alarm:
+                send_new = True
+        else:
+            # Not in alarm state, is there an alert to cancel?
+            # If so, create new one saying in_alarm = False
+            if alert and alert.in_alarm:
+                create_new, send_new = True, self.alert_on_out_of_alarm
+
         if self.num_channels_operator == self.NumChannelsOperator.ANY:
             # Special treatment for num_channels_operator == ANY
             added, removed = self.get_breaching_change(
                 breaching_channels, reftime)
             if added:
                 # Always send new alert if new channels are added
-                create_new, send_new = True, True
+                send_new = True
             elif removed:
-                create_new, send_new = True, self.alert_on_out_of_alarm
-        else:
-            # Regular treatment for num_channels_operator != ANY
-            if in_alarm:
-                # In alarm state, does alert exist yet? If not, create a new
-                # one. Exist means the most recent one has in_alarm = True
-                if not alert or not alert.in_alarm:
-                    create_new, send_new = True, True
-            else:
-                # Not in alarm state, is there an alert to cancel?
-                # If so, create new one saying in_alarm = False
-                if alert and alert.in_alarm:
-                    create_new, send_new = True, self.alert_on_out_of_alarm
+                send_new = self.alert_on_out_of_alarm
 
         if create_new:
             alert = self.create_alert(in_alarm, breaching_channels, reftime)
