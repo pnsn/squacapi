@@ -128,6 +128,7 @@ class Monitor(MeasurementBase):
         default=Stat.SUM
     )
     name = models.CharField(max_length=255, default='')
+    do_daily_digest = models.BooleanField(default=False)
 
     def calc_interval_seconds(self):
         '''Return the number of seconds in the alarm interval'''
@@ -454,6 +455,11 @@ class Trigger(MeasurementBase):
                 send_new = True
             elif removed:
                 send_new = self.alert_on_out_of_alarm
+
+        # Make sure to not send individual alerts if daily digest is on.
+        # They can still be created
+        if self.monitor.do_daily_digest:
+            send_new = False
 
         if create_new:
             alert = self.create_alert(in_alarm, breaching_channels, reftime)
