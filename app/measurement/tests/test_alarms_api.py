@@ -521,7 +521,8 @@ class PrivateAlarmAPITests(TestCase):
         trigger = Trigger.objects.get(pk=2)
 
         alert = trigger.evaluate_alert(True)
-        self.assertEqual(2, alert.id)
+
+        self.assertEqual(81, alert.id)
         self.assertTrue(alert.in_alarm)
         self.assertFalse(send_alert.called)
 
@@ -649,6 +650,8 @@ class PrivateAlarmAPITests(TestCase):
         n_alerts2 = trigger.alerts.count()
         self.assertNotEqual(n_alerts1, n_alerts2)
         self.assertTrue(alert.in_alarm)
+        # trigger with num_channels_operator == ANY should send alert when
+        # the channels have changed even if still in alarm
         self.assertTrue(send_alert.called)
 
     @patch.object(Alert, 'send_alert')
@@ -670,8 +673,9 @@ class PrivateAlarmAPITests(TestCase):
             breaching_channels=breaching_channels
         )
         n_alerts2 = trigger.alerts.count()
-        self.assertEqual(n_alerts1, n_alerts2)
+        self.assertNotEqual(n_alerts1, n_alerts2)
         self.assertTrue(alert.in_alarm)
+        # no alert sent if same channels are breaching as previous alert
         self.assertFalse(send_alert.called)
 
     def test_evaluate_alarm(self):
@@ -698,7 +702,7 @@ class PrivateAlarmAPITests(TestCase):
         # already had an active alert, check that in_alarm is still True
         trigger = Trigger.objects.get(pk=2)
         alerts = trigger.alerts.all()
-        self.assertEqual(len(alerts), 1)
+        self.assertEqual(len(alerts), 2)
         # get most recent alert
         alert = alerts.latest('timestamp')
         self.assertTrue(alert.in_alarm)
@@ -729,7 +733,7 @@ class PrivateAlarmAPITests(TestCase):
         self.assertEqual(len(alerts), 0)
 
         all_alerts = Alert.objects.all()
-        self.assertEqual(len(all_alerts), 13)
+        self.assertEqual(len(all_alerts), 14)
 
     def test_evaluate_alarms(self):
         '''Test evaluate_alarm command'''
