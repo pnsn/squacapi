@@ -38,6 +38,7 @@ python $dest/app/manage.py migrate
 
 # if production, update cronjobs
 if [ $DEPLOYMENT_GROUP_NAME == 'jobs' || $DEPLOYMENT_GROUP_NAME == 'staging']; then
+    echo 'Cronjobs enabled'
     python $dest/app/manage.py crontab remove
     python $dest/app/manage.py crontab add
 fi
