@@ -47,12 +47,11 @@ INTERNAL_IPS = [
     '10.0.2.2'
 ]
 
+CRONJOBS = STAGING_CRONJOBS
+
 # cronjobs
 if os.environ.get('CRONJOBS_ENABLED') == 'production':
     CRONJOBS = PRODUCTION_CRONJOBS
-
-if os.environ.get('CRONJOBS_ENABLED') == 'staging':
-    CRONJOBS = STAGING_CRONJOBS
 
 # tricks to have debug toolbar when developing with docker
 if os.environ.get('USE_DOCKER') == 'yes':
