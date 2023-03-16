@@ -318,9 +318,32 @@ class PrivateAlarmAPITests(TestCase):
         self.assertEqual(2, len(q_list))
         for q_dict in q_list:
             if self.chan1.id == q_dict['channel']:
-                # self.assertEqual(self.chan1.id, q_dict['channel'])
                 self.assertEqual(1, q_dict['minabs'])
                 self.assertEqual(20, q_dict['maxabs'])
+
+    def test_agg_measurements_percentile(self):
+        # Create fake data to test median, p90, p95
+        endtime = datetime(2020, 1, 2, 3, 0, 0, 0, tzinfo=pytz.UTC)
+
+        for val in range(101):
+            Measurement.objects.create(
+                metric=self.metric,
+                channel=self.chan1,
+                value=val,
+                starttime=endtime - relativedelta(hours=5),
+                endtime=endtime - relativedelta(hours=4),
+                user=self.user
+            )
+
+        q_list = self.monitor.agg_measurements(endtime=endtime)
+
+        # This monitor had 2 channels, though only one has data
+        self.assertEqual(2, len(q_list))
+        for q_dict in q_list:
+            if self.chan1.id == q_dict['channel']:
+                self.assertEqual(50, q_dict['median'])
+                self.assertEqual(90, q_dict['p90'])
+                self.assertEqual(95, q_dict['p95'])
 
     def test_agg_measurements_missing_channel(self):
         monitor = Monitor.objects.get(pk=2)
@@ -547,7 +570,7 @@ class PrivateAlarmAPITests(TestCase):
 
         alert = trigger.evaluate_alert(True)
 
-        self.assertEqual(83, alert.id)
+        self.assertEqual(85, alert.id)
         self.assertTrue(alert.in_alarm)
         self.assertFalse(send_alert.called)
 

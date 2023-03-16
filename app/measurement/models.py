@@ -7,6 +7,7 @@ from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 
+from measurement.aggregates.percentile import Percentile
 from .validators import validate_email_list
 from nslc.models import Channel, Group
 
@@ -109,6 +110,9 @@ class Monitor(MeasurementBase):
         MAXIMUM = 'max', _('Max')
         MINABS = 'minabs', _('MinAbs')
         MAXABS = 'maxabs', _('MaxAbs')
+        MEDIAN = 'median', _('Median')
+        P90 = 'p90', _('P90')
+        P95 = 'p95', _('P95')
 
     channel_group = models.ForeignKey(
         Group,
@@ -191,7 +195,10 @@ class Monitor(MeasurementBase):
             max=Max('value'),
             min=Min('value'),
             minabs=Min(Abs('value')),
-            maxabs=Max(Abs('value'))
+            maxabs=Max(Abs('value')),
+            median=Percentile('value', percentile=0.5),
+            p90=Percentile('value', percentile=0.90),
+            p95=Percentile('value', percentile=0.95)
         )
 
         # Get default values if there are no measurements
@@ -202,7 +209,10 @@ class Monitor(MeasurementBase):
             max=Value(None, output_field=FloatField()),
             min=Value(None, output_field=FloatField()),
             maxabs=Value(None, output_field=FloatField()),
-            minabs=Value(None, output_field=FloatField())
+            minabs=Value(None, output_field=FloatField()),
+            median=Value(None, output_field=FloatField()),
+            p90=Value(None, output_field=FloatField()),
+            p95=Value(None, output_field=FloatField())
         )
 
         # Combine querysets in case of zero measurements. Kludgy but
