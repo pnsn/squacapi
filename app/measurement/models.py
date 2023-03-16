@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models import (Avg, Count, Max, Min, Sum, F, Value,
                               IntegerField, FloatField)
+from django.db.models.functions import (Abs, Least, Greatest)
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
@@ -106,6 +107,9 @@ class Monitor(MeasurementBase):
         AVERAGE = 'avg', _('Avg')
         MINIMUM = 'min', _('Min')
         MAXIMUM = 'max', _('Max')
+        MINABS = 'minabs', _('MinAbs')
+        MAXABS = 'maxabs', _('MaxAbs')
+
     channel_group = models.ForeignKey(
         Group,
         on_delete=models.CASCADE,
@@ -185,7 +189,9 @@ class Monitor(MeasurementBase):
             sum=Sum('value'),
             avg=Avg('value'),
             max=Max('value'),
-            min=Min('value')
+            min=Min('value'),
+            minabs=Min(Abs('value')),
+            maxabs=Max(Abs('value'))
         )
 
         # Get default values if there are no measurements
@@ -194,7 +200,9 @@ class Monitor(MeasurementBase):
             sum=Value(None, output_field=FloatField()),
             avg=Value(None, output_field=FloatField()),
             max=Value(None, output_field=FloatField()),
-            min=Value(None, output_field=FloatField())
+            min=Value(None, output_field=FloatField()),
+            maxabs=Value(None, output_field=FloatField()),
+            minabs=Value(None, output_field=FloatField())
         )
 
         # Combine querysets in case of zero measurements. Kludgy but
@@ -226,6 +234,17 @@ class Monitor(MeasurementBase):
             breaching_channels = trigger.get_breaching_channels(channel_values)
             in_alarm = trigger.in_alarm_state(breaching_channels, endtime)
             trigger.evaluate_alert(in_alarm, breaching_channels, endtime)
+
+        digesttime = datetime.now(tz=pytz.UTC) - relativedelta(
+            hour=0, minute=0, second=0, microsecond=0)
+        if self.do_daily_digest and endtime == digesttime:
+            self.send_daily_digest(digesttime)
+
+    def send_daily_digest(self, digesttime):
+        triggers = self.triggers.all()
+
+        for trigger in triggers:
+            text_desc = trigger.get_daily_digest(digesttime)
 
     def __str__(self):
         if not self.name:
@@ -494,6 +513,14 @@ class Trigger(MeasurementBase):
         desc += f'\n\nover the last {self.monitor.interval_count}'
         desc += f' {self.monitor.interval_type}{add_s}'
         return desc
+
+    def get_daily_digest(self, digesttime):
+        # - At top should be newly breaching channels, then below all breaching channels. 
+        # - With "been in alarm since" dates 
+        # - “latest monitor evaluation" value
+        alerts = self.alerts.filter(
+            timestamp__gte=digesttime - relativedelta(days=1),
+            timestamp__lte=digesttime).order_by('timestamp')
 
     def __str__(self):
         return (f"Monitor: {str(self.monitor)}, "

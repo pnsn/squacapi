@@ -16,6 +16,7 @@ from rest_framework.test import APIClient
 from rest_framework import status
 
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
 import pytz
 from squac.test_mixins import sample_user
 
@@ -296,6 +297,30 @@ class PrivateAlarmAPITests(TestCase):
         for res in q_list:
             self.assertEqual(res['count'], expected[res['channel']]['count'])
             self.assertEqual(res['sum'], expected[res['channel']]['sum'])
+
+    def test_agg_measurements_min_max_abs(self):
+        # Create fake data to test minabs, maxabs
+        endtime = datetime(2020, 1, 2, 3, 0, 0, 0, tzinfo=pytz.UTC)
+        vals = [-20, -1, 2, 5, 12]
+        for val in vals:
+            Measurement.objects.create(
+                metric=self.metric,
+                channel=self.chan1,
+                value=val,
+                starttime=endtime - relativedelta(hours=5),
+                endtime=endtime  - relativedelta(hours=4),
+                user=self.user
+            )
+
+        q_list = self.monitor.agg_measurements(endtime=endtime)
+
+        # This monitor had 2 channels, though only one has data
+        self.assertEqual(2, len(q_list))
+        for q_dict in q_list:
+            if self.chan1.id == q_dict['channel']:
+                # self.assertEqual(self.chan1.id, q_dict['channel'])
+                self.assertEqual(1, q_dict['minabs'])
+                self.assertEqual(20, q_dict['maxabs'])
 
     def test_agg_measurements_missing_channel(self):
         monitor = Monitor.objects.get(pk=2)
