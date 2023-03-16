@@ -1,7 +1,7 @@
 from django.db import models
 from django.db.models import (Avg, Count, Max, Min, Sum, F, Value,
                               IntegerField, FloatField)
-from django.db.models.functions import (Abs, Least, Greatest)
+from django.db.models.functions import Abs
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
@@ -515,8 +515,9 @@ class Trigger(MeasurementBase):
         return desc
 
     def get_daily_digest(self, digesttime):
-        # - At top should be newly breaching channels, then below all breaching channels. 
-        # - With "been in alarm since" dates 
+        # - At top should be newly breaching channels,
+        #   then below all breaching channels.
+        # - With "been in alarm since" dates
         # - “latest monitor evaluation" value
         alerts = self.alerts.filter(
             timestamp__gte=digesttime - relativedelta(days=1),

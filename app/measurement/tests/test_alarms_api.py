@@ -308,7 +308,7 @@ class PrivateAlarmAPITests(TestCase):
                 channel=self.chan1,
                 value=val,
                 starttime=endtime - relativedelta(hours=5),
-                endtime=endtime  - relativedelta(hours=4),
+                endtime=endtime - relativedelta(hours=4),
                 user=self.user
             )
 
@@ -547,7 +547,7 @@ class PrivateAlarmAPITests(TestCase):
 
         alert = trigger.evaluate_alert(True)
 
-        self.assertEqual(81, alert.id)
+        self.assertEqual(83, alert.id)
         self.assertTrue(alert.in_alarm)
         self.assertFalse(send_alert.called)
 
