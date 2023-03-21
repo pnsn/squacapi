@@ -582,6 +582,9 @@ class Trigger(MeasurementBase):
 
     def get_daily_trigger_digest(self, digesttime):
         """
+        digesttime is the time this is evaluated. So the code will actually
+        check what happened the day before.
+
         Return boolean of whether this trigger was in alarm today
         Then text description:
         - At top should be brief trigger description
@@ -605,9 +608,13 @@ class Trigger(MeasurementBase):
             add_s = 's' if self.num_channels > 1 else ''
             desc += f' {self.num_channels} channel{add_s}'
 
+        # Use check time to ensure digesttime is 00:00, and the trigger will be
+        # evaluated for the day before
+        checktime = digesttime - relativedelta(
+            hour=0, minute=0, second=0, microsecond=0)
         alerts = self.alerts.filter(
-            timestamp__gte=digesttime - relativedelta(days=1),
-            timestamp__lte=digesttime).order_by('timestamp')
+            timestamp__gte=checktime - relativedelta(days=1),
+            timestamp__lte=checktime).order_by('timestamp')
 
         # If there were no alerts today, return now.
         if len(alerts) == 0:
