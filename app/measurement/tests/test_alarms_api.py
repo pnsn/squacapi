@@ -16,6 +16,7 @@ from rest_framework.test import APIClient
 from rest_framework import status
 
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
 import pytz
 from squac.test_mixins import sample_user
 
@@ -297,6 +298,53 @@ class PrivateAlarmAPITests(TestCase):
             self.assertEqual(res['count'], expected[res['channel']]['count'])
             self.assertEqual(res['sum'], expected[res['channel']]['sum'])
 
+    def test_agg_measurements_min_max_abs(self):
+        # Create fake data to test minabs, maxabs
+        endtime = datetime(2020, 1, 2, 3, 0, 0, 0, tzinfo=pytz.UTC)
+        vals = [-20, -1, 2, 5, 12]
+        for val in vals:
+            Measurement.objects.create(
+                metric=self.metric,
+                channel=self.chan1,
+                value=val,
+                starttime=endtime - relativedelta(hours=5),
+                endtime=endtime - relativedelta(hours=4),
+                user=self.user
+            )
+
+        q_list = self.monitor.agg_measurements(endtime=endtime)
+
+        # This monitor had 2 channels, though only one has data
+        self.assertEqual(2, len(q_list))
+        for q_dict in q_list:
+            if self.chan1.id == q_dict['channel']:
+                self.assertEqual(1, q_dict['minabs'])
+                self.assertEqual(20, q_dict['maxabs'])
+
+    def test_agg_measurements_percentile(self):
+        # Create fake data to test median, p90, p95
+        endtime = datetime(2020, 1, 2, 3, 0, 0, 0, tzinfo=pytz.UTC)
+
+        for val in range(101):
+            Measurement.objects.create(
+                metric=self.metric,
+                channel=self.chan1,
+                value=val,
+                starttime=endtime - relativedelta(hours=5),
+                endtime=endtime - relativedelta(hours=4),
+                user=self.user
+            )
+
+        q_list = self.monitor.agg_measurements(endtime=endtime)
+
+        # This monitor had 2 channels, though only one has data
+        self.assertEqual(2, len(q_list))
+        for q_dict in q_list:
+            if self.chan1.id == q_dict['channel']:
+                self.assertEqual(50, q_dict['median'])
+                self.assertEqual(90, q_dict['p90'])
+                self.assertEqual(95, q_dict['p95'])
+
     def test_agg_measurements_missing_channel(self):
         monitor = Monitor.objects.get(pk=2)
         endtime = datetime(2018, 2, 1, 4, 30, 0, 0, tzinfo=pytz.UTC)
@@ -522,7 +570,6 @@ class PrivateAlarmAPITests(TestCase):
 
         alert = trigger.evaluate_alert(True)
 
-        self.assertEqual(81, alert.id)
         self.assertTrue(alert.in_alarm)
         self.assertFalse(send_alert.called)
 
@@ -973,3 +1020,28 @@ class PrivateAlarmAPITests(TestCase):
         # Compare results
         for q_item in q_list:
             self.assertEqual(q_item['sum'], chan_vals[q_item['channel']])
+
+    def test_check_daily_digest_no_alerts(self):
+        self.monitor.check_daily_digest()
+
+        # was an email sent? If no alerts then it shouldn't be
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_check_daily_digest_with_alerts(self):
+        # Create a couple alerts for this monitor
+        reftime = datetime(2020, 1, 2, 3, 0, 0, 0, tzinfo=pytz.UTC)
+
+        self.trigger.create_alert(True, [], timestamp=reftime + relativedelta(
+            hours=1))
+        self.trigger.create_alert(False, [], timestamp=reftime + relativedelta(
+            hours=4))
+        self.trigger.create_alert(True, [], timestamp=reftime + relativedelta(
+            hours=6))
+
+        self.monitor.check_daily_digest(digesttime=reftime + relativedelta(
+            days=1))
+
+        # was an email sent?
+        self.assertEqual(len(mail.outbox), 1)
+        for email in self.trigger.email_list:
+            self.assertTrue(email in mail.outbox[0].recipients())

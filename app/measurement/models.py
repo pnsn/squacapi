@@ -1,11 +1,13 @@
 from django.db import models
 from django.db.models import (Avg, Count, Max, Min, Sum, F, Value,
                               IntegerField, FloatField)
+from django.db.models.functions import Abs
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 
+from measurement.aggregates.percentile import Percentile
 from .validators import validate_email_list
 from nslc.models import Channel, Group
 
@@ -106,6 +108,12 @@ class Monitor(MeasurementBase):
         AVERAGE = 'avg', _('Avg')
         MINIMUM = 'min', _('Min')
         MAXIMUM = 'max', _('Max')
+        MINABS = 'minabs', _('MinAbs')
+        MAXABS = 'maxabs', _('MaxAbs')
+        MEDIAN = 'median', _('Median')
+        P90 = 'p90', _('P90')
+        P95 = 'p95', _('P95')
+
     channel_group = models.ForeignKey(
         Group,
         on_delete=models.CASCADE,
@@ -128,6 +136,7 @@ class Monitor(MeasurementBase):
         default=Stat.SUM
     )
     name = models.CharField(max_length=255, default='')
+    do_daily_digest = models.BooleanField(default=False)
 
     def calc_interval_seconds(self):
         '''Return the number of seconds in the alarm interval'''
@@ -184,7 +193,12 @@ class Monitor(MeasurementBase):
             sum=Sum('value'),
             avg=Avg('value'),
             max=Max('value'),
-            min=Min('value')
+            min=Min('value'),
+            minabs=Min(Abs('value')),
+            maxabs=Max(Abs('value')),
+            median=Percentile('value', percentile=0.5),
+            p90=Percentile('value', percentile=0.90),
+            p95=Percentile('value', percentile=0.95)
         )
 
         # Get default values if there are no measurements
@@ -193,7 +207,12 @@ class Monitor(MeasurementBase):
             sum=Value(None, output_field=FloatField()),
             avg=Value(None, output_field=FloatField()),
             max=Value(None, output_field=FloatField()),
-            min=Value(None, output_field=FloatField())
+            min=Value(None, output_field=FloatField()),
+            maxabs=Value(None, output_field=FloatField()),
+            minabs=Value(None, output_field=FloatField()),
+            median=Value(None, output_field=FloatField()),
+            p90=Value(None, output_field=FloatField()),
+            p95=Value(None, output_field=FloatField())
         )
 
         # Combine querysets in case of zero measurements. Kludgy but
@@ -225,6 +244,73 @@ class Monitor(MeasurementBase):
             breaching_channels = trigger.get_breaching_channels(channel_values)
             in_alarm = trigger.in_alarm_state(breaching_channels, endtime)
             trigger.evaluate_alert(in_alarm, breaching_channels, endtime)
+
+        # Set the digest to be evaluated at this time. Should it be a field?
+        digesttime = datetime.now(tz=pytz.UTC) - relativedelta(
+            hour=0, minute=0, second=0, microsecond=0)
+        endtimecheck = endtime - relativedelta(
+            minute=0, second=0, microsecond=0)
+        if self.do_daily_digest and endtimecheck == digesttime:
+            self.check_daily_digest(digesttime)
+
+    def check_daily_digest(self, digesttime=datetime.now(tz=pytz.UTC)):
+        # Get the date string for yesterday
+        yesterday_str = (
+            digesttime - relativedelta(days=1)).strftime("%Y-%m-%d")
+
+        triggers = self.triggers.all()
+        # Each trigger result is a tuple:
+        # (in/out of alarm, text description)
+        trigger_results = []
+        for trigger in triggers:
+            trigger_results.append(
+                trigger.get_daily_trigger_digest(digesttime))
+
+        n_in_alert = sum([1 for res in trigger_results if res[0]])
+        n_triggers = len(triggers)
+
+        message = ''
+        message += f'Daily digest for {yesterday_str} prepared at '
+        message += f'{datetime.now(tz=pytz.UTC).strftime("%Y-%m-%dT%H:%M %Z")}'
+
+        message += f'\n\nMonitor: {self.name}'
+        message += f'\nChannel group: {self.channel_group}'
+        message += f'\nMetric: {self.metric.name}'
+        message += f'\nChecking {self.stat} '
+        add_s = 's' if self.interval_count > 1 else ''
+        message += f'over {self.interval_count}'
+        message += f' {self.interval_type}{add_s}'
+
+        message += f'\n\n{n_in_alert} of {n_triggers} '
+        message += 'triggers were in alert over the last day'
+        line_break = '________________________________________________________'
+        for i, trigger_result in enumerate(trigger_results):
+            message += f'\n\n{line_break}\n\n'
+            message += f'TRIGGER {i} WAS {"" if trigger_result[0] else "NOT "}'
+            message += f'in alert during {yesterday_str}'
+            message += f'\n{trigger_result[1]}'
+
+        message += '\n\n\n'
+        # message += "Unsubscribe from this monitor's alert emails"
+
+        # Get emails for triggers that were in alarm
+        email_list = []
+        for i, trigger in enumerate(triggers):
+            if trigger_results[i][0]:
+                email_list += [email for email in trigger.email_list]
+
+        if not email_list:
+            # There is noone specified to send to
+            return
+
+        subject = f"SQUAC daily digest for '{self.__str__()}'"
+        subject += f", {yesterday_str}"
+        send_mail(subject,
+                  message,
+                  settings.EMAIL_NO_REPLY,
+                  [email for email in email_list],
+                  fail_silently=False,
+                  )
 
     def __str__(self):
         if not self.name:
@@ -455,6 +541,11 @@ class Trigger(MeasurementBase):
             elif removed:
                 send_new = self.alert_on_out_of_alarm
 
+        # Make sure to not send individual alerts if daily digest is on.
+        # They can still be created
+        if self.monitor.do_daily_digest:
+            send_new = False
+
         if create_new:
             alert = self.create_alert(in_alarm, breaching_channels, reftime)
             if send_new:
@@ -488,6 +579,76 @@ class Trigger(MeasurementBase):
         desc += f'\n\nover the last {self.monitor.interval_count}'
         desc += f' {self.monitor.interval_type}{add_s}'
         return desc
+
+    def get_daily_trigger_digest(self, digesttime):
+        """
+        digesttime is the time this is evaluated. So the code will actually
+        check what happened the day before.
+
+        Return boolean of whether this trigger was in alarm today
+        Then text description:
+        - At top should be brief trigger description
+        - Then summary of alerts for the day
+        - Then breaching channels, including breaching since times
+        """
+        # First generate the initial description of the trigger.
+        # Could use self.get_text_description(), but need to make it consistent
+        # for digest and "normal" alerts first
+        val = (self.val1, self.val2) if self.val2 is not None else self.val1
+        desc = ''
+        desc += f'Description: In alert if {self.monitor.stat} of'
+        desc += f' "{self.monitor.metric.name}" measurements was '
+        desc += f'{self.value_operator} {val} '
+        if self.num_channels_operator == self.NumChannelsOperator.ANY:
+            desc += 'for ANY channel'
+        elif self.num_channels_operator == self.NumChannelsOperator.ALL:
+            desc += 'for ALL channels'
+        else:
+            desc += f'for {self.num_channels_operator}'
+            add_s = 's' if self.num_channels > 1 else ''
+            desc += f' {self.num_channels} channel{add_s}'
+
+        # Use check time to ensure digesttime is 00:00, and the trigger will be
+        # evaluated for the day before
+        checktime = digesttime - relativedelta(
+            hour=0, minute=0, second=0, microsecond=0)
+        alerts = self.alerts.filter(
+            timestamp__gte=checktime - relativedelta(days=1),
+            timestamp__lte=checktime).order_by('timestamp')
+
+        # If there were no alerts today, return now.
+        if len(alerts) == 0:
+            return False, desc
+
+        # There were alerts, so categorize them and generate a summary
+        in_alarm_times = [
+            alert.timestamp.strftime('%H:%M') for alert in alerts
+            if alert.in_alarm
+        ]
+        out_of_alarm_times = [
+            alert.timestamp.strftime('%H:%M') for alert in alerts
+            if not alert.in_alarm
+        ]
+
+        desc += "\n\nSummary of alerts:"
+        desc += f"\nIn alert: {', '.join(in_alarm_times)}"
+        desc += f"\nOut of alert: {', '.join(out_of_alarm_times)}"
+
+        # Now add the list of breaching channels (first generate it)
+        channels_dict = {}
+        for alert in alerts:
+            for channel in alert.breaching_channels:
+                # Keep track of the most recent breaching time per channel
+                channels_dict[channel['channel']] = alert.timestamp
+
+        # Sort the channels
+        sorted_channels = sorted(channels_dict.keys())
+
+        for channel in sorted_channels:
+            desc += f"\n{channel:16s} - last breaching time: "
+            desc += f"{channels_dict[channel].strftime('%Y-%m-%dT%H:%M %Z')}"
+
+        return True, desc
 
     def __str__(self):
         return (f"Monitor: {str(self.monitor)}, "
