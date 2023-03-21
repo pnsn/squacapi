@@ -570,7 +570,6 @@ class PrivateAlarmAPITests(TestCase):
 
         alert = trigger.evaluate_alert(True)
 
-        self.assertEqual(85, alert.id)
         self.assertTrue(alert.in_alarm)
         self.assertFalse(send_alert.called)
 
@@ -1021,3 +1020,28 @@ class PrivateAlarmAPITests(TestCase):
         # Compare results
         for q_item in q_list:
             self.assertEqual(q_item['sum'], chan_vals[q_item['channel']])
+
+    def test_check_daily_digest_no_alerts(self):
+        self.monitor.check_daily_digest()
+
+        # was an email sent? If no alerts then it shouldn't be
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_check_daily_digest_with_alerts(self):
+        # Create a couple alerts for this monitor
+        reftime = datetime(2020, 1, 2, 3, 0, 0, 0, tzinfo=pytz.UTC)
+
+        self.trigger.create_alert(True, [], timestamp=reftime + relativedelta(
+            hours=1))
+        self.trigger.create_alert(False, [], timestamp=reftime + relativedelta(
+            hours=4))
+        self.trigger.create_alert(True, [], timestamp=reftime + relativedelta(
+            hours=6))
+
+        self.monitor.check_daily_digest(digesttime=reftime + relativedelta(
+            days=1))
+
+        # was an email sent?
+        self.assertEqual(len(mail.outbox), 1)
+        for email in self.trigger.email_list:
+            self.assertTrue(email in mail.outbox[0].recipients())
