@@ -299,16 +299,12 @@ class Monitor(MeasurementBase):
             if trigger_results[i][0]:
                 email_list += [email for email in trigger.email_list]
 
-        # if not email_list:
-        #     # There is noone specified to send to
-        #     return
+        if not email_list:
+            # There is noone specified to send to
+            return
 
         subject = f"SQUAC daily digest for '{self.__str__()}'"
         subject += f", {yesterday_str}"
-
-        # print(f'\nMessage:\n{message}')
-        # print(f'email_list: {email_list}')
-        # print(f'subject: {subject}')
         send_mail(subject,
                   message,
                   settings.EMAIL_NO_REPLY,
@@ -592,7 +588,9 @@ class Trigger(MeasurementBase):
         - Then summary of alerts for the day
         - Then breaching channels, including breaching since times
         """
-        # First generate the initial description of the trigger
+        # First generate the initial description of the trigger.
+        # Could use self.get_text_description(), but need to make it consistent
+        # for digest and "normal" alerts first
         val = (self.val1, self.val2) if self.val2 is not None else self.val1
         desc = ''
         desc += f'Description: In alert if {self.monitor.stat} of'
