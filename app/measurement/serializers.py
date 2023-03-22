@@ -118,8 +118,8 @@ class MonitorSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'channel_group', 'channel_group_name',
             'metric_name', 'metric', 'interval_type',
-            'interval_count', 'stat', 'name', 'created_at', 'updated_at',
-            'user'
+            'interval_count', 'stat', 'name', 'do_daily_digest',
+            'created_at', 'updated_at', 'user'
         )
         read_only_fields = ('id', 'user')
 
