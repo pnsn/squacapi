@@ -225,7 +225,7 @@ class MonitorDetailSerializer(MonitorSerializer):
             'id', 'channel_group', 'channel_group_name',
             'metric_name', 'metric', 'interval_type',
             'interval_count', 'stat', 'name', 'created_at', 'updated_at',
-            'user', 'triggers'
+            'user', 'triggers', 'do_daily_digest',
         )
         read_only_fields = ('id', 'user')
 
