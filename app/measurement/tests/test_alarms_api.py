@@ -1031,15 +1031,37 @@ class PrivateAlarmAPITests(TestCase):
         # Create a couple alerts for this monitor
         reftime = datetime(2020, 1, 2, 3, 0, 0, 0, tzinfo=pytz.UTC)
 
-        self.trigger.create_alert(True, [], timestamp=reftime + relativedelta(
-            hours=1))
-        self.trigger.create_alert(False, [], timestamp=reftime + relativedelta(
-            hours=4))
-        self.trigger.create_alert(True, [], timestamp=reftime + relativedelta(
-            hours=6))
+        ch1 = {
+            "sum": 5,
+            "channel": "UW:STA1:--:HNN",
+            "channel_id": 1
+        }
+        ch2 = {
+            "sum": 10,
+            "channel": "UW:STA2:--:HNN",
+            "channel_id": 2
+        }
+        ch3 = {
+            "sum": 15,
+            "channel": "UW:STA3:--:HNN",
+            "channel_id": 3
+        }
 
-        self.monitor.check_daily_digest(digesttime=reftime + relativedelta(
-            days=1))
+        self.trigger.create_alert(
+            True,
+            breaching_channels=[ch1, ch2, ch3],
+            timestamp=reftime + relativedelta(hours=1))
+        self.trigger.create_alert(
+            False,
+            breaching_channels=[ch1],
+            timestamp=reftime + relativedelta(hours=4))
+        self.trigger.create_alert(
+            True,
+            breaching_channels=[ch1, ch2],
+            timestamp=reftime + relativedelta(hours=6))
+
+        self.monitor.check_daily_digest(
+            digesttime=reftime + relativedelta(days=1))
 
         # was an email sent?
         self.assertEqual(len(mail.outbox), 1)

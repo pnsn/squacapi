@@ -282,6 +282,8 @@ class Monitor(MeasurementBase):
             # There is noone specified to send to
             return
 
+        # Could move some/all of this logic to the template and simply send a
+        # dict of this instance
         context = {
             'yesterday': digesttime - relativedelta(days=1),
             'now': datetime.now(tz=pytz.UTC),
@@ -577,7 +579,8 @@ class Trigger(MeasurementBase):
                 f'{self.num_channels_operator} {self.num_channels}')
             num_channels = self.num_channels
 
-        # Create context to send to render_to_string
+        # Create context to send to render_to_string. Could move some of this
+        # logic to the template and send a dict of this instance instead
         context = {
             'value': (
                 (self.val1, self.val2) if self.val2 is not None
