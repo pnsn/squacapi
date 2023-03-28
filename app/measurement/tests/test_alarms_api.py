@@ -1061,7 +1061,7 @@ class PrivateAlarmAPITests(TestCase):
             timestamp=reftime + relativedelta(hours=6))
 
         self.monitor.check_daily_digest(
-            digesttime=reftime + relativedelta(days=1))
+            digesttime=reftime + relativedelta(days=1), env='staging')
 
         # was an email sent?
         self.assertEqual(len(mail.outbox), 1)

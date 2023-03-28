@@ -228,8 +228,10 @@ class Monitor(MeasurementBase):
 
         return q_list
 
-    def evaluate_alarm(self, endtime=datetime.now(tz=pytz.UTC) - relativedelta(
-                       minute=0, second=0, microsecond=0)):
+    def evaluate_alarm(self,
+                       endtime=datetime.now(tz=pytz.UTC) - relativedelta(
+                           minute=0, second=0, microsecond=0),
+                       env='production'):
         '''
         Higher-level function that determines alarm state and calls other
         functions to create alerts if necessary. Default is to start on the
@@ -252,9 +254,11 @@ class Monitor(MeasurementBase):
         endtimecheck = endtime - relativedelta(
             minute=0, second=0, microsecond=0)
         if self.do_daily_digest and endtimecheck == digesttime:
-            self.check_daily_digest(digesttime)
+            self.check_daily_digest(digesttime, env=env)
 
-    def check_daily_digest(self, digesttime=datetime.now(tz=pytz.UTC)):
+    def check_daily_digest(self,
+                           digesttime=datetime.now(tz=pytz.UTC),
+                           env='production'):
         # Get the date string for yesterday
         yesterday_str = (
             digesttime - relativedelta(days=1)).strftime("%Y-%m-%d")
@@ -282,8 +286,18 @@ class Monitor(MeasurementBase):
             # There is noone specified to send to
             return
 
+        # Determine the base url
+        if env == 'production':
+            remote_host = "squac.pnsn.org"
+        elif env == 'staging':
+            remote_host = "staging-squac.pnsn.org"
+        elif env == 'localhost':
+            remote_host = "localhost:8000/"
+        else:
+            remote_host = "squac.pnsn.org"
+
         # Could move some/all of this logic to the template and simply send a
-        # dict of this instance
+        # dict of this instance?
         context = {
             'yesterday': digesttime - relativedelta(days=1),
             'now': datetime.now(tz=pytz.UTC),
@@ -297,7 +311,13 @@ class Monitor(MeasurementBase):
                 'latest value'
                 if (self.interval_type == self.IntervalType.LASTN)
                 else self.interval_type),
-            'trigger_contexts': trigger_contexts
+            'trigger_contexts': trigger_contexts,
+            'monitor_url': "https://{}/{}/{}".format(
+                remote_host, "monitors", self.id),
+            'channel_group_url': "https://{}/{}/{}".format(
+                remote_host, "channel-groups", self.channel_group.id),
+            'metric_url': "https://{}/{}/{}".format(
+                remote_host, "metrics", self.metric.id)
         }
 
         # render email text

@@ -13,25 +13,26 @@
     </head>
 
     <body>
-        <p>Daily digest for {{ yesterday|date:"Y-m-d" }}, prepared at {{ now|date:"Y-m-d H:i:s e" }}</p>
+        <h2>Daily digest for {{ yesterday|date:"Y-m-d" }}</h2>
+        <p>Prepared at {{ now|date:"Y-m-d H:i:s e" }}</p>
 
-        <p>Monitor: {{ name }}<br>
-        Channel group: {{ channel_group }}<br>
-        Metric: {{ metric }}<br>
+        <p>Monitor: <a href="{{ monitor_url }}">{{ name }}</a><br>
+        Channel group: <a href="{{ channel_group_url }}">{{ channel_group }}</a><br>
+        Metric: <a href="{{ metric_url }}">{{ metric }}</a><br>
         Checking {{ stat }} over {{ interval_count }} {{ interval_type }}{{ interval_count|pluralize }}</p>
 
         <p>{{ n_in_alert }} of {{ trigger_contexts|length }} triggers were in alert over the last day</p>
     {% for trigger_context in trigger_contexts %}
         <hr>
-        <p>TRIGGER {{ forloop.counter }} WAS {% if not trigger_context.in_alarm %}NOT{% endif %}
-        in alert during {{ yesterday|date:"Y-m-d" }}<br>
-        Description: {{ trigger_context.trigger_description|safe }}</p>
+        <h3>TRIGGER {{ forloop.counter }} WAS {% if not trigger_context.in_alarm %}NOT{% endif %}
+        in alert during {{ yesterday|date:"Y-m-d" }}</h3>
+        <p>Description: {{ trigger_context.trigger_description|safe }}</p>
     {% if trigger_context.in_alarm %}
-        <p>Summary of alerts:<br>
-        In alert: {{ trigger_context.in_alarm_times|safe|cut:"'" }}<br>
+        <h4>Summary of alerts:</h4>
+        <p>In alert: {{ trigger_context.in_alarm_times|safe|cut:"'" }}<br>
         Out of alert: {{ trigger_context.out_of_alarm_times|safe|cut:"'" }}</p>
     {% if trigger_context.breaching_channels %}
-        <p>Channels breaching during {{ yesterday|date:"Y-m-d" }}:</p>
+        <h4>Channels breaching during {{ yesterday|date:"Y-m-d" }}:</h4>
         <table>
             <tr>
                 <th>NSLC</th>
