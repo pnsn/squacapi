@@ -264,8 +264,7 @@ class Monitor(MeasurementBase):
             digesttime - relativedelta(days=1)).strftime("%Y-%m-%d")
 
         triggers = self.triggers.all()
-        # Each trigger result is a tuple:
-        # (in/out of alarm, text description)
+        # Get trigger contexts - information about the previous day
         trigger_contexts = []
         for trigger in triggers:
             trigger_contexts.append(
@@ -676,10 +675,18 @@ class Trigger(MeasurementBase):
                 # Keep track of the most recent breaching time per channel
                 channels_dict[channel['channel']] = alert.timestamp
 
+        # Sort the channels by NSLC
+        channels_list = []
+        for channel_name in sorted(channels_dict.keys()):
+            channels_list.append({
+                'channel': channel_name,
+                'timestamp': channels_dict[channel_name]
+            })
+
         trigger_context['in_alarm'] = True
         trigger_context['in_alarm_times'] = in_alarm_times
         trigger_context['out_of_alarm_times'] = out_of_alarm_times
-        trigger_context['breaching_channels'] = channels_dict
+        trigger_context['breaching_channels'] = channels_list
 
         return trigger_context
 

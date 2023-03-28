@@ -17,8 +17,8 @@ Out of alert: {{ trigger_context.out_of_alarm_times|safe|cut:"'" }}
 {% if trigger_context.breaching_channels %}
 Channels breaching during {{ yesterday|date:"Y-m-d" }}:
 {{ "NSLC"|ljust:"17" }} Last breaching date
-{% for channel, breaching_date in trigger_context.breaching_channels.items %}
-{{ channel|ljust:"17" }} {{ breaching_date|date:"Y-m-d H:i:s" }}
+{% for breaching_channel in trigger_context.breaching_channels %}
+{{ breaching_channel.channel|ljust:"17" }} {{ breaching_channel.timestamp|date:"Y-m-d H:i:s" }}
 {% endfor %}
 {% endif %}
 {% endif %}

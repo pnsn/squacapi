@@ -38,10 +38,10 @@
                 <th>NSLC</th>
                 <th>Last breaching date</th>
             </tr>
-        {% for channel, breaching_date in trigger_context.breaching_channels.items %}
+        {% for breaching_channel in trigger_context.breaching_channels %}
             <tr>
-                <td>{{ channel }}</td>
-                <td>{{ breaching_date|date:"Y-m-d H:i:s" }}</td>
+                <td>{{ breaching_channel.channel }}</td>
+                <td>{{ breaching_channel.timestamp|date:"Y-m-d H:i:s" }}</td>
             </tr>
         {% endfor %}
         </table>
