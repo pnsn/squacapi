@@ -4,6 +4,9 @@ from .models import (Metric, Measurement,
                      Trigger, ArchiveMonth)
 from nslc.models import Channel, Group
 from drf_yasg.utils import swagger_serializer_method
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
+import json
 
 
 class BulkMeasurementListSerializer(serializers.ListSerializer):
@@ -137,17 +140,42 @@ class AlertSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'user')
 
 
+class EmailListFieldSerializer(serializers.CharField):
+    """
+        Custom serializer for list of emails
+    """
+
+    def to_representation(self, value):
+        return ", ".join(value)
+
+    def to_internal_value(self, data):
+        if not data:
+            return list
+        if isinstance(data, list):
+            return data
+        if isinstance(data, str):
+            return [address.strip() for address in data.split(',')]
+        else:
+            raise ValidationError(
+                _(f"Invalid input type. Requires str or list,"
+                  f" this is of type {type(data)}")
+            )
+
+
 class TriggerSerializer(serializers.ModelSerializer):
     monitor = serializers.PrimaryKeyRelatedField(
         queryset=Monitor.objects.all())
 
     latest_alert = serializers.SerializerMethodField()
 
+    emails = EmailListFieldSerializer(
+        max_length=100, required=False, allow_blank=True, default=list)
+
     class Meta:
         model = Trigger
         fields = (
             'id', 'monitor', 'val1', 'val2', 'value_operator',
-            'num_channels', 'num_channels_operator', 'email_list',
+            'num_channels', 'num_channels_operator', 'emails',
             'created_at', 'updated_at', 'user',
             'alert_on_out_of_alarm', 'latest_alert'
 
@@ -163,6 +191,11 @@ class TriggerSerializer(serializers.ModelSerializer):
             return AlertSerializer(alert).data
 
         return None
+
+    def validate_emails(self, value):
+        if value == '' or value is None:
+            return list()
+        return value
 
 
 class ArchiveBaseSerializer(serializers.HyperlinkedModelSerializer):

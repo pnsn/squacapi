@@ -20,6 +20,7 @@ from measurement import serializers
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from measurement.params import measurement_params
+from squac.mixins import EnablePartialUpdateMixin
 
 
 def check_measurement_params(params):
@@ -178,7 +179,7 @@ class MeasurementViewSet(MeasurementBaseViewSet):
         return super().list(self, request, *args, **kwargs)
 
 
-class MonitorViewSet(MonitorBaseViewSet):
+class MonitorViewSet(MonitorBaseViewSet, EnablePartialUpdateMixin):
     serializer_class = serializers.MonitorSerializer
     filter_class = MonitorFilter
 
@@ -194,7 +195,7 @@ class MonitorViewSet(MonitorBaseViewSet):
         return self.serializer_class
 
 
-class TriggerViewSet(MonitorBaseViewSet):
+class TriggerViewSet(MonitorBaseViewSet, EnablePartialUpdateMixin):
     serializer_class = serializers.TriggerSerializer
     filter_class = TriggerFilter
 

@@ -26,6 +26,8 @@ def password_reset_token_created(sender, instance, reset_password_token,
     except KeyError:
         remote_host = "squac.pnsn.org"
 
+    print(remote_host)
+
     context = {
         'user': reset_password_token.user,
         'username': reset_password_token.user.email,

@@ -5,6 +5,7 @@ from django.core.management import call_command
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
+import json
 # from django.db.models import Avg, Count, Max, Min, Sum
 
 from measurement.models import (Monitor, Trigger, Alert, Measurement,
@@ -121,7 +122,7 @@ class PrivateAlarmAPITests(TestCase):
             value_operator=Trigger.ValueOperator.WITHIN,
             num_channels=5,
             user=self.user,
-            email_list=[self.user.email]
+            emails=[self.user.email]
         )
         self.alert = Alert.objects.create(
             trigger=self.trigger,
@@ -187,9 +188,10 @@ class PrivateAlarmAPITests(TestCase):
             'val2': 20,
             'num_channels': 3,
             'user': self.user,
-            'email_list': [self.user.email]
+            'emails': [self.user.email]
         }
         res = self.client.post(url, payload)
+
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         trigger = Trigger.objects.get(id=res.data['id'])
         for key in payload.keys():
@@ -206,7 +208,7 @@ class PrivateAlarmAPITests(TestCase):
             'val2': 20,
             'num_channels': 3,
             'user': self.user,
-            'email_list': [self.user.email]
+            'emails': [self.user.email]
         }
         res = self.client.post(url, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
@@ -481,7 +483,7 @@ class PrivateAlarmAPITests(TestCase):
             value_operator=Trigger.ValueOperator.GREATER_THAN,
             num_channels_operator=Trigger.NumChannelsOperator.ALL,
             user=self.user,
-            email_list=[self.user.email]
+            emails=[self.user.email]
         )
         breaching_channels = [
             {
@@ -794,7 +796,7 @@ class PrivateAlarmAPITests(TestCase):
 
         self.assertEqual(len(mail.outbox), 1)
         self.assertTrue(self.alert.get_email_message() in mail.outbox[0].body)
-        for email in self.alert.trigger.email_list:
+        for email in self.alert.trigger.emails:
             self.assertTrue(email in mail.outbox[0].recipients())
 
     def test_evaluate_alarms_filter_metric(self):
@@ -898,7 +900,7 @@ class PrivateAlarmAPITests(TestCase):
                 value_operator=Trigger.ValueOperator.WITHIN,
                 num_channels=5,
                 user=user,
-                email_list=email_list
+                emails=email_list
             )
         if flag == 0:
             create_trigger(self.monitor, self.user)
@@ -908,9 +910,9 @@ class PrivateAlarmAPITests(TestCase):
         if flag == 1:
             test_str = 'Invalid input type'
         if flag == 2:
-            test_str = 'Invalid email address'
+            test_str = 'Enter a valid email address'
 
-        with self.assertRaisesRegex(ValidationError, test_str + '*'):
+        with self.assertRaisesRegex(ValidationError, test_str):
             create_trigger(self.monitor, self.user)
 
     def test_trigger_email_list(self):
@@ -921,13 +923,42 @@ class PrivateAlarmAPITests(TestCase):
             2: invalid email(s)
         """
         self.check_email_list('user', flag=2)
-        self.check_email_list('user@gmail.com', flag=0)
         self.check_email_list(['user'], flag=2)
         self.check_email_list(['user@gmail.com'], flag=0)
         self.check_email_list(['user@gmail.com', 'user'], flag=2)
         self.check_email_list(['user@gmail.com', 'user', 'other'], flag=2)
         self.check_email_list(['user@gmail.com', 'new@uw.edu'], flag=0)
         self.check_email_list({'email': 'user@gmail.com'}, flag=1)
+        self.check_email_list([], flag=0)
+        self.check_email_list(None, flag=0)
+
+    def check_trigger_email_field(self, emails, expected):
+        ''' Creates trigger with given email list and compares results'''
+
+        url = reverse('measurement:trigger-detail',
+                      kwargs={'pk': self.trigger.id})
+        payload = {
+            'emails': emails
+        }
+        res = self.client.patch(url, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        trigger = Trigger.objects.get(id=self.trigger.id)
+
+        self.assertEqual(getattr(trigger, "emails"), expected)
+
+    def test_update_trigger_with_email_field(self):
+        '''
+            Email field should take in string or array of strings
+            validate & store as array field 
+        '''
+
+        self.check_trigger_email_field('user@pnsn.org', ['user@pnsn.org'])
+        self.check_trigger_email_field('', [])
+        self.check_trigger_email_field(['user@pnsn.org'], ['user@pnsn.org'])
+        self.check_trigger_email_field(
+            'user@pnsn.org,user2@pnsn.org',
+            ['user@pnsn.org', 'user2@pnsn.org'])
 
     def test_val2_is_none_error(self):
         with self.assertRaisesRegex(ValidationError,
@@ -938,7 +969,7 @@ class PrivateAlarmAPITests(TestCase):
                 value_operator=Trigger.ValueOperator.WITHIN,
                 num_channels=5,
                 user=self.user,
-                email_list=self.user.email
+                emails=[self.user.email]
             )
 
     def test_val2_is_less_than_val1_error(self):
@@ -951,7 +982,7 @@ class PrivateAlarmAPITests(TestCase):
                 value_operator=Trigger.ValueOperator.WITHIN,
                 num_channels=5,
                 user=self.user,
-                email_list=self.user.email
+                emails=[self.user.email]
             )
 
     def test_num_channels_is_none_error(self):
@@ -963,7 +994,7 @@ class PrivateAlarmAPITests(TestCase):
                 value_operator=Trigger.ValueOperator.GREATER_THAN,
                 num_channels_operator=Trigger.NumChannelsOperator.GREATER_THAN,
                 user=self.user,
-                email_list=self.user.email
+                emails=[self.user.email]
             )
 
     def test_reset_alert_on_monitor_change(self):
@@ -1043,5 +1074,5 @@ class PrivateAlarmAPITests(TestCase):
 
         # was an email sent?
         self.assertEqual(len(mail.outbox), 1)
-        for email in self.trigger.email_list:
+        for email in self.trigger.emails:
             self.assertTrue(email in mail.outbox[0].recipients())

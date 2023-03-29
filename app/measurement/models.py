@@ -15,8 +15,9 @@ from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 import pytz
 import operator
-
+from measurement.fields import EmailListArrayField
 from bulk_update_or_create import BulkUpdateOrCreateQuerySet
+from django.contrib.postgres.fields import ArrayField
 
 
 class MeasurementBase(models.Model):
@@ -294,12 +295,12 @@ class Monitor(MeasurementBase):
         # message += "Unsubscribe from this monitor's alert emails"
 
         # Get emails for triggers that were in alarm
-        email_list = []
+        emails = []
         for i, trigger in enumerate(triggers):
             if trigger_results[i][0]:
-                email_list += [email for email in trigger.email_list]
+                emails += [email for email in trigger.emails]
 
-        if not email_list:
+        if not emails:
             # There is noone specified to send to
             return
 
@@ -308,7 +309,7 @@ class Monitor(MeasurementBase):
         send_mail(subject,
                   message,
                   settings.EMAIL_NO_REPLY,
-                  [email for email in email_list],
+                  [email for email in emails],
                   fail_silently=False,
                   )
 
@@ -396,7 +397,10 @@ class Trigger(MeasurementBase):
     alert_on_out_of_alarm = models.BooleanField(default=False)
     email_list = models.JSONField(blank=True,
                                   null=True,
+                                  default=list,
                                   validators=[validate_email_list, ])
+    emails = EmailListArrayField(models.EmailField(
+        null=True, blank=True), null=True, blank=True, default=list)
 
     # channel_value is dict
     def is_breaching(self, channel_value):
@@ -677,21 +681,18 @@ class Trigger(MeasurementBase):
             raise ValidationError(
                 _('num_channels must be defined when using'
                   f' {self.num_channels_operator}'))
-        # Make sure email_list is an actual list
-        if isinstance(self.email_list, str):
-            self.email_list = [self.email_list]
 
     def save(self, *args, **kwargs):
         """
         Do regular save except also validate fields. This doesn't happen
         automatically on save. Also reset alerts associated with this trigger
         """
+
         # Validate fields
         try:
             self.full_clean()
         except ValidationError:
             raise
-
         super().save(*args, **kwargs)  # Call the "real" save() method.
 
         # Create a new alert with in_alarm = False. Should happen after trigger
@@ -755,7 +756,7 @@ class Alert(MeasurementBase):
         return msg
 
     def send_alert(self):
-        if not self.trigger.email_list:
+        if not self.trigger.emails:
             # There is noone specified to send to
             return False
         in_out = "IN" if self.in_alarm else "OUT OF"
@@ -764,7 +765,7 @@ class Alert(MeasurementBase):
         send_mail(subject,
                   message,
                   settings.EMAIL_NO_REPLY,
-                  [email for email in self.trigger.email_list],
+                  [email for email in self.trigger.emails],
                   fail_silently=False,
                   )
         return True
