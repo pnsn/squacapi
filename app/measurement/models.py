@@ -16,6 +16,7 @@ from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 import pytz
 import operator
+import os
 
 from bulk_update_or_create import BulkUpdateOrCreateQuerySet
 
@@ -230,8 +231,7 @@ class Monitor(MeasurementBase):
 
     def evaluate_alarm(self,
                        endtime=datetime.now(tz=pytz.UTC) - relativedelta(
-                           minute=0, second=0, microsecond=0),
-                       env='production'):
+                           minute=0, second=0, microsecond=0)):
         '''
         Higher-level function that determines alarm state and calls other
         functions to create alerts if necessary. Default is to start on the
@@ -254,11 +254,10 @@ class Monitor(MeasurementBase):
         endtimecheck = endtime - relativedelta(
             minute=0, second=0, microsecond=0)
         if self.do_daily_digest and endtimecheck == digesttime:
-            self.check_daily_digest(digesttime, env=env)
+            self.check_daily_digest(digesttime)
 
     def check_daily_digest(self,
-                           digesttime=datetime.now(tz=pytz.UTC),
-                           env='production'):
+                           digesttime=datetime.now(tz=pytz.UTC)):
         # Get the date string for yesterday
         yesterday_str = (
             digesttime - relativedelta(days=1)).strftime("%Y-%m-%d")
@@ -286,6 +285,7 @@ class Monitor(MeasurementBase):
             return
 
         # Determine the base url
+        env = os.environ.get('SQUAC_ENVIRONMENT')
         if env == 'production':
             remote_host = "squac.pnsn.org"
         elif env == 'staging':

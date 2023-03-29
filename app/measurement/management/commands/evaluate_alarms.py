@@ -17,10 +17,6 @@ class Command(BaseCommand):
                             help='Alarms to check should contain these\
                                   metrics',
                             default=[])
-        parser.add_argument('--env',
-                            choices=['staging', 'production', 'localhost'],
-                            help=('Which environment to run this'),
-                            default='production')
 
     def handle(self, *args, **options):
         '''method called by manager'''
@@ -39,4 +35,4 @@ class Command(BaseCommand):
 
         # Evaluate each alarm
         for monitor in monitors:
-            monitor.evaluate_alarm(env=options['env'])
+            monitor.evaluate_alarm()
