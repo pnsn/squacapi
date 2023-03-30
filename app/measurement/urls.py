@@ -9,6 +9,7 @@ router.register('measurements', views.MeasurementViewSet,
                 basename='measurement')
 router.register('monitors', views.MonitorViewSet, basename='monitor')
 router.register('triggers', views.TriggerViewSet, basename='trigger')
+
 router.register('alerts', views.AlertViewSet, basename='alert')
 router.register('hour-archives', views.ArchiveHourViewSet,
                 basename='archive-hour')
@@ -21,4 +22,14 @@ router.register('month-archives', views.ArchiveMonthViewSet,
 router.register('aggregated', views.AggregatedViewSet,
                 basename='aggregated')
 app_name = "measurement"
-urlpatterns = [path('', include(router.urls))]
+urlpatterns = [
+    # path('triggers/<uid>/unsubscribe/<token>/',
+    #      views.TriggerUnsubscribeViewSet.as_view(
+    #          {
+    #              'get': 'retrieve',
+    #              'put': 'update'
+    #          }
+    #      ),
+    #      name='unsubscribe'),
+    path('', include(router.urls))
+]

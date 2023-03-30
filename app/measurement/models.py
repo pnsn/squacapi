@@ -17,7 +17,8 @@ import pytz
 import operator
 from measurement.fields import EmailListArrayField
 from bulk_update_or_create import BulkUpdateOrCreateQuerySet
-from django.contrib.postgres.fields import ArrayField
+from django.core.signing import Signer, BadSignature
+from django.urls import reverse
 
 
 class MeasurementBase(models.Model):
@@ -400,7 +401,7 @@ class Trigger(MeasurementBase):
                                   default=list,
                                   validators=[validate_email_list, ])
     emails = EmailListArrayField(models.EmailField(
-        null=True, blank=True), null=True, blank=True, default=list)
+        null=True, blank=True), null=True, blank=True)
 
     # channel_value is dict
     def is_breaching(self, channel_value):
@@ -653,6 +654,28 @@ class Trigger(MeasurementBase):
             desc += f"{channels_dict[channel].strftime('%Y-%m-%dT%H:%M %Z')}"
 
         return True, desc
+
+    def create_unsubscribe_link(self):
+        token = self.make_token(self.pk)
+        return reverse('measurement:unsubscribe',
+                       kwargs={'uid': self.pk, 'token': token})
+
+    def make_token(self, id):
+        id, token = Signer(salt="trigger").sign(id).split(":", 1)
+        return token
+
+    def check_token(self, token):
+        try:
+            key = '%s:%s' % (self.pk, token)
+            Signer(salt="trigger").unsign(key)
+        except BadSignature:
+            return False
+        return True
+
+    def unsubscribe(self, email, unsubscribe):
+        print(f"unsubscribe {email}")
+        if self.emails:
+            print(f" unsubscribe {email in self.emails}")
 
     def __str__(self):
         return (f"Monitor: {str(self.monitor)}, "

@@ -7,6 +7,7 @@ from drf_yasg.utils import swagger_serializer_method
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 import json
+from measurement.fields import EmailListArrayField
 
 
 class BulkMeasurementListSerializer(serializers.ListSerializer):
@@ -150,7 +151,7 @@ class EmailListFieldSerializer(serializers.CharField):
 
     def to_internal_value(self, data):
         if not data:
-            return list
+            return None
         if isinstance(data, list):
             return data
         if isinstance(data, str):
@@ -167,16 +168,15 @@ class TriggerSerializer(serializers.ModelSerializer):
         queryset=Monitor.objects.all())
 
     latest_alert = serializers.SerializerMethodField()
-
     emails = EmailListFieldSerializer(
-        max_length=100, required=False, allow_blank=True, default=list)
+        max_length=100, required=False, allow_blank=True)
 
     class Meta:
         model = Trigger
         fields = (
             'id', 'monitor', 'val1', 'val2', 'value_operator',
-            'num_channels', 'num_channels_operator', 'emails',
-            'created_at', 'updated_at', 'user',
+            'num_channels', 'num_channels_operator',
+            'created_at', 'updated_at', 'user', 'emails',
             'alert_on_out_of_alarm', 'latest_alert'
 
         )
@@ -193,8 +193,8 @@ class TriggerSerializer(serializers.ModelSerializer):
         return None
 
     def validate_emails(self, value):
-        if value == '' or value is None:
-            return list()
+        if value == '':
+            return None
         return value
 
 
@@ -287,3 +287,17 @@ class AlertDetailSerializer(serializers.ModelSerializer):
             'monitor_name'
         )
         read_only_fields = ('id', 'user')
+
+
+class TriggerUnsubscribeSerializer(serializers.Serializer):
+    unsubscribe_all = serializers.BooleanField(required=True)
+    email = serializers.EmailField(required=True)
+
+    def save(self, trigger):
+        print("save function")
+        unsubscribe = self.validated_data['unsubscribe_all']
+        email = self.validated_data['email']
+        if trigger is not None:
+            trigger.unsubscribe(
+                email, unsubscribe)
+        print(f"save serializer {email}")

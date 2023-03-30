@@ -1,5 +1,5 @@
 
-from rest_framework import viewsets
+from rest_framework import viewsets, views
 from rest_framework.permissions import IsAuthenticated
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
@@ -21,6 +21,10 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from measurement.params import measurement_params
 from squac.mixins import EnablePartialUpdateMixin
+from django.http import HttpResponseNotFound, HttpResponse
+from django.shortcuts import render, redirect, get_object_or_404
+from rest_framework.renderers import TemplateHTMLRenderer
+from rest_framework.decorators import action
 
 
 def check_measurement_params(params):
@@ -205,6 +209,36 @@ class TriggerViewSet(MonitorBaseViewSet, EnablePartialUpdateMixin):
             return queryset
         return queryset.filter(user=self.request.user)
 
+    @action(detail=True, methods=['get', 'post', ],
+            url_path='unsubscribe/(?P<token>[^/.]+)',
+            renderer_classes=[TemplateHTMLRenderer],
+            serializer_class=serializers.TriggerUnsubscribeSerializer)
+    def unsubscribe(self, request, pk, token):
+        trigger = self.retrieve_trigger(token)
+
+        if trigger is not None:
+            serializer = self.get_serializer(
+                data=request.data)
+            if serializer.is_valid() and request.method == 'POST':
+                serializer.save(trigger)
+                return HttpResponse('<h1>success!</h1>')
+
+            return Response({'pk': pk, "serializer": serializer,
+                             'trigger': trigger,
+                             'token': token}, template_name="unsubscribe.html")
+        else:
+            return HttpResponseNotFound('<h1>Trigger not found</h1>')
+
+    def retrieve_trigger(self, token):
+        try:
+            trigger = self.get_object()
+        except (TypeError, ValueError, OverflowError, Trigger.DoesNotExist):
+            trigger = None
+            print("bad trigger")
+        if trigger is not None and trigger.check_token(token):
+            return trigger
+        return None
+
 
 class AlertViewSet(MonitorBaseViewSet):
     serializer_class = serializers.AlertSerializer
@@ -256,7 +290,7 @@ class AggregatedViewSet(IsAuthenticated, viewsets.ViewSet):
         cannot be used
     '''
 
-    @swagger_auto_schema(
+    @ swagger_auto_schema(
         query_serializer=serializers.AggregatedParametersSerializer,
         manual_parameters=measurement_params)
     def list(self, request):
@@ -329,3 +363,39 @@ class AggregatedViewSet(IsAuthenticated, viewsets.ViewSet):
         serializer = serializers.AggregatedSerializer(
             instance=aggs_list, many=True)
         return Response(serializer.data)
+
+
+class TriggerUnsubscribeViewSet(viewsets.ViewSet):
+
+    # def post(request, email, ):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'unsubscribe.html'
+
+    def update(self, request, uid, token):
+        print("Update called")
+        serializer = serializers.TriggerUnsubscribeSerializer(
+            data=request.data
+        )
+        trigger = Trigger.objects.get(pk=uid)
+
+        if not serializer.is_valid(raise_exception=True):
+            print("serializer not valid")
+            print(serializer.errors())
+            print(f"is jnot vlaid {serializer.validated_data}")
+            return Response(request.data)
+
+        serializer.save(trigger=trigger)
+        return HttpResponse('<h1>You have been unsubscribed</h1>')
+
+    def retrieve(self, request, uid, token):
+        print("retrieve")
+        try:
+            trigger = Trigger.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, Trigger.DoesNotExist):
+            trigger = None
+        if trigger is not None and trigger.check_token(token):
+            serializer = serializers.TriggerUnsubscribeSerializer()
+            return Response({
+                'serializer': serializer, 'trigger': trigger, 'token': token})
+        else:
+            return HttpResponseNotFound('<h1>Trigger not found</h1>')

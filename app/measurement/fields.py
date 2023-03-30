@@ -1,5 +1,3 @@
-from django.core import validators
-from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django.contrib.postgres.fields import ArrayField
@@ -23,7 +21,7 @@ class EmailListArrayField(ArrayField):
     def to_python(self, value):
         ''' Take value and ensure it is correct type for internals'''
         if not value:
-            return list()
+            return None
 
         ''' lists stay as lists'''
         if isinstance(value, list):
@@ -35,8 +33,7 @@ class EmailListArrayField(ArrayField):
         else:
             raise ValidationError(
                 _(f"Invalid input type. Requires str or list,"
-                  f" this is of type {type(value)}")
-            )
+                  f" this is of type {type(value)}"))
 
     def validate(self, value, *args):
         super().validate(value, *args)
