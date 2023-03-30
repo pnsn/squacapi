@@ -1,0 +1,1 @@
+In alert if {{ stat }} of "{{ metric_name }}" measurements was {{ value_operator|safe }} {{ value }} for {{ num_channels_description|safe }} channel{{ num_channels|pluralize }}

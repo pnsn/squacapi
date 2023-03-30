@@ -6,6 +6,7 @@ from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
+from django.template.loader import render_to_string
 
 from measurement.aggregates.percentile import Percentile
 from .validators import validate_email_list
@@ -15,6 +16,7 @@ from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 import pytz
 import operator
+import os
 
 from bulk_update_or_create import BulkUpdateOrCreateQuerySet
 
@@ -227,8 +229,9 @@ class Monitor(MeasurementBase):
 
         return q_list
 
-    def evaluate_alarm(self, endtime=datetime.now(tz=pytz.UTC) - relativedelta(
-                       minute=0, second=0, microsecond=0)):
+    def evaluate_alarm(self,
+                       endtime=datetime.now(tz=pytz.UTC) - relativedelta(
+                           minute=0, second=0, microsecond=0)):
         '''
         Higher-level function that determines alarm state and calls other
         functions to create alerts if necessary. Default is to start on the
@@ -253,63 +256,83 @@ class Monitor(MeasurementBase):
         if self.do_daily_digest and endtimecheck == digesttime:
             self.check_daily_digest(digesttime)
 
-    def check_daily_digest(self, digesttime=datetime.now(tz=pytz.UTC)):
+    def check_daily_digest(self,
+                           digesttime=datetime.now(tz=pytz.UTC)):
         # Get the date string for yesterday
         yesterday_str = (
             digesttime - relativedelta(days=1)).strftime("%Y-%m-%d")
 
         triggers = self.triggers.all()
-        # Each trigger result is a tuple:
-        # (in/out of alarm, text description)
-        trigger_results = []
+        # Get trigger contexts - information about the previous day
+        trigger_contexts = []
         for trigger in triggers:
-            trigger_results.append(
+            trigger_contexts.append(
                 trigger.get_daily_trigger_digest(digesttime))
 
-        n_in_alert = sum([1 for res in trigger_results if res[0]])
-        n_triggers = len(triggers)
-
-        message = ''
-        message += f'Daily digest for {yesterday_str} prepared at '
-        message += f'{datetime.now(tz=pytz.UTC).strftime("%Y-%m-%dT%H:%M %Z")}'
-
-        message += f'\n\nMonitor: {self.name}'
-        message += f'\nChannel group: {self.channel_group}'
-        message += f'\nMetric: {self.metric.name}'
-        message += f'\nChecking {self.stat} '
-        add_s = 's' if self.interval_count > 1 else ''
-        message += f'over {self.interval_count}'
-        message += f' {self.interval_type}{add_s}'
-
-        message += f'\n\n{n_in_alert} of {n_triggers} '
-        message += 'triggers were in alert over the last day'
-        line_break = '________________________________________________________'
-        for i, trigger_result in enumerate(trigger_results):
-            message += f'\n\n{line_break}\n\n'
-            message += f'TRIGGER {i} WAS {"" if trigger_result[0] else "NOT "}'
-            message += f'in alert during {yesterday_str}'
-            message += f'\n{trigger_result[1]}'
-
-        message += '\n\n\n'
-        # message += "Unsubscribe from this monitor's alert emails"
+        n_in_alert = sum([1 for res in trigger_contexts if res['in_alarm']])
+        if n_in_alert == 0:
+            # No alerts, no need to send digest
+            return
 
         # Get emails for triggers that were in alarm
         email_list = []
         for i, trigger in enumerate(triggers):
-            if trigger_results[i][0]:
+            if trigger_contexts[i]['in_alarm']:
                 email_list += [email for email in trigger.email_list]
 
         if not email_list:
             # There is noone specified to send to
             return
 
-        subject = f"SQUAC daily digest for '{self.__str__()}'"
+        # Determine the base url
+        env = os.environ.get('SQUAC_ENVIRONMENT')
+        if env == 'production':
+            remote_host = "squac.pnsn.org"
+        elif env == 'staging':
+            remote_host = "staging-squac.pnsn.org"
+        elif env == 'localhost':
+            remote_host = "localhost:8000/"
+        else:
+            remote_host = "squac.pnsn.org"
+
+        # Could move some/all of this logic to the template and simply send a
+        # dict of this instance?
+        context = {
+            'yesterday': digesttime - relativedelta(days=1),
+            'now': datetime.now(tz=pytz.UTC),
+            'n_in_alert': n_in_alert,
+            'name': str(self),
+            'channel_group': self.channel_group,
+            'metric': self.metric.name,
+            'stat': self.stat,
+            'interval_count': self.interval_count,
+            'interval_type': (
+                'latest value'
+                if (self.interval_type == self.IntervalType.LASTN)
+                else self.interval_type),
+            'trigger_contexts': trigger_contexts,
+            'monitor_url': "https://{}/{}/{}".format(
+                remote_host, "monitors", self.id),
+            'channel_group_url': "https://{}/{}/{}".format(
+                remote_host, "channel-groups", self.channel_group.id),
+            'metric_url': "https://{}/{}/{}".format(
+                remote_host, "metrics", self.metric.id)
+        }
+
+        # render email text
+        email_html_message = render_to_string(
+            'email/monitor_daily_digest.html', context)
+        email_plaintext_message = render_to_string(
+            'email/monitor_daily_digest.txt', context)
+
+        subject = f"SQUAC daily digest for '{str(self)}'"
         subject += f", {yesterday_str}"
         send_mail(subject,
-                  message,
+                  email_plaintext_message,
                   settings.EMAIL_NO_REPLY,
                   [email for email in email_list],
                   fail_silently=False,
+                  html_message=email_html_message
                   )
 
     def __str__(self):
@@ -553,7 +576,7 @@ class Trigger(MeasurementBase):
 
         return alert
 
-    def get_text_description(self):
+    def get_text_description(self, verbose=True):
         '''
         Try to return something like:
             Alert if avg of hourly_mean measurements is outside of (-5, 5)
@@ -561,24 +584,49 @@ class Trigger(MeasurementBase):
             over the last 5 hours
         see https://github.com/pnsn/squacapi/issues/373
         '''
-        desc = ''
-        desc += f'Alert if {self.monitor.stat} of'
-        desc += f' {self.monitor.metric.name} measurements'
-        val = (self.val1, self.val2) if self.val2 is not None else self.val1
-        desc += f' is {self.value_operator} {val}'
+        # Handle num_channels differently
         if self.num_channels_operator == self.NumChannelsOperator.ANY:
-            desc += '\n\nfor ANY channel'
+            num_channels_description = 'ANY'
+            # manually set num channels to get correct pluralization
+            num_channels = 1
         elif self.num_channels_operator == self.NumChannelsOperator.ALL:
-            desc += '\n\nfor ALL channels'
+            num_channels_description = 'ALL'
+            # manually set num channels to get correct pluralization
+            num_channels = 2
         else:
-            desc += f'\n\nfor {self.num_channels_operator} than'
-            add_s = 's' if self.num_channels > 1 else ''
-            desc += f' {self.num_channels} channel{add_s}'
-        desc += f' in channel group: {self.monitor.channel_group}'
-        add_s = 's' if self.monitor.interval_count > 1 else ''
-        desc += f'\n\nover the last {self.monitor.interval_count}'
-        desc += f' {self.monitor.interval_type}{add_s}'
-        return desc
+            num_channels_description = (
+                f'{self.num_channels_operator} {self.num_channels}')
+            num_channels = self.num_channels
+
+        # Create context to send to render_to_string. Could move some of this
+        # logic to the template and send a dict of this instance instead
+        context = {
+            'value': (
+                (self.val1, self.val2) if self.val2 is not None
+                else self.val1),
+            'stat': self.monitor.stat,
+            'metric_name': self.monitor.metric.name,
+            'value_operator': self.value_operator,
+            'num_channels_description': num_channels_description,
+            'num_channels_operator': self.num_channels_operator,
+            'num_channels': num_channels,
+            'channel_group': self.monitor.channel_group,
+            'interval_count': self.monitor.interval_count,
+            'interval_type': (
+                'latest value'
+                if operator.eq(self.monitor.interval_type,
+                               self.monitor.IntervalType.LASTN)
+                else self.monitor.interval_type),
+        }
+
+        if verbose:
+            trigger_description = render_to_string(
+                'monitors/trigger_description_verbose.txt', context)
+        else:
+            trigger_description = render_to_string(
+                'monitors/trigger_description_simple.txt', context)
+
+        return trigger_description
 
     def get_daily_trigger_digest(self, digesttime):
         """
@@ -591,22 +639,12 @@ class Trigger(MeasurementBase):
         - Then summary of alerts for the day
         - Then breaching channels, including breaching since times
         """
-        # First generate the initial description of the trigger.
-        # Could use self.get_text_description(), but need to make it consistent
-        # for digest and "normal" alerts first
-        val = (self.val1, self.val2) if self.val2 is not None else self.val1
-        desc = ''
-        desc += f'Description: In alert if {self.monitor.stat} of'
-        desc += f' "{self.monitor.metric.name}" measurements was '
-        desc += f'{self.value_operator} {val} '
-        if self.num_channels_operator == self.NumChannelsOperator.ANY:
-            desc += 'for ANY channel'
-        elif self.num_channels_operator == self.NumChannelsOperator.ALL:
-            desc += 'for ALL channels'
-        else:
-            desc += f'for {self.num_channels_operator}'
-            add_s = 's' if self.num_channels > 1 else ''
-            desc += f' {self.num_channels} channel{add_s}'
+        # trigger_context will be returned and ultimately used in crafting the
+        # digest email
+        trigger_context = {
+            'in_alarm': False,
+            'trigger_description': self.get_text_description(verbose=False)
+        }
 
         # Use check time to ensure digesttime is 00:00, and the trigger will be
         # evaluated for the day before
@@ -618,7 +656,7 @@ class Trigger(MeasurementBase):
 
         # If there were no alerts today, return now.
         if len(alerts) == 0:
-            return False, desc
+            return trigger_context
 
         # There were alerts, so categorize them and generate a summary
         in_alarm_times = [
@@ -630,10 +668,6 @@ class Trigger(MeasurementBase):
             if not alert.in_alarm
         ]
 
-        desc += "\n\nSummary of alerts:"
-        desc += f"\nIn alert: {', '.join(in_alarm_times)}"
-        desc += f"\nOut of alert: {', '.join(out_of_alarm_times)}"
-
         # Now add the list of breaching channels (first generate it)
         channels_dict = {}
         for alert in alerts:
@@ -641,14 +675,20 @@ class Trigger(MeasurementBase):
                 # Keep track of the most recent breaching time per channel
                 channels_dict[channel['channel']] = alert.timestamp
 
-        # Sort the channels
-        sorted_channels = sorted(channels_dict.keys())
+        # Sort the channels by NSLC
+        channels_list = []
+        for channel_name in sorted(channels_dict.keys()):
+            channels_list.append({
+                'channel': channel_name,
+                'timestamp': channels_dict[channel_name]
+            })
 
-        for channel in sorted_channels:
-            desc += f"\n{channel:16s} - last breaching time: "
-            desc += f"{channels_dict[channel].strftime('%Y-%m-%dT%H:%M %Z')}"
+        trigger_context['in_alarm'] = True
+        trigger_context['in_alarm_times'] = in_alarm_times
+        trigger_context['out_of_alarm_times'] = out_of_alarm_times
+        trigger_context['breaching_channels'] = channels_list
 
-        return True, desc
+        return trigger_context
 
     def __str__(self):
         return (f"Monitor: {str(self.monitor)}, "
