@@ -723,33 +723,6 @@ class Trigger(MeasurementBase):
             self.emails.remove(email)
             self.save(update_fields=['emails'])
 
-    def create_unsubscribe_link(self, email):
-        ''' creates a link to the unsubscribe url for given trigger'''
-        token = self.make_token(email)
-        return reverse('measurement:trigger-unsubscribe',
-                       kwargs={'pk': self.pk, 'token': token})
-
-    def make_token(self, email):
-        ''' generates a token for the given id'''
-        id, token = Signer(salt=email).sign(self.pk).split(":", 1)
-        return token
-
-    def check_token(self, token, email):
-        ''' validates that the given token matches the trigger'''
-        try:
-            key = '%s:%s' % (self.pk, token)
-
-            Signer(salt=email).unsign(key)
-        except BadSignature:
-            return False
-        return True
-
-    def unsubscribe(self, email):
-        ''' removes given email from the trigger's emails '''
-        if self.emails and email in self.emails:
-            self.emails.remove(email)
-            self.save(update_fields=['emails'])
-
     def __str__(self):
         return (f"Monitor: {str(self.monitor)}, "
                 f"Val1: {self.val1}, "
