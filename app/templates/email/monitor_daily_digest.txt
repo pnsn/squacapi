@@ -1,0 +1,26 @@
+Daily digest for {{ yesterday|date:"Y-m-d" }}, prepared at {{ now|date:"Y-m-d H:i:s e" }}
+
+Monitor: {{ name }}, {{ monitor_url }}
+Channel group: {{ channel_group }}, {{ channel_group_url }}
+Metric: {{ metric }}, {{ metric_url }}
+Checking {{ stat }} over {{ interval_count }} {{ interval_type }}{{ interval_count|pluralize }}
+
+{{ n_in_alert }} of {{ trigger_contexts|length }} triggers were in alert over the last day
+{% for trigger_context in trigger_contexts %}
+________________________________________________________
+TRIGGER {{ forloop.counter }} WAS {% if not trigger_context.in_alarm %}NOT {% endif %}in alert during {{ yesterday|date:"Y-m-d" }}
+Description: {{ trigger_context.trigger_description|safe }}
+{% if trigger_context.in_alarm %}
+Summary of alerts:
+In alert: {{ trigger_context.in_alarm_times|safe|cut:"'" }}
+Out of alert: {{ trigger_context.out_of_alarm_times|safe|cut:"'" }}
+{% if trigger_context.breaching_channels %}
+Channels breaching during {{ yesterday|date:"Y-m-d" }}:
+{{ "NSLC"|ljust:"17" }} Last breaching date
+{% for breaching_channel in trigger_context.breaching_channels %}
+{{ breaching_channel.channel|ljust:"17" }} {{ breaching_channel.timestamp|date:"Y-m-d H:i:s" }}
+{% endfor %}
+{% endif %}
+{% endif %}
+
+{% endfor %}

@@ -50,7 +50,7 @@ INTERNAL_IPS = [
 CRONJOBS = STAGING_CRONJOBS
 
 # cronjobs
-if os.environ.get('CRONJOBS_ENABLED') == 'production':
+if os.environ.get('SQUAC_ENVIRONMENT') == 'production':
     CRONJOBS = PRODUCTION_CRONJOBS
 
 # tricks to have debug toolbar when developing with docker
