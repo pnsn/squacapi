@@ -4,7 +4,6 @@ from django.core.management import call_command
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
-import json
 # from django.db.models import Avg, Count, Max, Min, Sum
 
 from measurement.models import (Monitor, Trigger, Alert, Measurement,

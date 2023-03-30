@@ -655,27 +655,32 @@ class Trigger(MeasurementBase):
 
         return True, desc
 
-    def create_unsubscribe_link(self):
-        token = self.make_token(self.pk)
-        return reverse('measurement:unsubscribe',
-                       kwargs={'uid': self.pk, 'token': token})
+    def create_unsubscribe_link(self, email):
+        ''' creates a link to the unsubscribe url for given trigger'''
+        token = self.make_token(email)
+        return reverse('measurement:trigger-unsubscribe',
+                       kwargs={'pk': self.pk, 'token': token})
 
-    def make_token(self, id):
-        id, token = Signer(salt="trigger").sign(id).split(":", 1)
+    def make_token(self, email):
+        ''' generates a token for the given id'''
+        id, token = Signer(salt=email).sign(self.pk).split(":", 1)
         return token
 
-    def check_token(self, token):
+    def check_token(self, token, email):
+        ''' validates that the given token matches the trigger'''
         try:
             key = '%s:%s' % (self.pk, token)
-            Signer(salt="trigger").unsign(key)
+
+            Signer(salt=email).unsign(key)
         except BadSignature:
             return False
         return True
 
-    def unsubscribe(self, email, unsubscribe):
-        print(f"unsubscribe {email}")
-        if self.emails:
-            print(f" unsubscribe {email in self.emails}")
+    def unsubscribe(self, email):
+        ''' removes given email from the trigger's emails '''
+        if self.emails and email in self.emails:
+            self.emails.remove(email)
+            self.save(update_fields=['emails'])
 
     def __str__(self):
         return (f"Monitor: {str(self.monitor)}, "

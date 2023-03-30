@@ -6,8 +6,6 @@ from nslc.models import Channel, Group
 from drf_yasg.utils import swagger_serializer_method
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
-import json
-from measurement.fields import EmailListArrayField
 
 
 class BulkMeasurementListSerializer(serializers.ListSerializer):
@@ -290,14 +288,18 @@ class AlertDetailSerializer(serializers.ModelSerializer):
 
 
 class TriggerUnsubscribeSerializer(serializers.Serializer):
-    unsubscribe_all = serializers.BooleanField(required=True)
+    unsubscribe_all = serializers.BooleanField(default=False)
     email = serializers.EmailField(required=True)
 
     def save(self, trigger):
-        print("save function")
-        unsubscribe = self.validated_data['unsubscribe_all']
+        unsubscribe_all = self.validated_data['unsubscribe_all']
         email = self.validated_data['email']
+
         if trigger is not None:
-            trigger.unsubscribe(
-                email, unsubscribe)
-        print(f"save serializer {email}")
+            triggers = [trigger]
+            if unsubscribe_all is True:
+                # find all triggers with same monitor
+                triggers = Trigger.objects.filter(monitor=trigger.monitor)
+            for t in triggers:
+                # unsubscribe email from triggers
+                t.unsubscribe(email)

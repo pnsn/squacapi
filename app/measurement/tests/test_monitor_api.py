@@ -644,7 +644,7 @@ class PrivateMonitorApiTests(TestCase):
         '''
 
         self.check_trigger_email_field('user@pnsn.org', ['user@pnsn.org'])
-        self.check_trigger_email_field('', [])
+        self.check_trigger_email_field('', None)
         self.check_trigger_email_field(['user@pnsn.org'], ['user@pnsn.org'])
         self.check_trigger_email_field(
             'user@pnsn.org,user2@pnsn.org',
@@ -738,36 +738,154 @@ class PublicMonitorApiTests(TestCase):
             emails=[self.user.email]
         )
 
-    # def test_trigger_makes_valid_token(self):
-    #     id = self.trigger.id
-    #     url = self.trigger.create_unsubscribe_link()
-    #     token = self.trigger.make_token(self.trigger.id)
-    #     print(url)
-    #     self.assertEqual(
-    #         f"/api/measurement/triggers/{id}/unsubscribe/{token}/", url)
-    #     self.assertTrue(self.trigger.check_token(token))
+    def test_trigger_makes_valid_token(self):
+        ''' check that trigger makes a token that validates
+        with only the correct email and token combination '''
+        email = "test@pnsn.org"
+        token = self.trigger.make_token(email)
 
-    #     token = "testbadtoken"
-    #     self.assertFalse(self.trigger.check_token(token))
+        self.assertTrue(self.trigger.check_token(token, email))
 
-    def test_trigger_unsubscribe(self):
-        url = self.trigger.create_unsubscribe_link()
+        bad_token = "testbadtoken"
+        self.assertFalse(self.trigger.check_token(bad_token, email))
 
-        # res = self.client.get(url)
-        # self.assertEqual(res.status_code, status.HTTP_200_OK)
+        bad_email = "bademail@pnsn.org"
+        self.assertFalse(self.trigger.check_token(token, bad_email))
 
-        # self.assertIsNotNone(res.data['trigger'])
-        # self.assertEqual(res.data['trigger'].id, self.trigger.id)
-        print(url)
-        res = self.client.put(url, data={
-            'uid': self.trigger.id,
-            'token': 'blej',
-            'trigger': self.trigger,
+    def test_trigger_makes_valid_url(self):
+        ''' check that trigger makes a url with correct information '''
+        email = "test@pnsn.org"
+        trigger = Trigger.objects.create(
+            monitor=self.monitor,
+            val1=2,
+            val2=5,
+            value_operator=Trigger.ValueOperator.WITHIN,
+            num_channels=5,
+            user=self.user,
+            emails=[email, ]
+        )
+        token = trigger.make_token(email)
+
+        url = trigger.create_unsubscribe_link(email)
+        self.assertEqual(
+            f'/api/measurement/triggers/{trigger.id}/unsubscribe/{token}/',
+            url)
+
+    def test_trigger_unsubscribe_endpoints(self):
+        '''check that unsubscribe form works'''
+        email = "test2@pnsn.org"
+        email2 = "other@pnsn.org"
+        self.trigger.emails = [email, email2]
+        self.trigger.save()
+
+        self.assertTrue(email in self.trigger.emails)
+        self.assertTrue(email2 in self.trigger.emails)
+
+        url = self.trigger.create_unsubscribe_link(email)
+        get = self.client.get(url)
+        self.assertEqual(get.status_code, status.HTTP_200_OK)
+
+        token = self.trigger.make_token(email)
+
+        # test if unsubscribe_all only removes given email
+        post = self.client.post(url, data={
+            'pk': self.trigger.pk,
+            'token': token,
             'unsubscribe_all': False,
-            'email': 'testemail@pnsn.org'
+            'email': email
         })
 
+        self.assertEqual(post.status_code, status.HTTP_200_OK)
 
-# def unsubscribe_from_trigger_hash(self):
+        trigger = Trigger.objects.get(pk=self.trigger.pk)
+        self.assertFalse(email in trigger.emails)
+        self.assertTrue(email2 in trigger.emails)
 
-# def unsubscribe_from_monitor_hash(self):
+    def test_trigger_unsubscribe_all(self):
+        ''' check if trigger will remove email from all
+        triggers with the same monitor '''
+        email = self.user.email
+        email2 = "other@pnsn.org"
+        self.trigger.emails = [email, email2]
+        self.trigger.save()
+
+        monitor = self.monitor
+
+        # trigger without emails
+        Trigger.objects.create(
+            monitor=monitor,
+            val1=2,
+            val2=5,
+            value_operator=Trigger.ValueOperator.WITHIN,
+            num_channels=5,
+            user=self.user,
+            emails=[email, email2]
+        )
+
+        # trigger with one emails
+        Trigger.objects.create(
+            monitor=monitor,
+            val1=2,
+            val2=5,
+            value_operator=Trigger.ValueOperator.WITHIN,
+            num_channels=5,
+            user=self.user,
+            emails=[email, email2]
+        )
+        # trigger with one emails
+        Trigger.objects.create(
+            monitor=monitor,
+            val1=2,
+            val2=5,
+            value_operator=Trigger.ValueOperator.WITHIN,
+            num_channels=5,
+            user=self.user,
+            emails=[email2, ]
+        )
+
+        triggers = Trigger.objects.filter(monitor=monitor)
+        self.assertEqual(len(triggers), 4)
+
+        url = self.trigger.create_unsubscribe_link(email)
+        token = self.trigger.make_token(email)
+
+        # test if unsubscribe_all only removes given email
+        # from all related triggers
+        post = self.client.post(url, data={
+            'pk': self.trigger.pk,
+            'token': token,
+            'unsubscribe_all': True,
+            'email': email
+        })
+
+        self.assertEqual(post.status_code, status.HTTP_200_OK)
+
+        triggers = Trigger.objects.filter(monitor=monitor)
+
+        # make sure email was removed and others are unaffected
+        for trigger in triggers:
+            self.assertFalse(email in trigger.emails)
+            self.assertTrue(email2 in trigger.emails)
+
+    def test_unauthenticated_user_trigger_requests(self):
+        ''' Make sure unauthenticated/non-owner users can't
+        edit the trigger outside of unsubscribe'''
+
+        url = reverse('measurement:trigger-list')
+        payload = {
+            'monitor': self.monitor.id,
+            'val1': 15,
+            'val2': 20,
+            'num_channels': 3,
+            'user': self.user,
+            'emails': [self.user.email]
+        }
+        res = self.client.post(url, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+        url = reverse('measurement:trigger-detail',
+                      kwargs={'pk': self.trigger.id})
+        res = self.client.get(url)
+
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)

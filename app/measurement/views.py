@@ -1,6 +1,7 @@
 
-from rest_framework import viewsets, views
+from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
+
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from rest_framework.response import Response
@@ -11,7 +12,7 @@ from django.db.models import Avg, StdDev, Min, Max, Sum, Count, FloatField
 from django.db.models.functions import Coalesce, Abs
 from squac.mixins import (SetUserMixin, DefaultPermissionsMixin,
                           OverrideParamsMixin, OverrideReadParamsMixin,
-                          AdminOrOwnerPermissionMixin)
+                          AdminOrOwnerPermissionMixin,)
 from .exceptions import MissingParameterException
 from .models import (Metric, Measurement,
                      Alert, ArchiveDay, ArchiveWeek, ArchiveMonth,
@@ -22,7 +23,6 @@ from drf_yasg import openapi
 from measurement.params import measurement_params
 from squac.mixins import EnablePartialUpdateMixin
 from django.http import HttpResponseNotFound, HttpResponse
-from django.shortcuts import render, redirect, get_object_or_404
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.decorators import action
 
@@ -199,7 +199,8 @@ class MonitorViewSet(MonitorBaseViewSet, EnablePartialUpdateMixin):
         return self.serializer_class
 
 
-class TriggerViewSet(MonitorBaseViewSet, EnablePartialUpdateMixin):
+class TriggerViewSet(MonitorBaseViewSet,
+                     EnablePartialUpdateMixin):
     serializer_class = serializers.TriggerSerializer
     filter_class = TriggerFilter
 
@@ -211,31 +212,37 @@ class TriggerViewSet(MonitorBaseViewSet, EnablePartialUpdateMixin):
 
     @action(detail=True, methods=['get', 'post', ],
             url_path='unsubscribe/(?P<token>[^/.]+)',
-            renderer_classes=[TemplateHTMLRenderer],
+            renderer_classes=[TemplateHTMLRenderer, ],
+            permission_classes=[],  # needs to allow unauthenticated user
             serializer_class=serializers.TriggerUnsubscribeSerializer)
     def unsubscribe(self, request, pk, token):
-        trigger = self.retrieve_trigger(token)
+        trigger = self.retrieve_trigger(pk)
+        serializer = self.get_serializer(
+            data=request.data)
 
-        if trigger is not None:
-            serializer = self.get_serializer(
-                data=request.data)
-            if serializer.is_valid() and request.method == 'POST':
+        if trigger is None:
+            return HttpResponseNotFound('<h1>Trigger not found</h1>')
+
+        if serializer.is_valid():
+            email = serializer.validated_data['email']
+            if not trigger.check_token(token, email):
+                return HttpResponseNotFound('<h1>Token not valid</h1>')
+
+            if request.method == "POST":
                 serializer.save(trigger)
                 return HttpResponse('<h1>success!</h1>')
 
-            return Response({'pk': pk, "serializer": serializer,
-                             'trigger': trigger,
-                             'token': token}, template_name="unsubscribe.html")
-        else:
-            return HttpResponseNotFound('<h1>Trigger not found</h1>')
+        return Response({'pk': pk, "serializer": serializer,
+                         'trigger': trigger,
+                         'token': token}, template_name="unsubscribe.html")
 
-    def retrieve_trigger(self, token):
+    def retrieve_trigger(self, pk):
         try:
-            trigger = self.get_object()
+            trigger = Trigger.objects.all().get(pk=pk)
+
         except (TypeError, ValueError, OverflowError, Trigger.DoesNotExist):
             trigger = None
-            print("bad trigger")
-        if trigger is not None and trigger.check_token(token):
+        if trigger is not None:
             return trigger
         return None
 
@@ -363,39 +370,3 @@ class AggregatedViewSet(IsAuthenticated, viewsets.ViewSet):
         serializer = serializers.AggregatedSerializer(
             instance=aggs_list, many=True)
         return Response(serializer.data)
-
-
-class TriggerUnsubscribeViewSet(viewsets.ViewSet):
-
-    # def post(request, email, ):
-    renderer_classes = [TemplateHTMLRenderer]
-    template_name = 'unsubscribe.html'
-
-    def update(self, request, uid, token):
-        print("Update called")
-        serializer = serializers.TriggerUnsubscribeSerializer(
-            data=request.data
-        )
-        trigger = Trigger.objects.get(pk=uid)
-
-        if not serializer.is_valid(raise_exception=True):
-            print("serializer not valid")
-            print(serializer.errors())
-            print(f"is jnot vlaid {serializer.validated_data}")
-            return Response(request.data)
-
-        serializer.save(trigger=trigger)
-        return HttpResponse('<h1>You have been unsubscribed</h1>')
-
-    def retrieve(self, request, uid, token):
-        print("retrieve")
-        try:
-            trigger = Trigger.objects.get(pk=uid)
-        except (TypeError, ValueError, OverflowError, Trigger.DoesNotExist):
-            trigger = None
-        if trigger is not None and trigger.check_token(token):
-            serializer = serializers.TriggerUnsubscribeSerializer()
-            return Response({
-                'serializer': serializer, 'trigger': trigger, 'token': token})
-        else:
-            return HttpResponseNotFound('<h1>Trigger not found</h1>')
