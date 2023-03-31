@@ -692,23 +692,23 @@ class Trigger(MeasurementBase):
 
         return trigger_context
 
-    def create_unsubscribe_link(self, email):
+    def create_unsubscribe_link(self):
         ''' creates a link to the unsubscribe url for given trigger'''
-        token = self.make_token(email)
+        token = self.make_token()
         return reverse('measurement:trigger-unsubscribe',
                        kwargs={'pk': self.pk, 'token': token})
 
-    def make_token(self, email):
+    def make_token(self):
         ''' generates a token for the given id'''
-        id, token = Signer(salt=email).sign(self.pk).split(":", 1)
+        id, token = Signer().sign(self.pk).split(":", 1)
         return token
 
-    def check_token(self, token, email):
+    def check_token(self, token):
         ''' validates that the given token matches the trigger'''
         try:
             key = '%s:%s' % (self.pk, token)
 
-            Signer(salt=email).unsign(key)
+            Signer().unsign(key)
         except BadSignature:
             return False
         return True

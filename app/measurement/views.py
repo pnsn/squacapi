@@ -229,11 +229,9 @@ class TriggerViewSet(MonitorBaseViewSet,
             status_message = "Could not find trigger."
 
         if serializer.is_valid():
-            email = serializer.validated_data['email']
-            if not trigger.check_token(token, email):
+            if not trigger.check_token(token):
                 status_code = status.HTTP_400_BAD_REQUEST
-                status_message = "Email address does not match, \
-                    please enter the correct email."
+                status_message = "Invalid token"
 
             elif request.method == "POST":
                 serializer.save(trigger)
