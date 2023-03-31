@@ -1,5 +1,5 @@
 
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated
 
 from django.utils.decorators import method_decorator
@@ -216,25 +216,35 @@ class TriggerViewSet(MonitorBaseViewSet,
             permission_classes=[],  # needs to allow unauthenticated user
             serializer_class=serializers.TriggerUnsubscribeSerializer)
     def unsubscribe(self, request, pk, token):
+        self.template_name = "monitors/unsubscribe.html"
+
         trigger = self.retrieve_trigger(pk)
         serializer = self.get_serializer(
             data=request.data)
 
+        status_code = status.HTTP_200_OK
+        status_message = ""
+
         if trigger is None:
-            return HttpResponseNotFound('<h1>Trigger not found</h1>')
+            status_code = status.HTTP_404_NOT_FOUND
+            status_message = "Could not find trigger."
 
         if serializer.is_valid():
             email = serializer.validated_data['email']
             if not trigger.check_token(token, email):
-                return HttpResponseNotFound('<h1>Token not valid</h1>')
+                status_code = status.HTTP_400_BAD_REQUEST
+                status_message = "Email address does not match, \
+                    please enter the correct email."
 
-            if request.method == "POST":
+            elif request.method == "POST":
                 serializer.save(trigger)
-                return HttpResponse('<h1>success!</h1>')
+                status_code = status.HTTP_202_ACCEPTED
 
         return Response({'pk': pk, "serializer": serializer,
                          'trigger': trigger,
-                         'token': token}, template_name="unsubscribe.html")
+                         'token': token,
+                         'status_message': status_message,
+                         "status_code": status_code})
 
     def retrieve_trigger(self, pk):
         try:

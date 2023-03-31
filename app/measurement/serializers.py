@@ -288,8 +288,12 @@ class AlertDetailSerializer(serializers.ModelSerializer):
 
 
 class TriggerUnsubscribeSerializer(serializers.Serializer):
-    unsubscribe_all = serializers.BooleanField(default=False)
-    email = serializers.EmailField(required=True)
+    email = serializers.EmailField(
+        required=True, style={'placeholder': 'Email', 'autofocus': True},
+        label="Email address")
+    unsubscribe_all = serializers.BooleanField(
+        default=False, label="Unsubscribe All",
+        help_text="This will remove you from all email notifications for this monitor.")
 
     def save(self, trigger):
         unsubscribe_all = self.validated_data['unsubscribe_all']
