@@ -761,7 +761,7 @@ class PublicMonitorApiTests(TestCase):
         )
         token = trigger.make_token()
 
-        url = trigger.create_unsubscribe_link()
+        url = trigger.create_unsubscribe_url()
         self.assertEqual(
             f'/api/measurement/triggers/{trigger.id}/unsubscribe/{token}/',
             url)
@@ -776,7 +776,7 @@ class PublicMonitorApiTests(TestCase):
         self.assertTrue(email in self.trigger.emails)
         self.assertTrue(email2 in self.trigger.emails)
 
-        url = self.trigger.create_unsubscribe_link()
+        url = self.trigger.create_unsubscribe_url()
         get = self.client.get(url)
         self.assertEqual(get.status_code, status.HTTP_200_OK)
 
@@ -839,7 +839,7 @@ class PublicMonitorApiTests(TestCase):
         triggers = Trigger.objects.filter(monitor=monitor)
         self.assertEqual(len(triggers), 4)
 
-        url = self.trigger.create_unsubscribe_link()
+        url = self.trigger.create_unsubscribe_url()
         token = self.trigger.make_token()
 
         # test if unsubscribe_all only removes given email

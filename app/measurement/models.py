@@ -289,17 +289,18 @@ class Monitor(MeasurementBase):
         # Determine the base url
         env = os.environ.get('SQUAC_ENVIRONMENT')
         if env == 'production':
-            remote_host = "squac.pnsn.org"
+            remote_host = "https://squac.pnsn.org"
         elif env == 'staging':
-            remote_host = "staging-squac.pnsn.org"
+            remote_host = "https://staging-squac.pnsn.org"
         elif env == 'localhost':
-            remote_host = "localhost:8000/"
+            remote_host = "localhost:8000"
         else:
-            remote_host = "squac.pnsn.org"
+            remote_host = "http://squac.pnsn.org"
 
         # Could move some/all of this logic to the template and simply send a
         # dict of this instance?
         context = {
+            'remote_host': remote_host,
             'yesterday': digesttime - relativedelta(days=1),
             'now': datetime.now(tz=pytz.UTC),
             'n_in_alert': n_in_alert,
@@ -313,11 +314,11 @@ class Monitor(MeasurementBase):
                 if (self.interval_type == self.IntervalType.LASTN)
                 else self.interval_type),
             'trigger_contexts': trigger_contexts,
-            'monitor_url': "https://{}/{}/{}".format(
+            'monitor_url': "{}/{}/{}".format(
                 remote_host, "monitors", self.id),
-            'channel_group_url': "https://{}/{}/{}".format(
+            'channel_group_url': "{}/{}/{}".format(
                 remote_host, "channel-groups", self.channel_group.id),
-            'metric_url': "https://{}/{}/{}".format(
+            'metric_url': "{}/{}/{}".format(
                 remote_host, "metrics", self.metric.id)
         }
 
@@ -645,7 +646,8 @@ class Trigger(MeasurementBase):
         # digest email
         trigger_context = {
             'in_alarm': False,
-            'trigger_description': self.get_text_description(verbose=False)
+            'trigger_description': self.get_text_description(verbose=False),
+            'unsubscribe_url': self.create_unsubscribe_url()
         }
 
         # Use check time to ensure digesttime is 00:00, and the trigger will be
@@ -692,7 +694,7 @@ class Trigger(MeasurementBase):
 
         return trigger_context
 
-    def create_unsubscribe_link(self):
+    def create_unsubscribe_url(self):
         ''' creates a link to the unsubscribe url for given trigger'''
         token = self.make_token()
         return reverse('measurement:trigger-unsubscribe',
