@@ -22,7 +22,6 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from measurement.params import measurement_params
 from squac.mixins import EnablePartialUpdateMixin
-from django.http import HttpResponseNotFound, HttpResponse
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.decorators import action
 
