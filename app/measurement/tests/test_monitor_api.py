@@ -811,7 +811,7 @@ class PublicMonitorApiTests(TestCase):
 
         monitor = self.monitor
 
-        # trigger without emails
+        # triggers with 2 emails
         Trigger.objects.create(
             monitor=monitor,
             val1=2,
@@ -821,8 +821,6 @@ class PublicMonitorApiTests(TestCase):
             user=self.user,
             emails=[email, email2]
         )
-
-        # trigger with one emails
         Trigger.objects.create(
             monitor=monitor,
             val1=2,

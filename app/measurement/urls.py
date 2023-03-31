@@ -23,13 +23,5 @@ router.register('aggregated', views.AggregatedViewSet,
                 basename='aggregated')
 app_name = "measurement"
 urlpatterns = [
-    # path('triggers/<uid>/unsubscribe/<token>/',
-    #      views.TriggerUnsubscribeViewSet.as_view(
-    #          {
-    #              'get': 'retrieve',
-    #              'put': 'update'
-    #          }
-    #      ),
-    #      name='unsubscribe'),
     path('', include(router.urls))
 ]
