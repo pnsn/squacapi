@@ -306,7 +306,7 @@ class AggregatedViewSet(IsAuthenticated, viewsets.ViewSet):
         cannot be used
     '''
 
-    @ swagger_auto_schema(
+    @swagger_auto_schema(
         query_serializer=serializers.AggregatedParametersSerializer,
         manual_parameters=measurement_params)
     def list(self, request):
