@@ -9,7 +9,6 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 
 from measurement.aggregates.percentile import Percentile
-from .validators import validate_email_list
 from nslc.models import Channel, Group
 
 from datetime import datetime, timedelta
@@ -420,10 +419,7 @@ class Trigger(MeasurementBase):
         default=NumChannelsOperator.GREATER_THAN
     )
     alert_on_out_of_alarm = models.BooleanField(default=False)
-    email_list = models.JSONField(blank=True,
-                                  null=True,
-                                  default=list,
-                                  validators=[validate_email_list, ])
+
     emails = EmailListArrayField(models.EmailField(
         null=True, blank=True), null=True, blank=True)
 
