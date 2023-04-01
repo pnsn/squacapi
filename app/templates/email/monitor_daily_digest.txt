@@ -22,5 +22,5 @@ Channels breaching during {{ yesterday|date:"Y-m-d" }}:
 {% endfor %}
 {% endif %}
 {% endif %}
-Unsubscribe from alarms for this trigger: {{remote_host}}{{trigger_context.unsubscribe_url}}
+Unsubscribe from alerts for this trigger: {{remote_host}}{{trigger_context.unsubscribe_url}}
 {% endfor %}
