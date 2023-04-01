@@ -1,7 +1,7 @@
 from rest_framework.permissions import IsAuthenticated, \
     DjangoModelPermissions, IsAdminUser
 from squac.permissions import IsAdminOwnerOrShared, IsOrgAdminOrMember,\
-    IsAdminOrOwner
+    IsAdminOrOwner, IsAdminOwnerOrReadOnly
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -26,6 +26,18 @@ class AdminOrOwnerPermissionMixin:
          '''
     permission_classes = (
         IsAuthenticated, IsAdminOrOwner,)
+
+
+class OwnerOrReadOnlyPermissionMixin:
+    '''Owner or Admin can edit, otherwise read only access
+
+        permission_classes acts as base permissions:
+            all views must be autheticated and if user is admin we are done
+            otherwise check if user owns object
+            ',' commas act as 'and' '|' pipes act as 'or'
+         '''
+    permission_classes = (
+        IsAuthenticated | IsAdminOwnerOrReadOnly,)
 
 
 class DefaultPermissionsMixin:

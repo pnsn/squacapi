@@ -1,6 +1,7 @@
 
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated
+
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from rest_framework.response import Response
@@ -11,7 +12,7 @@ from django.db.models import Avg, StdDev, Min, Max, Sum, Count, FloatField
 from django.db.models.functions import Coalesce, Abs
 from squac.mixins import (SetUserMixin, DefaultPermissionsMixin,
                           OverrideParamsMixin, OverrideReadParamsMixin,
-                          AdminOrOwnerPermissionMixin)
+                          AdminOrOwnerPermissionMixin,)
 from .exceptions import MissingParameterException
 from .models import (Metric, Measurement,
                      Alert, ArchiveDay, ArchiveWeek, ArchiveMonth,
@@ -20,6 +21,9 @@ from measurement import serializers
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from measurement.params import measurement_params
+from squac.mixins import EnablePartialUpdateMixin
+from rest_framework.renderers import TemplateHTMLRenderer
+from rest_framework.decorators import action
 
 
 def check_measurement_params(params):
@@ -178,7 +182,7 @@ class MeasurementViewSet(MeasurementBaseViewSet):
         return super().list(self, request, *args, **kwargs)
 
 
-class MonitorViewSet(MonitorBaseViewSet):
+class MonitorViewSet(MonitorBaseViewSet, EnablePartialUpdateMixin):
     serializer_class = serializers.MonitorSerializer
     filter_class = MonitorFilter
 
@@ -194,7 +198,8 @@ class MonitorViewSet(MonitorBaseViewSet):
         return self.serializer_class
 
 
-class TriggerViewSet(MonitorBaseViewSet):
+class TriggerViewSet(MonitorBaseViewSet,
+                     EnablePartialUpdateMixin):
     serializer_class = serializers.TriggerSerializer
     filter_class = TriggerFilter
 
@@ -203,6 +208,52 @@ class TriggerViewSet(MonitorBaseViewSet):
         if self.request.user.is_staff:
             return queryset
         return queryset.filter(user=self.request.user)
+
+    @action(detail=True, methods=['get', 'post', ],
+            url_path='unsubscribe/(?P<token>[^/.]+)',
+            renderer_classes=[TemplateHTMLRenderer, ],
+            permission_classes=[],  # needs to allow unauthenticated user
+            serializer_class=serializers.TriggerUnsubscribeSerializer)
+    def unsubscribe(self, request, pk, token):
+        self.template_name = "monitors/unsubscribe.html"
+
+        trigger = self.retrieve_trigger(pk)
+        serializer = self.get_serializer(
+            data=request.data)
+
+        status_code = status.HTTP_200_OK
+        status_message = ""
+
+        if trigger is None:
+            status_code = status.HTTP_404_NOT_FOUND
+            status_message = "Could not find trigger."
+
+        if serializer.is_valid():
+            email = serializer.validated_data['email']
+            if not trigger.check_token(token, email):
+                status_code = status.HTTP_400_BAD_REQUEST
+                status_message = "Email address does not match, \
+                    please enter the correct email."
+
+            elif request.method == "POST":
+                serializer.save(trigger)
+                status_code = status.HTTP_202_ACCEPTED
+
+        return Response({'pk': pk, "serializer": serializer,
+                         'trigger': trigger,
+                         'token': token,
+                         'status_message': status_message,
+                         "status_code": status_code})
+
+    def retrieve_trigger(self, pk):
+        try:
+            trigger = Trigger.objects.all().get(pk=pk)
+
+        except (TypeError, ValueError, OverflowError, Trigger.DoesNotExist):
+            trigger = None
+        if trigger is not None:
+            return trigger
+        return None
 
 
 class AlertViewSet(MonitorBaseViewSet):

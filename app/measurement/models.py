@@ -9,16 +9,18 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 
 from measurement.aggregates.percentile import Percentile
-from .validators import validate_email_list
 from nslc.models import Channel, Group
 
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 import pytz
 import operator
+from measurement.fields import EmailListArrayField
 import os
 
 from bulk_update_or_create import BulkUpdateOrCreateQuerySet
+from django.core.signing import Signer, BadSignature
+from django.urls import reverse
 
 
 class MeasurementBase(models.Model):
@@ -275,12 +277,12 @@ class Monitor(MeasurementBase):
             return
 
         # Get emails for triggers that were in alarm
-        email_list = []
+        emails = []
         for i, trigger in enumerate(triggers):
             if trigger_contexts[i]['in_alarm']:
-                email_list += [email for email in trigger.email_list]
+                emails += [email for email in trigger.emails]
 
-        if not email_list:
+        if not emails:
             # There is noone specified to send to
             return
 
@@ -330,7 +332,7 @@ class Monitor(MeasurementBase):
         send_mail(subject,
                   email_plaintext_message,
                   settings.EMAIL_NO_REPLY,
-                  [email for email in email_list],
+                  [email for email in emails],
                   fail_silently=False,
                   html_message=email_html_message
                   )
@@ -417,9 +419,9 @@ class Trigger(MeasurementBase):
         default=NumChannelsOperator.GREATER_THAN
     )
     alert_on_out_of_alarm = models.BooleanField(default=False)
-    email_list = models.JSONField(blank=True,
-                                  null=True,
-                                  validators=[validate_email_list, ])
+
+    emails = EmailListArrayField(models.EmailField(
+        null=True, blank=True), null=True, blank=True)
 
     # channel_value is dict
     def is_breaching(self, channel_value):
@@ -690,6 +692,33 @@ class Trigger(MeasurementBase):
 
         return trigger_context
 
+    def create_unsubscribe_link(self, email):
+        ''' creates a link to the unsubscribe url for given trigger'''
+        token = self.make_token(email)
+        return reverse('measurement:trigger-unsubscribe',
+                       kwargs={'pk': self.pk, 'token': token})
+
+    def make_token(self, email):
+        ''' generates a token for the given id'''
+        id, token = Signer(salt=email).sign(self.pk).split(":", 1)
+        return token
+
+    def check_token(self, token, email):
+        ''' validates that the given token matches the trigger'''
+        try:
+            key = '%s:%s' % (self.pk, token)
+
+            Signer(salt=email).unsign(key)
+        except BadSignature:
+            return False
+        return True
+
+    def unsubscribe(self, email):
+        ''' removes given email from the trigger's emails '''
+        if self.emails and email in self.emails:
+            self.emails.remove(email)
+            self.save(update_fields=['emails'])
+
     def __str__(self):
         return (f"Monitor: {str(self.monitor)}, "
                 f"Val1: {self.val1}, "
@@ -717,21 +746,18 @@ class Trigger(MeasurementBase):
             raise ValidationError(
                 _('num_channels must be defined when using'
                   f' {self.num_channels_operator}'))
-        # Make sure email_list is an actual list
-        if isinstance(self.email_list, str):
-            self.email_list = [self.email_list]
 
     def save(self, *args, **kwargs):
         """
         Do regular save except also validate fields. This doesn't happen
         automatically on save. Also reset alerts associated with this trigger
         """
+
         # Validate fields
         try:
             self.full_clean()
         except ValidationError:
             raise
-
         super().save(*args, **kwargs)  # Call the "real" save() method.
 
         # Create a new alert with in_alarm = False. Should happen after trigger
@@ -795,7 +821,7 @@ class Alert(MeasurementBase):
         return msg
 
     def send_alert(self):
-        if not self.trigger.email_list:
+        if not self.trigger.emails:
             # There is noone specified to send to
             return False
         in_out = "IN" if self.in_alarm else "OUT OF"
@@ -804,7 +830,7 @@ class Alert(MeasurementBase):
         send_mail(subject,
                   message,
                   settings.EMAIL_NO_REPLY,
-                  [email for email in self.trigger.email_list],
+                  [email for email in self.trigger.emails],
                   fail_silently=False,
                   )
         return True

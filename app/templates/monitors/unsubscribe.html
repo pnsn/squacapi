@@ -1,0 +1,82 @@
+{% extends "../rest_framework/api.html" %}
+{% load rest_framework %}
+
+{% block title %} Unsubscribe {% endblock %}
+
+<!-- Content -->
+{% block body %}
+
+<body class="{% block bodyclass %}{% endblock %}">
+
+  <div class="wrapper">
+    {% block navbar %}
+    <div class="navbar navbar-static-top {% block bootstrap_navbar_variant %}navbar-inverse{% endblock %}"
+      role="navigation">
+      <div class="container">
+        <span>
+          {% block branding %}
+          <a class='navbar-brand' rel="nofollow" href='https://www.django-rest-framework.org/'>
+            Django REST framework
+          </a>
+          {% endblock %}
+        </span>
+        <ul class="nav navbar-nav pull-right">
+          {% block userlinks %}
+          {% if user.is_authenticated %}
+          {% optional_logout request user %}
+          {% else %}
+          {% optional_login request %}
+          {% endif %}
+          {% endblock %}
+        </ul>
+      </div>
+    </div>
+    {% endblock %}
+
+    <div class="container">
+      <ul class="breadcrumb">
+      </ul>
+      <div class="content-main" role="main">
+        <div class="page-header">
+          <h1>Unsubscribe from SQUAC Notifications</h1>
+        </div>
+
+        {% if status_code == 202 %}
+        <div class="alert-success alert"><b>Success:</b> You have been unsubscribed.</div>
+
+        {% elif status_code != 200 %}
+        <div class="alert-danger alert"><b>Error:</b> {{status_message}}</div>
+        {% endif %}
+
+        {% if status_code == 200 or status_code == 400 %}
+        <div>
+          <p>
+            <b>Monitor:</b> {{trigger.monitor.name}}
+          </p>
+          <p>
+            <b>Trigger:</b> {{trigger}}
+          </p>
+        </div>
+        <div class="tabable">
+          <div class="well">
+            <div id="post-object-form">
+              <form class="form-horizontal" action="{% url 'measurement:trigger-unsubscribe' token=token pk=pk %}"
+                method="POST">
+                {% csrf_token %}{% render_form serializer template_pack='./rest_framework/horizontal' %}
+                <button type="submit">Unsubscribe</button>
+              </form>
+            </div>
+
+          </div>
+        </div>
+        {% endif %}
+
+
+
+      </div>
+    </div>
+  </div>
+</body>
+
+
+{% endblock body %}

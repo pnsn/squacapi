@@ -128,10 +128,16 @@ class IsAdminOrOwner(DjangoModelPermissions):
         return False
 
 
-class IsAdminOrReadOnly(DjangoModelPermissions):
+class IsAdminOwnerOrReadOnly(DjangoModelPermissions):
     '''Only allow non-staff to read'''
 
     def has_permission(self, request, view):
-        if request.user.is_staff:
+        if request.user.is_staff or request.method in permissions.SAFE_METHODS:
             return True
-        return request.method == 'GET'
+        return super().has_permission(request, view)
+
+    def has_object_permission(self, request, view, obj):
+        if request.user.is_staff or obj.user == request.user or \
+                request.method in permissions.SAFE_METHODS:
+            return True
+        return False

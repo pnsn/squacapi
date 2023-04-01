@@ -531,7 +531,7 @@
       "val2": null,
       "value_operator": "<",
       "num_channels": 1,
-      "email_list": "loader@pnsn.org"
+      "emails": "loader@pnsn.org"
     }
   },
   {
@@ -546,7 +546,7 @@
       "val2": null,
       "value_operator": ">",
       "num_channels": 2,
-      "email_list": "loader@pnsn.org"
+      "emails": "loader@pnsn.org"
     }
   },
   {
@@ -561,7 +561,7 @@
       "val2": 6,
       "value_operator": "outsideof",
       "num_channels": 2,
-      "email_list": "loader@pnsn.org"
+      "emails": ""
     }
   },
   {
@@ -576,7 +576,7 @@
       "val2": 6,
       "value_operator": "within",
       "num_channels": 1,
-      "email_list": "loader@pnsn.org"
+      "emails": "loader@pnsn.org"
     }
   },
   {
@@ -591,7 +591,7 @@
       "val2": 6,
       "value_operator": "within",
       "num_channels": 2,
-      "email_list": "loader@pnsn.org"
+      "emails": "loader@pnsn.org"
     }
   },
   {
@@ -606,7 +606,7 @@
       "val2": 6,
       "value_operator": "within",
       "num_channels": 2,
-      "email_list": "loader@pnsn.org"
+      "emails": "loader@pnsn.org"
     }
   },
   {
@@ -620,7 +620,7 @@
       "val1": 4,
       "value_operator": ">",
       "num_channels_operator": "any",
-      "email_list": "loader@pnsn.org"
+      "emails": "loader@pnsn.org"
     }
   },
   {
@@ -634,7 +634,7 @@
       "val1": 4,
       "value_operator": ">",
       "num_channels_operator": "any",
-      "email_list": "loader@pnsn.org"
+      "emails": "loader@pnsn.org"
     }
   },
   {
@@ -648,7 +648,7 @@
       "val1": 4,
       "value_operator": ">",
       "num_channels_operator": "any",
-      "email_list": "loader@pnsn.org",
+      "emails": "loader@pnsn.org",
       "alert_on_out_of_alarm": false
     }
   },
@@ -663,7 +663,7 @@
       "val1": 4,
       "value_operator": ">",
       "num_channels_operator": "any",
-      "email_list": "loader@pnsn.org",
+      "emails": "loader@pnsn.org",
       "alert_on_out_of_alarm": true
     }
   },
