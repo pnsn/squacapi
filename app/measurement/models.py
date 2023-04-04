@@ -286,40 +286,10 @@ class Monitor(MeasurementBase):
             # There is noone specified to send to
             return
 
-        # Determine the base url
-        env = os.environ.get('SQUAC_ENVIRONMENT')
-        if env == 'production':
-            remote_host = "squac.pnsn.org"
-        elif env == 'staging':
-            remote_host = "staging-squac.pnsn.org"
-        elif env == 'localhost':
-            remote_host = "localhost:8000/"
-        else:
-            remote_host = "squac.pnsn.org"
-
-        # Could move some/all of this logic to the template and simply send a
-        # dict of this instance?
-        context = {
-            'yesterday': digesttime - relativedelta(days=1),
-            'now': datetime.now(tz=pytz.UTC),
-            'n_in_alert': n_in_alert,
-            'name': str(self),
-            'channel_group': self.channel_group,
-            'metric': self.metric.name,
-            'stat': self.stat,
-            'interval_count': self.interval_count,
-            'interval_type': (
-                'latest value'
-                if (self.interval_type == self.IntervalType.LASTN)
-                else self.interval_type),
-            'trigger_contexts': trigger_contexts,
-            'monitor_url': "https://{}/{}/{}".format(
-                remote_host, "monitors", self.id),
-            'channel_group_url': "https://{}/{}/{}".format(
-                remote_host, "channel-groups", self.channel_group.id),
-            'metric_url': "https://{}/{}/{}".format(
-                remote_host, "metrics", self.metric.id)
-        }
+        context = get_monitor_context(self)
+        context['yesterday'] = digesttime - relativedelta(days=1)
+        context['n_in_alert'] = n_in_alert
+        context['trigger_contexts'] = trigger_contexts
 
         # render email text
         email_html_message = render_to_string(
@@ -457,7 +427,8 @@ class Trigger(MeasurementBase):
                 breaching_channels.append({
                     'channel': str(channel[0]),
                     'channel_id': channel_value['channel'],
-                    self.monitor.stat: value
+                    self.monitor.stat: value,
+                    "value": value
                 })
 
         # Sort the channels for simplicity later
@@ -645,7 +616,8 @@ class Trigger(MeasurementBase):
         # digest email
         trigger_context = {
             'in_alarm': False,
-            'trigger_description': self.get_text_description(verbose=False)
+            'trigger_description': self.get_text_description(verbose=False),
+            'unsubscribe_url': self.create_unsubscribe_url()
         }
 
         # Use check time to ensure digesttime is 00:00, and the trigger will be
@@ -692,23 +664,23 @@ class Trigger(MeasurementBase):
 
         return trigger_context
 
-    def create_unsubscribe_link(self, email):
+    def create_unsubscribe_url(self):
         ''' creates a link to the unsubscribe url for given trigger'''
-        token = self.make_token(email)
+        token = self.make_token()
         return reverse('measurement:trigger-unsubscribe',
                        kwargs={'pk': self.pk, 'token': token})
 
-    def make_token(self, email):
+    def make_token(self):
         ''' generates a token for the given id'''
-        id, token = Signer(salt=email).sign(self.pk).split(":", 1)
+        id, token = Signer().sign(self.pk).split(":", 1)
         return token
 
-    def check_token(self, token, email):
+    def check_token(self, token):
         ''' validates that the given token matches the trigger'''
         try:
             key = '%s:%s' % (self.pk, token)
 
-            Signer(salt=email).unsign(key)
+            Signer().unsign(key)
         except BadSignature:
             return False
         return True
@@ -776,32 +748,13 @@ class Alert(MeasurementBase):
     in_alarm = models.BooleanField(default=True)
     breaching_channels = models.JSONField(null=True)
 
-    def get_printable_channel(self, channel, include_stat=True):
-        ret = str(channel['channel'])
-        # The monitor stat should be a key
-        stat = self.trigger.monitor.stat
-        if stat in channel and include_stat:
-            ret += f', {stat}: {channel[stat]}'
-
-        return ret
-
-    def get_printable_channels(self, channels, include_stat=True):
-        str_out = ''
-        if not channels:
-            return str_out
-
-        for channel in channels:
-            str_out += '\n' + self.get_printable_channel(channel, include_stat)
-
-        return str_out
-
-    def get_email_message(self):
-        msg = ''
-        msg += self.timestamp.strftime('%Y-%m-%dT%H:%M %Z')
-        in_out = 'IN' if self.in_alarm else 'OUT OF'
-        msg += f'\n\nTrigger {in_out} alert for {str(self.trigger.monitor)}'
-        msg += f'\n\n{self.trigger.get_text_description()}'
-
+    def send_alert(self):
+        if not self.trigger.emails:
+            # There is noone specified to send to
+            return False
+        in_out = "IN" if self.in_alarm else "OUT OF"
+        subject = f"SQUAC {in_out} alert for '{self.trigger.monitor}'"
+        added, removed = None, None
         if operator.eq(self.trigger.num_channels_operator,
                        Trigger.NumChannelsOperator.ANY):
             # Use one second before as reftime just to make sure this alert
@@ -809,30 +762,36 @@ class Alert(MeasurementBase):
             added, removed = self.trigger.get_breaching_change(
                 self.breaching_channels,
                 self.timestamp - timedelta(seconds=1))
-            if added:
-                added_out = self.get_printable_channels(added)
-                msg += '\n\nNew channels in alert:' + str(added_out)
-            if removed:
-                removed_out = self.get_printable_channels(removed, False)
-                msg += '\n\nNew channels out of alert:' + str(removed_out)
 
-        breaching_out = self.get_printable_channels(self.breaching_channels)
-        msg += '\n\nAll breaching channels:' + str(breaching_out)
-        return msg
+        # could send just trigger to simplify this, but then the
+        # HTML is more complex
+        context = get_monitor_context(self.trigger.monitor)
+        context["timestamp"] = self.timestamp
+        context["in_out"] = in_out
+        context["unsubscribe_url"] = remote_host(
+        ) + self.trigger.create_unsubscribe_url()
+        context["trigger"] = self.trigger
+        context["added_channels"] = added
+        context["removed_channels"] = removed
+        context["breaching_channels"] = self.breaching_channels
+        context["trigger_description"] = self.trigger.get_text_description(
+            verbose=False),
 
-    def send_alert(self):
-        if not self.trigger.emails:
-            # There is noone specified to send to
-            return False
-        in_out = "IN" if self.in_alarm else "OUT OF"
-        subject = f"SQUAC {in_out} alert for '{self.trigger.monitor}'"
-        message = self.get_email_message()
+        # render email text
+        email_html_message = render_to_string(
+            'email/alert_email.html', context)
+
+        email_plaintext_message = render_to_string(
+            'email/alert_email.txt', context)
+
         send_mail(subject,
-                  message,
+                  email_plaintext_message,
                   settings.EMAIL_NO_REPLY,
                   [email for email in self.trigger.emails],
                   fail_silently=False,
+                  html_message=email_html_message
                   )
+
         return True
 
     class Meta:
@@ -907,3 +866,42 @@ class ArchiveWeek(ArchiveBase):
 
 class ArchiveMonth(ArchiveBase):
     pass
+
+
+def remote_host():
+    # Determine the base url
+    env = os.environ.get('SQUAC_ENVIRONMENT')
+    if env == 'production':
+        remote_host = "https://squac.pnsn.org"
+    elif env == 'staging':
+        remote_host = "https://staging-squac.pnsn.org"
+    elif env == 'localhost':
+        remote_host = "localhost:8000"
+    else:
+        remote_host = "http://squac.pnsn.org"
+
+    return remote_host
+
+
+def get_monitor_context(monitor):
+    """ Monitor context for emails that is shared """
+    host = remote_host()
+    return {
+        'now': datetime.now(tz=pytz.UTC),
+        'remote_host': host,
+        'channel_group': monitor.channel_group,
+        'name': monitor.name,
+        'metric': monitor.metric.name,
+        'stat': monitor.stat,
+        'interval_count': monitor.interval_count,
+        'interval_type': (
+            'latest value'
+            if (monitor.interval_type == monitor.IntervalType.LASTN)
+            else monitor.interval_type),
+        'monitor_url': "{}/{}/{}".format(
+            host, "monitors", monitor.id),
+        'channel_group_url': "{}/{}/{}".format(
+            host, "channel-groups", monitor.channel_group.id),
+        'metric_url': "{}/{}/{}".format(
+            host, "metrics", monitor.metric.id)
+    }

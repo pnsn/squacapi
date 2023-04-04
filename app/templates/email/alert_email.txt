@@ -1,0 +1,32 @@
+Alert for {{name}}
+{{in_out}} alarm at {{ timestamp|date:"Y-m-d H:i:s e" }}
+
+TRIGGER: {{trigger_description |escape }}
+MONITOR: {{ name }}, {{ monitor_url }}
+CHANNEL GROUP: {{ channel_group }}, {{ channel_group_url }}
+METRIC: {{ metric }}, {{ metric_url }}
+
+Checking {{ stat }} over {{ interval_count }} {{ interval_type }}{{ interval_count|pluralize }}
+________________________________________________________
+Breaching Channels:
+{% if breaching_channels %}
+{% for breaching_channel in breaching_channels %}
+  {{ breaching_channel.channel|ljust:"17" }} {{breaching_channel.value}}
+{% endfor %}
+{% endif %}
+
+{% if added %}
+New Channels in Alarm:
+{% for breaching_channel in added %}
+  {{ breaching_channel.channel|ljust:"17" }} {{breaching_channel.value}}
+{% endfor %}
+{% endif %}
+
+{% if removed %}
+New Channels Out of Alarm:
+{% for breaching_channel in breaching_channels %}
+  {{ breaching_channel.channel|ljust:"17" }} {{breaching_channel.value}}
+{% endfor %}
+{% endif %}
+
+Unsubscribe from alerts for this trigger: {{ unsubscribe_url}}

@@ -57,6 +57,7 @@ class PrivateAlarmAPITests(TestCase):
     def getTestMonitor(self, interval_type=Monitor.IntervalType.MINUTE,
                        interval_count=2):
         return Monitor.objects.create(
+            name="Test Monitor",
             channel_group=self.grp,
             metric=self.metric,
             interval_type=interval_type,
@@ -106,6 +107,7 @@ class PrivateAlarmAPITests(TestCase):
             reference_url='pnsn.org'
         )
         self.monitor = Monitor.objects.create(
+            name="Self Monitor",
             channel_group=self.grp,
             metric=self.metric,
             interval_type=Monitor.IntervalType.DAY,
@@ -431,7 +433,7 @@ class PrivateAlarmAPITests(TestCase):
         self.alert.send_alert()
 
         self.assertEqual(len(mail.outbox), 1)
-        self.assertTrue(self.alert.get_email_message() in mail.outbox[0].body)
+
         for email in self.alert.trigger.emails:
             self.assertTrue(email in mail.outbox[0].recipients())
 
@@ -465,24 +467,6 @@ class PrivateAlarmAPITests(TestCase):
         # Verify results are reverse sorted by timestamps
         timestamps = [alert['timestamp'] for alert in res.data]
         self.assertTrue(sorted(timestamps, reverse=True) == timestamps)
-
-    def test_alert_get_email_message(self):
-        monitor = Monitor.objects.get(pk=1)
-        endtime = datetime(2018, 2, 1, 4, 30, 0, 0, tzinfo=pytz.UTC)
-
-        q_list = monitor.agg_measurements(endtime=endtime)
-        trigger = Trigger.objects.get(pk=2)
-
-        breaching_channels = trigger.get_breaching_channels(q_list)
-        alert = Alert.objects.create(
-            trigger=trigger,
-            timestamp=datetime(1975, 1, 1, tzinfo=pytz.UTC),
-            in_alarm=True,
-            user=trigger.user,
-            breaching_channels=breaching_channels
-        )
-        channels_out = alert.get_printable_channels(breaching_channels)
-        self.assertTrue(str(channels_out) in alert.get_email_message())
 
     def test_alert_filter(self):
         '''Test filtering alerts'''

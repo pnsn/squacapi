@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <style>
+      table,
+      th,
+      td {
+        border: 1px solid black;
+        border-collapse: collapse;
+        padding-left: 4px;
+        padding-right: 4px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h2>Alert for {{name}}</h2>
+    <p>
+      <b>{{in_out}}</b> alarm at {{ timestamp|date:"Y-m-d H:i:s e" }}
+    </p>
+
+    <p><b>Trigger:</b>{{trigger_description|safe}}</p>
+
+    <p>
+      <b>Monitor: </b> <a href="{{ monitor_url }}">{{ name }}</a>
+      <br>
+      <b>Channel group: </b><a href="{{ channel_group_url }}">{{ channel_group }}</a>
+      <br>
+      <b>Metric:</b><a href="{{ metric_url }}">{{ metric }}</a>
+      <br>
+      Checking {{ stat }} over {{ interval_count }} {{ interval_type }}{{ interval_count|pluralize }}
+    </p>
+
+    <hr>
+
+    <h3>Breaching Channels</h3>
+    <div>
+      {% if breaching_channels %}
+      <h4>Channels breaching:</h4>
+      <table>
+        <tr>
+          <th>NSLC</th>
+          <th>Stat ({{stat}})</th>
+        </tr>
+        {% for breaching_channel in breaching_channels %}
+        <tr>
+          <td>{{ breaching_channel.channel }}</td>
+          <td>{{ breaching_channel.value }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+      {%endif%}
+
+      {% if added %}
+      <h4>New channels in alert</h4>
+
+      <table>
+        <tr>
+          <th>NSLC</th>
+          <th>Stat ({{stat}})</th>
+        </tr>
+        {% for breaching_channel in breaching_channels %}
+        <tr>
+          <td>{{ breaching_channel.channel }}</td>
+          <td>{{ breaching_channel.value }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+      {% endif %}
+
+      {% if removed %}
+
+      <h4>New channels out of alert</h4>
+      <table>
+        <tr>
+          <th>NSLC</th>
+          <th>Stat ({{stat}})</th>
+        </tr>
+        {% for breaching_channel in breaching_channels %}
+        <tr>
+          <td>{{ breaching_channel.channel }}</td>
+          <td>{{breaching_channel.value}}</td>
+        </tr>
+        {% endfor %}
+      </table>
+
+      {% endif %}
+    </div>
+
+    <a href="{{unsubscribe_url}}">
+      Unsubscribe from alerts for this trigger</a>
+  </body>
+
+</html>
