@@ -157,10 +157,12 @@ class Monitor(MeasurementBase):
 
         return seconds
 
-    def agg_measurements(self, endtime=datetime.now(tz=pytz.UTC)):
+    def agg_measurements(self, endtime=None):
         '''
         Gather all measurements for the alarm and calculate aggregate values
         '''
+        if not endtime:
+            endtime = datetime.now(tz=pytz.UTC)
         group = self.channel_group
         metric = self.metric
         q_data = Measurement.objects.none()
@@ -232,13 +234,16 @@ class Monitor(MeasurementBase):
         return q_list
 
     def evaluate_alarm(self,
-                       endtime=datetime.now(tz=pytz.UTC) - relativedelta(
-                           minute=0, second=0, microsecond=0)):
+                       endtime=None):
         '''
         Higher-level function that determines alarm state and calls other
         functions to create alerts if necessary. Default is to start on the
         hour regardless of when it is called (truncate down).
         '''
+        if not endtime:
+            endtime = datetime.now(tz=pytz.UTC) - relativedelta(
+                minute=0, second=0, microsecond=0)
+
         # Get aggregate values for each channel. Returns a list(QuerySet)
         channel_values = self.agg_measurements(endtime)
 
@@ -247,7 +252,7 @@ class Monitor(MeasurementBase):
 
         for trigger in triggers:
             breaching_channels = trigger.get_breaching_channels(channel_values)
-            in_alarm = trigger.in_alarm_state(breaching_channels, endtime)
+            in_alarm = trigger.in_alarm_state(breaching_channels)
             trigger.evaluate_alert(in_alarm, breaching_channels, endtime)
 
         # Set the digest to be evaluated at this time. Should it be a field?
@@ -259,7 +264,10 @@ class Monitor(MeasurementBase):
             self.check_daily_digest(digesttime)
 
     def check_daily_digest(self,
-                           digesttime=datetime.now(tz=pytz.UTC)):
+                           digesttime=None):
+        if not digesttime:
+            digesttime = datetime.now(tz=pytz.UTC)
+
         # Get the date string for yesterday
         yesterday_str = (
             digesttime - relativedelta(days=1)).strftime("%Y-%m-%d")
@@ -438,11 +446,14 @@ class Trigger(MeasurementBase):
 
     def get_breaching_change(self,
                              breaching_channels,
-                             reftime=datetime.now(tz=pytz.UTC)):
+                             reftime=None):
         '''
         Return channels that were added or removed from the previous
         breaching_channels list
         '''
+        if not reftime:
+            reftime = datetime.now(tz=pytz.UTC)
+
         added = []
         removed = []
         alert = self.get_latest_alert(reftime)
@@ -464,8 +475,7 @@ class Trigger(MeasurementBase):
     # breaching_channels is a list of dicts from
     # trigger.get_breaching_channels()
     def in_alarm_state(self,
-                       breaching_channels,
-                       reftime=datetime.now(tz=pytz.UTC)):
+                       breaching_channels):
         '''
         Determine if Trigger is in or out of alarm based on breaching_channels
         and num_channels_operator.
@@ -484,15 +494,21 @@ class Trigger(MeasurementBase):
             op = self.OPERATOR[self.num_channels_operator]
             return op(len(breaching_channels), self.num_channels)
 
-    def get_latest_alert(self, reftime=datetime.now(tz=pytz.UTC)):
+    def get_latest_alert(self, reftime=None):
         '''Return the most recent alert for this Trigger'''
+        if not reftime:
+            reftime = datetime.now(tz=pytz.UTC)
+
         return self.alerts.filter(
             timestamp__lte=reftime).order_by('timestamp').last()
 
     def create_alert(self,
                      in_alarm,
                      breaching_channels=[],
-                     timestamp=datetime.now(tz=pytz.UTC)):
+                     timestamp=None):
+        if not timestamp:
+            timestamp = datetime.now(tz=pytz.UTC)
+
         new_alert = Alert(trigger=self,
                           timestamp=timestamp,
                           in_alarm=in_alarm,
@@ -504,12 +520,14 @@ class Trigger(MeasurementBase):
     def evaluate_alert(self,
                        in_alarm,
                        breaching_channels=[],
-                       reftime=datetime.now(tz=pytz.UTC)):
+                       reftime=None):
         '''
         Determine what to do with alerts given that this Trigger is in
         or out of spec
         '''
-        alert = self.get_latest_alert()
+        if not reftime:
+            reftime = datetime.now(tz=pytz.UTC)
+        alert = self.get_latest_alert(reftime=reftime)
         create_new = False
         send_new = False
 
@@ -543,7 +561,9 @@ class Trigger(MeasurementBase):
             send_new = False
 
         if create_new:
-            alert = self.create_alert(in_alarm, breaching_channels, reftime)
+            alert = self.create_alert(in_alarm,
+                                      breaching_channels=breaching_channels,
+                                      timestamp=reftime)
             if send_new:
                 alert.send_alert()
 
@@ -724,7 +744,6 @@ class Trigger(MeasurementBase):
         Do regular save except also validate fields. This doesn't happen
         automatically on save. Also reset alerts associated with this trigger
         """
-
         # Validate fields
         try:
             self.full_clean()

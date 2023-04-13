@@ -22,7 +22,7 @@ from squac.test_mixins import sample_user
 to run only measurement tests:
     ./mg.sh "test measurement && flake8"
 to run only this file
-    "./mg.sh "test measurement.tests.test_monitor_api && flake8"
+    ./mg.sh "test measurement.tests.test_monitor_api && flake8"
 
 '''
 
@@ -211,8 +211,8 @@ class PrivateMonitorApiTests(TestCase):
 
         trigger = Trigger.objects.get(id=res.data['id'])
 
-        # should have no alert
-        self.assertIsNone(res.data['latest_alert'])
+        # should have an initial alert
+        self.assertIsNotNone(res.data['latest_alert'])
 
         # create alert with in_alarm True
         Alert.objects.create(

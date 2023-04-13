@@ -4,7 +4,6 @@ from django.core.management import call_command
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
-# from django.db.models import Avg, Count, Max, Min, Sum
 
 from measurement.models import (Monitor, Trigger, Alert, Measurement,
                                 Metric)
@@ -199,8 +198,11 @@ class PrivateAlarmAPITests(TestCase):
         trigger.alert_on_out_of_alarm = True
         trigger.save()
 
+        # saving the trigger created a new alert with in_alarm=False
+        # so make another with in_alarm=True
+        old_alert = trigger.create_alert(True)
         alert = trigger.evaluate_alert(False)
-        self.assertNotEqual(2, alert.id)
+        self.assertNotEqual(old_alert.id, alert.id)
         self.assertFalse(alert.in_alarm)
         self.assertTrue(send_alert.called)
 
