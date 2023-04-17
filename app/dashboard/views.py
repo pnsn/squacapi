@@ -1,10 +1,12 @@
 from rest_framework import viewsets
 # from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from squac.mixins import SetUserMixin, DefaultPermissionsMixin, \
-    SharedPermissionsMixin
+    SharedPermissionsMixin, OverrideParamsMixin, \
+    EnablePartialUpdateMixin
 from dashboard.models import Dashboard, Widget
 from dashboard import serializers
 from django_filters import rest_framework as filters
+
 """Filter classes used for view filtering"""
 
 ''''
@@ -40,11 +42,12 @@ class WidgetFilter(filters.FilterSet):
 
 
 class BaseDashboardViewSet(SetUserMixin, DefaultPermissionsMixin,
-                           viewsets.ModelViewSet):
+                           OverrideParamsMixin, viewsets.ModelViewSet):
     pass
 
 
-class DashboardViewSet(SharedPermissionsMixin, BaseDashboardViewSet):
+class DashboardViewSet(SharedPermissionsMixin, BaseDashboardViewSet,
+                       EnablePartialUpdateMixin):
     serializer_class = serializers.DashboardSerializer
     filter_class = DashboardFilter
 
@@ -70,7 +73,7 @@ class DashboardViewSet(SharedPermissionsMixin, BaseDashboardViewSet):
         return queryset
 
 
-class WidgetViewSet(BaseDashboardViewSet):
+class WidgetViewSet(BaseDashboardViewSet, EnablePartialUpdateMixin):
     queryset = Widget.objects.all()
     serializer_class = serializers.WidgetSerializer
     filter_class = WidgetFilter

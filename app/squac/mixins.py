@@ -1,7 +1,10 @@
 from rest_framework.permissions import IsAuthenticated, \
     DjangoModelPermissions, IsAdminUser
 from squac.permissions import IsAdminOwnerOrShared, IsOrgAdminOrMember,\
-    IsAdminOrOwner
+    IsAdminOrOwner, IsAdminOwnerOrReadOnly
+
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 '''common mixins'''
 
@@ -23,6 +26,18 @@ class AdminOrOwnerPermissionMixin:
          '''
     permission_classes = (
         IsAuthenticated, IsAdminOrOwner,)
+
+
+class OwnerOrReadOnlyPermissionMixin:
+    '''Owner or Admin can edit, otherwise read only access
+
+        permission_classes acts as base permissions:
+            all views must be autheticated and if user is admin we are done
+            otherwise check if user owns object
+            ',' commas act as 'and' '|' pipes act as 'or'
+         '''
+    permission_classes = (
+        IsAuthenticated | IsAdminOwnerOrReadOnly,)
 
 
 class DefaultPermissionsMixin:
@@ -70,3 +85,36 @@ class EnablePartialUpdateMixin:
     def update(self, request, *args, **kwargs):
         kwargs['partial'] = True
         return super().update(request, *args, **kwargs)
+
+
+id_params = [
+    openapi.Parameter(
+        'id',
+        openapi.IN_PATH,
+        type=openapi.TYPE_INTEGER),
+]
+
+
+class OverrideReadParamsMixin:
+    @swagger_auto_schema(manual_parameters=id_params)
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
+
+
+class OverrideParamsMixin(OverrideReadParamsMixin):
+    """
+        Overrides id param documentation for detail operations
+
+    """
+
+    @swagger_auto_schema(manual_parameters=id_params)
+    def destroy(self, request, *args, **kwargs):
+        return super().destroy(request, *args, **kwargs)
+
+    @swagger_auto_schema(manual_parameters=id_params)
+    def update(self, request, *args, **kwargs):
+        return super().update(request, *args, **kwargs)
+
+    @swagger_auto_schema(manual_parameters=id_params)
+    def partial_update(self, request, *args, **kwargs):
+        return super().partial_update(request, *args, **kwargs)

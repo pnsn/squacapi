@@ -1,849 +1,773 @@
 [
-{
+  {
     "model": "core.user",
-        "fields": {
-        "password": "pbkdf2_sha256$150000$Maki0QGWXOfV$d+iR6jNQ5v4X4QhgZ58qsloHqqF98lnf5yf/feQBaIo=",
-        "last_login": null,
-        "is_superuser": true,
-        "email": "loader@pnsn.org",
-        "organization": 1,
-        "firstname": "testy",
-        "lastname": "parakeet",
-        "is_active": true,
-        "is_staff": true,
-        "groups": [],
-        "user_permissions": []
+    "fields": {
+      "password": "pbkdf2_sha256$150000$Maki0QGWXOfV$d+iR6jNQ5v4X4QhgZ58qsloHqqF98lnf5yf/feQBaIo=",
+      "last_login": null,
+      "is_superuser": true,
+      "email": "loader@pnsn.org",
+      "organization": 1,
+      "firstname": "testy",
+      "lastname": "parakeet",
+      "is_active": true,
+      "is_staff": true,
+      "groups": [],
+      "user_permissions": []
     }
-},
-{
+  },
+  {
     "model": "organization.organization",
     "pk": 1,
-    "fields":{
-        "name": "PNSN",
-        "created_at": "2019-08-28T23:27:28.623Z",
-        "updated_at": "2019-08-28T23:27:28.623Z"
+    "fields": {
+      "name": "PNSN",
+      "created_at": "2019-08-28T23:27:28.623Z",
+      "updated_at": "2019-08-28T23:27:28.623Z"
     }
-},
-{
+  },
+  {
     "model": "nslc.network",
     "pk": "uw",
     "fields": {
-        "name": "University of Washington",
-        "description": null,
-        "created_at": "2019-08-28T23:27:28.597Z",
-        "updated_at": "2019-08-28T23:27:28.598Z",
-        "user": [
-            "loader@pnsn.org"
-        ]
+      "name": "University of Washington",
+      "description": null,
+      "created_at": "2019-08-28T23:27:28.597Z",
+      "updated_at": "2019-08-28T23:27:28.598Z",
+      "user": ["loader@pnsn.org"]
     }
-},
-{
+  },
+  {
     "model": "nslc.channel",
     "pk": 1,
     "fields": {
-        "name": "HNN",
-        "description": null,
-        "created_at": "2019-08-28T23:27:28.649Z",
-        "updated_at": "2019-08-28T23:27:28.649Z",
-        "user": [
-        "loader@pnsn.org"
-        ],
-        "code": "hnn",
-        "station_code": "sta1",
-        "station_name": "",
-        "sample_rate": -1.0,
-        "loc": "--",
-        "lat": 40.0,
-        "lon": -120.0,
-        "elev": 5.0,
-        "depth": 0.0,
-        "azimuth": 0.0,
-        "dip": 0.0,
-        "sensor_description": "",
-        "scale": 0.0,
-        "scale_freq": 1.0,
-        "scale_units": "M/S",
-        "starttime": "1970-01-01T23:27:28.597Z",
-        "endtime": "2599-12-31T23:27:28.598Z",
-        "network": "uw"
+      "name": "HNN",
+      "description": null,
+      "created_at": "2019-08-28T23:27:28.649Z",
+      "updated_at": "2019-08-28T23:27:28.649Z",
+      "user": ["loader@pnsn.org"],
+      "code": "hnn",
+      "station_code": "sta1",
+      "station_name": "",
+      "sample_rate": -1.0,
+      "loc": "--",
+      "lat": 40.0,
+      "lon": -120.0,
+      "elev": 5.0,
+      "depth": 0.0,
+      "azimuth": 0.0,
+      "dip": 0.0,
+      "sensor_description": "",
+      "scale": 0.0,
+      "scale_freq": 1.0,
+      "scale_units": "M/S",
+      "starttime": "1970-01-01T23:27:28.597Z",
+      "endtime": "2599-12-31T23:27:28.598Z",
+      "network": "uw"
     }
-},
-{
+  },
+  {
     "model": "nslc.channel",
     "pk": 2,
     "fields": {
-        "name": "HNN",
-        "description": null,
-        "created_at": "2019-08-28T23:27:28.649Z",
-        "updated_at": "2019-08-28T23:27:28.649Z",
-        "user": [
-        "loader@pnsn.org"
-        ],
-        "code": "hnn",
-        "station_code": "sta2",
-        "station_name": "",
-        "sample_rate": -1.0,
-        "loc": "--",
-        "lat": 40.0,
-        "lon": -120.0,
-        "elev": 5.0,
-        "depth": 0.0,
-        "azimuth": 0.0,
-        "dip": 0.0,
-        "sensor_description": "",
-        "scale": 0.0,
-        "scale_freq": 1.0,
-        "scale_units": "M/S",
-        "starttime": "1970-01-01T23:27:28.597Z",
-        "endtime": "2599-12-31T23:27:28.598Z",
-        "network": "uw"
+      "name": "HNN",
+      "description": null,
+      "created_at": "2019-08-28T23:27:28.649Z",
+      "updated_at": "2019-08-28T23:27:28.649Z",
+      "user": ["loader@pnsn.org"],
+      "code": "hnn",
+      "station_code": "sta2",
+      "station_name": "",
+      "sample_rate": -1.0,
+      "loc": "--",
+      "lat": 40.0,
+      "lon": -120.0,
+      "elev": 5.0,
+      "depth": 0.0,
+      "azimuth": 0.0,
+      "dip": 0.0,
+      "sensor_description": "",
+      "scale": 0.0,
+      "scale_freq": 1.0,
+      "scale_units": "M/S",
+      "starttime": "1970-01-01T23:27:28.597Z",
+      "endtime": "2599-12-31T23:27:28.598Z",
+      "network": "uw"
     }
-},
-{
+  },
+  {
     "model": "nslc.channel",
     "pk": 3,
     "fields": {
-        "name": "HNN",
-        "description": null,
-        "created_at": "2019-08-28T23:27:28.649Z",
-        "updated_at": "2019-08-28T23:27:28.649Z",
-        "user": [
-        "loader@pnsn.org"
-        ],
-        "code": "hnn",
-        "station_code": "sta3",
-        "station_name": "",
-        "sample_rate": -1.0,
-        "loc": "--",
-        "lat": 40.0,
-        "lon": -120.0,
-        "elev": 5.0,
-        "depth": 0.0,
-        "azimuth": 0.0,
-        "dip": 0.0,
-        "sensor_description": "",
-        "scale": 0.0,
-        "scale_freq": 1.0,
-        "scale_units": "M/S",
-        "starttime": "1970-01-01T23:27:28.597Z",
-        "endtime": "2599-12-31T23:27:28.598Z",
-        "network": "uw"
+      "name": "HNN",
+      "description": null,
+      "created_at": "2019-08-28T23:27:28.649Z",
+      "updated_at": "2019-08-28T23:27:28.649Z",
+      "user": ["loader@pnsn.org"],
+      "code": "hnn",
+      "station_code": "sta3",
+      "station_name": "",
+      "sample_rate": -1.0,
+      "loc": "--",
+      "lat": 40.0,
+      "lon": -120.0,
+      "elev": 5.0,
+      "depth": 0.0,
+      "azimuth": 0.0,
+      "dip": 0.0,
+      "sensor_description": "",
+      "scale": 0.0,
+      "scale_freq": 1.0,
+      "scale_units": "M/S",
+      "starttime": "1970-01-01T23:27:28.597Z",
+      "endtime": "2599-12-31T23:27:28.598Z",
+      "network": "uw"
     }
-},
-{
+  },
+  {
     "model": "nslc.channel",
     "pk": 4,
     "fields": {
-        "name": "HNN",
-        "description": null,
-        "created_at": "2019-08-28T23:27:28.649Z",
-        "updated_at": "2019-08-28T23:27:28.649Z",
-        "user": [
-        "loader@pnsn.org"
-        ],
-        "code": "hnn",
-        "station_code": "sta4",
-        "station_name": "",
-        "sample_rate": -1.0,
-        "loc": "--",
-        "lat": 40.0,
-        "lon": -120.0,
-        "elev": 5.0,
-        "depth": 0.0,
-        "azimuth": 0.0,
-        "dip": 0.0,
-        "sensor_description": "",
-        "scale": 0.0,
-        "scale_freq": 1.0,
-        "scale_units": "M/S",
-        "starttime": "1970-01-01T23:27:28.597Z",
-        "endtime": "2599-12-31T23:27:28.598Z",
-        "network": "uw"
+      "name": "HNN",
+      "description": null,
+      "created_at": "2019-08-28T23:27:28.649Z",
+      "updated_at": "2019-08-28T23:27:28.649Z",
+      "user": ["loader@pnsn.org"],
+      "code": "hnn",
+      "station_code": "sta4",
+      "station_name": "",
+      "sample_rate": -1.0,
+      "loc": "--",
+      "lat": 40.0,
+      "lon": -120.0,
+      "elev": 5.0,
+      "depth": 0.0,
+      "azimuth": 0.0,
+      "dip": 0.0,
+      "sensor_description": "",
+      "scale": 0.0,
+      "scale_freq": 1.0,
+      "scale_units": "M/S",
+      "starttime": "1970-01-01T23:27:28.597Z",
+      "endtime": "2599-12-31T23:27:28.598Z",
+      "network": "uw"
     }
-},
-{
+  },
+  {
     "model": "nslc.channel",
     "pk": 5,
     "fields": {
-        "name": "HNN",
-        "description": null,
-        "created_at": "2019-08-28T23:27:28.649Z",
-        "updated_at": "2019-08-28T23:27:28.649Z",
-        "user": [
-        "loader@pnsn.org"
-        ],
-        "code": "hnn",
-        "station_code": "sta5",
-        "station_name": "",
-        "sample_rate": -1.0,
-        "loc": "--",
-        "lat": 40.0,
-        "lon": -120.0,
-        "elev": 5.0,
-        "depth": 0.0,
-        "azimuth": 0.0,
-        "dip": 0.0,
-        "sensor_description": "",
-        "scale": 0.0,
-        "scale_freq": 1.0,
-        "scale_units": "M/S",
-        "starttime": "1970-01-01T23:27:28.597Z",
-        "endtime": "2599-12-31T23:27:28.598Z",
-        "network": "uw"
+      "name": "HNN",
+      "description": null,
+      "created_at": "2019-08-28T23:27:28.649Z",
+      "updated_at": "2019-08-28T23:27:28.649Z",
+      "user": ["loader@pnsn.org"],
+      "code": "hnn",
+      "station_code": "sta5",
+      "station_name": "",
+      "sample_rate": -1.0,
+      "loc": "--",
+      "lat": 40.0,
+      "lon": -120.0,
+      "elev": 5.0,
+      "depth": 0.0,
+      "azimuth": 0.0,
+      "dip": 0.0,
+      "sensor_description": "",
+      "scale": 0.0,
+      "scale_freq": 1.0,
+      "scale_units": "M/S",
+      "starttime": "1970-01-01T23:27:28.597Z",
+      "endtime": "2599-12-31T23:27:28.598Z",
+      "network": "uw"
     }
-},
-{
+  },
+  {
     "model": "nslc.group",
     "pk": 1,
     "fields": {
-        "user": [
-            "loader@pnsn.org"
-        ],
-        "name": "grp1",
-        "description": "Group 1",
-        "created_at": "2019-08-28T23:27:28.691Z",
-        "updated_at": "2019-08-28T23:27:28.691Z",
-        "channels": [
-            1,
-            2,
-            3
-        ],
-        "organization": 1
+      "user": ["loader@pnsn.org"],
+      "name": "grp1",
+      "description": "Group 1",
+      "created_at": "2019-08-28T23:27:28.691Z",
+      "updated_at": "2019-08-28T23:27:28.691Z",
+      "channels": [1, 2, 3],
+      "organization": 1
     }
-},
-{
+  },
+  {
     "model": "nslc.group",
     "pk": 2,
     "fields": {
-        "user": [
-            "loader@pnsn.org"
-        ],
-        "name": "grp2",
-        "description": "Group 2",
-        "created_at": "2019-08-28T23:27:28.691Z",
-        "updated_at": "2019-08-28T23:27:28.691Z",
-        "channels": [
-            4,
-            5
-        ],
-        "organization": 1
+      "user": ["loader@pnsn.org"],
+      "name": "grp2",
+      "description": "Group 2",
+      "created_at": "2019-08-28T23:27:28.691Z",
+      "updated_at": "2019-08-28T23:27:28.691Z",
+      "channels": [4, 5],
+      "organization": 1
     }
-},
-{
+  },
+  {
     "model": "nslc.group",
     "pk": 3,
     "fields": {
-        "user": [
-            "loader@pnsn.org"
-        ],
-        "name": "grp3",
-        "description": "Group 3",
-        "created_at": "2019-08-28T23:27:28.691Z",
-        "updated_at": "2019-08-28T23:27:28.691Z",
-        "channels": [],
-        "organization": 1
+      "user": ["loader@pnsn.org"],
+      "name": "grp3",
+      "description": "Group 3",
+      "created_at": "2019-08-28T23:27:28.691Z",
+      "updated_at": "2019-08-28T23:27:28.691Z",
+      "channels": [],
+      "organization": 1
     }
-},
-{
+  },
+  {
     "model": "measurement.metric",
     "reference_url": "https://pnsn.org",
     "pk": 1,
     "fields": {
-        "created_at": "2019-08-28T23:30:31.258Z",
-        "user": [
-            "loader@pnsn.org"
-        ],
-        "code": "test1",
-        "name": "test1",
-        "description": "Test 1",
-        "unit": "integer",
-        "url": "",
-        "default_minval": 1.0,
-        "default_maxval": 10.0,
-        "updated_at": "2019-08-28T23:30:31.258Z"
+      "created_at": "2019-08-28T23:30:31.258Z",
+      "user": ["loader@pnsn.org"],
+      "code": "test1",
+      "name": "test1",
+      "description": "Test 1",
+      "unit": "integer",
+      "url": "",
+      "default_minval": 1.0,
+      "default_maxval": 10.0,
+      "updated_at": "2019-08-28T23:30:31.258Z"
     }
-},
-{
+  },
+  {
     "model": "measurement.metric",
     "reference_url": "https://pnsn.org",
     "pk": 2,
     "fields": {
-        "created_at": "2019-08-28T23:30:31.265Z",
-        "user": [
-            "loader@pnsn.org"
-        ],
-        "code": "test2",
-        "name": "test2",
-        "description": "Test 2",
-        "unit": "integer",
-        "url": "",
-        "default_minval": 2.0,
-        "default_maxval": 15.0,
-        "updated_at": "2019-08-28T23:30:31.265Z"
+      "created_at": "2019-08-28T23:30:31.265Z",
+      "user": ["loader@pnsn.org"],
+      "code": "test2",
+      "name": "test2",
+      "description": "Test 2",
+      "unit": "integer",
+      "url": "",
+      "default_minval": 2.0,
+      "default_maxval": 15.0,
+      "updated_at": "2019-08-28T23:30:31.265Z"
     }
-},
-{
-  "model": "measurement.measurement",
-  "pk": 1,
-  "fields": {
-    "created_at": "2019-08-28T23:30:31.262Z",
-    "updated_at": "2019-08-28T23:30:31.262Z",
-    "user": [
-      "loader@pnsn.org"
-    ],
-    "metric": 1,
-    "channel": 1,
-    "value": 1,
-    "starttime": "2018-02-01T03:00:00Z",
-    "endtime": "2018-02-01T03:00:00Z"
-  }
-},
-{
-  "model": "measurement.measurement",
-  "pk": 2,
-  "fields": {
-    "created_at": "2019-08-28T23:30:31.262Z",
-    "updated_at": "2019-08-28T23:30:31.262Z",
-    "user": [
-      "loader@pnsn.org"
-    ],
-    "metric": 1,
-    "channel": 1,
-    "value": 2,
-    "starttime": "2018-02-01T03:30:00Z",
-    "endtime": "2018-02-01T03:30:00Z"
-  }
-},
-{
-  "model": "measurement.measurement",
-  "pk": 3,
-  "fields": {
-    "created_at": "2019-08-28T23:30:31.262Z",
-    "updated_at": "2019-08-28T23:30:31.262Z",
-    "user": [
-      "loader@pnsn.org"
-    ],
-    "metric": 1,
-    "channel": 1,
-    "value": 3,
-    "starttime": "2018-02-01T04:00:00Z",
-    "endtime": "2018-02-01T04:00:00Z"
-  }
-},
-{
-  "model": "measurement.measurement",
-  "pk": 4,
-  "fields": {
-    "created_at": "2019-08-28T23:30:31.262Z",
-    "updated_at": "2019-08-28T23:30:31.262Z",
-    "user": [
-      "loader@pnsn.org"
-    ],
-    "metric": 1,
-    "channel": 1,
-    "value": 4,
-    "starttime": "2018-02-01T05:30:00Z",
-    "endtime": "2018-02-01T05:30:00Z"
-  }
-},
-{
-  "model": "measurement.measurement",
-  "pk": 5,
-  "fields": {
-    "created_at": "2019-08-28T23:30:31.262Z",
-    "updated_at": "2019-08-28T23:30:31.262Z",
-    "user": [
-      "loader@pnsn.org"
-    ],
-    "metric": 1,
-    "channel": 2,
-    "value": 5,
-    "starttime": "2018-02-01T03:00:00Z",
-    "endtime": "2018-02-01T03:00:00Z"
-  }
-},
-{
-  "model": "measurement.measurement",
-  "pk": 6,
-  "fields": {
-    "created_at": "2019-08-28T23:30:31.262Z",
-    "updated_at": "2019-08-28T23:30:31.262Z",
-    "user": [
-      "loader@pnsn.org"
-    ],
-    "metric": 1,
-    "channel": 2,
-    "value": 6,
-    "starttime": "2018-02-01T03:30:00Z",
-    "endtime": "2018-02-01T03:30:00Z"
-  }
-},
-{
-  "model": "measurement.measurement",
-  "pk": 7,
-  "fields": {
-    "created_at": "2019-08-28T23:30:31.262Z",
-    "updated_at": "2019-08-28T23:30:31.262Z",
-    "user": [
-      "loader@pnsn.org"
-    ],
-    "metric": 1,
-    "channel": 2,
-    "value": 7,
-    "starttime": "2018-02-01T06:00:00Z",
-    "endtime": "2018-02-01T06:00:00Z"
-  }
-},
-{
-  "model": "measurement.measurement",
-  "pk": 8,
-  "fields": {
-    "created_at": "2019-08-28T23:30:31.262Z",
-    "updated_at": "2019-08-28T23:30:31.262Z",
-    "user": [
-      "loader@pnsn.org"
-    ],
-    "metric": 1,
-    "channel": 3,
-    "value": 8,
-    "starttime": "2018-02-01T03:00:00Z",
-    "endtime": "2018-02-01T03:00:00Z"
-  }
-},
-{
-  "model": "measurement.measurement",
-  "pk": 9,
-  "fields": {
-    "created_at": "2019-08-28T23:30:31.262Z",
-    "updated_at": "2019-08-28T23:30:31.262Z",
-    "user": [
-      "loader@pnsn.org"
-    ],
-    "metric": 1,
-    "channel": 3,
-    "value": 9,
-    "starttime": "2018-02-01T06:00:00Z",
-    "endtime": "2018-02-01T06:00:00Z"
-  }
-},
-{
-  "model": "measurement.measurement",
-  "pk": 10,
-  "fields": {
-    "created_at": "2019-08-28T23:30:31.262Z",
-    "updated_at": "2019-08-28T23:30:31.262Z",
-    "user": [
-      "loader@pnsn.org"
-    ],
-    "metric": 1,
-    "channel": 4,
-    "value": 10,
-    "starttime": "2018-02-01T03:00:00Z",
-    "endtime": "2018-02-01T03:00:00Z"
-  }
-},
-{
-  "model": "measurement.measurement",
-  "pk": 11,
-  "fields": {
-    "created_at": "2019-08-28T23:30:31.262Z",
-    "updated_at": "2019-08-28T23:30:31.262Z",
-    "user": [
-      "loader@pnsn.org"
-    ],
-    "metric": 1,
-    "channel": 5,
-    "value": 11,
-    "starttime": "2018-02-01T03:00:00Z",
-    "endtime": "2018-02-01T03:00:00Z"
-  }
-},
-{
-  "model": "measurement.measurement",
-  "pk": 12,
-  "fields": {
-    "created_at": "2019-08-28T23:30:31.262Z",
-    "updated_at": "2019-08-28T23:30:31.262Z",
-    "user": [
-      "loader@pnsn.org"
-    ],
-    "metric": 2,
-    "channel": 1,
-    "value": 12,
-    "starttime": "2018-02-01T03:00:00Z",
-    "endtime": "2018-02-01T03:00:00Z"
-  }
-},
-{
-  "model": "measurement.measurement",
-  "pk": 13,
-  "fields": {
-    "created_at": "2019-08-28T23:30:31.262Z",
-    "updated_at": "2019-08-28T23:30:31.262Z",
-    "user": [
-      "loader@pnsn.org"
-    ],
-    "metric": 2,
-    "channel": 1,
-    "value": 13,
-    "starttime": "2018-02-01T03:30:00Z",
-    "endtime": "2018-02-01T03:30:00Z"
-  }
-},
-{
-  "model": "measurement.measurement",
-  "pk": 14,
-  "fields": {
-    "created_at": "2019-08-28T23:30:31.262Z",
-    "updated_at": "2019-08-28T23:30:31.262Z",
-    "user": [
-      "loader@pnsn.org"
-    ],
-    "metric": 2,
-    "channel": 2,
-    "value": 14,
-    "starttime": "2018-02-01T03:30:00Z",
-    "endtime": "2018-02-01T03:30:00Z"
-  }
-},
-{
-  "model": "measurement.measurement",
-  "pk": 15,
-  "fields": {
-    "created_at": "2019-08-28T23:30:31.262Z",
-    "updated_at": "2019-08-28T23:30:31.262Z",
-    "user": [
-      "loader@pnsn.org"
-    ],
-    "metric": 2,
-    "channel": 4,
-    "value": 15,
-    "starttime": "2018-02-01T03:30:00Z",
-    "endtime": "2018-02-01T03:30:00Z"
-  }
-},
-{
-  "model": "measurement.measurement",
-  "pk": 16,
-  "fields": {
-    "created_at": "2019-08-28T23:30:31.262Z",
-    "updated_at": "2019-08-28T23:30:31.262Z",
-    "user": [
-      "loader@pnsn.org"
-    ],
-    "metric": 2,
-    "channel": 5,
-    "value": 16,
-    "starttime": "2018-02-01T05:30:00Z",
-    "endtime": "2018-02-01T05:30:00Z"
-  }
-},
-{
+  },
+  {
+    "model": "measurement.measurement",
+    "pk": 1,
+    "fields": {
+      "created_at": "2019-08-28T23:30:31.262Z",
+      "updated_at": "2019-08-28T23:30:31.262Z",
+      "user": ["loader@pnsn.org"],
+      "metric": 1,
+      "channel": 1,
+      "value": 1,
+      "starttime": "2018-02-01T03:00:00Z",
+      "endtime": "2018-02-01T03:00:00Z"
+    }
+  },
+  {
+    "model": "measurement.measurement",
+    "pk": 2,
+    "fields": {
+      "created_at": "2019-08-28T23:30:31.262Z",
+      "updated_at": "2019-08-28T23:30:31.262Z",
+      "user": ["loader@pnsn.org"],
+      "metric": 1,
+      "channel": 1,
+      "value": 2,
+      "starttime": "2018-02-01T03:30:00Z",
+      "endtime": "2018-02-01T03:30:00Z"
+    }
+  },
+  {
+    "model": "measurement.measurement",
+    "pk": 3,
+    "fields": {
+      "created_at": "2019-08-28T23:30:31.262Z",
+      "updated_at": "2019-08-28T23:30:31.262Z",
+      "user": ["loader@pnsn.org"],
+      "metric": 1,
+      "channel": 1,
+      "value": 3,
+      "starttime": "2018-02-01T04:00:00Z",
+      "endtime": "2018-02-01T04:00:00Z"
+    }
+  },
+  {
+    "model": "measurement.measurement",
+    "pk": 4,
+    "fields": {
+      "created_at": "2019-08-28T23:30:31.262Z",
+      "updated_at": "2019-08-28T23:30:31.262Z",
+      "user": ["loader@pnsn.org"],
+      "metric": 1,
+      "channel": 1,
+      "value": 4,
+      "starttime": "2018-02-01T05:30:00Z",
+      "endtime": "2018-02-01T05:30:00Z"
+    }
+  },
+  {
+    "model": "measurement.measurement",
+    "pk": 5,
+    "fields": {
+      "created_at": "2019-08-28T23:30:31.262Z",
+      "updated_at": "2019-08-28T23:30:31.262Z",
+      "user": ["loader@pnsn.org"],
+      "metric": 1,
+      "channel": 2,
+      "value": 5,
+      "starttime": "2018-02-01T03:00:00Z",
+      "endtime": "2018-02-01T03:00:00Z"
+    }
+  },
+  {
+    "model": "measurement.measurement",
+    "pk": 6,
+    "fields": {
+      "created_at": "2019-08-28T23:30:31.262Z",
+      "updated_at": "2019-08-28T23:30:31.262Z",
+      "user": ["loader@pnsn.org"],
+      "metric": 1,
+      "channel": 2,
+      "value": 6,
+      "starttime": "2018-02-01T03:30:00Z",
+      "endtime": "2018-02-01T03:30:00Z"
+    }
+  },
+  {
+    "model": "measurement.measurement",
+    "pk": 7,
+    "fields": {
+      "created_at": "2019-08-28T23:30:31.262Z",
+      "updated_at": "2019-08-28T23:30:31.262Z",
+      "user": ["loader@pnsn.org"],
+      "metric": 1,
+      "channel": 2,
+      "value": 7,
+      "starttime": "2018-02-01T06:00:00Z",
+      "endtime": "2018-02-01T06:00:00Z"
+    }
+  },
+  {
+    "model": "measurement.measurement",
+    "pk": 8,
+    "fields": {
+      "created_at": "2019-08-28T23:30:31.262Z",
+      "updated_at": "2019-08-28T23:30:31.262Z",
+      "user": ["loader@pnsn.org"],
+      "metric": 1,
+      "channel": 3,
+      "value": 8,
+      "starttime": "2018-02-01T03:00:00Z",
+      "endtime": "2018-02-01T03:00:00Z"
+    }
+  },
+  {
+    "model": "measurement.measurement",
+    "pk": 9,
+    "fields": {
+      "created_at": "2019-08-28T23:30:31.262Z",
+      "updated_at": "2019-08-28T23:30:31.262Z",
+      "user": ["loader@pnsn.org"],
+      "metric": 1,
+      "channel": 3,
+      "value": 9,
+      "starttime": "2018-02-01T06:00:00Z",
+      "endtime": "2018-02-01T06:00:00Z"
+    }
+  },
+  {
+    "model": "measurement.measurement",
+    "pk": 10,
+    "fields": {
+      "created_at": "2019-08-28T23:30:31.262Z",
+      "updated_at": "2019-08-28T23:30:31.262Z",
+      "user": ["loader@pnsn.org"],
+      "metric": 1,
+      "channel": 4,
+      "value": 10,
+      "starttime": "2018-02-01T03:00:00Z",
+      "endtime": "2018-02-01T03:00:00Z"
+    }
+  },
+  {
+    "model": "measurement.measurement",
+    "pk": 11,
+    "fields": {
+      "created_at": "2019-08-28T23:30:31.262Z",
+      "updated_at": "2019-08-28T23:30:31.262Z",
+      "user": ["loader@pnsn.org"],
+      "metric": 1,
+      "channel": 5,
+      "value": 11,
+      "starttime": "2018-02-01T03:00:00Z",
+      "endtime": "2018-02-01T03:00:00Z"
+    }
+  },
+  {
+    "model": "measurement.measurement",
+    "pk": 12,
+    "fields": {
+      "created_at": "2019-08-28T23:30:31.262Z",
+      "updated_at": "2019-08-28T23:30:31.262Z",
+      "user": ["loader@pnsn.org"],
+      "metric": 2,
+      "channel": 1,
+      "value": 12,
+      "starttime": "2018-02-01T03:00:00Z",
+      "endtime": "2018-02-01T03:00:00Z"
+    }
+  },
+  {
+    "model": "measurement.measurement",
+    "pk": 13,
+    "fields": {
+      "created_at": "2019-08-28T23:30:31.262Z",
+      "updated_at": "2019-08-28T23:30:31.262Z",
+      "user": ["loader@pnsn.org"],
+      "metric": 2,
+      "channel": 1,
+      "value": 13,
+      "starttime": "2018-02-01T03:30:00Z",
+      "endtime": "2018-02-01T03:30:00Z"
+    }
+  },
+  {
+    "model": "measurement.measurement",
+    "pk": 14,
+    "fields": {
+      "created_at": "2019-08-28T23:30:31.262Z",
+      "updated_at": "2019-08-28T23:30:31.262Z",
+      "user": ["loader@pnsn.org"],
+      "metric": 2,
+      "channel": 2,
+      "value": 14,
+      "starttime": "2018-02-01T03:30:00Z",
+      "endtime": "2018-02-01T03:30:00Z"
+    }
+  },
+  {
+    "model": "measurement.measurement",
+    "pk": 15,
+    "fields": {
+      "created_at": "2019-08-28T23:30:31.262Z",
+      "updated_at": "2019-08-28T23:30:31.262Z",
+      "user": ["loader@pnsn.org"],
+      "metric": 2,
+      "channel": 4,
+      "value": 15,
+      "starttime": "2018-02-01T03:30:00Z",
+      "endtime": "2018-02-01T03:30:00Z"
+    }
+  },
+  {
+    "model": "measurement.measurement",
+    "pk": 16,
+    "fields": {
+      "created_at": "2019-08-28T23:30:31.262Z",
+      "updated_at": "2019-08-28T23:30:31.262Z",
+      "user": ["loader@pnsn.org"],
+      "metric": 2,
+      "channel": 5,
+      "value": 16,
+      "starttime": "2018-02-01T05:30:00Z",
+      "endtime": "2018-02-01T05:30:00Z"
+    }
+  },
+  {
     "model": "measurement.monitor",
     "pk": 1,
     "fields": {
-        "created_at": "2019-08-28T23:30:31.262Z", 
-        "updated_at": "2019-08-28T23:30:31.262Z", 
-        "user": [
-            "loader@pnsn.org"
-        ], 
-        "channel_group": 1, 
-        "metric": 1, 
-        "interval_type": "hour", 
-        "interval_count": 2, 
-        "stat": "avg"
+      "created_at": "2019-08-28T23:30:31.262Z",
+      "updated_at": "2019-08-28T23:30:31.262Z",
+      "user": ["loader@pnsn.org"],
+      "channel_group": 1,
+      "metric": 1,
+      "interval_type": "hour",
+      "interval_count": 2,
+      "stat": "avg"
     }
-},
-{
+  },
+  {
     "model": "measurement.monitor",
     "pk": 2,
     "fields": {
-        "created_at": "2019-08-28T23:30:31.262Z", 
-        "updated_at": "2019-08-28T23:30:31.262Z", 
-        "user": [
-            "loader@pnsn.org"
-        ], 
-        "channel_group": 1, 
-        "metric": 2, 
-        "interval_type": "hour", 
-        "interval_count": 2, 
-        "stat": "avg"
+      "created_at": "2019-08-28T23:30:31.262Z",
+      "updated_at": "2019-08-28T23:30:31.262Z",
+      "user": ["loader@pnsn.org"],
+      "channel_group": 1,
+      "metric": 2,
+      "interval_type": "hour",
+      "interval_count": 2,
+      "stat": "avg"
     }
-},
-{
+  },
+  {
     "model": "measurement.monitor",
     "pk": 3,
     "fields": {
-        "created_at": "2019-08-28T23:30:31.262Z", 
-        "updated_at": "2019-08-28T23:30:31.262Z", 
-        "user": [
-            "loader@pnsn.org"
-        ], 
-        "channel_group": 3, 
-        "metric": 2, 
-        "interval_type": "hour", 
-        "interval_count": 2, 
-        "stat": "avg"
+      "created_at": "2019-08-28T23:30:31.262Z",
+      "updated_at": "2019-08-28T23:30:31.262Z",
+      "user": ["loader@pnsn.org"],
+      "channel_group": 3,
+      "metric": 2,
+      "interval_type": "hour",
+      "interval_count": 2,
+      "stat": "avg"
     }
-},
-{
+  },
+  {
     "model": "measurement.trigger",
     "pk": 1,
     "fields": {
-        "created_at": "2019-08-28T23:30:31.262Z", 
-        "updated_at": "2019-08-28T23:30:31.262Z", 
-        "user": [
-            "loader@pnsn.org"
-        ], 
-        "monitor": 1, 
-        "val1": 6, 
-        "val2": null, 
-        "value_operator": "<",
-        "num_channels": 1, 
-        "email_list": "loader@pnsn.org"
+      "created_at": "2019-08-28T23:30:31.262Z",
+      "updated_at": "2019-08-28T23:30:31.262Z",
+      "user": ["loader@pnsn.org"],
+      "monitor": 1,
+      "val1": 6,
+      "val2": null,
+      "value_operator": "<",
+      "num_channels": 1,
+      "emails": "loader@pnsn.org"
     }
-},
-{
+  },
+  {
     "model": "measurement.trigger",
     "pk": 2,
     "fields": {
-        "created_at": "2019-08-28T23:30:31.262Z", 
-        "updated_at": "2019-08-28T23:30:31.262Z", 
-        "user": [
-            "loader@pnsn.org"
-        ], 
-        "monitor": 1, 
-        "val1": 1, 
-        "val2": null, 
-        "value_operator": ">",
-        "num_channels": 2, 
-        "email_list": "loader@pnsn.org"
+      "created_at": "2019-08-28T23:30:31.262Z",
+      "updated_at": "2019-08-28T23:30:31.262Z",
+      "user": ["loader@pnsn.org"],
+      "monitor": 1,
+      "val1": 1,
+      "val2": null,
+      "value_operator": ">",
+      "num_channels": 2,
+      "emails": "loader@pnsn.org"
     }
-},
-{
+  },
+  {
     "model": "measurement.trigger",
     "pk": 3,
     "fields": {
-        "created_at": "2019-08-28T23:30:31.262Z", 
-        "updated_at": "2019-08-28T23:30:31.262Z", 
-        "user": [
-            "loader@pnsn.org"
-        ], 
-        "monitor": 1, 
-        "val1": 1, 
-        "val2": 6, 
-        "value_operator": "outsideof",
-        "num_channels": 2, 
-        "email_list": "loader@pnsn.org"
+      "created_at": "2019-08-28T23:30:31.262Z",
+      "updated_at": "2019-08-28T23:30:31.262Z",
+      "user": ["loader@pnsn.org"],
+      "monitor": 1,
+      "val1": 1,
+      "val2": 6,
+      "value_operator": "outsideof",
+      "num_channels": 2,
+      "emails": ""
     }
-},
-{
+  },
+  {
     "model": "measurement.trigger",
     "pk": 4,
     "fields": {
-        "created_at": "2019-08-28T23:30:31.262Z", 
-        "updated_at": "2019-08-28T23:30:31.262Z", 
-        "user": [
-            "loader@pnsn.org"
-        ], 
-        "monitor": 1, 
-        "val1": 1, 
-        "val2": 6, 
-        "value_operator": "within",
-        "num_channels": 1, 
-        "email_list": "loader@pnsn.org"
+      "created_at": "2019-08-28T23:30:31.262Z",
+      "updated_at": "2019-08-28T23:30:31.262Z",
+      "user": ["loader@pnsn.org"],
+      "monitor": 1,
+      "val1": 1,
+      "val2": 6,
+      "value_operator": "within",
+      "num_channels": 1,
+      "emails": "loader@pnsn.org"
     }
-},
-{
+  },
+  {
     "model": "measurement.trigger",
     "pk": 5,
     "fields": {
-        "created_at": "2019-08-28T23:30:31.262Z", 
-        "updated_at": "2019-08-28T23:30:31.262Z", 
-        "user": [
-            "loader@pnsn.org"
-        ], 
-        "monitor": 1, 
-        "val1": 4, 
-        "val2": 6, 
-        "value_operator": "within",
-        "num_channels": 2, 
-        "email_list": "loader@pnsn.org"
+      "created_at": "2019-08-28T23:30:31.262Z",
+      "updated_at": "2019-08-28T23:30:31.262Z",
+      "user": ["loader@pnsn.org"],
+      "monitor": 1,
+      "val1": 4,
+      "val2": 6,
+      "value_operator": "within",
+      "num_channels": 2,
+      "emails": "loader@pnsn.org"
     }
-},
-{
+  },
+  {
     "model": "measurement.trigger",
     "pk": 6,
     "fields": {
-        "created_at": "2019-08-28T23:30:31.262Z", 
-        "updated_at": "2019-08-28T23:30:31.262Z", 
-        "user": [
-            "loader@pnsn.org"
-        ], 
-        "monitor": 2, 
-        "val1": 4, 
-        "val2": 6, 
-        "value_operator": "within",
-        "num_channels": 2, 
-        "email_list": "loader@pnsn.org"
+      "created_at": "2019-08-28T23:30:31.262Z",
+      "updated_at": "2019-08-28T23:30:31.262Z",
+      "user": ["loader@pnsn.org"],
+      "monitor": 2,
+      "val1": 4,
+      "val2": 6,
+      "value_operator": "within",
+      "num_channels": 2,
+      "emails": "loader@pnsn.org"
     }
-},
-{
+  },
+  {
     "model": "measurement.trigger",
     "pk": 7,
     "fields": {
-        "created_at": "2019-08-28T23:30:31.262Z", 
-        "updated_at": "2019-08-28T23:30:31.262Z", 
-        "user": [
-            "loader@pnsn.org"
-        ], 
-        "monitor": 2, 
-        "val1": 4, 
-        "value_operator": ">",
-        "num_channels_operator": "any",
-        "email_list": "loader@pnsn.org"
+      "created_at": "2019-08-28T23:30:31.262Z",
+      "updated_at": "2019-08-28T23:30:31.262Z",
+      "user": ["loader@pnsn.org"],
+      "monitor": 2,
+      "val1": 4,
+      "value_operator": ">",
+      "num_channels_operator": "any",
+      "emails": "loader@pnsn.org"
     }
-},
-{
+  },
+  {
     "model": "measurement.trigger",
     "pk": 8,
     "fields": {
-        "created_at": "2019-08-28T23:30:31.262Z", 
-        "updated_at": "2019-08-28T23:30:31.262Z", 
-        "user": [
-            "loader@pnsn.org"
-        ], 
-        "monitor": 2, 
-        "val1": 4, 
-        "value_operator": ">",
-        "num_channels_operator": "any",
-        "email_list": "loader@pnsn.org"
+      "created_at": "2019-08-28T23:30:31.262Z",
+      "updated_at": "2019-08-28T23:30:31.262Z",
+      "user": ["loader@pnsn.org"],
+      "monitor": 2,
+      "val1": 4,
+      "value_operator": ">",
+      "num_channels_operator": "any",
+      "emails": "loader@pnsn.org"
     }
-},
-{
+  },
+  {
     "model": "measurement.trigger",
     "pk": 9,
     "fields": {
-        "created_at": "2019-08-28T23:30:31.262Z", 
-        "updated_at": "2019-08-28T23:30:31.262Z", 
-        "user": [
-            "loader@pnsn.org"
-        ], 
-        "monitor": 2, 
-        "val1": 4, 
-        "value_operator": ">",
-        "num_channels_operator": "any",
-        "email_list": "loader@pnsn.org"
+      "created_at": "2019-08-28T23:30:31.262Z",
+      "updated_at": "2019-08-28T23:30:31.262Z",
+      "user": ["loader@pnsn.org"],
+      "monitor": 2,
+      "val1": 4,
+      "value_operator": ">",
+      "num_channels_operator": "any",
+      "emails": "loader@pnsn.org",
+      "alert_on_out_of_alarm": false
     }
-},
-{
+  },
+  {
+    "model": "measurement.trigger",
+    "pk": 10,
+    "fields": {
+      "created_at": "2019-08-28T23:30:31.262Z",
+      "updated_at": "2019-08-28T23:30:31.262Z",
+      "user": ["loader@pnsn.org"],
+      "monitor": 2,
+      "val1": 4,
+      "value_operator": ">",
+      "num_channels_operator": "any",
+      "emails": "loader@pnsn.org",
+      "alert_on_out_of_alarm": true
+    }
+  },
+  {
     "model": "measurement.alert",
     "pk": 1,
     "fields": {
-        "created_at": "2019-08-28T23:30:31.262Z", 
-        "updated_at": "2019-08-28T23:30:31.262Z", 
-        "user": [
-            "loader@pnsn.org"
-        ], 
-        "trigger": 1, 
-        "timestamp": "2018-02-01T04:30:00Z", 
-        "message": "Wow, an alert!", 
-        "in_alarm": false
+      "created_at": "2019-08-28T23:30:31.262Z",
+      "updated_at": "2019-08-28T23:30:31.262Z",
+      "user": ["loader@pnsn.org"],
+      "trigger": 1,
+      "timestamp": "2018-02-01T04:30:00Z",
+      "in_alarm": false
     }
-},
-{
+  },
+  {
     "model": "measurement.alert",
     "pk": 2,
     "fields": {
-        "created_at": "2019-08-28T23:30:31.262Z", 
-        "updated_at": "2019-08-28T23:30:31.262Z", 
-        "user": [
-            "loader@pnsn.org"
-        ], 
-        "trigger": 2, 
-        "timestamp": "2018-02-01T04:30:00Z", 
-        "message": "Wow, an alert again!", 
-        "in_alarm": true
+      "created_at": "2019-08-28T23:30:31.262Z",
+      "updated_at": "2019-08-28T23:30:31.262Z",
+      "user": ["loader@pnsn.org"],
+      "trigger": 2,
+      "timestamp": "2018-02-01T04:30:00Z",
+      "in_alarm": true
     }
-},
-{
+  },
+  {
     "model": "measurement.alert",
     "pk": 3,
     "fields": {
-        "created_at": "2019-08-28T23:30:31.262Z", 
-        "updated_at": "2019-08-28T23:30:31.262Z", 
-        "user": [
-            "loader@pnsn.org"
-        ], 
-        "trigger": 3, 
-        "timestamp": "2018-02-01T03:30:00Z", 
-        "message": "Wow, an alert! It keeps happening!", 
-        "in_alarm": false
+      "created_at": "2019-08-28T23:30:31.262Z",
+      "updated_at": "2019-08-28T23:30:31.262Z",
+      "user": ["loader@pnsn.org"],
+      "trigger": 3,
+      "timestamp": "2018-02-01T03:30:00Z",
+      "in_alarm": false
     }
-},
-{
+  },
+  {
     "model": "measurement.alert",
     "pk": 4,
     "fields": {
-        "created_at": "2019-08-28T23:30:31.262Z", 
-        "updated_at": "2019-08-28T23:30:31.262Z", 
-        "user": [
-            "loader@pnsn.org"
-        ], 
-        "trigger": 3, 
-        "timestamp": "2018-02-01T04:30:00Z", 
-        "message": "Wow, an alert! It keeps happening!", 
-        "in_alarm": true
+      "created_at": "2019-08-28T23:30:31.262Z",
+      "updated_at": "2019-08-28T23:30:31.262Z",
+      "user": ["loader@pnsn.org"],
+      "trigger": 3,
+      "timestamp": "2018-02-01T04:30:00Z",
+      "in_alarm": true
     }
-},
-{
+  },
+  {
     "model": "measurement.alert",
     "pk": 5,
     "fields": {
-        "created_at": "2019-08-28T23:30:31.262Z", 
-        "updated_at": "2019-08-28T23:30:31.262Z", 
-        "user": [
-            "loader@pnsn.org"
-        ], 
-        "trigger": 3, 
-        "timestamp": "2018-02-01T04:00:00Z", 
-        "message": "Wow, an alert! It keeps happening!", 
-        "in_alarm": false
+      "created_at": "2019-08-28T23:30:31.262Z",
+      "updated_at": "2019-08-28T23:30:31.262Z",
+      "user": ["loader@pnsn.org"],
+      "trigger": 3,
+      "timestamp": "2018-02-01T04:00:00Z",
+      "in_alarm": false
     }
-},
-{
+  },
+  {
     "model": "measurement.alert",
     "pk": 6,
     "fields": {
-        "created_at": "2019-08-28T23:30:31.262Z", 
-        "updated_at": "2019-08-28T23:30:31.262Z", 
-        "user": [
-            "loader@pnsn.org"
-        ], 
-        "trigger": 8, 
-        "timestamp": "2018-02-01T04:00:00Z", 
-        "message": "", 
-        "breaching_channels": [],
-        "in_alarm": false
+      "created_at": "2019-08-28T23:30:31.262Z",
+      "updated_at": "2019-08-28T23:30:31.262Z",
+      "user": ["loader@pnsn.org"],
+      "trigger": 8,
+      "timestamp": "2018-02-01T04:00:00Z",
+      "breaching_channels": [],
+      "in_alarm": false
     }
-},
-{
+  },
+  {
     "model": "measurement.alert",
     "pk": 7,
     "fields": {
-        "created_at": "2019-08-28T23:30:31.262Z", 
-        "updated_at": "2019-08-28T23:30:31.262Z", 
-        "user": [
-            "loader@pnsn.org"
-        ], 
-        "trigger": 9, 
-        "timestamp": "2018-02-01T04:00:00Z", 
-        "message": "", 
-        "breaching_channels": [
-            {"avg": 5, "channel": "UW:STA1:--:HNN", "channel_id": 1}
-        ],
-        "in_alarm": true
+      "created_at": "2019-08-28T23:30:31.262Z",
+      "updated_at": "2019-08-28T23:30:31.262Z",
+      "user": ["loader@pnsn.org"],
+      "trigger": 9,
+      "timestamp": "2018-02-01T04:00:00Z",
+      "breaching_channels": [
+        { "avg": 5, "channel": "UW:STA1:--:HNN", "channel_id": 1 }
+      ],
+      "in_alarm": true
     }
-}
+  },
+  {
+    "model": "measurement.alert",
+    "pk": 8,
+    "fields": {
+      "created_at": "2019-08-28T23:30:31.262Z",
+      "updated_at": "2019-08-28T23:30:31.262Z",
+      "user": ["loader@pnsn.org"],
+      "trigger": 10,
+      "timestamp": "2018-02-01T04:00:00Z",
+      "breaching_channels": [
+        { "avg": 5, "channel": "UW:STA1:--:HNN", "channel_id": 1 }
+      ],
+      "in_alarm": true
+    }
+  }
 ]
-

@@ -3,7 +3,9 @@ from .models import (Metric, Measurement,
                      Alert, ArchiveHour, ArchiveDay, ArchiveWeek, Monitor,
                      Trigger, ArchiveMonth)
 from nslc.models import Channel, Group
-from nslc.serializers import GroupSerializer
+from drf_yasg.utils import swagger_serializer_method
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 
 
 class BulkMeasurementListSerializer(serializers.ListSerializer):
@@ -72,6 +74,7 @@ class AggregatedSerializer(serializers.Serializer):
     mean = serializers.FloatField()
     min = serializers.FloatField()
     max = serializers.FloatField()
+    sum = serializers.FloatField()
     minabs = serializers.FloatField()
     maxabs = serializers.FloatField()
     median = serializers.FloatField()
@@ -103,32 +106,22 @@ class MonitorSerializer(serializers.ModelSerializer):
     channel_group = serializers.PrimaryKeyRelatedField(
         queryset=Group.objects.all()
     )
-
     metric = serializers.PrimaryKeyRelatedField(
         queryset=Metric.objects.all()
     )
 
+    channel_group_name = serializers.CharField(
+        source="channel_group.name", read_only=True)
+    metric_name = serializers.CharField(
+        source="metric.name", read_only=True)
+
     class Meta:
         model = Monitor
         fields = (
-            'id', 'channel_group', 'metric', 'interval_type',
-            'interval_count', 'stat', 'name', 'created_at', 'updated_at',
-            'user'
-        )
-        read_only_fields = ('id', 'user')
-
-
-class TriggerSerializer(serializers.ModelSerializer):
-
-    monitor = serializers.PrimaryKeyRelatedField(
-        queryset=Monitor.objects.all())
-
-    class Meta:
-        model = Trigger
-        fields = (
-            'id', 'monitor', 'val1', 'val2', 'value_operator',
-            'num_channels', 'num_channels_operator', 'email_list',
-            'created_at', 'updated_at', 'user', 'alert_on_out_of_alarm'
+            'id', 'channel_group', 'channel_group_name',
+            'metric_name', 'metric', 'interval_type',
+            'interval_count', 'stat', 'name', 'do_daily_digest',
+            'created_at', 'updated_at', 'user'
         )
         read_only_fields = ('id', 'user')
 
@@ -140,10 +133,67 @@ class AlertSerializer(serializers.ModelSerializer):
     class Meta:
         model = Alert
         fields = (
-            'id', 'trigger', 'timestamp', 'message', 'in_alarm',
+            'id', 'trigger', 'timestamp', 'in_alarm',
             'breaching_channels', 'created_at', 'updated_at', 'user'
         )
         read_only_fields = ('id', 'user')
+
+
+class EmailListFieldSerializer(serializers.CharField):
+    """
+        Custom serializer for list of emails
+    """
+
+    def to_representation(self, value):
+        return ", ".join(value)
+
+    def to_internal_value(self, data):
+        if not data:
+            return None
+        if isinstance(data, list):
+            return data
+        if isinstance(data, str):
+            return [address.strip() for address in data.split(',')]
+        else:
+            raise ValidationError(
+                _(f"Invalid input type. Requires str or list,"
+                  f" this is of type {type(data)}")
+            )
+
+
+class TriggerSerializer(serializers.ModelSerializer):
+    monitor = serializers.PrimaryKeyRelatedField(
+        queryset=Monitor.objects.all())
+
+    latest_alert = serializers.SerializerMethodField()
+    emails = EmailListFieldSerializer(
+        max_length=100, required=False, allow_blank=True)
+
+    class Meta:
+        model = Trigger
+        fields = (
+            'id', 'monitor', 'val1', 'val2', 'value_operator',
+            'num_channels', 'num_channels_operator',
+            'created_at', 'updated_at', 'user', 'emails',
+            'alert_on_out_of_alarm', 'latest_alert'
+
+        )
+        read_only_fields = ('id', 'user')
+
+    @swagger_serializer_method(serializer_or_field=AlertSerializer)
+    def get_latest_alert(self, obj):
+        """returns most recent alert for trigger"""
+        alert = obj.get_latest_alert()
+
+        if alert:
+            return AlertSerializer(alert).data
+
+        return None
+
+    def validate_emails(self, value):
+        if value == '':
+            return None
+        return value
 
 
 class ArchiveBaseSerializer(serializers.HyperlinkedModelSerializer):
@@ -152,8 +202,9 @@ class ArchiveBaseSerializer(serializers.HyperlinkedModelSerializer):
         queryset=Channel.objects.all())
     metric = serializers.PrimaryKeyRelatedField(
         queryset=Metric.objects.all())
-    minabs = serializers.ReadOnlyField()
-    maxabs = serializers.ReadOnlyField()
+    minabs = serializers.FloatField(read_only=True)
+    maxabs = serializers.FloatField(read_only=True)
+    sum = serializers.FloatField(read_only=True)
 
 
 class ArchiveHourSerializer(ArchiveBaseSerializer):
@@ -196,28 +247,64 @@ class ArchiveMonthSerializer(ArchiveBaseSerializer):
         exclude = ("url",)
 
 
-class MonitorDetailSerializer(serializers.ModelSerializer):
-    channel_group = GroupSerializer(read_only=True)
-    metric = MetricSerializer(read_only=True)
+class MonitorDetailSerializer(MonitorSerializer):
     triggers = TriggerSerializer(many=True, read_only=True)
 
     class Meta:
         model = Monitor
         fields = (
-            'id', 'channel_group', 'metric', 'interval_type',
+            'id', 'channel_group', 'channel_group_name',
+            'metric_name', 'metric', 'interval_type',
             'interval_count', 'stat', 'name', 'created_at', 'updated_at',
-            'user', 'triggers'
+            'user', 'triggers', 'do_daily_digest',
         )
         read_only_fields = ('id', 'user')
 
 
 class AlertDetailSerializer(serializers.ModelSerializer):
-    trigger = TriggerSerializer(read_only=True)
+    trigger = serializers.PrimaryKeyRelatedField(read_only=True)
+    monitor = serializers.PrimaryKeyRelatedField(
+        source="trigger.monitor", read_only=True)
+    monitor_name = serializers.CharField(
+        source="trigger.monitor.name", read_only=True)
+    val1 = serializers.FloatField(source="trigger.val1", read_only=True)
+    val2 = serializers.FloatField(source="trigger.val2", read_only=True)
+    value_operator = serializers.CharField(
+        source="trigger.value_operator", read_only=True)
+    num_channels = serializers.IntegerField(
+        source="trigger.num_channels", read_only=True)
+    num_channels_operator = serializers.CharField(
+        source="trigger.num_channels_operator", read_only=True)
 
     class Meta:
         model = Alert
         fields = (
-            'id', 'trigger', 'timestamp', 'message', 'in_alarm',
-            'breaching_channels', 'created_at', 'updated_at', 'user'
+            'id', 'trigger', 'monitor', 'timestamp', 'in_alarm',
+            'val1', 'val2', 'value_operator', 'num_channels',
+            'num_channels_operator', 'breaching_channels', 'user',
+            'monitor_name'
         )
         read_only_fields = ('id', 'user')
+
+
+class TriggerUnsubscribeSerializer(serializers.Serializer):
+    email = serializers.EmailField(
+        required=True, style={'placeholder': 'Email', 'autofocus': True},
+        label="Email address")
+    unsubscribe_all = serializers.BooleanField(
+        default=False, label="Unsubscribe All",
+        help_text="This will remove you from all email \
+            notifications for this monitor.")
+
+    def save(self, trigger):
+        unsubscribe_all = self.validated_data['unsubscribe_all']
+        email = self.validated_data['email']
+
+        if trigger is not None:
+            triggers = [trigger]
+            if unsubscribe_all is True:
+                # find all triggers with same monitor
+                triggers = Trigger.objects.filter(monitor=trigger.monitor)
+            for t in triggers:
+                # unsubscribe email from triggers
+                t.unsubscribe(email)

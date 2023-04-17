@@ -1,9 +1,9 @@
-from squac.mixins import EnablePartialUpdateMixin
+from squac.mixins import EnablePartialUpdateMixin, OverrideParamsMixin
 from django_rest_passwordreset.serializers import TokenSerializer
 from django.utils.decorators import method_decorator
 from django.contrib.auth.models import Group
 from rest_framework import generics, viewsets
-from squac.permissions import IsAdminOrReadOnly
+from squac.permissions import IsAdminOwnerOrReadOnly
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.settings import api_settings
@@ -40,10 +40,10 @@ class ManageUserView(generics.RetrieveUpdateAPIView,
         return self.request.user
 
 
-class GroupViewSet(viewsets.ModelViewSet):
+class GroupViewSet(OverrideParamsMixin, viewsets.ModelViewSet):
     """Manage user permissions groups"""
     serializer_class = UserGroupSerializer
-    permission_classes = (IsAuthenticated, IsAdminOrReadOnly, )
+    permission_classes = (IsAuthenticated, IsAdminOwnerOrReadOnly, )
 
     def get_queryset(self):
         return Group.objects.all()

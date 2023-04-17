@@ -7,7 +7,7 @@ env variables config
 import requests
 from requests.exceptions import RequestException, MissingSchema
 import os
-from squac.cronjobs import CRONJOBS
+from squac.cronjobs import PRODUCTION_CRONJOBS, STAGING_CRONJOBS
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -47,6 +47,12 @@ INTERNAL_IPS = [
     '10.0.2.2'
 ]
 
+CRONJOBS = STAGING_CRONJOBS
+
+# cronjobs
+if os.environ.get('SQUAC_ENVIRONMENT') == 'production':
+    CRONJOBS = PRODUCTION_CRONJOBS
+
 # tricks to have debug toolbar when developing with docker
 if os.environ.get('USE_DOCKER') == 'yes':
     import socket
@@ -67,6 +73,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.postgres',
     'django_extensions',
     'django_rest_passwordreset',
     'django_filters',

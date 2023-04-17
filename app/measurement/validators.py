@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 def validate_email_list(email_list):
     if not email_list:
         # Empty list or None is fine
-        return email_list
+        return dict
 
     # First check if it an actual list and not some other json object
     if not isinstance(email_list, list) and not isinstance(email_list, str):
@@ -17,7 +17,7 @@ def validate_email_list(email_list):
 
     # Just make a string a list so below logic works
     if isinstance(email_list, str):
-        email_list = [email_list]
+        email_list = email_list.split(",")
 
     invalid = []
     for email in email_list:
