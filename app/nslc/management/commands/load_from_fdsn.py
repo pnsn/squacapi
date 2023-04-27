@@ -89,12 +89,12 @@ class Command(BaseCommand):
         parser.add_argument(
             '--minlon',
             default=-183.,
-            help="Left latitude for search box, -183. default"
+            help="Left longitude for search box, -183. default"
         )
         parser.add_argument(
             '--maxlon',
             default=-52,
-            help="Right latitude for search box, -52 default"
+            help="Right longitude for search box, -52 default"
         )
         parser.add_argument(
             '--starttime',
@@ -130,51 +130,53 @@ class Command(BaseCommand):
 
     def check_availability(self, params):
         ''' check FDSNWS availabilty service and return list of NSLC
-            for channels whose latest upload of waveform data is 
-            more than one year ago, i.e. list of NSLC that should not get 
-            added. Only applies to NLSCs with data in the past, i.e. 
+            for channels whose latest upload of waveform data is
+            more than one year ago, i.e. list of NSLC that should not get
+            added. Only applies to NLSCs with data in the past, i.e.
             ignores newly installed channels.
             documentation at https://service.iris.edu/fdsnws/availability/1
         '''
-        if ( params['net'] is not None ):
+        if params['net'] is not None:
             availability_url = (
                 f"https://service.iris.edu/fdsnws/availability/1/extent?"
                 f"&net={params['net']}"
                 "&format=text&nodata=404"
-
+            )
             NSLC_skip = []
             with requests.Session() as s:
-                download = s.get(availabililty_url)
+                download = s.get(availability_url)
                 decoded_content = download.content.decode('utf-8')
                 content = csv.reader(
                     decoded_content.splitlines(), delimiter=' ')
                 row_list = list(content)
-                if ( row_list[0][0:8] == "#Network" ):
+                if row_list[0][0:8] == "#Network":
                     # skip header rows in metadata
                     for row in row_list[1:]:
                         # extract data from row
-                    if len(row) == 11:
-                        net, sta, loc, cha, qua, samp, earlieststr, *rem = row
-                        lateststr, updated, timespans, restr = rem
-                        earliest = datetime.strptime(earlieststr.split("T")[0],
-                                   "%Y-%m-%d")
-                        latest = datetime.strptime(lateststr.split("T")[0],
-                                 "%Y-%m-%d")
-                        today = datetime.today()
-                        if ( (today-latest).days > 366 and (earliest < today) ):
-                            NSLC_skip.append(f'{net}.{sta}.{loc}.{cha}'.lower())
-            )
+                        if len(row) == 11:
+                            net, sta, loc, cha, qua, samp, *rem = row
+                            earlieststr, lateststr, updated, *rem = rem
+                            timespans, restr = rem
+                            earliest = datetime.strptime(
+                                earlieststr.split("T")[0], "%Y-%m-%d")
+                            latest = datetime.strptime(
+                                lateststr.split("T")[0], "%Y-%m-%d")
+                            today = datetime.today()
+                            if all((today - latest).days > 366,
+                                   (earliest < today)):
+                                NSLC_skip.append(
+                                    f'{net}.{sta}.{loc}.{cha}'.lower())
         return NSLC_skip
 
     '''Django command to check network and channel tables with FDSN service'''
     def handle(self, *args, **options):
         ALLOWED_NETWORKS = [
-            "AE", "AK", "AV", "AZ", "BC", "BK", "C0", "CC", "CE", "CI", "CN", "CO",
-            "CU", "ET", "GM", "GM", "HV", "IE", "IU", "IW", "KY", "LB", "LD", "LI",
-            "LM", "MB", "MU", "MX", "N4", "NC", "NE", "NN", "NP", "NV", "NW", "NX",
-            "NY", "O2", "OH", "OK", "OO", "PB", "PE", "PO", "PR", "PT", "PY", "RB",
-            "RC", "RE", "SB", "SC", "SN", "TR", "TX", "UM", "UO", "US", "UU", "UW",
-            "WR", "WU", "WW", "WY"
+            "AE", "AK", "AV", "AZ", "BC", "BK", "C0", "CC", "CE", "CI", "CN",
+            "CO", "CU", "ET", "GM", "GM", "HV", "IE", "IU", "IW", "KY", "LB",
+            "LD", "LI", "LM", "MB", "MU", "MX", "N4", "NC", "NE", "NN", "NP",
+            "NV", "NW", "NX", "NY", "O2", "OH", "OK", "OO", "PB", "PE", "PO",
+            "PR", "PT", "PY", "RB", "RC", "RE", "SB", "SC", "SN", "TR", "TX",
+            "UM", "UO", "US", "UU", "UW", "WR", "WU", "WW", "WY"
         ]
         options["net"] = ','.join(ALLOWED_NETWORKS)
         LOADER_EMAIL = os.environ.get('LOADER_EMAIL')
@@ -274,7 +276,7 @@ class Command(BaseCommand):
                     try:
                         # Update or create the channel using data.
                         # Skip if no waveform data for > 1 yr
-                        if ( nslc_code not in NSLC_skip ):
+                        if nslc_code not in NSLC_skip:
                             Channel.objects.update_or_create(
                                 network=Network.objects.get(code=net.lower()),
                                 station_code=sta.lower(),
@@ -290,15 +292,17 @@ class Command(BaseCommand):
                                         azimuth),
                                     'dip': 0.0 if not dip else float(dip),
                                     'sensor_description': sensor_descr,
-                                    'scale': 0.0 if not scale else float(scale),
-                                    'scale_freq': 0.0 if not freq else float(freq),
+                                    'scale': 0.0 if not scale else float(
+                                        scale),
+                                    'scale_freq': 0.0 if not freq else float(
+                                        freq),
                                     'scale_units': units,
                                     'sample_rate': 0.0 if not rate else float(
                                         rate),
                                     'starttime': channels[nslc_code]['start'],
                                     'endtime': channels[nslc_code]['end'],
                                     'user': user,
-                            }
-                        )
+                                }
+                            )
                     except KeyError as e:
                         print(f'Key error occured: {e}')
