@@ -4,7 +4,7 @@ Command run without any options will give default URL
         query?datacenter=IRISDMC,NCEDC,SCEDC
         &targetservice=station
         &level=channel
-        &net=AE,AG,AK,AV,AZ,BC,BK,CC,CE,CI,CN,CO,CU,ET,HV,IU,IW,LD,MB,N4,NC,NN,NP,NV,O2,OK,OO,PB,PR,SN,TX,UM,UO,US,UU,UW,WR,WY
+        &net=AE,AG,AK,AV,AZ,BC,BK,CC,CE,CI,CN,CO,CU,ET,HV,IU,IW,LD,MB,N4,NC,NN,NP,NV,O2,OH,OK,OO,PB,PR,SN,TX,UM,UO,US,UU,UW,WR,WY
         &sta=*
         &cha=EN?,HN?,?H?
         &loc=*
@@ -133,8 +133,8 @@ class Command(BaseCommand):
         ALLOWED_NETWORKS = [
             "AE", "AK", "AV", "AZ", "BC", "BK", "CC", "CE", "CI", "CN", "CO",
             "CU", "ET", "HV", "IU", "IW", "LD", "MB", "N4", "NC", "NN", "NP",
-            "NV", "O2", "OK", "OO", "PB", "PR", "SN", "TX", "UM", "UO", "US",
-            "UU", "UW", "WR", "WY"
+            "NV", "O2", "OH", "OK", "OO", "PB", "PR", "SN", "TX", "UM", "UO",
+            "US", "UU", "UW", "WR", "WY"
         ]
         options["net"] = ','.join(ALLOWED_NETWORKS)
         LOADER_EMAIL = os.environ.get('LOADER_EMAIL')
