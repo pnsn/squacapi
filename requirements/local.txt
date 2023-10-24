@@ -1,7 +1,7 @@
 -r base.txt
 flake8==3.8.4
 hypothesis==5.37.3
-numpy==1.19.2
+numpy<1.20,>=1.19
 
 
 
