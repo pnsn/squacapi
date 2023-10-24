@@ -8,3 +8,8 @@ Squacapi is an open source application for reporting on seismic network performa
 
 See [app_root]/swagger for full API documentation
 
+Getting started:
+populate .env
+run docker-compose build
+to get starter data:
+docker-compose run --rm app sh -c "python manage.py bootstrap_db --days=7"
