@@ -11,3 +11,4 @@ docker-compose-test.yml
 
 .DS_Store
 
+**/o365_token.txt
