@@ -18,8 +18,6 @@ django-debug-toolbar==3.2.1
 django-dotenv==1.4.2
 django-extensions==3.0.9
 django-filter==2.4.0
-django-gmailapi-backend==0.3.0
-django-o365mail
 django-regex-field==2.0.2
 django-rest-passwordreset==1.1.0
 djangorestframework==3.11.2
