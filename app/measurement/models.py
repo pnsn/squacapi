@@ -172,7 +172,7 @@ class Monitor(MeasurementBase):
         if self.interval_type == self.IntervalType.LASTN:
             # Special case that isn't time-based
             # Restrict time window to reduce query time
-            starttime = endtime - timedelta(weeks=2)
+            starttime = endtime - timedelta(weeks=1)
             measurement_ids = []
             for channel in group.channels.all():
                 measurements = metric.measurements.filter(
