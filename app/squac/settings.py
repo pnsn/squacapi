@@ -220,6 +220,10 @@ EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_ADMIN = os.environ.get('EMAIL_ADMIN')
 EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL')
+DEFAULT_FROM_EMAIL = EMAIL_NO_REPLY
+SERVER_EMAIL = EMAIL_NO_REPLY
+
+
 # Fixture directories
 FIXTURE_DIRS = (
     BASE_DIR + '/fixtures/',
