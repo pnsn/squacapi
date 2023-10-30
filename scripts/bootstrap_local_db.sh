@@ -14,8 +14,11 @@ else
   exit
 fi
 if [ $1 = "staging" ]; then
-    ssh -i $PEM_FILE $DEPLOY_USER@$DEPLOY_HOST $DUMP_SCRIPT
-    scp -i $PEM_FILE $DEPLOY_USER@$DEPLOY_HOST:$DUMP_DIR/staging-current.sql /tmp/
+    docker run -it --rm \
+    --env PGPASSWORD=$SQUAC_PROD_DB_PASS  \
+    --mount type=bind,source=/tmp,target=/tmp  postgres:12.4-alpine \
+    pg_dump -h $SQUAC_PROD_DB_HOST -U $SQUAC_PROD_DB_USER -d squacapi_staging \
+    -f /tmp/staging-current.sql
 fi
 docker exec squacapi_db  psql -U postgres  template1 -c "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = 'squac_dev' AND pid <> pg_backend_pid();"
 docker exec squacapi_db  psql -U postgres  template1 -c 'DROP DATABASE squac_dev;'
