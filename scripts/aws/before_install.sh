@@ -10,3 +10,7 @@ APP_ROOT=/var/www/squacapi
 mkdir -p $APP_ROOT/releases/tmp
 # Ensure there isn't an existing file here
 rm -rf $APP_ROOT/releases/tmp/
+
+touch '/var/log/squacapi.log'
+chown -R ec2-user:ec2-user '/var/log/squacapi.log'
+chmod 775 '/var/log/squacapi.log'
