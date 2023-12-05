@@ -1,9 +1,9 @@
-"""
+'''
 env variables config 
     * dev in docker-compose.yml
     * prod app/.env
 
-"""
+'''
 import requests
 from requests.exceptions import RequestException, MissingSchema
 import os
@@ -19,7 +19,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.environ.get('SQUAC_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('SQUAC_DEBUG_MODE') == 'True'
+DEBUG = os.environ.get('SQUAC_DEBUG_MODE')
 
 CACHE_ENABLED = os.environ.get('SQUAC_CACHE_ENABLED') == 'True'
 
@@ -210,7 +210,7 @@ STATIC_ROOT = os.environ.get('SQUACAPI_STATIC_ROOT')
 
 AUTH_USER_MODEL = 'core.User'
 
-LOGIN_REDIRECT_URL = "/"
+LOGIN_REDIRECT_URL = '/'
 # EMAIL_BACKEND='gmailapi_backend.mail.GmailBackend'
 EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND')
 EMAIL_HOST = os.environ.get('SQUAC_EMAIL_HOST')
@@ -233,12 +233,6 @@ FIXTURE_DIRS = (
 LOGIN_URL = 'rest_framework:login'
 LOGOUT_URL = 'rest_framework:logout'
 
-if DEBUG:
-    CACHES = {
-        'default': {
-            'BACKEND': 'django.core.cache.backends.dummy.DummyCache'
-        }
-    }
 # need to do it this way since we don't want to install redis locally
 if CACHE_ENABLED:
     CACHES = {
@@ -250,6 +244,12 @@ if CACHE_ENABLED:
             },
             'TIMEOUT': int(os.environ.get('CACHE_SECONDS')),
             'KEY_PREFIX': 'squac_' + os.environ.get('CACHE_BACKEND')
+        }
+    }
+else:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.dummy.DummyCache'
         }
     }
 
@@ -279,61 +279,29 @@ MANAGERS = ADMINS
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'formatters': {
-        'simple': {
-            'format': '{levelname} {asctime}: {lineno} {message}',
-            'style': '{',
-        },
-    },
-    'filters': {
-        'require_debug_false': {
-            '()': 'django.utils.log.RequireDebugFalse',
-        },
-        'require_debug_true': {
-            '()': 'django.utils.log.RequireDebugTrue',
-        },
-    },
+    'root': {'level': 'INFO', 'handlers': ['file']},
     'handlers': {
-        'console': {
+        'file': {
             'level': 'INFO',
-            'filters': ['require_debug_true'],
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple',
-        },
-        'console_on_not_debug': {
-            'level': 'ERROR',
-            'filters': ['require_debug_false'],
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple',
-        },
-        'django.server': {
-            'level': 'INFO',
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple',
-        },
-        'mail_admins': {
-            'level': 'ERROR',
-            'filters': ['require_debug_false'],
-            'class': 'django.utils.log.AdminEmailHandler'
-        },
-        'null': {  # this
-            'level': 'DEBUG',
-            'class': 'logging.NullHandler',
+            'class': 'logging.FileHandler',
+            'filename': '/var/log/squacapi.log',
+            'formatter': 'app',
         },
     },
     'loggers': {
         'django': {
-            'handlers': ['console', 'mail_admins', 'console_on_not_debug'],
-            'level': "INFO"
-        },
-        'django.security.DisallowedHost': {  # and this
-            'handlers': ['console', 'console_on_not_debug'],
-            'propagate': False,
-        },
-        'django.server': {
-            'handlers': ['django.server'],
+            'handlers': ['file'],
             'level': 'INFO',
-            'propagate': False,
+            'propagate': True
         },
-    }
+    },
+    'formatters': {
+        'app': {
+            'format': (
+                u'%(asctime)s [%(levelname)-8s] '
+                '(%(module)s.%(funcName)s) %(message)s'
+            ),
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+        },
+    },
 }
