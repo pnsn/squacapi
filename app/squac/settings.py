@@ -169,6 +169,11 @@ DATABASES = {
 }
 
 
+# Default primary key field type, new as of Django 3.2
+# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
+
 # Password validation
 # https://docs.djangoproject.com/en/dev/ref/settings/#auth-password-validators
 
