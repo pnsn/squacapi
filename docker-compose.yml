@@ -30,7 +30,7 @@ services:
       - CACHE_SECONDS=300
       - CACHE_LOCATION=''
       - EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
-      - EMAIL_NO_REPLY=pnsn-no-reply@uw.edu
+      - EMAIL_NO_REPLY=pnsn-no-reply@ess.washington.edu
       - DJANGO_LOG_LEVEL=DEBUG
 
     depends_on:
@@ -42,7 +42,6 @@ services:
       - POSTGRES_DB=squac_dev
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=supersecret
-
   # mailhog:
   #   container_name: mailhog
   #   image: mailhog/mailhog

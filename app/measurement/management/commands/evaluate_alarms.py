@@ -1,6 +1,10 @@
 from django.core.management.base import BaseCommand
 from measurement.models import Monitor
 
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
+import pytz
+
 
 class Command(BaseCommand):
     """
@@ -20,6 +24,9 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         '''method called by manager'''
+        # Any monitors in this cycle should have the same endtime
+        endtime = datetime.now(tz=pytz.UTC) - relativedelta(
+            minute=0, second=0, microsecond=0)
 
         channel_groups = options['channel_group']
         metrics = options['metric']
@@ -35,4 +42,4 @@ class Command(BaseCommand):
 
         # Evaluate each alarm
         for monitor in monitors:
-            monitor.evaluate_alarm()
+            monitor.evaluate_alarm(endtime=endtime)

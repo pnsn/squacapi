@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 from django.db.models import (Avg, StdDev, Min, Max, Count, F, FloatField,
-                              Value as V)
+                              CharField, Value as V)
 from django.db.models.functions import (TruncDay, TruncMonth, TruncWeek,
                                         Coalesce, Concat)
 from measurement.models import (Measurement, ArchiveDay, ArchiveMonth,
@@ -108,9 +108,15 @@ class Command(BaseCommand):
             # exclude measurements that already have archives. This only works
             # correctly for a single time period
             archive_key = archives.annotate(
-                m_c=Concat('metric_id', V(' '), 'channel_id')).values('m_c')
+                m_c=Concat('metric_id',
+                           V(' '),
+                           'channel_id',
+                           output_field=CharField())).values('m_c')
             measurements = measurements.annotate(
-                m_c=Concat('metric_id', V(' '), 'channel_id')).exclude(
+                m_c=Concat('metric_id',
+                           V(' '),
+                           'channel_id',
+                           output_field=CharField())).exclude(
                 m_c__in=archive_key)
             # make sure we don't delete any old archives
             archives_to_delete = self.ARCHIVE_TYPE[archive_type].objects.none()

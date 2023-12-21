@@ -1,5 +1,5 @@
 from squac.mixins import EnablePartialUpdateMixin, OverrideParamsMixin
-from django_rest_passwordreset.serializers import TokenSerializer
+from django_rest_passwordreset.serializers import ResetTokenSerializer
 from django.utils.decorators import method_decorator
 from django.contrib.auth.models import Group
 from rest_framework import generics, viewsets
@@ -15,7 +15,7 @@ from drf_yasg.utils import swagger_auto_schema
 
 @method_decorator(name="post", decorator=swagger_auto_schema(
     request_body=AuthTokenSerializer,
-    responses={200: TokenSerializer}
+    responses={200: ResetTokenSerializer}
 ))
 class CreateTokenView(ObtainAuthToken):
     '''create a new auth token for user'''

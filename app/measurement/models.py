@@ -167,12 +167,19 @@ class Monitor(MeasurementBase):
         metric = self.metric
         q_data = Measurement.objects.none()
 
+        # q_list is returned to the caller
+        q_list = []
+
         # Get a QuerySet containing only measurements for the correct time
         # period and metric for this alarm
         if self.interval_type == self.IntervalType.LASTN:
+            # 10/27/23 CWU: Temporarily disable LASTN evaluation since it was
+            # taking too many db resources
+            return q_list
+
             # Special case that isn't time-based
             # Restrict time window to reduce query time
-            starttime = endtime - timedelta(weeks=2)
+            starttime = endtime - timedelta(weeks=1)
             measurement_ids = []
             for channel in group.channels.all():
                 measurements = metric.measurements.filter(
@@ -224,7 +231,6 @@ class Monitor(MeasurementBase):
         # Combine querysets in case of zero measurements. Kludgy but
         # shouldn't strain the db as much?
         q_dict = {obj['channel']: obj for obj in q_data}
-        q_list = []
         for chan_default in q_default:
             if chan_default['channel'] not in q_dict:
                 q_list.append(chan_default)

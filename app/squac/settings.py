@@ -80,7 +80,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'bulk_update_or_create',
-    'gmailapi_backend',
     'corsheaders',
     'debug_toolbar',
     'drf_yasg',
@@ -170,6 +169,11 @@ DATABASES = {
 }
 
 
+# Default primary key field type, new as of Django 3.2
+# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
+
 # Password validation
 # https://docs.djangoproject.com/en/dev/ref/settings/#auth-password-validators
 
@@ -217,13 +221,12 @@ EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND')
 EMAIL_HOST = os.environ.get('SQUAC_EMAIL_HOST')
 EMAIL_PORT = os.environ.get('SQUAC_EMAIL_PORT')
 EMAIL_NO_REPLY = os.environ.get('EMAIL_NO_REPLY')
-
-EMAIL_NO_REPLY = os.environ.get('EMAIL_NO_REPLY')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_ADMIN = os.environ.get('EMAIL_ADMIN')
-
-GMAIL_API_CLIENT_ID = os.environ.get('GMAIL_API_CLIENT_ID')
-GMAIL_API_CLIENT_SECRET = os.environ.get('GMAIL_API_CLIENT_SECRET')
-GMAIL_API_REFRESH_TOKEN = os.environ.get('GMAIL_API_REFRESH_TOKEN')
+EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL')
+DEFAULT_FROM_EMAIL = EMAIL_NO_REPLY
+SERVER_EMAIL = EMAIL_NO_REPLY
 
 
 # Fixture directories
