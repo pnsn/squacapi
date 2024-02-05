@@ -20,7 +20,7 @@ APP_ROOT = os.path.join(os.path.dirname(__file__), '..')
 sys.path.insert(0, os.path.abspath(APP_ROOT))
 # load env variables
 dotenv_path = os.path.join(APP_ROOT, '.env')
-dotenv.read_dotenv(dotenv_path)
+dotenv.load_dotenv(dotenv_path)
 # load settings
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'squac.settings')
 
