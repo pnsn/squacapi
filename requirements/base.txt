@@ -15,7 +15,6 @@ django-cors-headers==3.5.0
 django-cprofile-middleware==1.0.5
 django-crontab==0.7.1
 django-debug-toolbar==3.2.1
-django-dotenv==1.4.2
 django-extensions==3.0.9
 django-filter==2.4.0
 django-regex-field==2.0.2
@@ -44,6 +43,7 @@ pycodestyle==2.6.0
 pyflakes==2.2.0
 pyparsing==2.4.7
 python-dateutil==2.8.1
+python-dotenv==1.0.1
 pytz==2021.1
 requests==2.31.0
 rsa==4.7
