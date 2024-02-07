@@ -33,7 +33,7 @@ if [ $DEPLOYMENT_GROUP_NAME == 'staging' ]; then
 fi
 
 # All groups use production.txt
-pip3 install  -r $dest/requirements/production.txt
+pip3 install  -r $dest/requirements/production.txt --log $dest/pip3_install.log
 python $dest/app/manage.py migrate
 
 # if production, update cronjobs
