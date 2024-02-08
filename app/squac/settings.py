@@ -332,13 +332,11 @@ LOGGING = {
             'level': "INFO"
         },
         'django.security.DisallowedHost': {  # and this
-            'handlers': ['console', 'console_on_not_debug'],
+            'handlers': ['console_on_not_debug'],
             'propagate': False,
         },
         'django.server': {
             'handlers': ['django.server'],
-            'level': 'INFO',
-            'propagate': False,
         },
     }
 }
