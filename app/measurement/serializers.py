@@ -12,12 +12,13 @@ class BulkMeasurementListSerializer(serializers.ListSerializer):
     '''serializer for bulk creating or updating measurements'''
 
     def create(self, validated_data):
-        result = [Measurement(**item) for item in validated_data]
-        Measurement.objects.bulk_update_or_create(
-            result,
-            ['value', 'endtime', 'user'],
-            match_field=['metric', 'channel', 'starttime'])
-        return result
+        results = [Measurement(**item) for item in validated_data]
+        created = Measurement.objects\
+            .bulk_create(results, update_conflicts=True,
+                         update_fields=["value", "user"],
+                         unique_fields=["metric", "channel", "starttime"]
+                         )
+        return created
 
 
 class MeasurementSerializer(serializers.ModelSerializer):

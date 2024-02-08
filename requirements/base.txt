@@ -1,5 +1,4 @@
 asgiref<4,>=3.6.0
-aws-xray-sdk==2.8.0
 attrs==20.2.0
 beautifulsoup4==4.9.3
 boto3==1.16.16
@@ -10,7 +9,6 @@ chardet==3.0.4
 coreapi==2.3.3
 coreschema==0.0.4
 Django==4.2.7
-django-bulk-update-or-create==0.3.0
 django-cors-headers==3.5.0
 django-cprofile-middleware==1.0.5
 django-crontab==0.7.1
