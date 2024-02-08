@@ -66,7 +66,7 @@ class TestArchiveCreation(TestCase):
                 metric=metric,
                 channel=channel_id,
                 value=random.randrange(-(10**8), 10**8),
-                starttime=start_time,
+                starttime=start_time + relativedelta(seconds=1 * i),
                 endtime=start_time + relativedelta(seconds=10 * i),
                 user=user_id
             )

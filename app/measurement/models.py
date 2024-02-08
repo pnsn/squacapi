@@ -81,7 +81,8 @@ class Measurement(MeasurementBase):
         indexes = [
             # index in desc order (newest first)
             models.Index(fields=['-starttime']),
-
+            models.Index(fields=['metric']),
+            models.Index(fields=['channel']),
         ]
         constraints = [
             models.UniqueConstraint(
@@ -843,6 +844,8 @@ class ArchiveBase(models.Model):
         indexes = [
             # index in desc order (newest first)
             models.Index(fields=['-starttime']),
+            models.Index(fields=['metric']),
+            models.Index(fields=['channel']),
         ]
 
     channel = models.ForeignKey(Channel, on_delete=models.CASCADE)
