@@ -79,7 +79,6 @@ INSTALLED_APPS = [
     'django_filters',
     'rest_framework',
     'rest_framework.authtoken',
-    'bulk_update_or_create',
     'corsheaders',
     'debug_toolbar',
     'drf_yasg',
