@@ -27,14 +27,14 @@ rmvirtualenv squacapi-$DEPLOYMENT_GROUP_NAME
 mkvirtualenv squacapi-$DEPLOYMENT_GROUP_NAME 2>&1
 workon squacapi-$DEPLOYMENT_GROUP_NAME 2>&1
 
+# All groups use production.txt
+pip3 install  -r $dest/requirements/production.txt --log $dest/pip3_install.log
+python $dest/app/manage.py migrate
+
 # if staging, bootstrap
 if [ $DEPLOYMENT_GROUP_NAME == 'staging' ]; then
     python $dest/app/manage.py bootstrap_db --days=7
 fi
-
-# All groups use production.txt
-pip3 install  -r $dest/requirements/production.txt --log $dest/pip3_install.log
-python $dest/app/manage.py migrate
 
 # if production, update cronjobs
 if [ $DEPLOYMENT_GROUP_NAME == 'jobs' ] || [ $DEPLOYMENT_GROUP_NAME == 'staging' ]; then
