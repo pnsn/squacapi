@@ -4,7 +4,10 @@ Command run without any options will give default URL
         query?datacenter=IRISDMC,NCEDC,SCEDC,NRCAN
         &targetservice=station
         &level=channel
-        &net=AE,AG,AK,AV,AZ,BC,BK,CC,CE,CI,CN,C0,C8,CO,CU,CW,CY,EP,ET,GS,GM,HV,IE,IU,IW,JM,KY,LB,LD,LI,LM,MB,MU,MX,N4,NA,NC,NE,NM,NN,NP,NV,NW,NX,NY,O2,OH,OK,OO,PB,PE,PO,PQ,PR,PT,PY,QW,QX,RB,RC,RE,RV,SB,SC,SE,SN,TD,TR,TX,UM,UO,US,UU,UW,WR,WU,WW,WY
+        &net=AE,AG,AK,AV,AZ,BC,BK,CC,CE,CI,CN,C0,C8,CO,CU,CW,CY,EP,ET,GS,GM,
+        HV,IE,IU,IW,JM,KY,LB,LD,LI,LM,MB,MU,MX,N4,NA,NC,NE,NM,NN,NP,NV,NW,NX,
+        NY,O2,OH,OK,OO,PB,PE,PO,PQ,PR,PT,PY,QW,QX,RB,RC,RE,RV,SB,SC,SE,SN,TD,
+        TR,TX,UM,UO,US,UU,UW,WR,WU,WW,WY
         &sta=*
         &cha=EN?,HN?,?H?
         &loc=*
@@ -131,12 +134,14 @@ class Command(BaseCommand):
     '''Django command to check network and channel tables with FDSN service'''
     def handle(self, *args, **options):
         ALLOWED_NETWORKS = [
-            "AE", "AG", "AK", "AV", "AZ", "BC", "BK", "C0", "C8", "CC", "CE", "CI", "CN", "CO",
-            "CU", "CW", "CY", "EP", "ET", "GM", "GS", "HV", "IE", "IU", "IW", "JM", "KY", "LB", 
-            "LD", "LI", "LM", "MB", "MU", "MX", "N4", "NA", "NC", "NE", "NM", "NN", "NP", "NV", 
-            "NW", "NX", "NY", "O2", "OH", "OK", "OO", "PB", "PE", "PO", "PQ", "PR", "PT", "PY", 
-            "QW", "QX", "RB", "RC", "RE", "RV", "SB", "SC", "SE", "SN", "TD", "TR", "TX", "UM",
-            "UO", "US", "UU", "UW", "WR", "WU", "WW", "WY" 
+            "AE", "AG", "AK", "AV", "AZ", "BC", "BK", "C0", "C8", "CC", "CE",
+            "CI", "CN", "CO", "CU", "CW", "CY", "EP", "ET", "GM", "GS", "HV",
+            "IE", "IU", "IW", "JM", "KY", "LB", "LD", "LI", "LM", "MB", "MU",
+            "MX", "N4", "NA", "NC", "NE", "NM", "NN", "NP", "NV", "NW", "NX",
+            "NY", "O2", "OH", "OK", "OO", "PB", "PE", "PO", "PQ", "PR", "PT",
+            "PY", "QW", "QX", "RB", "RC", "RE", "RV", "SB", "SC", "SE", "SN",
+            "TD", "TR", "TX", "UM", "UO", "US", "UU", "UW", "WR", "WU", "WW",
+            "WY"
         ]
         options["net"] = ','.join(ALLOWED_NETWORKS)
         LOADER_EMAIL = os.environ.get('LOADER_EMAIL')
