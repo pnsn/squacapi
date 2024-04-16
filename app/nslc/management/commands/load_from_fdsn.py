@@ -24,6 +24,7 @@ $:docker-compose run --rm app sh -c "LOADER_EMAIL=email@pnsn.org \
                     [optional args]
                     --path='.'
                     --datacenter='IRISDMC,...'
+                    --net='UO,UW...'
                     --sta='BEER,...'
                     --cha='HN?,ENN,...'
                     --loc=*
@@ -62,6 +63,12 @@ class Command(BaseCommand):
             '--datacenter',
             default="IRISDMC,NCEDC,SCEDC,NRCAN",
             help="Comma separated list of datacenters"
+        )
+        parser.add_argument(
+            '--net',
+            default="*",
+            help="Comma separated regex for stations, default \
+                is pre-defined list of stations"
         )
         parser.add_argument(
             '--sta',
@@ -119,7 +126,7 @@ class Command(BaseCommand):
             f"&starttime={params['starttime']}"
             "&format=text"
         )
-        if (level != "network"):
+        if (level != 'network'):
             url += (
                 f"&sta={params['sta']}"
                 f"&cha={params['cha']}"
@@ -143,7 +150,8 @@ class Command(BaseCommand):
             "TD", "TR", "TX", "UM", "UO", "US", "UU", "UW", "WR", "WU", "WW",
             "WY"
         ]
-        options["net"] = ','.join(ALLOWED_NETWORKS)
+        if 'net' not in options or options['net'] == '*':
+            options['net'] = ','.join(ALLOWED_NETWORKS)
         LOADER_EMAIL = os.environ.get('LOADER_EMAIL')
         if not LOADER_EMAIL:
             print(
@@ -165,7 +173,7 @@ class Command(BaseCommand):
             )
             sys.exit(1)
 
-        network_url = self.build_url(options, "network")
+        network_url = self.build_url(options, 'network')
         with requests.Session() as s:
             download = s.get(network_url)
             decoded_content = download.content.decode('utf-8')
