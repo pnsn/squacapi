@@ -7,7 +7,7 @@ Command run without any options will give default URL
         &net=AE,AG,AK,AV,AZ,BC,BK,CC,CE,CI,CN,C0,C8,CO,CU,CW,CY,EP,ET,GS,GM,
         HV,IE,IU,IW,JM,KY,LB,LD,LI,LM,MB,MU,MX,N4,NA,NC,NE,NM,NN,NP,NV,NW,NX,
         NY,O2,OH,OK,OO,PB,PE,PO,PQ,PR,PT,PY,QW,QX,RB,RC,RE,RV,SB,SC,SE,SN,TD,
-        TR,TX,UM,UO,US,UU,UW,WR,WU,WW,WY
+        TR,TX,UM,UO,US,UU,UW,WR,WU,WW,WY,2M
         &sta=*
         &cha=EN?,HN?,?H?
         &loc=*
@@ -141,7 +141,7 @@ class Command(BaseCommand):
             "NY", "O2", "OH", "OK", "OO", "PB", "PE", "PO", "PQ", "PR", "PT",
             "PY", "QW", "QX", "RB", "RC", "RE", "RV", "SB", "SC", "SE", "SN",
             "TD", "TR", "TX", "UM", "UO", "US", "UU", "UW", "WR", "WU", "WW",
-            "WY"
+            "WY", "2M"
         ]
         options["net"] = ','.join(ALLOWED_NETWORKS)
         LOADER_EMAIL = os.environ.get('LOADER_EMAIL')
