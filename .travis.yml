@@ -3,6 +3,8 @@ python:
   - "3.6"
 services:
   - docker
+before_install:
+  - gem install logger
 before_script:
   - pip install docker-compose
 script:
