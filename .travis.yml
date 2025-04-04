@@ -8,7 +8,6 @@ before_install:
 before_script:
   - pip install docker-compose
 script:
-  - docker-compose --version
   - docker-compose run app sh -c "python manage.py test && flake8"
 deploy:
   - provider: codedeploy
