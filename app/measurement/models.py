@@ -18,7 +18,6 @@ import operator
 from measurement.fields import EmailListArrayField
 import os
 
-from bulk_update_or_create import BulkUpdateOrCreateQuerySet
 from django.core.signing import Signer, BadSignature
 from django.urls import reverse
 
@@ -64,7 +63,6 @@ class Metric(MeasurementBase):
 
 class Measurement(MeasurementBase):
     '''describes the observable metrics'''
-    objects = BulkUpdateOrCreateQuerySet.as_manager()
     metric = models.ForeignKey(
         Metric,
         on_delete=models.CASCADE,
@@ -83,7 +81,14 @@ class Measurement(MeasurementBase):
         indexes = [
             # index in desc order (newest first)
             models.Index(fields=['-starttime']),
-
+            models.Index(fields=['metric']),
+            models.Index(fields=['channel']),
+        ]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["metric", "channel", "starttime"],
+                name="unique on starttime"
+            ),
         ]
 
     def __str__(self):
@@ -839,6 +844,8 @@ class ArchiveBase(models.Model):
         indexes = [
             # index in desc order (newest first)
             models.Index(fields=['-starttime']),
+            models.Index(fields=['metric']),
+            models.Index(fields=['channel']),
         ]
 
     channel = models.ForeignKey(Channel, on_delete=models.CASCADE)

@@ -306,12 +306,12 @@ class PrivateMonitorApiTests(TestCase):
         # Create fake data to test minabs, maxabs
         endtime = datetime(2020, 1, 2, 3, 0, 0, 0, tzinfo=pytz.UTC)
         vals = [-20, -1, 2, 5, 12]
-        for val in vals:
+        for index, val in enumerate(vals):
             Measurement.objects.create(
                 metric=self.metric,
                 channel=self.chan1,
                 value=val,
-                starttime=endtime - relativedelta(hours=5),
+                starttime=endtime - relativedelta(hours=5, microseconds=val),
                 endtime=endtime - relativedelta(hours=4),
                 user=self.user
             )
@@ -334,7 +334,7 @@ class PrivateMonitorApiTests(TestCase):
                 metric=self.metric,
                 channel=self.chan1,
                 value=val,
-                starttime=endtime - relativedelta(hours=5),
+                starttime=endtime - relativedelta(hours=5, microseconds=val),
                 endtime=endtime - relativedelta(hours=4),
                 user=self.user
             )
