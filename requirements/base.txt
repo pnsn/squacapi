@@ -53,5 +53,5 @@ sortedcontainers==2.2.2
 soupsieve==2.0.1
 sqlparse==0.4.2
 uritemplate==3.0.1
-urllib3==1.26.5
+urllib3==1.26.15
 zipp==3.4.0
