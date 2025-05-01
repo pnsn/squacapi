@@ -848,6 +848,7 @@ class ArchiveBase(models.Model):
             models.Index(fields=['channel']),
         ]
 
+    id = models.BigAutoField(primary_key=True)
     channel = models.ForeignKey(Channel, on_delete=models.CASCADE)
     metric = models.ForeignKey(Metric, on_delete=models.CASCADE)
     min = models.FloatField()
