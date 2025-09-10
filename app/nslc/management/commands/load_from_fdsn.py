@@ -108,8 +108,9 @@ class Command(BaseCommand):
 
     def build_url(self, params, level, webservice):
         ''' Create url based on params
-            documentation at https://service.iris.edu/irisws/fedcatalog/1/
-            (limited) documentation at https://www.earthquakescanada.nrcan.gc.ca/fdsnws/station/1/
+            documentation at:
+                https://service.iris.edu/irisws/fedcatalog/1/
+                https://www.earthquakescanada.nrcan.gc.ca/fdsnws/station/1/
         '''
         if webservice == 'iris':
             url = (
@@ -123,7 +124,8 @@ class Command(BaseCommand):
             )
         elif webservice == 'nrcan':
             url = (
-                f"https://www.earthquakescanada.nrcan.gc.ca/fdsnws/station/1/query?"
+                f"https://www.earthquakescanada.nrcan.gc.ca/"
+                "fdsnws/station/1/query?"
                 f"&level={level}"
                 f"&net={params['net']}"
                 f"&starttime={params['starttime']}"
@@ -147,17 +149,21 @@ class Command(BaseCommand):
                 f"&maxlon={params['maxlon']}"
             )
         return url
-    
+
     def parse_datetime(self, datestr):
-        ''' Parse an ISO-like datetime string with or without fractional seconds. '''
+        '''
+        Parse an ISO-like datetime string with or without fractional seconds.
+        '''
         if "." in datestr:
             fmt = "%Y-%m-%dT%H:%M:%S.%f"
         else:
             fmt = "%Y-%m-%dT%H:%M:%S"
         return pytz.utc.localize(datetime.strptime(datestr, fmt))
-    
+
     def add_nscl(self, options, user, webservice):
-        ''' Add Network, Station, Channel from the given webservice (iris, nrcan) '''
+        '''
+        Add Network, Station, Channel from the given webservice (iris, nrcan)
+        '''
         network_url = self.build_url(options, "network", webservice)
         with requests.Session() as s:
             download = s.get(network_url)
@@ -256,9 +262,10 @@ class Command(BaseCommand):
                     except KeyError as e:
                         print(f'Key error occured: {e}')
 
-    
     def handle(self, *args, **options):
-        ''' Django command to check network and channel tables with FDSN service '''
+        ''' 
+        Django command to check network and channel tables with FDSN service
+        '''
         IRIS_NETWORKS = [
             "AE", "AG", "AK", "AV", "AZ", "BC", "BK", "C0", "C8", "CC", "CE",
             "CI", "CN", "CO", "CU", "CW", "CY", "EP", "ET", "GM", "GS", "HV",
