@@ -263,7 +263,7 @@ class Command(BaseCommand):
                         print(f'Key error occured: {e}')
 
     def handle(self, *args, **options):
-        ''' 
+        '''
         Django command to check network and channel tables with FDSN service
         '''
         IRIS_NETWORKS = [
