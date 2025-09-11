@@ -1,10 +1,13 @@
 """
 Command run without any options will give default URL
     http://service.iris.edu/irisws/fedcatalog/1/
-        query?datacenter=IRISDMC,NCEDC,SCEDC
+        query?datacenter=IRISDMC,NCEDC,SCEDC,NRCAN
         &targetservice=station
         &level=channel
-        &net=AE,AG,AK,AV,AZ,BC,BK,CC,CE,CI,CN,CO,CU,ET,HV,IU,IW,LD,MB,N4,NC,NN,NP,NV,O2,OH,OK,OO,PB,PR,SN,TX,UM,UO,US,UU,UW,WR,WY
+        &net=AE,AG,AK,AV,AZ,BC,BK,CC,CE,CI,CN,C0,C8,CO,CU,CW,CY,EP,ET,GS,GM,
+        HV,IE,IU,IW,JM,KY,LB,LD,LI,LM,MB,MU,MX,N4,NA,NC,NE,NM,NN,NP,NV,NW,NX,
+        NY,O2,OH,OK,OO,PB,PE,PO,PQ,PR,PT,PY,QW,QX,RB,RC,RE,RV,SB,SC,SE,SN,TD,
+        TR,TX,UM,UO,US,UU,UW,WR,WU,WW,WY,2M
         &sta=*
         &cha=EN?,HN?,?H?
         &loc=*
@@ -57,7 +60,7 @@ class Command(BaseCommand):
         )
         parser.add_argument(
             '--datacenter',
-            default="IRISDMC,NCEDC,SCEDC",
+            default="IRISDMC,NCEDC,SCEDC,NRCAN",
             help="Comma separated list of datacenters"
         )
         parser.add_argument(
@@ -89,12 +92,12 @@ class Command(BaseCommand):
         parser.add_argument(
             '--minlon',
             default=-183.,
-            help="Left latitude for search box, -183. default"
+            help="Left longitude for search box, -183. default"
         )
         parser.add_argument(
             '--maxlon',
             default=-62,
-            help="Right latitude for search box, -62 default"
+            help="Right longitude for search box, -62 default"
         )
         parser.add_argument(
             '--starttime',
@@ -103,19 +106,38 @@ class Command(BaseCommand):
                 specified time"
         )
 
-    def build_url(self, params, level):
-        ''' create url based on params
-            documentation at https://service.iris.edu/irisws/fedcatalog/1/
+    def build_url(self, params, level, webservice):
+        ''' Create url based on params
+            documentation at:
+                https://service.iris.edu/irisws/fedcatalog/1/
+                https://www.earthquakescanada.nrcan.gc.ca/fdsnws/station/1/
         '''
-        url = (
-            f"http://service.iris.edu/irisws/fedcatalog/1/query?"
-            f"datacenter={params['datacenter']}"
-            f"&targetservice=station"
-            f"&level={level}"
-            f"&net={params['net']}"
-            f"&starttime={params['starttime']}"
-            "&format=text"
-        )
+        if webservice == 'iris':
+            url = (
+                f"http://service.iris.edu/irisws/fedcatalog/1/query?"
+                f"datacenter={params['datacenter']}"
+                f"&targetservice=station"
+                f"&level={level}"
+                f"&net={params['net']}"
+                f"&starttime={params['starttime']}"
+                "&format=text"
+            )
+        elif webservice == 'nrcan':
+            url = (
+                f"https://www.earthquakescanada.nrcan.gc.ca/"
+                "fdsnws/station/1/query?"
+                f"&level={level}"
+                f"&net={params['net']}"
+                f"&starttime={params['starttime']}"
+                "&format=text"
+                "&nodata=404"
+            )
+        else:
+            print(
+                "Unknown webservice, must be in [iris, nrcan]"
+            )
+            sys.exit(1)
+
         if (level != "network"):
             url += (
                 f"&sta={params['sta']}"
@@ -128,37 +150,21 @@ class Command(BaseCommand):
             )
         return url
 
-    '''Django command to check network and channel tables with FDSN service'''
-    def handle(self, *args, **options):
-        ALLOWED_NETWORKS = [
-            "AE", "AK", "AV", "AZ", "BC", "BK", "CC", "CE", "CI", "CN", "CO",
-            "CU", "ET", "HV", "IU", "IW", "LD", "MB", "N4", "NC", "NN", "NP",
-            "NV", "O2", "OH", "OK", "OO", "PB", "PR", "SN", "TX", "UM", "UO",
-            "US", "UU", "UW", "WR", "WY"
-        ]
-        options["net"] = ','.join(ALLOWED_NETWORKS)
-        LOADER_EMAIL = os.environ.get('LOADER_EMAIL')
-        if not LOADER_EMAIL:
-            print(
-                "You must provide a valid email by setting the LOADER_EMAIL "
-                "environmental variable."
-            )
-            sys.exit(1)
-        project_path = options['path']
-        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'squac.settings')
-        sys.path.append(project_path)
-        django.setup()
-        try:
-            user = get_user_model().objects.get(email=LOADER_EMAIL)
-        except ObjectDoesNotExist:
-            print(
-                f"Loader email {LOADER_EMAIL} does not exist.\n"
-                "You must provide a valid email by setting the LOADER_EMAIL "
-                "environmental variable."
-            )
-            sys.exit(1)
+    def parse_datetime(self, datestr):
+        '''
+        Parse an ISO-like datetime string with or without fractional seconds.
+        '''
+        if "." in datestr:
+            fmt = "%Y-%m-%dT%H:%M:%S.%f"
+        else:
+            fmt = "%Y-%m-%dT%H:%M:%S"
+        return pytz.utc.localize(datetime.strptime(datestr, fmt))
 
-        network_url = self.build_url(options, "network")
+    def add_nscl(self, options, user, webservice):
+        '''
+        Add Network, Station, Channel from the given webservice (iris, nrcan)
+        '''
+        network_url = self.build_url(options, "network", webservice)
         with requests.Session() as s:
             download = s.get(network_url)
             decoded_content = download.content.decode('utf-8')
@@ -180,7 +186,7 @@ class Command(BaseCommand):
                         }
                     )
 
-        station_url = self.build_url(options, 'station')
+        station_url = self.build_url(options, 'station', webservice)
         stations = {}
         with requests.Session() as s:
             download = s.get(station_url)
@@ -194,7 +200,7 @@ class Command(BaseCommand):
                     sta_name = row[5]
                     stations[sta_code] = sta_name
 
-        channel_url = self.build_url(options, 'channel')
+        channel_url = self.build_url(options, 'channel', webservice)
         channels = {}
         with requests.Session() as s:
             download = s.get(channel_url)
@@ -210,13 +216,9 @@ class Command(BaseCommand):
                     depth, azimuth, dip, sensor_descr, scale, *rem = rem
                     freq, units, rate, start, end = rem
                     nslc_code = f'{net}.{sta}.{loc}.{cha}'.lower()
-                    start_datetime = pytz.utc.localize(
-                        datetime.strptime(start, '%Y-%m-%dT%H:%M:%S')
-                    )
+                    start_datetime = self.parse_datetime(start)
                     if end:
-                        end_datetime = pytz.utc.localize(
-                            datetime.strptime(end, '%Y-%m-%dT%H:%M:%S')
-                        )
+                        end_datetime = self.parse_datetime(end)
                     else:
                         # If end time is null set to 2599 dummy date
                         end_datetime = datetime(
@@ -259,3 +261,51 @@ class Command(BaseCommand):
                         )
                     except KeyError as e:
                         print(f'Key error occured: {e}')
+
+    def handle(self, *args, **options):
+        '''
+        Django command to check network and channel tables with FDSN service
+        '''
+        IRIS_NETWORKS = [
+            "AE", "AG", "AK", "AV", "AZ", "BC", "BK", "C0", "C8", "CC", "CE",
+            "CI", "CN", "CO", "CU", "CW", "CY", "EP", "ET", "GM", "GS", "HV",
+            "IE", "IU", "IW", "JM", "KY", "LB", "LD", "LI", "LM", "MB", "MU",
+            "MX", "N4", "NA", "NC", "NE", "NM", "NN", "NP", "NV", "NW", "NX",
+            "NY", "O2", "OH", "OK", "OO", "PB", "PE", "PO", "PQ", "PR", "PT",
+            "PY", "RB", "RC", "RE", "RV", "SB", "SC", "SE", "SN", "TD", "TR",
+            "TX", "UM", "UO", "US", "UU", "UW", "WR", "WU", "WW", "WY", "2M"
+        ]
+        NRCAN_NETWORKS = [
+            "QX", "QW"
+        ]
+        LOADER_EMAIL = os.environ.get('LOADER_EMAIL')
+        if not LOADER_EMAIL:
+            print(
+                "You must provide a valid email by setting the LOADER_EMAIL "
+                "environmental variable."
+            )
+            sys.exit(1)
+        project_path = options['path']
+        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'squac.settings')
+        sys.path.append(project_path)
+        django.setup()
+        try:
+            user = get_user_model().objects.get(email=LOADER_EMAIL)
+        except ObjectDoesNotExist:
+            print(
+                f"Loader email {LOADER_EMAIL} does not exist.\n"
+                "You must provide a valid email by setting the LOADER_EMAIL "
+                "environmental variable."
+            )
+            sys.exit(1)
+
+        if IRIS_NETWORKS:
+            options["net"] = ','.join(IRIS_NETWORKS)
+            self.add_nscl(options, user, 'iris')
+        if NRCAN_NETWORKS:
+            options["net"] = ','.join(NRCAN_NETWORKS)
+            minlon_tmp = options["minlon"]
+            if options["minlon"] < -180:
+                options["minlon"] = -179.99
+            self.add_nscl(options, user, 'nrcan')
+            options["minlon"] = minlon_tmp
