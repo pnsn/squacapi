@@ -15,4 +15,4 @@ if [ "$#" -lt 1 ]; then
     
   exit 1
 fi
-docker-compose run --rm  app sh -c "python manage.py $1"
+docker compose run --rm  app sh -c "python manage.py $1"
