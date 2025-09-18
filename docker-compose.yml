@@ -1,7 +1,5 @@
 #for dev environment only
 
-version: "3"
-
 services:
   app:
     container_name: squacapi_app

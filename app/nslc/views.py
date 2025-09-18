@@ -133,7 +133,8 @@ class ChannelViewSet(BaseNslcViewSet):
         q = Channel.objects.all()
         return self.serializer_class.setup_eager_loading(q)
 
-    @cache_control(must_revalidate=True, max_age=settings.NSLC_DEFAULT_CACHE)
+    @method_decorator(cache_control(must_revalidate=True,
+                                    max_age=settings.NSLC_DEFAULT_CACHE))
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
