@@ -45,5 +45,5 @@ fi
 
 # static root must be overridden or it will be added to where current symlink points(previous)
 SQUACAPI_STATIC_ROOT=$dest/static python $dest/app/manage.py collectstatic --noinput
-deactivate
+source /var/.virtualenvs/squacapi-$DEPLOYMENT_GROUP_NAME/bin/deactivate
 
