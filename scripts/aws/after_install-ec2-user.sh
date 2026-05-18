@@ -25,7 +25,7 @@ cd $dest
 # delete virtualenv so packages are consistent
 rmvirtualenv squacapi-$DEPLOYMENT_GROUP_NAME
 mkvirtualenv squacapi-$DEPLOYMENT_GROUP_NAME 2>&1
-source /var/.virtualenvs/squacapi-$DEPLOYMENT_GROUP_NAME/bin/activate
+source /var/.virtualenvs/squacapi-$DEPLOYMENT_GROUP_NAME/bin/activate 2>&1
 
 # All groups use production.txt
 pip3 install  -r $dest/requirements/production.txt --log $dest/pip3_install.log
