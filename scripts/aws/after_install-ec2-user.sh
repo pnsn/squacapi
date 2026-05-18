@@ -28,23 +28,23 @@ rmvirtualenv squacapi-$DEPLOYMENT_GROUP_NAME
 mkvirtualenv squacapi-$DEPLOYMENT_GROUP_NAME 2>&1
 source /var/.virtualenvs/squacapi-$DEPLOYMENT_GROUP_NAME/bin/activate 2>&1
 
-# # All groups use production.txt
-# pip3 install  -r $dest/requirements/production.txt --log $dest/pip3_install.log
-# python3 $dest/app/manage.py migrate
+# All groups use production.txt
+pip3 install  -r $dest/requirements/production.txt --log $dest/pip3_install.log
+python3 $dest/app/manage.py migrate
 
-# # if staging, bootstrap
-# if [ $DEPLOYMENT_GROUP_NAME == 'staging' ]; then
-#     python3 $dest/app/manage.py bootstrap_db --days=7
-# fi
+# if staging, bootstrap
+if [ $DEPLOYMENT_GROUP_NAME == 'staging' ]; then
+    python3 $dest/app/manage.py bootstrap_db --days=7
+fi
 
-# # if production, update cronjobs
-# if [ $DEPLOYMENT_GROUP_NAME == 'jobs' ] || [ $DEPLOYMENT_GROUP_NAME == 'staging' ]; then
-#     echo 'Cronjobs enabled'
-#     python3 $dest/app/manage.py crontab remove
-#     python3 $dest/app/manage.py crontab add
-# fi
+# if production, update cronjobs
+if [ $DEPLOYMENT_GROUP_NAME == 'jobs' ] || [ $DEPLOYMENT_GROUP_NAME == 'staging' ]; then
+    echo 'Cronjobs enabled'
+    python3 $dest/app/manage.py crontab remove
+    python3 $dest/app/manage.py crontab add
+fi
 
-# # static root must be overridden or it will be added to where current symlink points(previous)
-# SQUACAPI_STATIC_ROOT=$dest/static python3 $dest/app/manage.py collectstatic --noinput
+# static root must be overridden or it will be added to where current symlink points(previous)
+SQUACAPI_STATIC_ROOT=$dest/static python3 $dest/app/manage.py collectstatic --noinput
 deactivate
 
