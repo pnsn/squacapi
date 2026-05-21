@@ -18,7 +18,7 @@ GUNICORN_SERVICE=gunicorn-$DEPLOYMENT_GROUP_NAME
 if [ $DEPLOYMENT_GROUP_NAME != 'jobs' ]; then
   # Restart gunicorn 
   systemctl daemon-reload
-  systemctl enable $GUNICORN_SERVICE.socket
+  systemctl enable $GUNICORN_SERVICE
   systemctl restart $GUNICORN_SERVICE.socket $GUNICORN_SERVICE.service
 
   # Check if valid and restart nginx
